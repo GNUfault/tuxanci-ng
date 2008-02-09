@@ -168,17 +168,18 @@ void initScreenSetting()
 	label_name_player1 = newWidgetLabel("Name player1 :", 100, WINDOW_SIZE_Y-160, WIDGET_LABEL_LEFT);
 	label_name_player2 = newWidgetLabel("Name player2 :", 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
 
-	textfield_count_cound = newWidgetTextfield("15", 110+label_count_round->w, WINDOW_SIZE_Y-200);
-	textfield_name_player1 = newWidgetTextfield("name1", 110+label_name_player1->w, WINDOW_SIZE_Y-160);
-	textfield_name_player2 = newWidgetTextfield("name2", 110+label_name_player2->w, WINDOW_SIZE_Y-120);
+	textfield_count_cound = newWidgetTextfield(getParamElse("--count", "15"), 110+label_count_round->w, WINDOW_SIZE_Y-200);
+	
+	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", "name1"), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
+	textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", "name2"), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
 
 	label_music = newWidgetLabel("Music :", 100, WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_music = newWidgetCheck(label_music->x + label_music->w  + 10,
-		WINDOW_SIZE_Y-80, TRUE, eventWidget);
+		WINDOW_SIZE_Y-80, isMusicActive() , eventWidget);
 	label_sound = newWidgetLabel("Sound :", check_music->x + WIDGET_CHECK_WIDTH + 10,
 		WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_sound = newWidgetCheck(label_sound->x + label_sound->w + 10,
-		WINDOW_SIZE_Y-80, TRUE, eventWidget);
+		WINDOW_SIZE_Y-80, isSoundActive() , eventWidget);
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{

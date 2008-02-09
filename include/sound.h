@@ -20,6 +20,8 @@ extern bool_t isSoundInicialized();
 extern void initSound();
 extern void addSound(char *file, char *name, int group);
 extern void playSound(char *name, int group);
+extern void setSoundActive(bool_t n);
+extern bool_t isSoundActive();
 extern void quitSound();
 
 #endif

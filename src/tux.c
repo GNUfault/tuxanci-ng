@@ -58,6 +58,7 @@ tux_t* newTux()
 	new->id = last_id++;
 	new->status = TUX_STATUS_ALIVE;
 	new->control = TUX_CONTROL_NONE;
+
 	findFreeSpace(&new->x, &new->y, TUX_WIDTH, TUX_HEIGHT);
 	new->position = TUX_DOWN;
 	new->gun = GUN_SIMPLE;
@@ -291,21 +292,12 @@ static void timer_spawnTux(void *p)
 	tux->status = TUX_STATUS_ALIVE;
 	findFreeSpace(&tux->x, &tux->y, TUX_WIDTH, TUX_HEIGHT);
 	tux->gun = GUN_SIMPLE;
-
-	memset(tux->shot, 0, sizeof(int) * GUN_COUNT);
-	tux->shot[ tux->gun ] = GUN_MAX_SHOT;
-
-	tux->bonus = BONUS_NONE;
-	tux->bonus_time = 0;
-
-	tux->isCanShot = TRUE;
-	tux->isCanSwitchGun = TRUE;
 	
 	addNewItem(arena->listItem);
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_settux(tux);
+		proto_send_newtux_server(NULL, tux);
 	}
 }
 
@@ -339,40 +331,6 @@ static void timer_tuxCanSwitchGun(void *p)
 	tux->isCanSwitchGun = TRUE;
 }
 
-void switchTuxGun(tux_t *tux)
-{
-	int i;
-	
-	if( tux->isCanSwitchGun == FALSE )
-	{
-		return;
-	}
-
-	playSound("switch_gun", SOUND_GROUP_BASE);
-
-	for( i = tux->gun+1 ; i < GUN_COUNT ; i++ )
-	{
-		if( tux->shot[i] > 0 )
-		{
-			tux->gun = i;
-			tux->isCanSwitchGun = FALSE;
-			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
-			return;
-		}
-	}
-
-	for( i = 0 ; i < GUN_COUNT ; i++ )
-	{
-		if( tux->shot[i] > 0 )
-		{
-			tux->gun = i;
-			tux->isCanSwitchGun = FALSE;
-			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
-			return;
-		}
-	}
-}
-
 void eventTuxIsDead(tux_t *tux)
 {
 	if( tux->status == TUX_STATUS_DEAD )
@@ -381,7 +339,17 @@ void eventTuxIsDead(tux_t *tux)
 	}
 
 	playSound("dead", SOUND_GROUP_BASE);
+
 	tux->status = TUX_STATUS_DEAD;
+	memset(tux->shot, 0, sizeof(int) * GUN_COUNT);
+	tux->gun = GUN_SIMPLE;
+	tux->shot[ tux->gun ] = GUN_MAX_SHOT;
+
+	tux->bonus = BONUS_NONE;
+	tux->bonus_time = 0;
+
+	tux->isCanShot = TRUE;
+	tux->isCanSwitchGun = TRUE;
 
 	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 	{
@@ -405,7 +373,7 @@ void tuxTeleport(tux_t *tux)
 	
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_settux(tux);
+		proto_send_newtux_server(NULL, tux);
 	}
 }
 
@@ -465,7 +433,6 @@ void moveTux(tux_t *tux, int n)
 	if( tux->position != n )
 	{
 		tux->position = n;
-		if( getNetTypeGame() != NET_GAME_TYPE_NONE )proto_send_settux(tux);
 		return;
 	}
 
@@ -518,7 +485,40 @@ void moveTux(tux_t *tux, int n)
 		tux->frame++;
 
 		if( tux->frame == TUX_MAX_ANIMATION_FRAME ) tux->frame = 0;
-		if( getNetTypeGame() != NET_GAME_TYPE_NONE )proto_send_settux(tux);
+	}
+}
+
+void switchTuxGun(tux_t *tux)
+{
+	int i;
+	
+	if( tux->isCanSwitchGun == FALSE )
+	{
+		return;
+	}
+
+	playSound("switch_gun", SOUND_GROUP_BASE);
+
+	for( i = tux->gun+1 ; i < GUN_COUNT ; i++ )
+	{
+		if( tux->shot[i] > 0 )
+		{
+			tux->gun = i;
+			tux->isCanSwitchGun = FALSE;
+			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
+			return;
+		}
+	}
+
+	for( i = 0 ; i < GUN_COUNT ; i++ )
+	{
+		if( tux->shot[i] > 0 )
+		{
+			tux->gun = i;
+			tux->isCanSwitchGun = FALSE;
+			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
+			return;
+		}
 	}
 }
 
@@ -545,6 +545,27 @@ void shotTux(tux_t *tux)
 	if( tux->shot[tux->gun] == 0 )
 	{
 		switchTuxGun(tux);
+	}
+}
+
+void actionTux(tux_t *tux, int action)
+{
+	switch( action )
+	{
+		case TUX_UP :
+		case TUX_LEFT :
+		case TUX_RIGHT :
+		case TUX_DOWN :
+			moveTux(tux, action);
+		break;
+
+		case TUX_SHOT :
+			shotTux(tux);
+		break;
+
+		case TUX_SWITCH_GUN :
+			switchTuxGun(tux);
+		break;
 	}
 }
 
@@ -587,6 +608,11 @@ static void eventBonus(tux_t *tux)
 			}
 
 			tux->bonus = BONUS_NONE;
+
+			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+			{
+				proto_send_newtux_server(NULL, tux);
+			}
 		}
 	}
 }

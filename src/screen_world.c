@@ -61,6 +61,24 @@ void countRoundInc()
 	count++;
 }
 
+static tux_t* getControlTux(int control_type)
+{
+	tux_t *thisTux;
+	int i;
+
+	for( i = 0 ; i < arena->listTux->count ; i++ )
+	{
+		thisTux = (tux_t *)(arena->listTux->list[i]);
+
+		if( thisTux->control == control_type )
+		{
+			return thisTux;
+		}
+	}
+
+	return NULL;
+}
+
 void createTux()
 {
 	tux_t *tux;
@@ -93,14 +111,25 @@ void createTux()
 
 void drawWorld()
 {
-	drawImage(arena->background, 0, 0, 0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	tux_t *tux = NULL;
+
+	addLayer(arena->background, 0, 0, 0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, -100);
 
 	drawListTux(arena->listTux);
 	drawListWall(arena->listWall);
 	drawListShot(arena->listShot);
 	drawListItem(arena->listItem);
 
-	drawLayer();
+	//tux = getControlTux( TUX_CONTROL_KEYBOARD_RIGHT );
+
+	if( tux == NULL )
+	{
+		drawLayerCenter(WINDOW_SIZE_X/2, WINDOW_SIZE_Y/2);
+	}
+	else
+	{
+		drawLayerCenter(tux->x, tux->y);
+	}
 
 	drawPanel(arena->listTux);
 }
@@ -137,56 +166,78 @@ void findFreeSpace(int *x, int *y, int w, int h)
 	*y = z_y;
 }
 
-static void control_keyboard_right(tux_t *p)
+static void netAction(tux_t *tux, int action)
+{
+	if( getSettingGameType() == NET_GAME_TYPE_SERVER )
+	{
+		proto_send_event_server(tux , action, NULL);
+	}
+
+	if( getSettingGameType() == NET_GAME_TYPE_CLIENT )
+	{
+		proto_send_event_client(action);
+	}
+}
+
+static void control_keyboard_right(tux_t *tux)
 {
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
 
-	assert( p != NULL );
+	assert( tux != NULL );
 	assert( mapa != NULL );
 
-	if( mapa[(SDLKey)SDLK_UP] == SDL_PRESSED )moveTux(p, TUX_UP);
-	if( mapa[(SDLKey)SDLK_RIGHT] == SDL_PRESSED )moveTux(p, TUX_RIGHT);
-	if( mapa[(SDLKey)SDLK_LEFT] == SDL_PRESSED )moveTux(p, TUX_LEFT);
-	if( mapa[(SDLKey)SDLK_DOWN] == SDL_PRESSED )moveTux(p, TUX_DOWN);
+	if( mapa[(SDLKey)SDLK_UP] == SDL_PRESSED )
+	{
+		netAction(tux, TUX_UP);
+		actionTux(tux, TUX_UP);
+	}
+
+	if( mapa[(SDLKey)SDLK_RIGHT] == SDL_PRESSED )
+	{
+		netAction(tux, TUX_RIGHT);
+		actionTux(tux, TUX_RIGHT);
+	}
+
+	if( mapa[(SDLKey)SDLK_LEFT] == SDL_PRESSED )
+	{
+		netAction(tux, TUX_LEFT);
+		actionTux(tux, TUX_LEFT);
+	}
+
+	if( mapa[(SDLKey)SDLK_DOWN] == SDL_PRESSED )
+	{
+		netAction(tux, TUX_DOWN);
+		actionTux(tux, TUX_DOWN);
+	}
 
 	if( mapa[(SDLKey)SDLK_KP0] == SDL_PRESSED )
 	{
-		proto_send_shottux(p);
-		shotTux(p);
+		netAction(tux, TUX_SHOT);
+		actionTux(tux, TUX_SHOT);
 	}
 
 	if( mapa[(SDLKey)SDLK_KP1] == SDL_PRESSED )
 	{
-		proto_send_switchgun(p);
-		switchTuxGun(p);
+		netAction(tux, TUX_SWITCH_GUN);
+		actionTux(tux, TUX_SWITCH_GUN);
 	}
 }
 
-static void control_keyboard_left(tux_t *p)
+static void control_keyboard_left(tux_t *tux)
 {
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
 
-	assert( p != NULL );
+	assert( tux != NULL );
 	assert( mapa != NULL );
 
-	if( mapa[(SDLKey)SDLK_w] == SDL_PRESSED )moveTux(p, TUX_UP);
-	if( mapa[(SDLKey)SDLK_d] == SDL_PRESSED )moveTux(p, TUX_RIGHT);
-	if( mapa[(SDLKey)SDLK_a] == SDL_PRESSED )moveTux(p, TUX_LEFT);
-	if( mapa[(SDLKey)SDLK_s] == SDL_PRESSED )moveTux(p, TUX_DOWN);
-
-	if( mapa[(SDLKey)SDLK_q] == SDL_PRESSED )
-	{
-		proto_send_shottux(p);
-		shotTux(p);
-	}
-
-	if( mapa[(SDLKey)SDLK_TAB] == SDL_PRESSED )
-	{
-		proto_send_switchgun(p);
-		switchTuxGun(p);
-	}
+	if( mapa[(SDLKey)SDLK_w] == SDL_PRESSED )actionTux(tux, TUX_UP);
+	if( mapa[(SDLKey)SDLK_d] == SDL_PRESSED )actionTux(tux, TUX_RIGHT);
+	if( mapa[(SDLKey)SDLK_a] == SDL_PRESSED )actionTux(tux, TUX_LEFT);
+	if( mapa[(SDLKey)SDLK_s] == SDL_PRESSED )actionTux(tux, TUX_DOWN);
+	if( mapa[(SDLKey)SDLK_q] == SDL_PRESSED )actionTux(tux, TUX_SHOT);
+	if( mapa[(SDLKey)SDLK_TAB] == SDL_PRESSED )actionTux(tux, TUX_SWITCH_GUN);
 }
 
 static void eventEnd()

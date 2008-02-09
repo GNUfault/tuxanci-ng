@@ -129,19 +129,6 @@ static void sendAllClient(char *msg)
 	sendAllClientBut(msg, NULL);
 }
 
-static void sendNetwork(char *msg)
-{
-	switch( netGameType )
-	{
-		case NET_GAME_TYPE_SERVER :
-			sendAllClient(msg);
-		break;
-		case NET_GAME_TYPE_CLIENT :
-			sendServer(msg);
-		break;
-	}
-}
-
 static client_t* newClient(int sock)
 {
 	client_t *new;
@@ -170,93 +157,114 @@ static void destroyClient(client_t *p)
 	free(p);
 }
 
-static void proto_send_init(client_t *p)
+void proto_send_init_server(client_t *client)
 {
 	char msg[STR_SIZE];
 
-	sprintf(msg, "init %d\n", p->tux->id);
-	sendClient(p, msg);
+	sprintf(msg, "init %d %d %d\n",
+	client->tux->id, client->tux->x, client->tux->y);
+	
+	sendClient(client, msg);
 }
 
-void proto_send_settux(tux_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "settux %d %d %d %d %d\n",
-		p->id ,p->x, p->y, p->position ,p->frame);
-	
-	sendNetwork(msg);
-}
-
-void proto_send_deltux(tux_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "deltux %d\n", p->id);
-
-	sendNetwork(msg);
-}
-
-void proto_send_shottux(tux_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "shottux %d\n", p->id);
-
-	sendNetwork(msg);
-}
-
-void proto_send_switchgun(tux_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "switchgun %d %d\n", p->id, p->gun);
-
-	sendNetwork(msg);
-}
-
-void proto_send_additem(item_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "additem %d %d %d\n", p->type, p->x, p->y);
-
-	sendNetwork(msg);
-}
-
-void proto_send_context(tux_t *p)
-{
-	char msg[STR_SIZE];
-	
-	sprintf(msg, "context %d %s\n", p->id, p->name);
-
-	sendNetwork(msg);
-}
-
-static void proto_recv_init(char *msg)
+void proto_recv_init_client(char *msg)
 {
 	char cmd[STR_SIZE];
 	tux_t *tux;
 
 	tux = newTux();
 
-	sscanf(msg, "%s %d\n", cmd, &tux->id);
+	sscanf(msg, "%s %d %d %d\n",
+	cmd, &tux->id, &tux->x, &tux->y);
 
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 	getSettingNameRight(tux->name);
-	proto_send_context(tux);
+	proto_send_context_client(tux);
 	addList(arena->listTux, tux);
 }
 
-static void proto_recv_settux(char *msg)
+void proto_send_event_server(tux_t *tux, int action, client_t *client)
+{
+	char msg[STR_SIZE];
+	
+	sprintf(msg, "event %d %d\n", tux->id, action);
+	
+	sendAllClientBut(msg, client);
+}
+
+void proto_recv_event_client(char *msg)
 {
 	char cmd[STR_SIZE];
-	int a, b, c, d, e;
+	int id, action;
 	tux_t *tux;
 
-	sscanf(msg, "%s %d %d %d %d %d", cmd, &a, &b, &c, &d, &e);
+	sscanf(msg, "%s %d %d", cmd, &id, &action);
 
-	tux = getTuxID(arena->listTux, a);
+	tux = getTuxID(arena->listTux, id);
+
+	if( tux != NULL )
+	{
+		actionTux(tux, action);
+	}
+}
+
+void proto_send_event_client(int action)
+{
+	char msg[STR_SIZE];
+	
+	sprintf(msg, "event %d\n", action);
+	
+	sendServer(msg);
+}
+
+void proto_recv_event_server(client_t *client, char *msg)
+{
+	char cmd[STR_SIZE];
+	int action;
+
+	sscanf(msg, "%s %d", cmd, &action);
+
+	actionTux(client->tux, action);
+
+	proto_send_event_server(client->tux, action, client);
+}
+
+void proto_send_newtux_server(client_t *client, tux_t *tux)
+{
+	char msg[STR_SIZE];
+
+	sprintf(msg, "newtux %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d\n",
+	tux->id ,tux->x, tux->y, tux->position ,tux->frame, tux->score, tux->name,
+	tux->gun, tux->bonus, tux->shot[GUN_SIMPLE], tux->shot[GUN_DUAL_SIMPLE],
+	tux->shot[GUN_SCATTER], tux->shot[GUN_TOMMY], tux->shot[GUN_LASSER],
+	tux->shot[GUN_MINE], tux->shot[GUN_BOMBBALL],
+	tux->bonus_time, tux->pickup_time);
+	
+	if( client == NULL )
+	{
+		sendAllClient(msg);
+	}
+	else
+	{
+		sendClient(client, msg);
+	}
+}
+
+void proto_recv_newtux_client(char *msg)
+{
+	char cmd[STR_SIZE];
+	char name[STR_NAME_SIZE];
+	int id, x, y, position, frame, score;
+	int myGun, myBonus;
+	int  gun1, gun2, gun3, gun4, gun5, gun6, gun7;
+	int time1, time2;
+	tux_t *tux;
+
+	sscanf(msg, "%s %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d",
+	cmd, &id, &x, &y, &position, &frame, &score, name,
+	&myGun, &myBonus, &gun1, &gun2, &gun3, &gun4, &gun5, &gun6, &gun7, &time1, &time2);
+
+	tux = getTuxID(arena->listTux, id);
 
 	if( tux == NULL )
 	{
@@ -265,18 +273,37 @@ static void proto_recv_settux(char *msg)
 		addList(arena->listTux, tux);
 	}
 
-	tux->id = a;
-	tux->x = b;
-	tux->y = c;
-	tux->position = d;
-	tux->frame = e;
+	tux->id = id;
+	tux->x = x;
+	tux->y = y;
+	tux->position = position;
+	tux->frame = frame;
+	tux->frame = score;
+	strcpy(tux->name, name);
+	tux->gun = myGun;
+	tux->bonus = myBonus;
+	tux->shot[GUN_SIMPLE] = gun1;
+	tux->shot[GUN_DUAL_SIMPLE] = gun2;
+	tux->shot[GUN_SCATTER] = gun3;
+	tux->shot[GUN_TOMMY] = gun4;
+	tux->shot[GUN_LASSER] = gun5;
+	tux->shot[GUN_MINE] = gun6;
+	tux->shot[GUN_BOMBBALL] = gun7;
+	tux->bonus_time = time1;
+	tux->pickup_time = time2;
 	tux->status = TUX_STATUS_ALIVE;
-
-	// ???
-	//eventGiveTuxItem(tux, arena->listItem);
 }
 
-static void proto_recv_deltux(char *msg)
+void proto_send_deltux_server(client_t *client)
+{
+	char msg[STR_SIZE];
+	
+	sprintf(msg, "deltux %d\n", client->tux->id);
+
+	sendAllClientBut(msg, client);
+}
+
+void proto_recv_deltux_client(char *msg)
 {
 	char cmd[STR_SIZE];
 	int id;
@@ -295,45 +322,22 @@ static void proto_recv_deltux(char *msg)
 	}
 }
 
-static void proto_recv_shottux(char *msg)
+void proto_send_additem_server(item_t *p)
 {
-	char cmd[STR_SIZE];
-	int id;
-	tux_t *tux;
+	char msg[STR_SIZE];
+	
+	sprintf(msg, "additem %d %d %d %d %d\n", p->type, p->x, p->y, p->count, p->frame);
 
-	sscanf(msg, "%s %d\n", cmd, &id);
-
-	tux = getTuxID(arena->listTux, id);
-
-	if( tux != NULL )
-	{
-		shotTux(tux);
-	}
+	sendAllClient(msg);
 }
 
-void proto_recv_switchgun(char *msg)
+void proto_recv_additem_client(char *msg)
 {
 	char cmd[STR_SIZE];
-	int id, gun;
-	tux_t *tux;
-
-	sscanf(msg, "%s %d %d\n", cmd, &id, &gun);
-
-	tux = getTuxID(arena->listTux, id);
-
-	if( tux != NULL )
-	{
-		tux->gun = gun;
-	}
-}
-
-void proto_recv_additem(char *msg)
-{
-	char cmd[STR_SIZE];
-	int type, x, y;
+	int type, x, y, count, frame;
 	item_t *item;
 
-	sscanf(msg, "%s %d %d %d\n", cmd, &type, &x, &y);
+	sscanf(msg, "%s %d %d %d %d %d\n", cmd, &type, &x, &y, &count, &frame);
 
 	item = newItem(x, y, type);
 
@@ -343,54 +347,64 @@ void proto_recv_additem(char *msg)
 		return;
 	}
 
+	item->count = count;
+	item->frame = frame;
+
 	addList(arena->listItem, item);
 }
 
-void proto_recv_context(char *msg)
+void proto_send_context_client(tux_t *tux)
+{
+	char msg[STR_SIZE];
+	
+	sprintf(msg, "context %s\n", tux->name);
+
+	sendServer(msg);
+}
+
+void proto_recv_context_server(client_t *client, char *msg)
 {
 	char cmd[STR_SIZE];
 	char name[STR_NAME_SIZE];
-	int id;
-	tux_t *tux;
 
-	sscanf(msg, "%s %d %s\n", cmd, &id, name);
+	sscanf(msg, "%s %s\n", cmd, name);
 
-	tux = getTuxID(arena->listTux, id);
-
-	if( tux != NULL )
-	{
-		strcpy(tux->name, name);
-	}
+	strcpy(client->tux->name, name);
+	
+	proto_send_newtux_server(NULL, client->tux);
 }
 
-static void eventCreateNewClient(int sock)
+void eventCreateNewClient(int sock)
 {
-	client_t *new;
+	client_t *client;
+	client_t *thisClient;
 	tux_t *thisTux;
 	item_t *thisItem;
 	int i;
 
-	new = newClient( getNewClient(sock) );
-	addList(listClient, new);
+	client = newClient( getNewClient(sock) );
+	addList(listClient, client);
 
-	proto_send_init(new);
+	proto_send_init_server(client);
 
-	for( i = 0 ; i < arena->listTux->count; i++)
+	proto_send_newtux_server(client, (tux_t *)(arena->listTux->list[0]) );
+
+	for( i = 0 ; i < listClient->count; i++)
 	{
-		thisTux = (tux_t *) arena->listTux->list[i];
-		
-		proto_send_settux(thisTux);
-		
-		if( thisTux != new->tux )
+		thisClient = (client_t *) listClient->list[i];
+		thisTux = thisClient->tux;
+
+		if( thisTux != client->tux )
 		{
-			proto_send_context(thisTux);
+			proto_send_newtux_server(thisClient, client->tux);
+			proto_send_newtux_server(client, thisTux);
 		}
 	}
 
 	for( i = 0 ; i < arena->listItem->count; i++)
 	{
 		thisItem = (item_t *) arena->listItem->list[i];
-		proto_send_additem(thisItem);
+		proto_send_additem_server(thisItem);
 	}
 }
 
@@ -430,13 +444,10 @@ static void eventClientBuffer(client_t *client)
 	
 	while( getBufferLine(client->buffer, line, STR_SIZE) >= 0 )
 	{
-		sendAllClientBut(line, client);
+		printf("dostal som %s", line);
 
-		if( strncmp(line, "settux", 6) == 0 )proto_recv_settux(line);
-		if( strncmp(line, "shottux", 7) == 0 )proto_recv_shottux(line);
-		if( strncmp(line, "switchgun", 9) == 0 )proto_recv_switchgun(line);
-		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem(line);
-		if( strncmp(line, "context", 7) == 0 )proto_recv_context(line);
+		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
+		if( strncmp(line, "context", 7) == 0 )proto_recv_context_server(client, line);
 	}
 }
 
@@ -497,7 +508,7 @@ static void selectServerSocket()
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{
-			proto_send_deltux(thisClient->tux);
+			proto_send_deltux_server(thisClient);
 			delListItem(listClient, i, destroyClient);
 		}
 	}
@@ -546,15 +557,13 @@ static void eventServerBuffer()
 	
 	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
 	{
-		//printf("dostal som %s\n", line);
-	
-		if( strncmp(line, "init", 4) == 0 )proto_recv_init(line);
-		if( strncmp(line, "settux", 6) == 0 )proto_recv_settux(line);
-		if( strncmp(line, "deltux", 6) == 0 )proto_recv_deltux(line);
-		if( strncmp(line, "shottux", 7) == 0 )proto_recv_shottux(line);
-		if( strncmp(line, "switchgun", 9) == 0 )proto_recv_switchgun(line);
-		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem(line);
-		if( strncmp(line, "context", 7) == 0 )proto_recv_context(line);
+		printf("dostal som %s", line);
+
+		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
+		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
+		if( strncmp(line, "newtux", 6) == 0 )proto_recv_newtux_client(line);
+		if( strncmp(line, "deltux", 6) == 0 )proto_recv_deltux_client(line);
+		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem_client(line);
 	}
 }
 

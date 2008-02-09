@@ -36,6 +36,9 @@
 #define TUX_RIGHT	6
 #define TUX_DOWN	2
 
+#define TUX_SHOT	5
+#define TUX_SWITCH_GUN	0
+
 
 #define GUN_NONE	-1
 
@@ -98,16 +101,15 @@ extern bool_t isTuxInicialized();
 extern void initTux();
 extern tux_t* newTux();
 extern bool_t isTuxAnyGun(tux_t *tux);
-extern void switchTuxGun(tux_t *tux);
 extern void getCourse(int n, int *x, int *y);
 extern void drawTux(tux_t *p);
 extern void drawListTux(list_t *listTux);
 extern void eventTuxIsDead(tux_t *tux);
 extern tux_t* isConflictWithListTux(list_t *listTux, int x, int y, int w, int h);
+extern int isConflictTuxWithListTux(tux_t *tux, list_t *listTux);
 extern void eventConflictShotWithTux(list_t *listTux, list_t *listShot);
-extern void moveTux(tux_t *p,int n);
-extern void shotTux(tux_t *p);
 extern void tuxTeleport(tux_t *tux);
+extern void actionTux(tux_t *tux, int action);
 extern void eventListTux(list_t *listTux);
 extern tux_t* getTuxID(list_t *listTux, int id);
 extern void getTuxProportion(tux_t *p, int *x,int *y, int *w, int *h);

@@ -21,6 +21,8 @@ extern void initMusic();
 extern void addMusic(char *file, char *name, int group);
 extern void stopMusic();
 extern void playMusic(char *name, int group);
+extern void setMusicActive(bool_t n);
+extern bool_t isMusicActive();
 extern char* getCurrentMusic();
 extern void delAllMusicInGroup(int group);
 extern void quitMusic();

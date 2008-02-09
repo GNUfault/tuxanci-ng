@@ -8,4 +8,4 @@ background image="grow"
 
 playMusic music="noc"
 
-wall x="200" y="100" w="128" h="64" img_x="200" img_y="100" layer="-1" image="pokus"
+wall x="200" y="100" w="128" h="64" img_x="200" img_y="100" layer="1" image="pokus"

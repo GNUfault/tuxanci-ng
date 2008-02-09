@@ -87,6 +87,34 @@ char* getParam(char *s)
 	return NULL;
 }
 
+char* getParamElse(char *s1, char *s2)
+{
+	char *ret;
+	ret = getParam(s1);
+
+	if( ret == NULL)
+	{
+		return s2;
+	}
+
+	return ret;
+}
+
+bool_t isParamFlag(char *s)
+{
+	int i;
+
+	for( i = 0 ; i < my_argc ; i++ )
+	{
+		if( strcmp(s, my_argv[i]) == 0 )
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 char *getString(int n)
 {
 	char str[STR_NUM_SIZE];

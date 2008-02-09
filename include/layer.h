@@ -46,7 +46,7 @@ extern void addLayer(SDL_Surface *img,
  * Vykresli zoznam na obrazovku
  */
 extern void drawLayer();
-
+extern void drawLayerCenter(int x, int y);
 extern void quitLayer();
 
 #endif

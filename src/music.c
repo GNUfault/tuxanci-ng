@@ -14,7 +14,7 @@
 static list_t *listMusic;
 
 static bool_t isMusicInit = FALSE;
-static bool_t isMusicActive = TRUE;
+static bool_t var_isMusicActive = TRUE;
 static music_t *currentMusic;
 
 bool_t isMusicInicialized()
@@ -34,7 +34,17 @@ void initMusic()
 	currentMusic = NULL;
 
 	isMusicInit = TRUE;
-	isMusicActive = TRUE;
+	var_isMusicActive = TRUE;
+
+	if( isParamFlag("--nomusic") )
+	{
+		setMusicActive(FALSE);
+	}
+
+	if( isParamFlag("--music") )
+	{
+		setMusicActive(TRUE);
+	}
 
 	printf("init music..\n");
 }
@@ -72,8 +82,11 @@ static music_t *newMusic(char *file, char *name, int group)
 
 static void playMixMusic()
 {
-	printf("play music %s..\n", currentMusic->name);
-	Mix_PlayMusic(currentMusic->music, 1000);
+	if( currentMusic != NULL )
+	{
+		printf("play music %s..\n", currentMusic->name);
+		Mix_PlayMusic(currentMusic->music, 1000);
+	}
 }
 
 static void destroyMusic(music_t *p)
@@ -91,7 +104,7 @@ void addMusic(char *file, char *name, int group)
 void stopMusic()
 {
 	if( isMusicInit == FALSE ||
-	    isMusicActive == FALSE )
+	    var_isMusicActive == FALSE )
 	{
 		return;
 	}
@@ -110,7 +123,7 @@ void playMusic(char *name, int group)
 	music_t *this;
 
 	if( isMusicInit == FALSE ||
-	    isMusicActive == FALSE )
+	    var_isMusicActive == FALSE )
 	{
 		return;
 	}
@@ -160,7 +173,12 @@ void setMusicActive(bool_t n)
 		playMixMusic();
 	}
 
-	isMusicActive = n;
+	var_isMusicActive = n;
+}
+
+bool_t isMusicActive()
+{
+	return var_isMusicActive;
 }
 
 char* getCurrentMusic()

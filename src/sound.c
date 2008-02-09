@@ -14,7 +14,7 @@
 static list_t *listSound;
 
 static bool_t isSoundInit = FALSE;
-static bool_t isSoundActive = TRUE;
+static bool_t var_isSoundActive = TRUE;
 
 bool_t isSoundInicialized()
 {
@@ -30,7 +30,17 @@ void initSound()
 
 	listSound = newList();
 	isSoundInit = TRUE;
-	isSoundActive = TRUE;
+	var_isSoundActive = TRUE;
+
+	if( isParamFlag("--nomusic") )
+	{
+		setSoundActive(FALSE);
+	}
+
+	if( isParamFlag("--music") )
+	{
+		setSoundActive(TRUE);
+	}
 
 	printf("init sound..\n");
 }
@@ -92,7 +102,7 @@ void playSound(char *name, int group)
 	sound_t *this;
 
 	if( isSoundInit == FALSE ||
-	    isSoundActive == FALSE )
+	    var_isSoundActive == FALSE )
 	{
 		return;
 	}
@@ -111,7 +121,12 @@ void playSound(char *name, int group)
 
 void setSoundActive(bool_t n)
 {
-	isSoundActive = n;
+	var_isSoundActive = n;
+}
+
+bool_t isSoundActive()
+{
+	return var_isSoundActive;
 }
 
 void quitSound()

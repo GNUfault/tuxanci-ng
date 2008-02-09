@@ -134,6 +134,7 @@ static void timer_addShotTimer(void *p)
 {
 	tux_t *tux;
 	int id;
+	int gun;
 
 	id =  * ((int *)p);
 	free(p);
@@ -142,7 +143,10 @@ static void timer_addShotTimer(void *p)
 
 	if( tux == NULL )return;
 
+	gun = tux->gun;
+	tux->gun = GUN_SIMPLE;
 	addShot(tux, 0, 0, +15, 0);
+	tux->gun = gun;
 }
 
 static void shotInGunTommy(tux_t *tux)
@@ -159,6 +163,7 @@ static void timer_addLaserTimer(void *p)
 {
 	tux_t *tux;
 	int id;
+	int gun;
 
 	id =  * ((int *)p);
 	free(p);
@@ -167,7 +172,10 @@ static void timer_addLaserTimer(void *p)
 
 	if( tux == NULL )return;
 
+	gun = tux->gun;
+	tux->gun = GUN_LASSER;
 	addShot(tux, 0, 0, +20, 0);
+	tux->gun = gun;
 }
 
 static void shotInGunLasser(tux_t *tux)

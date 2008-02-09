@@ -7,6 +7,8 @@
 #include "list.h"
 #include "layer.h"
 #include "image.h"
+#include "tux.h"
+#include "screen_world.h"
 
 static list_t *listLayer;
 
@@ -96,6 +98,29 @@ void drawLayer()
 
 		drawImage(this->image,
 			this->x, this->y,
+			this->px, this->py,
+			this->w, this->h);
+	}
+
+	destroyListItem(listLayer, free);
+	listLayer = newList();
+}
+
+void drawLayerCenter(int x, int y)
+{
+	layer_t *this;
+	int offset_x, offset_y;
+	int i;
+
+	offset_x = x - WINDOW_SIZE_X/2;
+	offset_y = y - WINDOW_SIZE_Y/2;
+
+	for( i = 0 ; i < listLayer->count ; i++ )
+	{
+		this = (layer_t *)listLayer->list[i];
+
+		drawImage(this->image,
+			this->x - offset_x, this->y - offset_y,
 			this->px, this->py,
 			this->w, this->h);
 	}

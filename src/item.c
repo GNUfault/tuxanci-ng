@@ -150,7 +150,7 @@ void addNewItem(list_t *listItem)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_additem(item);
+		proto_send_additem_server(item);
 	}
 }
 
