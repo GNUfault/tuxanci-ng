@@ -48,6 +48,7 @@ void initTux()
 tux_t* newTux()
 {
 	static int last_id = 0;
+	int x, y;
 	tux_t *new;
 
 	new = malloc( sizeof(tux_t) );
@@ -59,7 +60,9 @@ tux_t* newTux()
 	new->status = TUX_STATUS_ALIVE;
 	new->control = TUX_CONTROL_NONE;
 
-	findFreeSpace(&new->x, &new->y, TUX_WIDTH, TUX_HEIGHT);
+	findFreeSpace(&x, &y, TUX_WIDTH, TUX_HEIGHT);
+	setTuxProportion(new, x, y);
+
 	new->position = TUX_DOWN;
 	new->gun = GUN_SIMPLE;
 	new->shot[ new->gun ] = GUN_MAX_SHOT;
@@ -125,20 +128,20 @@ void getCourse(int n, int *x, int *y)
 	}	
 }
 
-void drawTux(tux_t *p)
+void drawTux(tux_t *tux)
 {
 	SDL_Surface *g_image = NULL;
 
-	assert( p != NULL );
+	assert( tux != NULL );
 
-	if( p->bonus == BONUS_HIDDEN && 
+	if( tux->bonus == BONUS_HIDDEN && 
 	    getNetTypeGame() != NET_GAME_TYPE_NONE &&
-	    p->control == TUX_CONTROL_NET )
+	    tux->control == TUX_CONTROL_NET )
 	{
 		return;
 	}
 
-	switch( p->position )
+	switch( tux->position )
 	{
 		case TUX_UP :
 			g_image = g_tux_up;
@@ -161,13 +164,13 @@ void drawTux(tux_t *p)
 		break;
 	}
 
-	if( p->status == TUX_STATUS_DEAD )
+	if( tux->status == TUX_STATUS_DEAD )
 	{
 		g_image = g_cross;
 
 		addLayer(g_cross,
-			p->x - g_cross->w / 2,
-			( p->y + g_cross->h / 2 ) - g_cross->h,
+			tux->x - g_cross->w / 2,
+			( tux->y + g_cross->h / 2 ) - g_cross->h,
 			0, 0,
 			g_cross->w, g_cross->h, TUX_LAYER);
 
@@ -175,9 +178,9 @@ void drawTux(tux_t *p)
 	}
 
 	addLayer(g_image,
-		p->x - TUX_IMG_WIDTH / 2,
-		( p->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,
-		p->frame * TUX_IMG_WIDTH, 0,
+		tux->x - TUX_IMG_WIDTH / 2,
+		( tux->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,
+		tux->frame * TUX_IMG_WIDTH, 0,
 		TUX_IMG_WIDTH, TUX_IMG_HEIGHT, TUX_LAYER);
 }
 
@@ -279,6 +282,7 @@ static void timer_spawnTux(void *p)
 {
 	tux_t *tux;
 	arena_t *arena;
+	int x, y;
 	int id;
 
 	id =  * ((int *)p);
@@ -290,7 +294,8 @@ static void timer_spawnTux(void *p)
 	if( tux == NULL )return;
 
 	tux->status = TUX_STATUS_ALIVE;
-	findFreeSpace(&tux->x, &tux->y, TUX_WIDTH, TUX_HEIGHT);
+	findFreeSpace(&x, &y, TUX_WIDTH, TUX_HEIGHT);
+	setTuxProportion(tux, x, y);
 	tux->gun = GUN_SIMPLE;
 	
 	addNewItem(arena->listItem);
@@ -362,14 +367,16 @@ static void eventTuxIsDeadWIthShot(tux_t *tux,shot_t *shot)
 	shot->author->score++;
 	countRoundInc();
 	eventTuxIsDead(tux);
-
 }
 
 void tuxTeleport(tux_t *tux)
 {
+	int x, y;
+
 	playSound("teleport", SOUND_GROUP_BASE);
 
-	findFreeSpace(&tux->x, &tux->y, TUX_WIDTH, TUX_HEIGHT);
+	findFreeSpace(&x, &y, TUX_WIDTH, TUX_HEIGHT);
+	setTuxProportion(tux, x, y);
 	
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
@@ -408,7 +415,6 @@ void eventConflictShotWithTux(list_t *listTux, list_t *listShot)
 					tuxTeleport(thisTux);
 					continue;
 				}
-
 
 				eventTuxIsDeadWIthShot(thisTux, thisShot);
 			}
@@ -534,11 +540,6 @@ void shotTux(tux_t *tux)
 
 	shotInGun(tux);
 
-	if( tux->bonus != BONUS_SHOT )
-	{
-		tux->shot[tux->gun]--;
-	}
-
 	tux->isCanShot = FALSE;
 	addTimer(timer_tuxCanShot, newInt(tux->id), TUX_TIME_CAN_SHOT );
 
@@ -636,20 +637,28 @@ void eventListTux(list_t *listTux)
 	}
 }
 
-void getTuxProportion(tux_t *p, int *x,int *y, int *w, int *h)
+void getTuxProportion(tux_t *tux, int *x,int *y, int *w, int *h)
 {
-	assert( p != NULL );
+	assert( tux != NULL );
 
-	if( x != NULL ) *x = p->x - TUX_WIDTH / 2;
-	if( y != NULL ) *y = p->y - TUX_HEIGHT / 2;
+	if( x != NULL ) *x = tux->x - TUX_WIDTH / 2;
+	if( y != NULL ) *y = tux->y - TUX_HEIGHT / 2;
 	if( w != NULL ) *w = TUX_WIDTH;
 	if( h != NULL ) *h = TUX_HEIGHT;
 }
 
-void destroyTux(tux_t *p)
+void setTuxProportion(tux_t *tux, int x, int y)
 {
-	assert( p != NULL );
-	free(p);
+	assert( tux != NULL );
+
+	tux->x = x + TUX_WIDTH / 2;
+	tux->y = y + TUX_WIDTH / 2;
+}
+
+void destroyTux(tux_t *tux)
+{
+	assert( tux != NULL );
+	free(tux);
 }
 
 void quitTux()

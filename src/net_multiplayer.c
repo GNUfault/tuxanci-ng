@@ -278,7 +278,7 @@ void proto_recv_newtux_client(char *msg)
 	tux->y = y;
 	tux->position = position;
 	tux->frame = frame;
-	tux->frame = score;
+	tux->score = score;
 	strcpy(tux->name, name);
 	tux->gun = myGun;
 	tux->bonus = myBonus;

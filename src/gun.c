@@ -217,11 +217,17 @@ static void putInGunMine(tux_t *tux)
 	if( isFreeSpace(x, y, ITEM_MINE_WIDTH, ITEM_MINE_HEIGHT) )
 	{
 		addList(arena->listItem, newItem(x, y, ITEM_MINE) );
+		tux->shot[tux->gun]--;
 	}
 }
 
 void shotInGun(tux_t *tux)
 {
+	if( tux->bonus != BONUS_SHOT && tux->gun != GUN_MINE )
+	{
+		tux->shot[tux->gun]--;
+	}
+
 	switch( tux->gun )
 	{
 		case GUN_SIMPLE :

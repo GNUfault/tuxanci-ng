@@ -102,7 +102,7 @@ extern void initTux();
 extern tux_t* newTux();
 extern bool_t isTuxAnyGun(tux_t *tux);
 extern void getCourse(int n, int *x, int *y);
-extern void drawTux(tux_t *p);
+extern void drawTux(tux_t *tux);
 extern void drawListTux(list_t *listTux);
 extern void eventTuxIsDead(tux_t *tux);
 extern tux_t* isConflictWithListTux(list_t *listTux, int x, int y, int w, int h);
@@ -112,8 +112,9 @@ extern void tuxTeleport(tux_t *tux);
 extern void actionTux(tux_t *tux, int action);
 extern void eventListTux(list_t *listTux);
 extern tux_t* getTuxID(list_t *listTux, int id);
-extern void getTuxProportion(tux_t *p, int *x,int *y, int *w, int *h);
-extern void destroyTux(tux_t *p);
+extern void getTuxProportion(tux_t *tux, int *x,int *y, int *w, int *h);
+extern void setTuxProportion(tux_t *tux, int x, int y);
+extern void destroyTux(tux_t *tux);
 extern void quitTux();
 
 #endif

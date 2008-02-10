@@ -26,18 +26,19 @@ void initSound()
 	if( isAudioInicialized() == FALSE )
 	{
 		isSoundInit = FALSE;
+		return;
 	}
 
 	listSound = newList();
 	isSoundInit = TRUE;
 	var_isSoundActive = TRUE;
 
-	if( isParamFlag("--nomusic") )
+	if( isParamFlag("--nosound") )
 	{
 		setSoundActive(FALSE);
 	}
 
-	if( isParamFlag("--music") )
+	if( isParamFlag("--sound") )
 	{
 		setSoundActive(TRUE);
 	}
@@ -93,6 +94,11 @@ static void destroySound(sound_t *p)
 
 void addSound(char *file, char *name, int group)
 {
+	if( isSoundInit == FALSE )
+	{
+		return;
+	}
+
 	addList( listSound, newSound(file, name, group) );
 }
 

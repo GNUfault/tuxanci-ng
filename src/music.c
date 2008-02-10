@@ -98,6 +98,11 @@ static void destroyMusic(music_t *p)
 
 void addMusic(char *file, char *name, int group)
 {
+	if( isMusicInit == FALSE )
+	{
+		return;
+	}
+
 	addList( listMusic, newMusic(file, name, group) );
 }
 
@@ -190,6 +195,11 @@ void delAllMusicInGroup(int group)
 {
 	int i;
 	music_t *this;
+
+	if( isMusicInit == FALSE )
+	{
+		return;
+	}
 
 	for( i = 0 ; i < listMusic->count ; i++ )
 	{

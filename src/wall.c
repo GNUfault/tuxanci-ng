@@ -33,7 +33,7 @@ void drawWall(wall_t *p)
 {
 	assert( p != NULL );
 
-	addLayer(p->img, p->x, p->y, 0, 0, p->img->w, p->img->h, p->layer);
+	addLayer(p->img, p->img_x, p->img_y, 0, 0, p->img->w, p->img->h, p->layer);
 }
 
 void drawListWall(list_t *listWall)

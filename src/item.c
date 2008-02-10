@@ -273,6 +273,8 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 	
 	for( i = 0 ; i < listShot->count ; i++ )
 	{
+		bool_t isDelShot = FALSE;
+
 		thisShot  = (shot_t *)listShot->list[i];
 		assert( thisShot != NULL );
 
@@ -298,11 +300,18 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 						j--;
 					}
 				break;
+
 				case ITEM_EXPLOSION :
 				case ITEM_BIG_EXPLOSION :
-					delListItem(listShot, i, destroyShot);
+					isDelShot = TRUE;
 				break;
 			}
+		}
+
+		if( isDelShot )
+		{
+			delListItem(listShot, i, destroyShot);
+			i--;
 		}
 	}
 }
@@ -345,9 +354,12 @@ void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 				break;
 
 				case ITEM_MINE :
-					delListItem(listItem, i, destroyItem);
-					addList(listItem, newItem(x, y, ITEM_EXPLOSION) );
-					i--;
+					if( tux->bonus != BONUS_GHOST )
+					{
+						delListItem(listItem, i, destroyItem);
+						addList(listItem, newItem(x, y, ITEM_EXPLOSION) );
+						i--;
+					}
 				break;
 
 				case ITEM_EXPLOSION :
