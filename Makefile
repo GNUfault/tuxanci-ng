@@ -1,12 +1,12 @@
 
-#DIST_DIR=/usr/local
-DIST_DIR=/usr
+#DISTDIR=/usr/local
+DISTDIR:=/usr/local/
 
 all:
-	make -C ./src
+	make -C ./src DISTDIR=$(DISTDIR)
  
 clean:
-	make -C ./src clean
+	make -C ./src DISTDIR=$(DISTDIR) clean
 
 run:
 	./tuxanci-ng.sh
@@ -18,25 +18,25 @@ svnr:
 	svn co http://opensvn.csie.org/tuxanci_ng/
 
 install:
-	cp  ./src/tuxanci-ng $(DIST_DIR)/bin/
-	mkdir $(DIST_DIR)/share/tuxanci-ng
-	mkdir $(DIST_DIR)/share/tuxanci-ng/arena
-	mkdir $(DIST_DIR)/share/tuxanci-ng/font
-	mkdir $(DIST_DIR)/share/tuxanci-ng/image
-	mkdir $(DIST_DIR)/share/tuxanci-ng/lang
-	mkdir $(DIST_DIR)/share/tuxanci-ng/music
-	mkdir $(DIST_DIR)/share/tuxanci-ng/sound
+	cp  ./src/tuxanci-ng $(DISTDIR)bin/
+	mkdir $(DISTDIR)share/tuxanci-ng
+	mkdir $(DISTDIR)share/tuxanci-ng/arena
+	mkdir $(DISTDIR)share/tuxanci-ng/font
+	mkdir $(DISTDIR)share/tuxanci-ng/image
+	mkdir $(DISTDIR)share/tuxanci-ng/lang
+	mkdir $(DISTDIR)share/tuxanci-ng/music
+	mkdir $(DISTDIR)share/tuxanci-ng/sound
 
-	cp  -rf ./arena/* $(DIST_DIR)/share/tuxanci-ng/arena
-	cp  -rf ./font/* $(DIST_DIR)/share/tuxanci-ng/font
-	cp  -rf ./image/* $(DIST_DIR)/share/tuxanci-ng/image
-	cp  -rf ./lang/* $(DIST_DIR)/share/tuxanci-ng/lang
-	cp  -rf ./music/* $(DIST_DIR)/share/tuxanci-ng/music
-	cp  -rf ./sound/* $(DIST_DIR)/share/tuxanci-ng/sound
+	cp  -rf ./arena/* $(DISTDIR)share/tuxanci-ng/arena
+	cp  -rf ./font/* $(DISTDIR)share/tuxanci-ng/font
+	cp  -rf ./image/* $(DISTDIR)share/tuxanci-ng/image
+	cp  -rf ./lang/* $(DISTDIR)share/tuxanci-ng/lang
+	cp  -rf ./music/* $(DISTDIR)share/tuxanci-ng/music
+	cp  -rf ./sound/* $(DISTDIR)share/tuxanci-ng/sound
 
 deb:
 	./deb-build.sh
 
 uninstall:
-	rm -rf $(DIST_DIR)/bin/tuxanci-ng
-	rm -rf $(DIST_DIR)/share/tuxanci-ng
+	rm -rf $(DISTDIR)bin/tuxanci-ng
+	rm -rf $(DISTDIR)share/tuxanci-ng

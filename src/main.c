@@ -13,6 +13,7 @@
 #include "screen_analyze.h"
 #include "screen_setting.h"
 #include "screen_gameType.h"
+#include "screen_choiceArena.h"
 #include "wall.h"
 #include "shot.h"
 #include "panel.h"
@@ -46,6 +47,7 @@ static void init()
 	initScreenAnalyze();
 	initScreenSetting();
 	initScreenGameType();
+	initScreenChoiceArena();
 }
 
 void quit()
@@ -68,6 +70,9 @@ void quit()
 	quitScreenAnalyze();
 	quitScreenSetting();
 	quitScreenGameType();
+	quitScreenChoiceArena();
+
+	printf("quit..\n");
 
 	exit(0);
 }
@@ -125,6 +130,8 @@ char *getString(int n)
 int main(int argc, char *argv[])
 {
 	srand( (unsigned) time(NULL) );
+
+	printf("dist dir = %s\n", DISTDIR);
 
 	my_argc = argc;
 	my_argv = argv;

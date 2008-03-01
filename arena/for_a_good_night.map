@@ -1,5 +1,9 @@
 
-loadMusic file="noc.ogg" name="noc"
+name For a good night
+netName FAGN
+screen for_a_good_night.png
+
+loadMusic file="for_a_good_night.ogg" name="for_a_good_night"
 
 loadImage file="l1.grow.png" name="grow" alpha="no"
 loadImage file="l1.hut.png" name="hut" alpha="yes"
@@ -9,7 +13,7 @@ loadImage file="l1.wood.png" name="wood" alpha="yes"
 
 background image="grow"
 
-playMusic music="noc"
+playMusic music="for_a_good_night"
 
 wall x="0" y="0" w="0" h="0" img_x="75" img_y="20" layer="1" image="hut"
 wall x="120" y="159" w="180" h="65" img_x="90" img_y="159" layer="0" image="peduncle"

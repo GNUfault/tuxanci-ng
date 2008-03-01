@@ -1,0 +1,23 @@
+
+name construction site
+netName CS
+screen construction_site.png
+
+loadMusic file="night_workshift.ogg" name="night_workshift"
+
+loadImage file="l4.pozadi.png" name="pozadi" alpha="no"
+loadImage file="l4.bagr.png" name="bagr" alpha="yes"
+loadImage file="l4.pytle.png" name="pytle" alpha="yes"
+loadImage file="l4.tvarnice.png" name="tvarnice" alpha="yes"
+loadImage file="l4.palety.png" name="palety" alpha="yes"
+loadImage file="l4.overlay.png" name="overlay" alpha="yes"
+
+background image="pozadi"
+
+wall x="96" y="423" w="162" h="96" img_x="86" img_y="235" layer="0" image="bagr"
+wall x="425" y="358" w="120" h="55" img_x="410" img_y="326" layer="0" image="pytle"
+wall x="55" y="52" w="62" h="87" img_x="51" img_y="37" layer="0" image="tvarnice"
+wall x="92" y="0" w="198" h="118" img_x="65" img_y="0" layer="0" image="palety"
+wall x="0" y="0" w="0" h="0" img_x="0" img_y="0" layer="1" image="overlay"
+
+

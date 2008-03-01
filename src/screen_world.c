@@ -10,6 +10,7 @@
 #include "screen_analyze.h"
 #include "screen_setting.h"
 #include "screen_gameType.h"
+#include "screen_choiceArena.h"
 
 #include "list.h"
 #include "layer.h"
@@ -38,7 +39,7 @@ bool_t isScreenWorldInicialized()
 	return isScreenWorldInit;
 }
 
-static void setGameType()
+void setGameType()
 {
 	if( getSettingGameType() == NET_GAME_TYPE_SERVER )
 	{
@@ -54,6 +55,17 @@ static void setGameType()
 arena_t* getWorldArena()
 {
 	return arena;
+}
+
+void setWorldArena(int id)
+{
+	arena = getArena(id);
+	netSetArena(arena);
+}
+
+void setMaxCountRound(int n)
+{
+	max_count = n;
 }
 
 static void timer_endArena()
@@ -99,13 +111,18 @@ static tux_t* getControlTux(int control_type)
 	return NULL;
 }
 
-void createTux()
+void prepareArena()
 {
 	tux_t *tux;
 
 	switch( getNetTypeGame() )
 	{
 		case NET_GAME_TYPE_NONE :
+			setWorldArena( getChoiceArenaId() );
+			addNewItem(arena->listItem);
+			playMusic(arena->music, MUSIC_GROUP_USER);
+			getSettingCountRound(&max_count);
+
 			tux = newTux();
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			getSettingNameRight(tux->name);
@@ -118,6 +135,11 @@ void createTux()
 		break;
 
 		case NET_GAME_TYPE_SERVER :
+			setWorldArena( getChoiceArenaId() );
+			addNewItem(arena->listItem);
+			playMusic(arena->music, MUSIC_GROUP_USER);
+			getSettingCountRound(&max_count);
+
 			tux = newTux();
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			getSettingNameRight(tux->name);
@@ -132,6 +154,11 @@ void createTux()
 void drawWorld()
 {
 	tux_t *tux = NULL;
+
+	if( arena == NULL )
+	{
+		return;
+	}
 
 	addLayer(arena->background, 0, 0, 0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, -100);
 
@@ -306,6 +333,12 @@ void tuxControl(tux_t *p)
 
 void eventWorld()
 {
+	if( arena == NULL )
+	{
+		eventNetMultiplayer();
+		return;
+	}
+
 	eventListTux(arena->listTux);
 
 	eventConflictShotWithTux(arena->listTux, arena->listShot);
@@ -322,15 +355,12 @@ void eventWorld()
 
 void startWorld()
 {
-	arena = getArena(0);
-	count = 0;
-	getSettingCountRound(&max_count);
+	arena = NULL;
 
-	netSetArena(arena);
+	count = 0;
+
 	setGameType();
-	createTux();
-	addNewItem(arena->listItem);
-	playMusic(arena->music, MUSIC_GROUP_USER);
+	prepareArena();
 	initTimer();
 }
 

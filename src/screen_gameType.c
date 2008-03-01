@@ -129,7 +129,14 @@ static void eventWidget(void *p)
 
 	if( button == button_play )
 	{
-		setScreen("world");
+		if( getSettingGameType() == NET_GAME_TYPE_CLIENT )
+		{
+			setScreen("world");
+		}
+		else
+		{
+			setScreen("chiceArena");
+		}
 	}
 }
 

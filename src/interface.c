@@ -81,8 +81,8 @@ SDL_Surface* getSDL_Screen()
 void interfaceRefresh()
 {
 	//SDL_BlitSurface(fake_screen, NULL, screen, NULL);
-	SDL_UpdateRect(screen, 0, 0, screen->w, screen->h);
-	//SDL_Flip(screen);
+	//SDL_UpdateRect(screen, 0, 0, screen->w, screen->h);
+	SDL_Flip(screen);
 }
 
 int toggleFullscreen()

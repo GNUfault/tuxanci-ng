@@ -8,6 +8,11 @@
 
 extern bool_t isArenaFileInicialized();
 extern void initArenaFile();
+extern int getArenaCount();
+extern char *getArenaName(int id);
+extern char *getArenaNetName(int id);
+extern int getArenaIdFormNetName(char *s);
+extern char *getArenaImage(int id);
 extern arena_t* getArena(int id);
 extern void quitArenaFile();
 

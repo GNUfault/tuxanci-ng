@@ -52,7 +52,14 @@ void drawWidgetButton(widget_button_t *p)
 
 void eventWidgetButton(widget_button_t *p)
 {
+	static int time = 0;
 	int x, y;
+
+	if( time > 0)
+	{
+		time--;
+		return;
+	}
 
 	getMousePosition(&x, &y);
 
@@ -60,6 +67,7 @@ void eventWidgetButton(widget_button_t *p)
 	    y >= p->y && y <= p->y+WIDGET_BUTTON_HEIGHT &&
 	    isMouseClicked() )
 	{
+		time = WIDGET_BUTTON_TIME;
 		p->fce_event(p);
 	}
 }

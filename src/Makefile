@@ -1,14 +1,15 @@
 
 CC = gcc
 
-CFLAGS = -g -O0 `sdl-config --cflags` -I../include -Wall
+CFLAGS = -g -O0 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer
 
 FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o main.o \
 	screen.o screen_world.o wall.o shot.o myTimer.o panel.o net_multiplayer.o network.o \
 	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o sound.o audio.o music.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
-	widget_check.o widget_image.o screen_setting.o screen_gameType.o
+	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
+	widget_buttonimage.o
  
  
 tuxanci-ng: $(FILES)
@@ -107,11 +108,17 @@ screen_setting.o: screen_setting.c ../include/screen_setting.h
 screen_gameType.o: screen_gameType.c ../include/screen_gameType.h
 	$(CC) $(CFLAGS) -o screen_gameType.o -c screen_gameType.c
 
+screen_choiceArena.o: screen_choiceArena.c ../include/screen_choiceArena.h
+	$(CC) $(CFLAGS) -o screen_choiceArena.o -c screen_choiceArena.c
+
 widget_label.o: widget_label.c ../include/widget_label.h
 	$(CC) $(CFLAGS) -o widget_label.o -c widget_label.c
 
 widget_button.o: widget_button.c ../include/widget_button.h
 	$(CC) $(CFLAGS) -o widget_button.o -c widget_button.c
+
+widget_buttonimage.o: widget_buttonimage.c ../include/widget_buttonimage.h
+	$(CC) $(CFLAGS) -o widget_buttonimage.o -c widget_buttonimage.c
 
 widget_textfield.o: widget_textfield.c ../include/widget_textfield.h
 	$(CC) $(CFLAGS) -o widget_textfield.o -c widget_textfield.c
@@ -121,6 +128,7 @@ widget_check.o: widget_check.c ../include/widget_check.h
 
 widget_image.o: widget_image.c ../include/widget_image.h
 	$(CC) $(CFLAGS) -o widget_image.o -c widget_image.c
+
 
 clean:
 	rm -rf *.o *.c~ *.h~ tuxanci-ng

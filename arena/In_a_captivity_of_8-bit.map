@@ -1,0 +1,19 @@
+
+name In a captivity of 8-bit
+netName IACO8B
+screen in_a_captivity_of_8-bit.png
+
+loadMusic file="in_a_captivity_of_8-bit.ogg" name="night_workshift"
+
+loadImage file="l3.nic.png" name="nic" alpha="no"
+loadImage file="l3.ihlan.png" name="ihlan" alpha="yes"
+loadImage file="l3.kvader1.png" name="kvader1" alpha="yes"
+loadImage file="l3.kvader2.png" name="kvader2" alpha="yes"
+
+background image="nic"
+
+playMusic music="in_a_captivity_of_8-bit"
+
+wall x="512" y="320" w="125" h="100" img_x="500" img_y="125" layer="0" image="ihlan"
+wall x="273" y="152" w="180" h="75" img_x="250" img_y="62" layer="0" image="kvader1"
+wall x="90" y="275" w="87" h="205" img_x="62" img_y="187" layer="0" image="kvader2"

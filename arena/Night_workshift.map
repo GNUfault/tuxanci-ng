@@ -1,0 +1,24 @@
+
+name night workshift
+netName NW
+screen night_workshift.png
+
+loadMusic file="night_workshift.ogg" name="night_workshift"
+
+loadImage file="l2.pitch.png" name="pitch" alpha="no"
+loadImage file="l2.potrubi.png" name="potrubi" alpha="yes"
+loadImage file="l2.retez.png" name="retez" alpha="yes"
+loadImage file="l2.barel.png" name="barel" alpha="yes"
+loadImage file="l2.nadrz.png" name="nadrz" alpha="yes"
+loadImage file="l2.trubky.png" name="trubky" alpha="yes"
+
+background image="pitch"
+
+playMusic music="night_workshift"
+
+wall x="0" y="0" w="0" h="0" img_x="0" img_y="366" layer="1" image="potrubi"
+wall x="0" y="0" w="0" h="0" img_x="393" img_y="20" layer="1" image="retez"
+wall x="535" y="480" w="175" h="31" img_x="531" img_y="421" layer="0" image="barel"
+wall x="333" y="146" w="287" h="18" img_x="331" img_y="2" layer="0" image="nadrz"
+wall x="125" y="318" w="37" h="162" img_x="106" img_y="320" layer="0" image="trubky"
+

@@ -14,6 +14,8 @@
 #include "screen.h"
 #include "screen_world.h"
 #include "screen_setting.h"
+#include "screen_choiceArena.h"
+#include "arenaFile.h"
 #include "net_multiplayer.h"
 
 static int netGameType;
@@ -160,9 +162,13 @@ static void destroyClient(client_t *p)
 void proto_send_init_server(client_t *client)
 {
 	char msg[STR_SIZE];
+	int n;
 
-	sprintf(msg, "init %d %d %d\n",
-	client->tux->id, client->tux->x, client->tux->y);
+	getSettingCountRound(&n);
+
+	sprintf(msg, "init %d %d %d %d %s\n",
+		client->tux->id, client->tux->x, client->tux->y,
+		n, getArenaNetName( getChoiceArenaId() ));
 	
 	sendClient(client, msg);
 }
@@ -170,15 +176,22 @@ void proto_send_init_server(client_t *client)
 void proto_recv_init_client(char *msg)
 {
 	char cmd[STR_SIZE];
+	char arena_name[STR_SIZE];
 	tux_t *tux;
+	int id;
+	int n;
+
+	sscanf(msg, "%s %d %d %d %d %s\n",
+	cmd, &id, &tux->x, &tux->y, &n, arena_name);
+
+	setWorldArena( getArenaIdFormNetName(arena_name) );
+	setMaxCountRound(n);
 
 	tux = newTux();
-
-	sscanf(msg, "%s %d %d %d\n",
-	cmd, &tux->id, &tux->x, &tux->y);
-
+	tux->id = id;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 	getSettingNameRight(tux->name);
+
 	proto_send_context_client(tux);
 	addList(arena->listTux, tux);
 }

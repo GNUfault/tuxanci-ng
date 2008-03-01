@@ -140,6 +140,72 @@ static void cmd_wall(arena_t *arena, char *line)
 	addList(arena->listWall, new);
 }
 
+int getArenaCount()
+{
+	return listArenaFile->count;
+}
+
+static char *getArenaStatus(int id, char *s)
+{
+	textFile_t *ts;
+	int len;
+	int i;
+
+	ts = (textFile_t *) listArenaFile->list[id];
+	len = strlen(s);
+
+	for( i = 0 ; i < ts->text->count ; i++ )
+	{
+		char *line;
+		line = (char *) (ts->text->list[i]);
+
+		if( strncmp(line, s, len) == 0 )
+		{
+			return line+len+1;
+		}
+	}
+
+	return NULL;
+}
+
+char *getArenaName(int id)
+{
+	char *ret;
+
+	ret = getArenaStatus(id, "name");
+
+	return ( ret != NULL ? ret : "arena_no_name" );
+}
+
+char *getArenaNetName(int id)
+{
+	char *ret;
+
+	ret = getArenaStatus(id, "netName");
+
+	return ( ret != NULL ? ret : "arena_no_net_name" );
+}
+
+int getArenaIdFormNetName(char *s)
+{
+	int i;
+
+	for( i = 0 ; i < listArenaFile->count ; i++ )
+	{
+		if( strcmp(getArenaNetName(i), s) == 0 )
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+char *getArenaImage(int id)
+{
+	return getArenaStatus(id, "screen");
+}
+
 arena_t* getArena(int id)
 {
 	textFile_t *ts;
