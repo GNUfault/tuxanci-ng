@@ -29,7 +29,7 @@ void drawWidgetLabel(widget_label_t *p)
 			drawFont(p->text, p->x, p->y+p->h/2, COLOR_WHITE);
 		break;
 		case WIDGET_LABEL_CENTER :
-			drawFont(p->text, p->x+p->w/2, p->y, COLOR_WHITE);
+			drawFont(p->text, p->x-p->w/2, p->y, COLOR_WHITE);
 		break;
 	}
 }

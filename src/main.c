@@ -14,6 +14,7 @@
 #include "screen_setting.h"
 #include "screen_gameType.h"
 #include "screen_choiceArena.h"
+#include "screen_credits.h"
 #include "wall.h"
 #include "shot.h"
 #include "panel.h"
@@ -48,6 +49,7 @@ static void init()
 	initScreenSetting();
 	initScreenGameType();
 	initScreenChoiceArena();
+	initScreenCredits();
 }
 
 void quit()
@@ -71,6 +73,7 @@ void quit()
 	quitScreenSetting();
 	quitScreenGameType();
 	quitScreenChoiceArena();
+	quitScreenCredits();
 
 	printf("quit..\n");
 

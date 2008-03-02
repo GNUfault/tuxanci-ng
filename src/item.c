@@ -117,6 +117,8 @@ void addNewItem(list_t *listItem)
 	arena = getWorldArena();
 	findFreeSpace(&new_x, &new_y, ITEM_GUN_WIDTH, ITEM_GUN_HEIGHT);
 
+	type = GUN_DUAL_SIMPLE;
+
 	do{
 		switch( random() % 11 )
 		{

@@ -78,13 +78,13 @@ static void sendServer(char *msg)
 	if ( ret == 0 )
 	{
 		fprintf(stderr, "server uzatvoril sietovy socket\n");
-		setScreen("analyze");
+		setWorldEnd();
 	}
 
 	if ( ret < 0 )
 	{
 		fprintf(stderr, "nastala chyba pri poslani spravy serveru\n");
-		setScreen("analyze");
+		setWorldEnd();
 	}
 }
 
@@ -179,16 +179,18 @@ void proto_recv_init_client(char *msg)
 	char arena_name[STR_SIZE];
 	tux_t *tux;
 	int id;
-	int n;
+	int x, y, n;
 
 	sscanf(msg, "%s %d %d %d %d %s\n",
-	cmd, &id, &tux->x, &tux->y, &n, arena_name);
+	cmd, &id, &x, &y, &n, arena_name);
 
 	setWorldArena( getArenaIdFormNetName(arena_name) );
 	setMaxCountRound(n);
 
 	tux = newTux();
 	tux->id = id;
+	tux->x = x;
+	tux->y = y;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 	getSettingNameRight(tux->name);
 
@@ -457,7 +459,7 @@ static void eventClientBuffer(client_t *client)
 	
 	while( getBufferLine(client->buffer, line, STR_SIZE) >= 0 )
 	{
-		printf("dostal som %s", line);
+ 		//printf("dostal som %s", line);
 
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
 		if( strncmp(line, "context", 7) == 0 )proto_recv_context_server(client, line);
@@ -538,21 +540,21 @@ static void eventServerSelect(int sock)
 	if( ret == 0 )
 	{
 		fprintf(stderr, "server uzatovril sietovy socket\n");
-		setScreen("analyze");
+		setWorldEnd();
 		return;
 	}
 
 	if( ret < 0 )
 	{
 		fprintf(stderr, "chyba, spojenie prerusene \n");
-		setScreen("analyze");
+		setWorldEnd();
 		return;
 	}
 
 	if( addBuffer(clientBuffer, buffer, ret) != 0 )
 	{
 		fprintf(stderr, "chyba, nemozem zapisovat do mojho buffera !\n");
-		setScreen("analyze");
+		setWorldEnd();
 		return;
 	}
 }
@@ -570,7 +572,7 @@ static void eventServerBuffer()
 	
 	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
 	{
-		printf("dostal som %s", line);
+		//printf("dostal som %s", line);
 
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);

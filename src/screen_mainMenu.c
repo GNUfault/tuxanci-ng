@@ -69,6 +69,11 @@ static void eventWidget(void *p)
 		setScreen("setting");
 	}
 
+	if( button == button_credits )
+	{
+		setScreen("credits");
+	}
+
 	if( button == button_end )
 	{
 		quit();

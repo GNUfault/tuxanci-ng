@@ -118,17 +118,12 @@ void initScreenChoiceArena()
 	SDL_Surface *image;
 	int i;
 
-	image = addImageData("screen_main.png", IMAGE_NO_ALPHA, "screen_main", IMAGE_GROUP_BASE);
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
 	button_back = newWidgetButton("Back", 100, WINDOW_SIZE_Y-100, eventWidget);
 	button_play = newWidgetButton("Play", WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
 	
-	addMusic("menu.ogg", "menu", MUSIC_GROUP_BASE);
-
-	registerScreen( newScreen("chiceArena", startScreenChoiceArena, eventScreenChoiceArena,
-		drawScreenChoiceArena, stopScreenChoiceArena) );
-
 	listWidgetButtonimage = newList();
 	choiceArenaId = 0;
 
@@ -153,6 +148,9 @@ void initScreenChoiceArena()
 
 		addList( listWidgetButtonimage, widget_buttonimage);
 	}
+
+	registerScreen( newScreen("chiceArena", startScreenChoiceArena, eventScreenChoiceArena,
+		drawScreenChoiceArena, stopScreenChoiceArena) );
 }
 
 void quitScreenChoiceArena()
@@ -161,5 +159,6 @@ void quitScreenChoiceArena()
 
 	destroyWidgetButton(button_play);
 	destroyWidgetButton(button_back);
-}
 
+	destroyListItem(listWidgetButtonimage, destroyWidgetButtonimage);
+}

@@ -183,8 +183,8 @@ void initScreenSetting()
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
-		int x;
-		int y;
+		int x = 0;
+		int y = 0;
 
 		if( i >= GUN_DUAL_SIMPLE && i <= GUN_TOMMY )
 		{
@@ -203,8 +203,8 @@ void initScreenSetting()
 
 	for( i = BONUS_SPEED ; i <= BONUS_HIDDEN ; i++ )
 	{
-		int x;
-		int y;
+		int x = 0;
+		int y = 0;
 
 		if( i >= BONUS_SPEED && i <= BONUS_TELEPORT )
 		{

@@ -14,6 +14,7 @@ extern void initWorld();
 extern arena_t* getWorldArena();
 extern void setWorldArena(int id);
 extern void countRoundInc();
+extern void setWorldEnd();
 extern void setMaxCountRound(int n);
 extern int conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2);
 extern int isFreeSpace(int x, int y, int w, int h);

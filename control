@@ -1,12 +1,12 @@
 Package: tuxanci-ng
-Version: svn5
+Version: svn8
 Section: Game
 Priority: optional
 Depends: libc6 (>= 2.2.4-4), libsdl1.2debian (>= 1.2), libsdl-image1.2 (>= 1.2), libsdl-mixer1.2 (>= 1.2), libsdl-ttf2.0-0 (>= 2.0)
 Architecture: i386
-Installed-Size: 1844
+Installed-Size: 4112
 Maintainer: Dušan Ďurech <dusan.d@centrum.sk>
-Description: Game tuxanci next generation SVN revision 5
- Game tuxanci next generation SVN revision 5
+Description: Game tuxanci next generation SVN revision 8
+ Game tuxanci next generation SVN revision 8
  .
  http://www.tuxanci.org

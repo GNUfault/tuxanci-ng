@@ -12,5 +12,6 @@
 #define PATH_MUSIC	DISTDIR PATH_DIR "music/"
 #define PATH_CONFIG	DISTDIR PATH_DIR "conf/"
 #define PATH_LANG	DISTDIR PATH_DIR "lang/"
+#define PATH_DATA	DISTDIR PATH_DIR "data/"
 
 #endif 

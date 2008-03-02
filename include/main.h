@@ -5,6 +5,7 @@
 
 #include "bool.h"
 #include "string_length.h"
+#include "path.h"
 
 extern char* getParam(char *s);
 extern char* getParamElse(char *s1, char *s2);

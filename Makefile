@@ -26,6 +26,7 @@ install:
 	mkdir $(DISTDIR)share/tuxanci-ng/lang
 	mkdir $(DISTDIR)share/tuxanci-ng/music
 	mkdir $(DISTDIR)share/tuxanci-ng/sound
+	mkdir $(DISTDIR)share/tuxanci-ng/data
 
 	cp  -rf ./arena/* $(DISTDIR)share/tuxanci-ng/arena
 	cp  -rf ./font/* $(DISTDIR)share/tuxanci-ng/font
@@ -33,6 +34,7 @@ install:
 	cp  -rf ./lang/* $(DISTDIR)share/tuxanci-ng/lang
 	cp  -rf ./music/* $(DISTDIR)share/tuxanci-ng/music
 	cp  -rf ./sound/* $(DISTDIR)share/tuxanci-ng/sound
+	cp  -rf ./data/* $(DISTDIR)share/tuxanci-ng/data
 
 deb:
 	./deb-build.sh

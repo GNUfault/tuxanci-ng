@@ -33,6 +33,7 @@ static int count;
 static int max_count;
 
 static bool_t isScreenWorldInit = FALSE;
+static bool_t isEndWorld;
 
 bool_t isScreenWorldInicialized()
 {
@@ -41,14 +42,22 @@ bool_t isScreenWorldInicialized()
 
 void setGameType()
 {
+	int ret = 0;
+
 	if( getSettingGameType() == NET_GAME_TYPE_SERVER )
 	{
-		initServer( getSettingPort() );
+		ret = initServer( getSettingPort() );
 	}
 
 	if( getSettingGameType() == NET_GAME_TYPE_CLIENT )
 	{
-		initClient( getSettingPort() , getSettingIP() );
+		ret = initClient( getSettingPort() , getSettingIP() );
+	}
+
+	if( ret != 0 )
+	{
+		fprintf(stderr, "Chyba inicalizacie sieti !\n");
+		setWorldEnd();
 	}
 }
 
@@ -68,11 +77,16 @@ void setMaxCountRound(int n)
 	max_count = n;
 }
 
+void setWorldEnd()
+{
+	isEndWorld = TRUE;
+}
+
 static void timer_endArena()
 {
 	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 	{
-		setScreen("analyze");
+		setWorldEnd();
 		return;
 	}
 }
@@ -287,23 +301,26 @@ static void control_keyboard_left(tux_t *tux)
 	if( mapa[(SDLKey)SDLK_TAB] == SDL_PRESSED )actionTux(tux, TUX_SWITCH_GUN);
 }
 
-static void eventEnd()
+static void eventEsc()
 {
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
 
 	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED )
 	{
-		setScreen("analyze");
+		isEndWorld = TRUE;
+		setWorldEnd();
 		return;
 	}
-/*
-	if( count >= max_count && getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+}
+
+static void eventEnd()
+{
+	if( isEndWorld == TRUE )
 	{
 		setScreen("analyze");
 		return;
 	}
-*/
 }
 
 void tuxControl(tux_t *p)
@@ -339,23 +356,24 @@ void eventWorld()
 		return;
 	}
 
-	eventListTux(arena->listTux);
-
 	eventConflictShotWithTux(arena->listTux, arena->listShot);
 	eventConflictShotWithWall(arena->listWall, arena->listShot);
 	eventMoveListShot(arena->listShot);
 	eventListItem(arena->listItem);
 	eventConflictShotWithItem(arena->listItem, arena->listShot);
-	eventTimer();
+	eventListTux(arena->listTux);
 
+	eventTimer();
 	eventNetMultiplayer();
 
+	eventEsc();
 	eventEnd();
 }
 
 void startWorld()
 {
 	arena = NULL;
+	isEndWorld = FALSE;
 
 	count = 0;
 

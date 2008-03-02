@@ -1,7 +1,9 @@
 
 CC = gcc
 
-CFLAGS = -g -O0 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
+#CFLAGS = -g -O0 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
+CFLAGS = -O2 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
+
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer
 
 FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o main.o \
@@ -9,7 +11,7 @@ FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o 
 	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o sound.o audio.o music.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
 	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
-	widget_buttonimage.o
+	widget_buttonimage.o screen_credits.o
  
  
 tuxanci-ng: $(FILES)
@@ -110,6 +112,9 @@ screen_gameType.o: screen_gameType.c ../include/screen_gameType.h
 
 screen_choiceArena.o: screen_choiceArena.c ../include/screen_choiceArena.h
 	$(CC) $(CFLAGS) -o screen_choiceArena.o -c screen_choiceArena.c
+
+screen_credits.o: screen_credits.c ../include/screen_credits.h
+	$(CC) $(CFLAGS) -o screen_credits.o -c screen_credits.c
 
 widget_label.o: widget_label.c ../include/widget_label.h
 	$(CC) $(CFLAGS) -o widget_label.o -c widget_label.c
