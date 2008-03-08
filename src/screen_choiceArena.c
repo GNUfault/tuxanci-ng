@@ -136,7 +136,7 @@ void initScreenChoiceArena()
 		image = addImageData(getArenaImage(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);
 
 		x = 100 + 200 * ( i -  3 * ( i/3 ) );
-		y = 150 + 200*(i/3);
+		y = 150 + 200 * ( i/3 );
 
 		widget_buttonimage = newWidgetButtonimage(image,
 			x, y, eventWidgetButtonImage);

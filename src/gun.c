@@ -44,15 +44,39 @@ static void modificiationCopuse(int courser, int right_x, int right_y, int *dest
 	}
 }
 
-static void addShot(tux_t *tux,int x, int y, int px, int py)
+static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 {
-	int dest_x, dest_y;
-	int dest_px, dest_py;
+	int dest_x = 0, dest_y = 0;
+	int dest_px = 0, dest_py = 0;
 	arena_t *arena;
 	shot_t *shot;
-	int gun;
 
 	arena = getWorldArena();
+
+	modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
+	modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
+
+	switch( tux->position )
+	{
+		case TUX_UP :
+			dest_y -= TUX_WIDTH;
+		break;
+		case TUX_RIGHT :
+			break;
+		case TUX_LEFT :
+			dest_x -= TUX_WIDTH;
+		break;
+			case TUX_DOWN :
+		break;
+	}
+
+	shot = newShot(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux);
+	addList( arena->listShot, shot );
+}
+
+static void addShot(tux_t *tux,int x, int y, int px, int py)
+{
+	int gun;
 
 	if( tux->gun == GUN_LASSER )
 	{
@@ -80,22 +104,14 @@ static void addShot(tux_t *tux,int x, int y, int px, int py)
 				case 3 : tux->position = TUX_DOWN; break;
 			}
 
-			modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
-			modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
-
-			shot = newShot(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux);
-			addList( arena->listShot, shot );
+			addShotTrivial(tux, x, y, px, py, gun);
 		}
 
 		tux->position = zal;
 	}
 	else
 	{
-		modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
-		modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
-
-		shot = newShot(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux);
-		addList( arena->listShot, shot );
+		addShotTrivial(tux, x, y, px, py, gun);
 	}
 }
 
@@ -161,6 +177,7 @@ static void timer_addLaserTimer(void *p)
 	tux = getTuxID(getWorldArena()->listTux, id);
 
 	if( tux == NULL )return;
+
 
 	gun = tux->gun;
 	tux->gun = GUN_LASSER;

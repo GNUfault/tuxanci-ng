@@ -223,7 +223,7 @@ static void transformShot(shot_t *shot, int position)
 void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	int dist_x, int dist_y, int dist_w, int dist_h)
 {
-	int offset;
+	int offset = 0;
 
 	switch( shot->position )
 	{

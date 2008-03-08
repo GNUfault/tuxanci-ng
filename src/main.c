@@ -15,6 +15,7 @@
 #include "screen_gameType.h"
 #include "screen_choiceArena.h"
 #include "screen_credits.h"
+#include "homeDirector.h"
 #include "wall.h"
 #include "shot.h"
 #include "panel.h"
@@ -30,6 +31,8 @@ static char **my_argv;
 
 static void init()
 {
+	createHomeDirector();
+
 	initSDL();
 	initLayer();
 	initFont("DejaVuSans.ttf", 16);

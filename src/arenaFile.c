@@ -7,6 +7,7 @@
 #include "main.h"
 #include "list.h"
 #include "textFile.h"
+#include "configFile.h"
 #include "arenaFile.h"
 #include "arena.h"
 #include "tux.h"
@@ -30,56 +31,15 @@ bool_t isAreaFileInicialized()
 	return isArenaFileInit;
 }
 
-static int setValue(char *line, char *env, char *val, int len)
-{
-	char *offset_env;
-	char *offset_val_begin;
-	char *offset_val_end;
-	char clone_env[STR_SIZE];
-	int val_len;
-
-	strcpy(clone_env, " ");
-	strcat(clone_env, env);
-
-	//printf("%s %s\n", line, env);
-
-	offset_env = strstr(line, clone_env);
-	//printf("offset_env = %s\n", offset_env);
-	if( offset_env == NULL )return -1;
-
-	offset_val_begin = strchr(offset_env, '"');
-	//printf("offset_val_begin = %s\n", offset_val_begin);
-	if( offset_val_begin == NULL )return -1;
-
-	offset_val_end = strchr(offset_val_begin+1, '"');
-	//printf("offset_val_end = %s\n", offset_val_end);
-	if( offset_val_end == NULL )return -1;
-
-	val_len = (int)(offset_val_end - ( offset_val_begin + 1) );
-	if( val_len > len - 1 ) val_len = len - 1;
-	//printf("val_len = %d\n", val_len);
-
-	memset(val, 0, len);
-	memcpy(val, offset_val_begin+1, val_len);
-	//printf("val = %s\n", val);
-	return 0;
-}
-
-static int isYesOrNO(char *s)
-{
-	if( s[0] == 'Y' || s[0] == 'y' )return 1;
-	return 0;
-}
-
 static void cmd_loadImage(char *line)
 {
 	char str_file[STR_SIZE];
 	char str_name[STR_SIZE];
 	char str_alpha[STR_SIZE];
 
-	if( setValue(line, "file", str_file, STR_SIZE) != 0 )return;
-	if( setValue(line, "name", str_name, STR_SIZE) != 0 )return;
-	if( setValue(line, "alpha", str_alpha, STR_SIZE) != 0 )return;
+	if( getValue(line, "file", str_file, STR_SIZE) != 0 )return;
+	if( getValue(line, "name", str_name, STR_SIZE) != 0 )return;
+	if( getValue(line, "alpha", str_alpha, STR_SIZE) != 0 )return;
 
 	addImageData(str_file, isYesOrNO(str_alpha), str_name, IMAGE_GROUP_USER);
 }
@@ -89,8 +49,8 @@ static void cmd_loadMusic(char *line)
 	char str_file[STR_SIZE];
 	char str_name[STR_SIZE];
 
-	if( setValue(line, "file", str_file, STR_SIZE) != 0 )return;
-	if( setValue(line, "name", str_name, STR_SIZE) != 0 )return;
+	if( getValue(line, "file", str_file, STR_SIZE) != 0 )return;
+	if( getValue(line, "name", str_name, STR_SIZE) != 0 )return;
 
 	addMusic(str_file, str_name, MUSIC_GROUP_USER);
 }
@@ -99,7 +59,7 @@ static void cmd_background(arena_t *arena, char *line)
 {
 	char str_image[STR_SIZE];
 
-	if( setValue(line, "image", str_image, STR_SIZE) != 0 )return;
+	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
 	arena->background = getImage(IMAGE_GROUP_USER, str_image);
 }
@@ -108,7 +68,7 @@ static void cmd_playMusic(arena_t *arena, char *line)
 {
 	char str_music[STR_SIZE];
 
-	if( setValue(line, "music", str_music, STR_SIZE) != 0 )return;
+	if( getValue(line, "music", str_music, STR_SIZE) != 0 )return;
 
 	strcpy(arena->music, str_music);
 }
@@ -125,14 +85,14 @@ static void cmd_wall(arena_t *arena, char *line)
 	char str_image[STR_SIZE];
 	wall_t *new;
 
-	if( setValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "img_x", str_img_x, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "image", str_image, STR_SIZE) != 0 )return;
+	if( getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "img_x", str_img_x, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
 	new = newWall(atoi(str_x), atoi(str_y),
 			atoi(str_w), atoi(str_h),
@@ -152,12 +112,12 @@ static void cmd_teleport(arena_t *arena, char *line)
 	char str_image[STR_SIZE];
 	teleport_t *new;
 
-	if( setValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "image", str_image, STR_SIZE) != 0 )return;
+	if( getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
 	new = newTeleport(atoi(str_x), atoi(str_y),
 			atoi(str_w), atoi(str_h),
@@ -179,15 +139,15 @@ static void cmd_pipe(arena_t *arena, char *line)
 	char str_image[STR_SIZE];
 	pipe_t *new;
 
-	if( setValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "id", str_id, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "id_out", str_id_out, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "position", str_position, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( setValue(line, "image", str_image, STR_SIZE) != 0 )return;
+	if( getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "id", str_id, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "id_out", str_id_out, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "position", str_position, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
+	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
 	new = newPipe(atoi(str_x), atoi(str_y),
 			atoi(str_w), atoi(str_h),

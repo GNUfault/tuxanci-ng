@@ -10,8 +10,11 @@
 #include "sound.h"
 #include "screen_mainMenu.h"
 #include "list.h"
+#include "homeDirector.h"
 #include "screen_setting.h"
 #include "tux.h"
+#include "textFile.h"
+#include "configFile.h"
 
 #include "widget_label.h"
 #include "widget_button.h"
@@ -50,6 +53,8 @@ static widget_image_t *image_bonus_hidden;
 static widget_textfield_t *textfield_count_cound;
 static widget_textfield_t *textfield_name_player1;
 static widget_textfield_t *textfield_name_player2;
+
+static textFile_t *configFile;
 
 void startScreenSetting()
 {
@@ -154,6 +159,92 @@ static void eventWidget(void *p)
 	}
 }
 
+static void initSettingFile()
+{
+	char path[STR_PATH_SIZE];
+	char val[STR_SIZE];
+
+	sprintf(path, "%s/tuxanci-ng.conf", getHomeDirector());
+
+	configFile = loadTextFile(path);
+
+	if( configFile == NULL )
+	{
+		fprintf(stderr, "Don't load %s\n", path);
+		fprintf(stderr, "I create %s\n", path);
+
+		configFile = newTextFile(path);
+	}
+
+	if( configFile == NULL )
+	{
+		fprintf(stderr, "Don't create %s\n", path);
+		return;
+	}
+
+	loadValueFromConfigFile(configFile, "COUNT_ROUND", val, STR_SIZE, "15");
+	strcpy(textfield_count_cound->text, val);
+	loadValueFromConfigFile(configFile, "NAME_PLAYER_RIGHT", val, STR_SIZE, "name1");
+	strcpy(textfield_name_player1->text, val);
+	loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, "name2");
+	strcpy(textfield_name_player2->text, val);
+
+	loadValueFromConfigFile(configFile, "GUN_DUAL_SIMPLE", val, STR_SIZE, "YES");
+	check[GUN_DUAL_SIMPLE]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "GUN_TOMMY", val, STR_SIZE, "YES");
+	check[GUN_TOMMY]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "GUN_LASSER", val, STR_SIZE, "YES");
+	check[GUN_LASSER]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "GUN_MINE", val, STR_SIZE, "YES");
+	check[GUN_MINE]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "GUN_BOMBBALL", val, STR_SIZE, "YES");
+	check[GUN_BOMBBALL]->status = isYesOrNO(val);
+
+	loadValueFromConfigFile(configFile, "BONUS_SPEED", val, STR_SIZE, "YES");
+	check[BONUS_SPEED]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "BONUS_SHOT", val, STR_SIZE, "YES");
+	check[BONUS_SHOT]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "BONUS_TELEPORT", val, STR_SIZE, "YES");
+	check[BONUS_TELEPORT]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "BONUS_GHOST", val, STR_SIZE, "YES");
+	check[BONUS_GHOST]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "BONUS_4X", val, STR_SIZE, "YES");
+	check[BONUS_4X]->status = isYesOrNO(val);
+	loadValueFromConfigFile(configFile, "BONUS_HIDDEN", val, STR_SIZE, "YES");
+	check[BONUS_HIDDEN]->status = isYesOrNO(val);
+
+	loadValueFromConfigFile(configFile, "MUSIC", val, STR_SIZE, "YES");
+	check_music->status = isYesOrNO(val);
+
+	loadValueFromConfigFile(configFile, "SOUND", val, STR_SIZE, "YES");
+	check_sound->status = isYesOrNO(val);
+}
+
+static void saveAndDestroyConfigFile()
+{
+	setValueInConfigFile(configFile, "COUNT_ROUND", textfield_count_cound->text );
+	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", textfield_name_player1->text );
+	setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", textfield_name_player2->text );
+
+	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(check[GUN_DUAL_SIMPLE]->status) );
+	setValueInConfigFile(configFile, "GUN_TOMMY", getYesOrNo(check[GUN_TOMMY]->status) );
+	setValueInConfigFile(configFile, "GUN_LASSER", getYesOrNo(check[GUN_LASSER]->status) );
+	setValueInConfigFile(configFile, "GUN_MINE", getYesOrNo(check[GUN_MINE]->status) );
+	setValueInConfigFile(configFile, "GUN_BOMBBALL", getYesOrNo(check[GUN_BOMBBALL]->status) );
+	setValueInConfigFile(configFile, "BONUS_SPEED", getYesOrNo(check[BONUS_SPEED]->status) );
+	setValueInConfigFile(configFile, "BONUS_SHOT", getYesOrNo(check[BONUS_SHOT]->status) );
+	setValueInConfigFile(configFile, "BONUS_TELEPORT", getYesOrNo(check[BONUS_TELEPORT]->status) );
+	setValueInConfigFile(configFile, "BONUS_GHOST", getYesOrNo(check[BONUS_GHOST]->status) );
+	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(check[BONUS_4X]->status) );
+	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(check[BONUS_HIDDEN]->status) );
+
+	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(check_music->status) );
+	setValueInConfigFile(configFile, "SOUND", getYesOrNo(check_sound->status) );
+
+	saveTextFile(configFile);
+	destroyTextFile(configFile);
+}
+
 void initScreenSetting()
 {
 	SDL_Surface *image;
@@ -237,6 +328,11 @@ void initScreenSetting()
 
 	registerScreen( newScreen("setting", startScreenSetting, eventScreenSetting,
 		drawScreenSetting, stopScreenSetting) );
+
+	initSettingFile();
+
+	eventWidget(check_music);
+	eventWidget(check_sound);
 }
 
 void getSettingNameRight(char *s)
@@ -285,6 +381,8 @@ bool_t isSettingItem(int item)
 void quitScreenSetting()
 {
 	int i;
+
+	saveAndDestroyConfigFile();
 
 	destroyWidgetImage(image_backgorund);
 

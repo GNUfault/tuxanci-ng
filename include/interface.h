@@ -23,7 +23,7 @@
 #define WINDOW_SIZE_Y 600
 
 //napis na okne
-#define WINDOW_TITLE "Tuxanci next generation SVN revision 8"
+#define WINDOW_TITLE "Tuxanci next generation SVN revision 11"
 #define WIN_BPP 0
 #define USR_EVT_TIMER 0
 
