@@ -121,6 +121,7 @@ void eventNetMultiplayer()
 					eventServerBuffer();
 				break;
 				case NET_PROTOCOL_TYPE_UDP :
+					eventPingServer();
 					selectClientUdpSocket();
 					eventServerBuffer();
 				break;

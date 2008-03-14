@@ -18,6 +18,7 @@ static int protocolType;
 static sock_tcp_t *sock_server_tcp;
 static sock_udp_t *sock_server_udp;
 static buffer_t *clientBuffer;
+static Uint32 lastPing;
 
 static void initClient()
 {
@@ -34,7 +35,7 @@ int initTcpClient(char *ip, int port)
 		return -1;
 	}
 
-	printf("connect %s %d\n", ip, port);
+	printf("connect TCP %s %d\n", ip, port);
 	protocolType = NET_PROTOCOL_TYPE_TCP;
 	initClient();
 
@@ -50,8 +51,9 @@ int initUdpClient(char *ip, int port)
 		return -1;
 	}
 
-	printf("connect %s %d\n", ip, port);
+	printf("connect UDP %s %d\n", ip, port);
 	protocolType = NET_PROTOCOL_TYPE_UDP;
+	lastPing = SDL_GetTicks();
 	initClient();
 
 	return 0;
@@ -143,6 +145,8 @@ void eventServerBuffer()
 		if( strncmp(line, "newtux", 6) == 0 )proto_recv_newtux_client(line);
 		if( strncmp(line, "deltux", 6) == 0 )proto_recv_deltux_client(line);
 		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem_client(line);
+		if( strncmp(line, "kill", 4) == 0 )proto_recv_kill_client(line);
+		if( strncmp(line, "score", 5) == 0 )proto_recv_score_client(line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_client(line);
 	}
 }
@@ -168,11 +172,26 @@ void selectClientTcpSocket()
 	}
 }
 
+void eventPingServer()
+{
+	Uint32 currentTime;
+
+ 	currentTime = SDL_GetTicks();
+
+	if( currentTime - lastPing > CLIENT_TIMEOUT )
+	{
+		proto_send_ping_client();
+		lastPing = SDL_GetTicks();
+	}
+}
+
 void selectClientUdpSocket()
 {
 	fd_set readfds;
 	struct timeval tv;
 	int max_fd;
+
+	eventPingServer();
 
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;

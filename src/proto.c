@@ -193,6 +193,66 @@ void proto_recv_newtux_client(char *msg)
 	tux->status = TUX_STATUS_ALIVE;
 }
 
+void proto_send_kill_server(tux_t *tux)
+{
+	char msg[STR_SIZE];
+	
+	assert( tux != NULL );
+
+	sprintf(msg, "kill %d\n", tux->id);
+	
+	sendAllClient(msg);
+}
+
+void proto_recv_kill_client(char *msg)
+{
+	char cmd[STR_SIZE];
+	int id;
+	tux_t *tux;
+
+	assert( msg != NULL );
+
+	sscanf(msg, "%s %d", cmd, &id);
+
+	tux = getTuxID(getWorldArena()->listTux, id);
+
+	if( tux != NULL )
+	{
+		eventTuxIsDead(tux);
+	}
+}
+
+void proto_send_score_server(tux_t *tux)
+{
+	char msg[STR_SIZE];
+	
+	assert( tux != NULL );
+
+	sprintf(msg, "score %d %d\n", tux->id, tux->score);
+	
+	sendAllClient(msg);
+}
+
+void proto_recv_score_client(char *msg)
+{
+	char cmd[STR_SIZE];
+	int id, score;
+	tux_t *tux;
+
+	assert( msg != NULL );
+
+	sscanf(msg, "%s %d %d", cmd, &id, &score);
+
+	tux = getTuxID(getWorldArena()->listTux, id);
+
+	if( tux != NULL )
+	{
+		tux->score = score;
+	}
+
+	countRoundInc();
+}
+
 void proto_send_deltux_server(client_t *client)
 {
 	char msg[STR_SIZE];
@@ -293,19 +353,34 @@ void proto_recv_context_server(client_t *client, char *msg)
 	proto_send_newtux_server(NULL, client->tux);
 }
 
+void proto_send_ping_client()
+{
+	char msg[STR_SIZE];
+	strcpy(msg, "ping\n");
+	sendServer(msg);
+}
+
+void proto_recv_ping_server(client_t *client, char *msg)
+{
+	assert( msg != NULL );
+	assert( client != NULL );
+	
+	client->lastPing = SDL_GetTicks();
+}
+
 void proto_send_end_client()
 {
 	char msg[STR_SIZE];
 	strcpy(msg, "end\n");
 	sendServer(msg);
-	printf("proto_send_end_client\n");
 }
 
 void proto_recv_end_server(client_t *client, char *msg)
 {
 	assert( msg != NULL );
+	assert( client != NULL );
+
 	client->status = NET_STATUS_ZOMBIE;
-	printf("proto_recv_end_server\n");
 }
 
 void proto_send_end_server()

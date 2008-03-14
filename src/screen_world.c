@@ -104,9 +104,11 @@ void countRoundInc()
 	}
 
 	count++;
+	printf("count %d\n", count);
 
 	if( count >= max_count )
 	{
+		printf("count %d ending\n", count);
 		playSound("end", SOUND_GROUP_BASE);
 		addTimer(timer_endArena, NULL, TIMER_END_ARENA);
 	}

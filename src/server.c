@@ -34,7 +34,7 @@ int initTcpServer(int port)
 
 	initServer();
 
-	printf("server listen port %d\n", port);
+	printf("server listen TCP port %d\n", port);
 
 	return 0;
 }
@@ -52,7 +52,7 @@ int initUdpServer(int port)
 
 	initServer();
 
-	printf("server listen port %d\n", port);
+	printf("server listen UDP port %d\n", port);
 
 	return 0;
 }
@@ -68,6 +68,7 @@ static client_t* newAnyClient()
 	new->buffer = newBuffer(LIMIT_BUFFER);
 	new->tux = newTux();
 	new->tux->control = TUX_CONTROL_NET;
+	new->lastPing = SDL_GetTicks();
 	addList(getWorldArena()->listTux, new->tux);
 
 	return new;
@@ -269,6 +270,7 @@ static void eventClientBuffer(client_t *client)
 		if( strncmp(line, "hello", 5) == 0 )proto_recv_hello_server(client, line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
 		if( strncmp(line, "context", 7) == 0 )proto_recv_context_server(client, line);
+		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_server(client, line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_server(client, line);
 	}
 }
@@ -357,11 +359,20 @@ static client_t* findUdpClient(sock_udp_t *sock_udp)
 static void delZombieCLient()
 {
 	client_t *thisClient;
+	Uint32 currentTime;
 	int i;
+
+ 	currentTime = SDL_GetTicks();
 
 	for( i = 0 ; i < listClient->count; i++)
 	{
 		thisClient = (client_t *) listClient->list[i];
+
+		if( currentTime - thisClient->lastPing > SERVER_TIMEOUT )
+		{
+			printf("client ping timeout\n");
+			thisClient->status = NET_STATUS_ZOMBIE;
+		}
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{

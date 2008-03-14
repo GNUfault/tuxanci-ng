@@ -346,7 +346,8 @@ void eventTuxIsDead(tux_t *tux)
 		return;
 	}
 
-	playSound("dead", SOUND_GROUP_BASE);
+ 	playSound("dead", SOUND_GROUP_BASE);
+	printf("tux id %d is dead\n", tux->id);
 
 	tux->status = TUX_STATUS_DEAD;
 	memset(tux->shot, 0, sizeof(int) * GUN_COUNT);
@@ -364,11 +365,22 @@ void eventTuxIsDead(tux_t *tux)
 	{
 		addTimer(timer_spawnTux, newInt(tux->id), TUX_TIME_SPAWN );
 	}
+
+	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+	{
+		proto_send_kill_server(tux);
+	}
 }
 
 static void eventTuxIsDeadWIthShot(tux_t *tux, shot_t *shot)
 {
 	shot->author->score++;
+
+	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+	{
+		proto_send_score_server(shot->author);
+	}
+
 	countRoundInc();
 	eventTuxIsDead(tux);
 }
@@ -378,10 +390,14 @@ void tuxTeleport(tux_t *tux)
 	int x, y;
 
 	playSound("teleport", SOUND_GROUP_BASE);
+	printf("tux id %d teleporting\n", tux->id);
 
-	findFreeSpace(&x, &y, TUX_WIDTH, TUX_HEIGHT);
-	setTuxProportion(tux, x, y);
-	
+	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+	{
+		findFreeSpace(&x, &y, TUX_WIDTH, TUX_HEIGHT);
+		setTuxProportion(tux, x, y);
+	}
+
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
 		proto_send_newtux_server(NULL, tux);
@@ -420,7 +436,10 @@ void eventConflictTuxWithShot(list_t *listTux, list_t *listShot)
 					continue;
 				}
 
-				eventTuxIsDeadWIthShot(thisTux, thisShot);
+				if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+				{
+					eventTuxIsDeadWIthShot(thisTux, thisShot);
+				}
 			}
 
 			delListItem(listShot, i, destroyShot);

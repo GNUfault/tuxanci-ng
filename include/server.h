@@ -9,12 +9,14 @@
 #include "tcp.h"
 #include "udp.h"
 
+#define SERVER_TIMEOUT	5000
+
 typedef struct client_struct
 {
 	sock_tcp_t *socket_tcp;
 	sock_udp_t *socket_udp;
 	int status;
-
+	Uint32 lastPing;
 	tux_t *tux;
 	buffer_t *buffer;
 } client_t;

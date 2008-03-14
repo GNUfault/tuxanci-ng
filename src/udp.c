@@ -62,7 +62,6 @@ sock_udp_t* bindUdpSocket(int port)
 		return NULL;
 	}
 
-
 	return new;
 }
 
