@@ -15,10 +15,12 @@ static int protocolType;
 static sock_tcp_t *sock_server_tcp;
 static sock_udp_t *sock_server_udp;
 static list_t *listClient;
+static Uint32 lastSyncClient;
 
 void static initServer()
 {
 	listClient = newList();
+	lastSyncClient = SDL_GetTicks();
 }
 
 int initTcpServer(int port)
@@ -77,8 +79,12 @@ static client_t* newAnyClient()
 client_t* newTcpClient(sock_tcp_t *sock_tcp)
 {
 	client_t *new;
+	char str_ip[STR_IP_SIZE];
 	
 	assert( sock_tcp != NULL );
+
+	getSockTcpIp(sock_tcp, str_ip);
+	printf("new client from %s:%d\n", str_ip, getSockTcpPort(sock_tcp));
 
 	new = newAnyClient();
 	new->socket_tcp = sock_tcp;
@@ -89,9 +95,12 @@ client_t* newTcpClient(sock_tcp_t *sock_tcp)
 client_t* newUdpClient(sock_udp_t *sock_udp)
 {
 	client_t *new;
-	
+	char str_ip[STR_IP_SIZE];
+
 	assert( sock_udp != NULL );
 
+	getSockUdpIp(sock_udp, str_ip);
+	printf("new client from %s:%d\n", str_ip, getSockUdpPort(sock_udp));
 	new = newAnyClient();
 	new->socket_udp = sock_udp;
 
@@ -186,9 +195,12 @@ static void eventCreateClient(client_t *client)
 	item_t *thisItem;
 	int i;
 
+	assert( client != NULL );
+
 	proto_send_init_server(client);
 
-	proto_send_newtux_server(client, (tux_t *)(getWorldArena()->listTux->list[0]) );
+	proto_send_newtux_server(client, 
+		(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]) );
 
 	for( i = 0 ; i < listClient->count; i++)
 	{
@@ -229,6 +241,7 @@ static void eventCreateNewUdpClient(sock_udp_t *socket_udp)
 
 	client = newUdpClient( socket_udp );
 	addList(listClient, client);
+
 	eventCreateClient(client);
 }
 
@@ -265,7 +278,7 @@ static void eventClientBuffer(client_t *client)
 	
 	while( getBufferLine(client->buffer, line, STR_SIZE) >= 0 )
 	{
- 		//printf("dostal som %s", line);
+ 		printf("spracuvavam %s", line);
 
 		if( strncmp(line, "hello", 5) == 0 )proto_recv_hello_server(client, line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
@@ -347,7 +360,7 @@ static client_t* findUdpClient(sock_udp_t *sock_udp)
 	{
 		thisClient = (client_t *) listClient->list[i];
 
-		if( thisClient->socket_udp->sockAddr.sin_port == sock_udp->sockAddr.sin_port )
+		if( getSockUdpPort(thisClient->socket_udp) == getSockUdpPort(sock_udp) )
 		{
 			return thisClient;
 		}
@@ -387,11 +400,13 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 	sock_udp_t *sock_client;
 	client_t *client;
 	char buffer[STR_SIZE];
+	bool_t isCreateNewClient;
 	int ret;
 
 	assert( sock_server != NULL );
 
 	sock_client = newSockUdp();
+	isCreateNewClient = FALSE;
 
 	memset(buffer, 0, STR_SIZE);
 	ret = readUdpSocket(sock_server, sock_client, buffer, STR_SIZE-1);
@@ -402,6 +417,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 	{
 		eventCreateNewUdpClient(sock_client);
 		client = findUdpClient(sock_client);
+		isCreateNewClient = TRUE;
 	}
 
 	if( client == NULL )
@@ -410,6 +426,11 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 		return;
 	}
 	
+	if( isCreateNewClient == FALSE )
+	{
+		destroySockUdp(sock_client);
+	}
+
 	if( ret <= 0 )
 	{
 		client->status = NET_STATUS_ZOMBIE;
@@ -446,6 +467,30 @@ void selectServerUdpSocket()
 	}
 }
 
+void eventPeriodicSyncClient()
+{
+	Uint32 currentTime;
+
+ 	currentTime = SDL_GetTicks();
+
+	if( currentTime - lastSyncClient > SERVER_TIME_SYNC )
+	{
+		client_t *thisClient;
+		int i;
+	
+		proto_send_newtux_server(NULL,
+			(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
+
+		for( i = 0 ; i < listClient->count; i++)
+		{
+			thisClient = (client_t *) listClient->list[i];
+			proto_send_newtux_server(NULL, thisClient->tux);
+		}
+
+		lastSyncClient = SDL_GetTicks();
+	}
+}
+
 static void quitServer()
 {
 	proto_send_end_server();
@@ -460,7 +505,7 @@ void quitTcpServer()
 	assert( sock_server_tcp != NULL );
 	closeTcpSocket(sock_server_tcp);
 
-	printf("quit port\n");
+	printf("quit TCP port\n");
 }
 
 void quitUdpServer()
@@ -470,5 +515,5 @@ void quitUdpServer()
 	assert( sock_server_udp != NULL );
 	closeUdpSocket(sock_server_udp);
 
-	printf("quit port\n");
+	printf("quit UDP port\n");
 }

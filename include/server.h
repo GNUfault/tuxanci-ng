@@ -9,7 +9,11 @@
 #include "tcp.h"
 #include "udp.h"
 
-#define SERVER_TIMEOUT	5000
+#define SERVER_TIMEOUT		5000
+#define SERVER_TIME_SYNC	5000
+
+#define SERVER_INDEX_ROOT_TUX	0
+
 
 typedef struct client_struct
 {
@@ -21,18 +25,20 @@ typedef struct client_struct
 	buffer_t *buffer;
 } client_t;
 
-int initTcpServer(int port);
-int initUdpServer(int port);
-client_t* newTcpClient(sock_tcp_t *sock_tcp);
-client_t* newUdpClient(sock_udp_t *sock_udp);
-void destroyClient(client_t *p);
-void sendClient(client_t *p, char *msg);
-void sendAllClientBut(char *msg, client_t *p);
-void sendAllClient(char *msg);
-void eventClientListBuffer();
-void selectServerTcpSocket();
-void selectServerUdpSocket();
-void quitTcpServer();
-void quitUdpServer();
+extern int initTcpServer(int port);
+extern int initUdpServer(int port);
+extern client_t* newTcpClient(sock_tcp_t *sock_tcp);
+extern client_t* newUdpClient(sock_udp_t *sock_udp);
+extern void destroyClient(client_t *p);
+extern void sendClient(client_t *p, char *msg);
+extern void sendAllClientBut(char *msg, client_t *p);
+extern void sendAllClient(char *msg);
+extern void eventClientListBuffer();
+extern void selectServerTcpSocket();
+extern void selectServerUdpSocket();
+extern void eventPeriodicSyncClient();
+extern void quitTcpServer();
+extern void quitUdpServer();
+
 #endif 
  

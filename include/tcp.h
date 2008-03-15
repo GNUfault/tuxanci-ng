@@ -16,6 +16,7 @@ extern void destroySockTcp(sock_tcp_t *p);
 extern sock_tcp_t* bindTcpSocket(int port);
 extern sock_tcp_t* getTcpNewClient(sock_tcp_t *p);
 extern void getSockTcpIp(sock_tcp_t *p, char *str_ip);
+extern int getSockTcpPort(sock_tcp_t *p);
 extern sock_tcp_t* connectTcpSocket(char *ip, int port);
 extern int readTcpSocket(sock_tcp_t *p, void *address, int len);
 extern int writeTcpSocket(sock_tcp_t *p, void *address, int len);

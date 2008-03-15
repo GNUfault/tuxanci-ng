@@ -95,6 +95,12 @@ void getSockTcpIp(sock_tcp_t *p, char *str_ip)
 	strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
 }
 
+int getSockTcpPort(sock_tcp_t *p)
+{
+	assert( p != NULL );
+	return htons(p->sockAddr.sin_port);
+}
+
 sock_tcp_t* connectTcpSocket(char *ip, int port)
 {
 	sock_tcp_t *new;

@@ -105,10 +105,12 @@ void eventNetMultiplayer()
 				case NET_PROTOCOL_TYPE_TCP :
 					selectServerTcpSocket();
 					eventClientListBuffer();
+					eventPeriodicSyncClient();
 				break;
 				case NET_PROTOCOL_TYPE_UDP :
 					selectServerUdpSocket();
 					eventClientListBuffer();
+					eventPeriodicSyncClient();
 				break;
 			}
 		break;

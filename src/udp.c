@@ -1,4 +1,5 @@
 
+
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -11,6 +12,8 @@
 #include <assert.h>
 
 #define BUFSIZE 1000
+
+#include "main.h"
 
 typedef struct struct_sock_udp_t
 {
@@ -142,9 +145,21 @@ void getSockUdpIp(sock_udp_t *p, char *str_ip)
 	strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
 }
 
+int getSockUdpPort(sock_udp_t *p)
+{
+	assert( p != NULL );
+	return htons(p->sockAddr.sin_port);
+}
+
+
 void closeUdpSocket(sock_udp_t *p)
 {
+	char str_ip[STR_IP_SIZE];
+
 	assert( p != NULL  );
+
+	getSockUdpIp(p, str_ip);
+	printf("close connect from %s:%d\n", str_ip, htons(p->sockAddr.sin_port));
 
 	close(p->sock);
 	destroySockUdp(p);

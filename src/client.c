@@ -23,6 +23,7 @@ static Uint32 lastPing;
 static void initClient()
 {
 	clientBuffer = newBuffer( LIMIT_BUFFER );
+	lastPing = SDL_GetTicks();
 	proto_send_hello_client();
 }
 
@@ -36,6 +37,7 @@ int initTcpClient(char *ip, int port)
 	}
 
 	printf("connect TCP %s %d\n", ip, port);
+
 	protocolType = NET_PROTOCOL_TYPE_TCP;
 	initClient();
 
@@ -52,8 +54,8 @@ int initUdpClient(char *ip, int port)
 	}
 
 	printf("connect UDP %s %d\n", ip, port);
+
 	protocolType = NET_PROTOCOL_TYPE_UDP;
-	lastPing = SDL_GetTicks();
 	initClient();
 
 	return 0;
@@ -138,7 +140,7 @@ void eventServerBuffer()
 
 	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
 	{
-		//printf("dostal som %s", line);
+ 		printf("spracuvavam %s", line);
 
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
@@ -222,7 +224,7 @@ void quitTcpClient()
 	assert( sock_server_tcp != NULL );
 	closeTcpSocket(sock_server_tcp);
 
-	printf("quit conenct\n");
+	printf("quit TCP conenct\n");
 }
 
 void quitUdpClient()
@@ -232,5 +234,5 @@ void quitUdpClient()
 	assert( sock_server_udp != NULL );
 	closeUdpSocket(sock_server_udp);
 
-	printf("quit conenct\n");
+	printf("quit UDP conenct\n");
 }
