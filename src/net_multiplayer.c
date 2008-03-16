@@ -13,11 +13,11 @@
 #include "arenaFile.h"
 #include "net_multiplayer.h"
 #include "server.h"
-#include "tcp.h"
 #include "udp.h"
-#include "sdl_udp.h"
 
 #ifndef BUBLIC_SERVER
+#include "sdl_udp.h"
+#include "tcp.h"
 #include "screen.h"
 #include "screen_setting.h"
 #include "screen_choiceArena.h"

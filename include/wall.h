@@ -3,7 +3,10 @@
 
 #define WALL_H
 
+#ifndef BUBLIC_SERVER
 #include "interface.h"
+#endif
+
 #include "list.h"
 
 typedef struct wall_struct

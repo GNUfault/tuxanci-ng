@@ -2,7 +2,9 @@
 #ifndef SHOT_H
 
 #include "main.h"
+#ifndef BUBLIC_SERVER	
 #include "interface.h"
+#endif	
 #include "list.h"
 #include "tux.h"
 

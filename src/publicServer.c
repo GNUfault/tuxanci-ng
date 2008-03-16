@@ -1,5 +1,7 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "main.h"
@@ -90,7 +92,7 @@ void eventPublicServer()
 
 	eventNetMultiplayer();
 
-	if( time == 0 )
+	if( lastActive == 0 )
 	{
 		lastActive = getMyTime();
 	}

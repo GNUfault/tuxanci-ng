@@ -4,13 +4,13 @@ CC = gcc
 
 DISTDIR:=/usr/
 
-CFLAGS = -g -O0 -DBUBLIC_SERVER -DSUPPORT_NET_UNIX_UDP -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
+CFLAGS = -g -O0 -DBUBLIC_SERVER -DSUPPORT_NET_UNIX_UDP -DDISTDIR=\"$(DISTDIR)\" -I../include -Wall
 #CFLAGS = -O2 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
 
 LIBS =
 
 FILES = list.o director.o configFile.o tux.o main.o wall.o shot.o myTimer.o  \
-	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o gun.o item.o teleport.o pipe.o tcp.o\
+	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o gun.o item.o teleport.o pipe.o\
 	udp.o proto.o server.o publicServer.o net_multiplayer.o
 
 publicserver: $(FILES)

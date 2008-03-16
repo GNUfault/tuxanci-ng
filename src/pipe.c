@@ -1,14 +1,15 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "main.h"
 #include "pipe.h"
-#include "layer.h"
 #include "shot.h"
 
 #ifndef BUBLIC_SERVER
 #include "screen_world.h"
+#include "layer.h"
 #endif
 
 #ifdef BUBLIC_SERVER

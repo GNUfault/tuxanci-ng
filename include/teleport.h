@@ -3,10 +3,11 @@
 
 #define TELEPORT_H
 
+#ifndef BUBLIC_SERVER
 #include "interface.h"
+#endif
 #include "main.h"
 #include "list.h"
-#include "interface.h"
 
 typedef struct teleport_struct
 {

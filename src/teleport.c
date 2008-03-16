@@ -6,7 +6,6 @@
 #include "tux.h"
 #include "teleport.h"
 #include "shot.h"
-#include "sound.h"
 
 #ifndef BUBLIC_SERVER
 #include "layer.h"

@@ -4,7 +4,9 @@
 #define PIPE_H
 
 #include "main.h"
+#ifndef BUBLIC_SERVER
 #include "interface.h"
+#endif
 #include "list.h"
 
 typedef struct pipe_struct
