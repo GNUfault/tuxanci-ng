@@ -593,7 +593,6 @@ void selectServerUdpSocket()
 	static struct timeval tv = { .tv_sec = 0, .tv_usec = 50000 };
 	fd_set readfds;
 	int max_fd;
-	unsigned int z;
 
 #ifndef BUBLIC_SERVER
 	tv.tv_sec = 0;
@@ -602,7 +601,7 @@ void selectServerUdpSocket()
 
 #ifdef BUBLIC_SERVER
 	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	tv.tv_usec = 50000;
 #endif	
 	
 	FD_ZERO(&readfds);
@@ -612,11 +611,6 @@ void selectServerUdpSocket()
 	delZombieCLient();
 
 	select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-
-#ifdef BUBLIC_SERVER
-	z = tv.tv_usec;
-	usleep( 50000 - z );
-#endif	
 
 /*
 	printf("%d\n", tv.tv_usec);
