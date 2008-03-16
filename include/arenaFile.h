@@ -6,6 +6,8 @@
 #include "main.h"
 #include "arena.h"
 
+#define PUBLIC_SERVER_PATH_ARENA "./arena/"
+
 extern bool_t isArenaFileInicialized();
 extern void initArenaFile();
 extern int getArenaCount();

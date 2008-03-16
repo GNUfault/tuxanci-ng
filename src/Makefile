@@ -2,7 +2,7 @@
 #CC = /usr/local/gcc/bin/gcc
 CC = gcc
 
-CFLAGS = -g -O0 -DSUPPORT_NET_SDL_UDP -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
+CFLAGS = -g -O0 -DSUPPORT_NET_SDL_UDP -DDISTDIR=\"$(DISTDIR)\" -I../include -Wall `sdl-config --cflags`
 #CFLAGS = -O2 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
 
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lSDL_net
@@ -165,4 +165,4 @@ screen_table.o: screen_table.c ../include/screen_table.h
 	$(CC) $(CFLAGS) -o screen_table.o -c screen_table.c
 
 clean:
-	rm -rf *.o *.c~ *.h~ tuxanci-ng
+	rm -rf *.o *.c~ ../include/*.h~ Makefile~ tuxanci-ng

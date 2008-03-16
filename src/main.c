@@ -154,8 +154,6 @@ int main(int argc, char *argv[])
 {
 	srand( (unsigned) time(NULL) );
 
-	printf("dist dir = %s\n", DISTDIR);
-
 	my_argc = argc;
 	my_argv = argv;
 

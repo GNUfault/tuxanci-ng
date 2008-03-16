@@ -4,18 +4,43 @@ DISTDIR:=/usr/
 
 all:
 	make -C ./src DISTDIR=$(DISTDIR)
- 
+
 clean:
 	make -C ./src DISTDIR=$(DISTDIR) clean
+	make -C ./src -f Makefile-publicServer clean
 
 run:
 	./tuxanci-ng.sh
+
+srun:
+	./publicserver.sh
+
+package:
+	./deb-build.sh
+
+kill:
+	kill -9 `pidof publicserver`
+
+stat:
+	cat /proc/`pidof publicserver`/status
+
+tuxstat:
+	cat /proc/`pidof tuxanci-ng`/status
+
+line:
+	cat src/*.c include*.h | wc -l
+
+core:
+	gcore `pidof publicserver`
 
 svn:
 	svn ci
 
 svnr:
 	svn co http://opensvn.csie.org/tuxanci_ng/
+
+server:
+	make -C ./src -f Makefile-publicServer
 
 install:
 	cp  ./src/tuxanci-ng $(DISTDIR)bin/
@@ -35,9 +60,6 @@ install:
 	cp  -rf ./music/* $(DISTDIR)share/tuxanci-ng/music
 	cp  -rf ./sound/* $(DISTDIR)share/tuxanci-ng/sound
 	cp  -rf ./data/* $(DISTDIR)share/tuxanci-ng/data
-
-deb:
-	./deb-build.sh
 
 uninstall:
 	rm -rf $(DISTDIR)bin/tuxanci-ng

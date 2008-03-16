@@ -594,7 +594,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 void selectServerUdpSocket()
 {
-	static struct timeval tv = { .tv_sec = 0, .tv_usec = 50000 };
+	struct timeval tv;
 	fd_set readfds;
 	int max_fd;
 
@@ -605,7 +605,7 @@ void selectServerUdpSocket()
 
 #ifdef BUBLIC_SERVER
 	tv.tv_sec = 0;
-	tv.tv_usec = 50000;
+	tv.tv_usec = 5000;
 #endif	
 	
 	FD_ZERO(&readfds);

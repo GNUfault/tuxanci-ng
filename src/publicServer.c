@@ -19,7 +19,7 @@
 #include "publicServer.h"
 #include "net_multiplayer.h"
 
-static int arenaId = 0;
+static int arenaId;
 static arena_t *arena;
 
 arena_t* getWorldArena()
@@ -39,7 +39,7 @@ void initPublicServer()
 	initShot();
 	initTimer();
 
-
+	arenaId = getArenaIdFormNetName( getParamElse("--arena", "FAGN") );
 	arena = getArena(arenaId);
 	addNewItem(arena->listItem, NULL);
 
@@ -103,8 +103,9 @@ void eventPublicServer()
 	{
 		return;
 	}
-
+/*
 	printf("interval = %d\n", interval);
+*/
 	lastActive = getMyTime();
 
 	eventConflictTuxWithTeleport(arena->listTux, arena->listTeleport);

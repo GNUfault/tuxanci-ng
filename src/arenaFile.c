@@ -296,7 +296,13 @@ void initArenaFile()
 	isArenaFileInit = TRUE;
 	listArenaFile  = newList();
 
+#ifndef BUBLIC_SERVER
 	p = loadDirector(PATH_ARENA);
+#endif
+
+#ifdef BUBLIC_SERVER
+	p = loadDirector(PUBLIC_SERVER_PATH_ARENA);
+#endif
 
 	for( i = 0 ; i < p->list->count ; i++ )
 	{
@@ -307,8 +313,13 @@ void initArenaFile()
 		if( strstr(line, ".map") != NULL && strstr(line, "~") == NULL )
 		{
 			char path[STR_PATH_SIZE];
-			sprintf(path, PATH_ARENA "%s", line);
 
+#ifndef BUBLIC_SERVER
+			sprintf(path, PATH_ARENA "%s", line);
+#endif
+#ifdef BUBLIC_SERVER
+			sprintf(path, PUBLIC_SERVER_PATH_ARENA "%s", line);
+#endif
 			printf("load map %s\n", line);
 			addList(listArenaFile, loadTextFile(path));
 		}

@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
 
@@ -41,6 +42,7 @@ director_t* loadDirector(char *s)
 	}
 
 	new->path = strdup(path);
+	printf("new->path = %s\n", new->path);
 
 	dir = opendir(new->path);
 

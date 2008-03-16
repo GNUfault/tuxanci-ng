@@ -4,7 +4,7 @@ CC = gcc
 
 DISTDIR:=/usr/
 
-CFLAGS = -g -O0 -DBUBLIC_SERVER -DSUPPORT_NET_UNIX_UDP -DDISTDIR=\"$(DISTDIR)\" -I../include -Wall
+CFLAGS = -g -O0 -DBUBLIC_SERVER -DSUPPORT_NET_UNIX_UDP -I../include -Wall
 #CFLAGS = -O2 -DDISTDIR=\"$(DISTDIR)\" `sdl-config --cflags` -I../include -Wall
 
 LIBS =
@@ -86,5 +86,5 @@ pipe.o: pipe.c ../include/pipe.h
 	$(CC) $(CFLAGS) -o pipe.o -c pipe.c
 
 clean:
-	rm -rf *.o *.c~ *.h~ publicserver
+	rm -rf *.o *.c~ ../include*.h~ Makefile-publicServer~ publicserver
 
