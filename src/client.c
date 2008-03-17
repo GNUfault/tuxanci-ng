@@ -31,11 +31,13 @@ static sock_sdl_udp_t *sock_server_sdl_udp;
 
 static buffer_t *clientBuffer;
 static my_time_t lastPing;
+static my_time_t lastPingServerAlive;
 
 static void initClient()
 {
 	clientBuffer = newBuffer( LIMIT_BUFFER );
 	lastPing = getMyTime();
+	lastPingServerAlive = getMyTime();
 	proto_send_hello_client();
 }
 
@@ -110,15 +112,6 @@ void sendServer(char *msg)
 
 #ifdef SUPPORT_NET_UNIX_TCP
 	ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
-#endif
-
-#ifdef SUPPORT_NET_UNIX_UDP
-	ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
-#endif
-
-#ifdef SUPPORT_NET_SDL_UDP
-	ret = writeSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, msg, strlen(msg));
-#endif
 
 	if ( ret == 0 )
 	{
@@ -131,9 +124,18 @@ void sendServer(char *msg)
 		fprintf(stderr, "nastala chyba pri poslani spravy serveru\n");
 		setWorldEnd();
 	}
+#endif
+
+#ifdef SUPPORT_NET_UNIX_UDP
+	ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
+#endif
+
+#ifdef SUPPORT_NET_SDL_UDP
+	ret = writeSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, msg, strlen(msg));
+#endif
 }
 
-static void eventServerSelect()
+static int eventServerSelect()
 {
 	char buffer[STR_SIZE];
 	int ret;
@@ -142,6 +144,20 @@ static void eventServerSelect()
 
 #ifdef SUPPORT_NET_UNIX_TCP
 	ret = readTcpSocket(sock_server_tcp, buffer, STR_SIZE-1);
+
+	if( ret == 0 )
+	{
+		fprintf(stderr, "server uzatovril sietovy socket\n");
+		setWorldEnd();
+		return ret;
+	}
+	
+	if( ret < 0 )
+	{
+		fprintf(stderr, "chyba, spojenie prerusene \n");
+		setWorldEnd();
+		return ret;
+	}
 #endif
 	
 #ifdef SUPPORT_NET_UNIX_UDP
@@ -153,30 +169,18 @@ static void eventServerSelect()
 
 	if( ret < 0 )
 	{
-		return;
+		return ret;
 	}
 #endif
-
-	if( ret == 0 )
-	{
-		fprintf(stderr, "server uzatovril sietovy socket\n");
-		setWorldEnd();
-		return;
-	}
-	
-	if( ret < 0 )
-	{
-		fprintf(stderr, "chyba, spojenie prerusene \n");
-		setWorldEnd();
-		return;
-	}
 
 	if( addBuffer(clientBuffer, buffer, ret) != 0 )
 	{
 		fprintf(stderr, "chyba, nemozem zapisovat do mojho buffera !\n");
 		setWorldEnd();
-		return;
+		return ret;
 	}
+
+	return ret;
 }
 
 void eventServerBuffer()
@@ -189,15 +193,17 @@ void eventServerBuffer()
 
 	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
 	{
- 		printf("spracuvavam %s", line);
+ 		//printf("spracuvavam %s", line);
 
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
 		if( strncmp(line, "newtux", 6) == 0 )proto_recv_newtux_client(line);
 		if( strncmp(line, "deltux", 6) == 0 )proto_recv_deltux_client(line);
 		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem_client(line);
+		if( strncmp(line, "shot", 4) == 0 )proto_recv_shot_client(line);
 		if( strncmp(line, "kill", 4) == 0 )proto_recv_kill_client(line);
 		if( strncmp(line, "score", 5) == 0 )proto_recv_score_client(line);
+		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_client(line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_client(line);
 	}
 }
@@ -209,20 +215,27 @@ void selectClientTcpSocket()
 	fd_set readfds;
 	struct timeval tv;
 	int max_fd;
+	bool_t isNext;
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	do{
+		isNext = FALSE;
+
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		
+		FD_ZERO(&readfds);
+		FD_SET(sock_server_tcp->sock, &readfds);
+		max_fd = sock_server_tcp->sock;
 	
-	FD_ZERO(&readfds);
-	FD_SET(sock_server_tcp->sock, &readfds);
-	max_fd = sock_server_tcp->sock;
+		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+	
+		if( FD_ISSET(sock_server_tcp->sock, &readfds) )
+		{
+			eventServerSelect();
+			isNext = TRUE;
+		}
 
-	select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-
-	if( FD_ISSET(sock_server_tcp->sock, &readfds) )
-	{
-		eventServerSelect();
-	}
+	}while( isNext == TRUE );
 }
 
 #endif
@@ -242,6 +255,25 @@ void eventPingServer()
 	}
 }
 
+void refreshPingServerAlive()
+{
+	lastPingServerAlive = getMyTime();
+}
+
+bool_t isServerAlive()
+{
+	my_time_t currentTime;
+
+ 	currentTime = getMyTime();
+
+	if( currentTime - lastPingServerAlive > SERVER_TIMEOUT_ALIVE )
+	{
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
@@ -251,20 +283,35 @@ void selectClientUdpSocket()
 	fd_set readfds;
 	struct timeval tv;
 	int max_fd;
+	bool_t isNext;
 
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-	
-	FD_ZERO(&readfds);
-	FD_SET(sock_server_udp->sock, &readfds);
-	max_fd = sock_server_udp->sock;
-
-	select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-
-	if( FD_ISSET(sock_server_udp->sock, &readfds) )
+	if( isServerAlive() == FALSE )
 	{
-		eventServerSelect();
+		fprintf(stderr, "server neodpoveda !\n");
+		setWorldEnd();
+		return;
 	}
+
+	do{
+		isNext = FALSE;
+
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		
+		FD_ZERO(&readfds);
+		FD_SET(sock_server_udp->sock, &readfds);
+		max_fd = sock_server_udp->sock;
+	
+		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+	
+		if( FD_ISSET(sock_server_udp->sock, &readfds) )
+		{
+			eventServerSelect();
+			isNext = TRUE;
+		}
+
+	}while( isNext == TRUE );
+
 }
 
 #endif
@@ -273,7 +320,18 @@ void selectClientUdpSocket()
 
 void selectClientSdlUdpSocket()
 {
-	eventServerSelect();
+	int ret;
+
+	if( isServerAlive() == FALSE )
+	{
+		fprintf(stderr, "server neodpoveda !\n");
+		setWorldEnd();
+		return;
+	}
+
+	do{
+		ret = eventServerSelect();
+	}while( ret > 0);
 }
 
 #endif

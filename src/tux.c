@@ -491,7 +491,10 @@ void eventConflictTuxWithTeleport(list_t *listTux, list_t *listTeleport)
 		if( ( thisTux = isConflictWithListTux(listTux, thisTeleport->x, thisTeleport->y,
 			thisTeleport->w, thisTeleport->h) ) != NULL )
 		{
-			eventTeleportTux(listTeleport, thisTeleport, thisTux);
+			if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+			{
+				eventTeleportTux(listTeleport, thisTeleport, thisTux);
+			}
 		}
 	}
 }

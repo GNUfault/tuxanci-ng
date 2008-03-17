@@ -363,6 +363,8 @@ void eventWorld()
 	if( arena == NULL )
 	{
 		eventNetMultiplayer();
+		eventEnd();
+		eventEsc();
 		return;
 	}
 
@@ -381,8 +383,8 @@ void eventWorld()
 	eventTimer();
 	eventNetMultiplayer();
 
-	eventEsc();
 	eventEnd();
+	eventEsc();
 }
 
 void startWorld()
@@ -439,12 +441,21 @@ static void setTable()
 
 void stoptWorld()
 {
-	setTable();
-	setAnalyze();
-	delAllImageInGroup(IMAGE_GROUP_USER);
+	if( arena != NULL )
+	{
+		setTable();
+		setAnalyze();
+	}
+
 	quitNetMultiplayer();
-	destroyArena(arena);
+
+	if( arena != NULL )
+	{
+		destroyArena(arena);
+	}
+
 	stopMusic();
+	delAllImageInGroup(IMAGE_GROUP_USER);
 	delAllMusicInGroup(MUSIC_GROUP_USER);
 	quitTimer();
 }

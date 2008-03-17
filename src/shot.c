@@ -6,6 +6,8 @@
 #include "main.h"
 #include "shot.h"
 #include "gun.h"
+#include "net_multiplayer.h"
+#include "proto.h"
 
 #ifndef BUBLIC_SERVER
 #include "image.h"
@@ -191,7 +193,7 @@ static int getSppedShot(shot_t *shot)
 	return ( myAbs(shot->px) > myAbs(shot->py) ? myAbs(shot->px) : myAbs(shot->py) );
 }
 
-static void eventOnlyLasser(shot_t *shot)
+void transformOnlyLasser(shot_t *shot)
 {
 	switch( shot->position )
 	{
@@ -248,7 +250,7 @@ static void transformShot(shot_t *shot, int position)
 
 	if( shot->gun == GUN_LASSER )
 	{
-		eventOnlyLasser(shot);
+		transformOnlyLasser(shot);
 	}
 }
 
@@ -294,6 +296,12 @@ void moveShot(shot_t *shot, int position, int src_x, int src_y,
 			shot->y = dist_y + dist_h;
 		break;
 	}
+
+	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+	{
+		proto_send_shot_server(shot);
+	}
+
 }
 
 void destroyShot(shot_t *p)

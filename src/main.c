@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 #include "main.h"
 #include "tux.h"
@@ -169,7 +170,16 @@ int main(int argc, char *argv[])
 
 #ifdef BUBLIC_SERVER
 
-	initPublicServer();
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, my_handler_quit);
+	signal(SIGTERM, my_handler_quit);
+	signal(SIGQUIT, my_handler_quit);
+
+	if( initPublicServer() < 0 )
+	{
+		quitPublicServer();
+		return -1;
+	}
 
 	while(1)
 	{

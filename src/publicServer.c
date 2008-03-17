@@ -21,6 +21,7 @@
 
 static int arenaId;
 static arena_t *arena;
+static bool_t isSignalEnd;
 
 arena_t* getWorldArena()
 {
@@ -31,7 +32,7 @@ void countRoundInc()
 {
 }
 
-void initPublicServer()
+int initPublicServer()
 {
 	initArenaFile();
 	initTux();
@@ -42,8 +43,15 @@ void initPublicServer()
 	arenaId = getArenaIdFormNetName( getParamElse("--arena", "FAGN") );
 	arena = getArena(arenaId);
 	addNewItem(arena->listItem, NULL);
+	isSignalEnd = FALSE;
 
-	initNetMuliplayer(NET_GAME_TYPE_SERVER, NULL, atoi( getParamElse("--port", "2200") ) );
+	if( initNetMuliplayer(NET_GAME_TYPE_SERVER, NULL, atoi( getParamElse("--port", "2200") ) ) < 0 )
+	{
+		printf("Nemozem inicalizovat sietovy socket !\n");
+		return -1;
+	}
+
+	return 0;
 }
 
 int getChoiceArenaId()
@@ -92,6 +100,11 @@ void eventPublicServer()
 
 	eventNetMultiplayer();
 
+	if( isSignalEnd == TRUE )
+	{
+		quitPublicServer();
+	}
+
 	if( lastActive == 0 )
 	{
 		lastActive = getMyTime();
@@ -103,6 +116,7 @@ void eventPublicServer()
 	{
 		return;
 	}
+
 /*
 	printf("interval = %d\n", interval);
 */
@@ -123,10 +137,19 @@ void eventPublicServer()
 	eventTimer();
 }
 
+void my_handler_quit(int n)
+{
+	printf("my_handler_quit\n");
+	isSignalEnd = TRUE;
+}
+
 void quitPublicServer()
 {
 	printf("quit public server\n");
 	quitNetMultiplayer();
 	destroyArena(arena);
+	quitArenaFile();
 	quitTimer();
+	exit(0);
 }
+

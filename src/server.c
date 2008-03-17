@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
 #include "list.h"
 #include "tux.h"
 #include "network.h"
@@ -44,7 +50,7 @@ static my_time_t lastSyncClient;
 void static initServer()
 {
 	listClient = newList();
- 	lastSyncClient = getMyTime();
+	lastSyncClient = getMyTime();
 }
 
 #ifdef SUPPORT_NET_UNIX_TCP
@@ -495,6 +501,8 @@ void eventPeriodicSyncClient()
 		client_t *thisClientSend;
 		tux_t *thisTux;
 		int i, j;
+
+		proto_send_ping_server();
 	
 #ifndef BUBLIC_SERVER
 		proto_send_newtux_server(NULL,
@@ -557,6 +565,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 	isCreateNewClient = FALSE;
 
 	memset(buffer, 0, STR_SIZE);
+
 	ret = readUdpSocket(sock_server, sock_client, buffer, STR_SIZE-1);
 
 	client = findUdpClient(sock_client);
@@ -597,6 +606,7 @@ void selectServerUdpSocket()
 	struct timeval tv;
 	fd_set readfds;
 	int max_fd;
+	int ret;
 
 #ifndef BUBLIC_SERVER
 	tv.tv_sec = 0;
@@ -614,7 +624,12 @@ void selectServerUdpSocket()
 
 	delZombieCLient();
 
-	select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+	ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+
+	if( ret < 0 )
+	{
+		return;
+	}
 
 /*
 	printf("%d\n", tv.tv_usec);

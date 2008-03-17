@@ -6,6 +6,8 @@
 #include "tux.h"
 #include "teleport.h"
 #include "shot.h"
+#include "net_multiplayer.h"
+#include "proto.h"
 
 #ifndef BUBLIC_SERVER
 #include "layer.h"
@@ -156,7 +158,15 @@ void eventConflictShotWithTeleport(list_t *listTeleport, list_t *listShot)
 				continue;
 			}
 
-			moveShotFromTeleport(thisShot, thisTeleport, listTeleport);
+			if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+			{
+				delListItem(listShot, i, destroyShot);
+				i--;
+			}
+			else
+			{
+				moveShotFromTeleport(thisShot, thisTeleport, listTeleport);
+			}
 		}
 	}
 }
@@ -167,7 +177,8 @@ void eventTeleportTux(list_t *listTeleport, teleport_t *teleport, tux_t *tux)
 	int current_x, current_y;
 	int dist_x, dist_y;
 
-	if( tux->bonus == BONUS_GHOST )
+	if( tux->bonus == BONUS_GHOST ||
+	    getNetTypeGame() == NET_GAME_TYPE_CLIENT )
 	{
 		return;
 	}
@@ -209,6 +220,10 @@ void eventTeleportTux(list_t *listTeleport, teleport_t *teleport, tux_t *tux)
 #ifndef BUBLIC_SERVER
 		playSound("teleport", SOUND_GROUP_BASE);
 #endif
+		if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+		{
+			proto_send_newtux_server(NULL, tux);
+		}
 	}
 }
 

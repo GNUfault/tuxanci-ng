@@ -28,7 +28,7 @@ tuxstat:
 	cat /proc/`pidof tuxanci-ng`/status
 
 line:
-	cat src/*.c include*.h | wc -l
+	cat src/*.c include/*.h | wc -l
 
 core:
 	gcore `pidof publicserver`

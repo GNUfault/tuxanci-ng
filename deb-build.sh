@@ -23,4 +23,4 @@ md5sum `find ./ -type f | awk '/.\// { print substr($0, 3) }'` > DEBIAN/md5sums
 
 cd ..
 rm -rf *.deb
-dpkg -b ./deb tuxanci-ng_svn13-1_i386.deb
+dpkg -b ./deb tuxanci-ng_svn`cat deb-ver`_i386.deb

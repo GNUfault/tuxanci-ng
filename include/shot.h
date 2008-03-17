@@ -1,6 +1,8 @@
 
 #ifndef SHOT_H
 
+#define SHOT_H
+
 #include "main.h"
 #ifndef BUBLIC_SERVER	
 #include "interface.h"
@@ -41,6 +43,8 @@ extern void drawListShot(list_t *listShot);
 #endif
 extern int isConflictWithListShot(list_t *listShot, int x, int y, int w, int h);
 extern void eventMoveListShot(list_t *listShot);
+
+extern void transformOnlyLasser(shot_t *shot);
 
 extern void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	int dist_x, int dist_y, int dist_w, int dist_h);

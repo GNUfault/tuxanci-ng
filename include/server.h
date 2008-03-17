@@ -21,7 +21,7 @@
 #include "udp.h"
 
 #define SERVER_TIMEOUT		5000
-#define SERVER_TIME_SYNC	5000
+#define SERVER_TIME_SYNC	1000
 
 #endif
 
@@ -30,7 +30,7 @@
 #include "sdl_udp.h"
 
 #define SERVER_TIMEOUT		5000
-#define SERVER_TIME_SYNC	5000
+#define SERVER_TIME_SYNC	1000
 
 #endif
 

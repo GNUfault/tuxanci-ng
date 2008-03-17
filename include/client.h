@@ -5,7 +5,8 @@
 
 #if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 
-#define CLIENT_TIMEOUT	2500
+#define CLIENT_TIMEOUT		2500
+#define SERVER_TIMEOUT_ALIVE	5000
 
 #endif
 
@@ -19,6 +20,7 @@ extern void quitTcpClient();
 extern int initUdpClient(char *ip, int port);
 extern void eventPingServer();
 extern void selectClientUdpSocket();
+extern void refreshPingServerAlive();
 extern void quitUdpClient();
 #endif
 
@@ -26,6 +28,8 @@ extern void quitUdpClient();
 extern int initSdlUdpClient(char *ip, int port);
 extern void eventPingServer();
 extern void selectClientSdlUdpSocket();
+extern void refreshPingServerAlive();
+extern bool_t isServerAlive();
 extern void quitSdlUdpClient();
 #endif
 

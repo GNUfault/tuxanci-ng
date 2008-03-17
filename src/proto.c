@@ -8,6 +8,7 @@
 #include "list.h"
 #include "tux.h"
 #include "item.h"
+#include "shot.h"
 #include "arenaFile.h"
 #include "myTimer.h"
 #include "server.h"
@@ -42,7 +43,6 @@ void proto_recv_hello_server(client_t *client, char *msg)
 {
 }
 
-
 void proto_send_init_server(client_t *client)
 {
 	char msg[STR_SIZE];
@@ -53,7 +53,6 @@ void proto_send_init_server(client_t *client)
 #ifndef BUBLIC_SERVER
 	getSettingCountRound(&n);
 #endif
-
 
 	sprintf(msg, "init %d %d %d %d %s\n",
 		client->tux->id, client->tux->x, client->tux->y,
@@ -377,6 +376,53 @@ void proto_recv_additem_client(char *msg)
 
 #endif
 
+void proto_send_shot_server(shot_t *p)
+{
+	char msg[STR_SIZE];
+	int id = -1;
+
+	assert( p != NULL );
+
+	if( p->author != NULL )
+	{
+		id = p->author->id;
+	}
+
+	sprintf(msg, "shot %d %d %d %d %d %d %d %d\n",
+		p->x, p->y, p->px, p->py, p->position, p->gun, id, p->isCanKillAuthor);
+
+	sendAllClient(msg);
+}
+
+#ifndef BUBLIC_SERVER
+
+void proto_recv_shot_client(char *msg)
+{
+	char cmd[STR_SIZE];
+	int x, y, px, py, position, gun, id, isCanKillAuthor;
+	shot_t *shot;
+
+	assert( msg != NULL );
+
+	sscanf(msg, "%s %d %d %d %d %d %d %d %d\n",
+		cmd, &x, &y, &px, &py, &position, &gun, &id, &isCanKillAuthor);
+
+	shot = newShot(x, y, px, py, gun, getTuxID(getWorldArena()->listTux, id));
+
+	shot->isCanKillAuthor = isCanKillAuthor;
+	shot->position = position;
+
+	if( shot->gun == GUN_LASSER )
+	{
+		printf("transform\n");
+		transformOnlyLasser(shot);
+	}
+
+	addList(getWorldArena()->listShot, shot);
+}
+
+#endif
+
 #ifndef BUBLIC_SERVER
 
 void proto_send_context_client(tux_t *tux)
@@ -446,6 +492,26 @@ void proto_recv_end_server(client_t *client, char *msg)
 
 	client->status = NET_STATUS_ZOMBIE;
 }
+
+void proto_send_ping_server()
+{
+	char msg[STR_SIZE];
+	strcpy(msg, "ping\n");
+	sendAllClient(msg);
+}
+
+#ifndef BUBLIC_SERVER
+
+void proto_recv_ping_client(char *msg)
+{
+	assert( msg != NULL );
+	
+#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
+	refreshPingServerAlive();
+#endif
+}
+
+#endif
 
 void proto_send_end_server()
 {
