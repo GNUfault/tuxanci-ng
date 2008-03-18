@@ -618,23 +618,20 @@ void selectServerUdpSocket()
 	tv.tv_sec = 0;
 	tv.tv_usec = 5000;
 #endif	
-	
+
 	FD_ZERO(&readfds);
 	FD_SET(sock_server_udp->sock, &readfds);
 	max_fd = sock_server_udp->sock;
-
+	
 	delZombieCLient();
-
+	
 	ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-
+	
 	if( ret < 0 )
 	{
 		return;
 	}
-
-/*
-	printf("%d\n", tv.tv_usec);
-*/
+	
 	if( FD_ISSET(sock_server_udp->sock, &readfds) )
 	{
 		eventClientUdpSelect(sock_server_udp);
@@ -675,48 +672,53 @@ void selectServerSdlUdpSocket()
 
 	delZombieCLient();
 
-	sock_client = newSdlSockUdp();
-	isCreateNewClient = FALSE;
-
-	memset(buffer, 0, STR_SIZE);
-	ret = readSdlUdpSocket(sock_server_sdl_udp, sock_client, buffer, STR_SIZE-1);
-
-	if( ret < 0 )
-	{
-		return;
-	}
-
-	client = findSdlUdpClient(sock_client);
-
-	if( client == NULL )
-	{
-		eventCreateNewSdlUdpClient(sock_client);
-		client = findSdlUdpClient(sock_client);
-		isCreateNewClient = TRUE;
-	}
-
-	if( client == NULL )
-	{
-		fprintf(stderr, "Client total not found !\n");
-		return;
-	}
+	do{
+		sock_client = newSdlSockUdp();
+		isCreateNewClient = FALSE;
 	
-	if( isCreateNewClient == FALSE )
-	{
-		destroySockSdlUdp(sock_client);
-	}
+		memset(buffer, 0, STR_SIZE);
+	
+		ret = readSdlUdpSocket(sock_server_sdl_udp, sock_client, buffer, STR_SIZE-1);
+	
+		if( ret < 0 )
+		{
+			destroySockSdlUdp(sock_client);
+			break;
+		}
+	
+		client = findSdlUdpClient(sock_client);
+	
+		if( client == NULL )
+		{
+			eventCreateNewSdlUdpClient(sock_client);
+			client = findSdlUdpClient(sock_client);
+			isCreateNewClient = TRUE;
+		}
+	
+		if( client == NULL )
+		{
+			fprintf(stderr, "Client total not found !\n");
+			return;
+		}
+		
+		if( isCreateNewClient == FALSE )
+		{
+			destroySockSdlUdp(sock_client);
+		}
+	
+		if( ret <= 0 )
+		{
+			client->status = NET_STATUS_ZOMBIE;
+			return;
+		}
+	
+		if( addBuffer(client->buffer, buffer, ret) != 0 )
+		{
+			client->status = NET_STATUS_ZOMBIE;
+			return;
+		}
 
-	if( ret <= 0 )
-	{
-		client->status = NET_STATUS_ZOMBIE;
-		return;
-	}
-
-	if( addBuffer(client->buffer, buffer, ret) != 0 )
-	{
-		client->status = NET_STATUS_ZOMBIE;
-		return;
-	}
+	}while( ret > 0 );
 }
 
 #endif

@@ -1,5 +1,5 @@
 Package: tuxanci-ng
-Version: svn23
+Version: svn25
 Section: Game
 Priority: optional
 Depends: libc6 (>= 2.2.4-4), libsdl1.2debian (>= 1.2), libsdl-image1.2 (>= 1.2), libsdl-mixer1.2 (>= 1.2), libsdl-net1.2 (>= 1.2), libsdl-ttf2.0-0 (>= 2.0)

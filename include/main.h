@@ -4,6 +4,13 @@
 #define MAIN_H
 
 #include "../config.h"
+
+#if defined SUPPORT_NET_UNIX_UDP && defined SUPPORT_NET_SDL_UDP
+
+#undef SUPPORT_NET_SDL_UDP
+
+#endif
+
 #include "bool.h"
 #include "string_length.h"
 #include "path.h"

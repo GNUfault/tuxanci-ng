@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mv config.h zal_config.h
+
 rm -rf deb myusr tuxanci-ng_svn*_i386.deb
 rm -rf  tuxanci_ng-i386-bin tuxanci_ng-i386-bin tuxanci_ng-i386-bin.tar.bz2
 rm -rf tuxanci_ng tuxanci_ng.tar tuxanci_ng.tar.bz2
@@ -25,3 +27,5 @@ mkdir myusr/share
 make install DISTDIR=./myusr/
 mv config.h path_config.h
 ./deb-build.sh
+
+mv zal_config.h config.h

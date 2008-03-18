@@ -116,7 +116,6 @@ void eventPublicServer()
 	{
 		return;
 	}
-
 /*
 	printf("interval = %d\n", interval);
 */

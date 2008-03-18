@@ -395,7 +395,10 @@ void eventTuxIsDead(tux_t *tux)
 
 static void eventTuxIsDeadWIthShot(tux_t *tux, shot_t *shot)
 {
-	shot->author->score++;
+	if( shot->author != NULL && shot->author != tux )
+	{
+		shot->author->score++;
+	}
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{

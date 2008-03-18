@@ -1,30 +1,33 @@
 #!/bin/sh
 
-rm -rf tuxanci_ng tuxanci_ng.tar tuxanci_ng.tar.bz2
+PROJECT="tuxanci-ng"
+DIST_DIR="$PROJECT-svn`cat r`"
 
-mkdir tuxanci_ng
-mkdir tuxanci_ng/image
-mkdir tuxanci_ng/font
-mkdir tuxanci_ng/arena
-mkdir tuxanci_ng/data
-mkdir tuxanci_ng/lang
-mkdir tuxanci_ng/sound
-mkdir tuxanci_ng/music
-mkdir tuxanci_ng/include
-mkdir tuxanci_ng/src
+rm -rf $DIST_DIR $DIST_DIR.tar $DIST_DIR.tar.bz2
+
+mkdir $DIST_DIR
+mkdir $DIST_DIR/image
+mkdir $DIST_DIR/font
+mkdir $DIST_DIR/arena
+mkdir $DIST_DIR/data
+mkdir $DIST_DIR/lang
+mkdir $DIST_DIR/sound
+mkdir $DIST_DIR/music
+mkdir $DIST_DIR/include
+mkdir $DIST_DIR/src
 
 
-cp image/*.* tuxanci_ng/image
-cp font/*.* tuxanci_ng/font
-cp arena/*.* tuxanci_ng/arena
-cp data/*.* tuxanci_ng/data
-cp lang/*.* tuxanci_ng/lang
-cp sound/*.* tuxanci_ng/sound
-cp music/*.* tuxanci_ng/music
-cp include/*.* tuxanci_ng/include
-cp src/* tuxanci_ng/src
-cp Makefile control deb-ver tuxanci_ng
-cp *.sh tuxanci_ng
+cp image/*.* $DIST_DIR/image
+cp font/*.* $DIST_DIR/font
+cp arena/*.* $DIST_DIR/arena
+cp data/*.* $DIST_DIR/data
+cp lang/*.* $DIST_DIR/lang
+cp sound/*.* $DIST_DIR/sound
+cp music/*.* $DIST_DIR/music
+cp include/*.* $DIST_DIR/include
+cp src/* $DIST_DIR/src
+cp Makefile $DIST_DIR
+cp $PROJECT.desktop $DIST_DIR
 
-tar -cvf tuxanci_ng.tar tuxanci_ng
-bzip2 tuxanci_ng.tar
+tar -cvf $DIST_DIR.tar $DIST_DIR
+bzip2 $DIST_DIR.tar
