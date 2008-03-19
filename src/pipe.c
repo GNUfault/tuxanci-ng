@@ -6,6 +6,7 @@
 #include "main.h"
 #include "pipe.h"
 #include "shot.h"
+#include "net_multiplayer.h"
 
 #ifndef BUBLIC_SERVER
 #include "screen_world.h"
@@ -178,7 +179,15 @@ void eventConflictShotWithPipe(list_t *listPipe, list_t *listShot)
 
 			if( negPosition( thisShot->position ) == thisPipe->position )
 			{
-				moveShotFromPipe(thisShot, thisPipe, listPipe);
+				if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+				{
+					delListItem(listShot, i, destroyShot);
+					i--;
+				}
+				else
+				{
+					moveShotFromPipe(thisShot, thisPipe, listPipe);
+				}
 			}
 			else
 			{

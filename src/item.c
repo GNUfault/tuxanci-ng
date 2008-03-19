@@ -176,7 +176,7 @@ void addNewItem(list_t *listItem, tux_t *author)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_additem_server(item);
+		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
 }
 

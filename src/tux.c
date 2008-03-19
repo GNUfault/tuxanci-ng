@@ -324,7 +324,7 @@ static void timer_spawnTux(void *p)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_newtux_server(NULL, tux);
+		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 	}
 }
 
@@ -389,7 +389,7 @@ void eventTuxIsDead(tux_t *tux)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_kill_server(tux);
+		proto_send_kill_server(PROTO_SEND_ALL, NULL, tux);
 	}
 }
 
@@ -398,11 +398,11 @@ static void eventTuxIsDeadWIthShot(tux_t *tux, shot_t *shot)
 	if( shot->author != NULL && shot->author != tux )
 	{
 		shot->author->score++;
-	}
 
-	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
-	{
-		proto_send_score_server(shot->author);
+		if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+		{
+			proto_send_score_server(PROTO_SEND_ALL, NULL, shot->author);
+		}
 	}
 
 	countRoundInc();
@@ -426,7 +426,7 @@ void tuxTeleport(tux_t *tux)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_newtux_server(NULL, tux);
+		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 	}
 }
 
@@ -575,7 +575,8 @@ void switchTuxGun(tux_t *tux)
 {
 	int i;
 	
-	if( tux->isCanSwitchGun == FALSE )
+	if( tux->control != TUX_CONTROL_NET &&
+	    tux->isCanSwitchGun == FALSE )
 	{
 		return;
 	}
@@ -695,7 +696,7 @@ static void eventBonus(tux_t *tux)
 
 			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 			{
-				proto_send_newtux_server(NULL, tux);
+				proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 			}
 		}
 	}

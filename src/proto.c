@@ -27,6 +27,39 @@
 #include "publicServer.h"
 #endif
 
+static void proto_send(int type, client_t *client, char *msg)
+{
+	assert( msg != NULL );
+
+	switch( type )
+	{
+		case PROTO_SEND_ONE :
+			assert( client != NULL );
+			sendClient(client, msg);
+#ifdef DEBUG_SERVER_SEND
+			printf("send one client msg->%s", msg);
+#endif
+		break;
+		case PROTO_SEND_ALL :
+			assert( client == NULL );
+			sendAllClient(msg);
+#ifdef DEBUG_SERVER_SEND
+			printf("send all clients msg->%s", msg);
+#endif
+		break;
+		case PROTO_SEND_BUT :
+			assert( client != NULL );
+			sendAllClientBut(msg, client);
+#ifdef DEBUG_SERVER_SEND
+			printf("send but client msg->%s", msg);
+#endif
+		break;
+		default :
+			assert( ! "Premenna type ma zlu hodnotu !" );
+		break;
+	}
+}
+
 #ifndef BUBLIC_SERVER
 
 void proto_send_hello_client()
@@ -43,22 +76,22 @@ void proto_recv_hello_server(client_t *client, char *msg)
 {
 }
 
-void proto_send_init_server(client_t *client)
+void proto_send_init_server(int type, client_t *client, client_t *client2)
 {
 	char msg[STR_SIZE];
 	int n = 9999;
 
-	assert( client != NULL );
+	assert( client2 != NULL );
 
 #ifndef BUBLIC_SERVER
 	getSettingCountRound(&n);
 #endif
 
 	sprintf(msg, "init %d %d %d %d %s\n",
-		client->tux->id, client->tux->x, client->tux->y,
+		client2->tux->id, client2->tux->x, client2->tux->y,
 		n, getArenaNetName( getChoiceArenaId() ));
 	
-	sendClient(client, msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -92,7 +125,7 @@ void proto_recv_init_client(char *msg)
 
 #endif
 
-void proto_send_event_server(tux_t *tux, int action, client_t *client)
+void proto_send_event_server(int type, client_t *client, tux_t *tux, int action)
 {
 	char msg[STR_SIZE];
 	
@@ -100,7 +133,7 @@ void proto_send_event_server(tux_t *tux, int action, client_t *client)
 
 	sprintf(msg, "event %d %d\n", tux->id, action);
 	
-	sendAllClientBut(msg, client);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -150,10 +183,10 @@ void proto_recv_event_server(client_t *client, char *msg)
 
 	actionTux(client->tux, action);
 
-	proto_send_event_server(client->tux, action, client);
+	proto_send_event_server(PROTO_SEND_BUT, client, client->tux, action);
 }
 
-void proto_send_newtux_server(client_t *client, tux_t *tux)
+void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 {
 	char msg[STR_SIZE];
 
@@ -166,14 +199,7 @@ void proto_send_newtux_server(client_t *client, tux_t *tux)
 	tux->shot[GUN_MINE], tux->shot[GUN_BOMBBALL],
 	tux->bonus_time, tux->pickup_time);
 	
-	if( client == NULL )
-	{
-		sendAllClient(msg);
-	}
-	else
-	{
-		sendClient(client, msg);
-	}
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -226,7 +252,7 @@ void proto_recv_newtux_client(char *msg)
 
 #endif
 
-void proto_send_kill_server(tux_t *tux)
+void proto_send_kill_server(int type, client_t *client, tux_t *tux)
 {
 	char msg[STR_SIZE];
 	
@@ -234,7 +260,7 @@ void proto_send_kill_server(tux_t *tux)
 
 	sprintf(msg, "kill %d\n", tux->id);
 	
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -259,7 +285,7 @@ void proto_recv_kill_client(char *msg)
 
 #endif
 
-void proto_send_score_server(tux_t *tux)
+void proto_send_score_server(int type, client_t *client, tux_t *tux)
 {
 	char msg[STR_SIZE];
 	
@@ -267,7 +293,7 @@ void proto_send_score_server(tux_t *tux)
 
 	sprintf(msg, "score %d %d\n", tux->id, tux->score);
 	
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -294,15 +320,15 @@ void proto_recv_score_client(char *msg)
 
 #endif
 
-void proto_send_deltux_server(client_t *client)
+void proto_send_deltux_server(int type, client_t *client, client_t *client2)
 {
 	char msg[STR_SIZE];
 	
-	assert( client != NULL );
+	assert( client2 != NULL );
 
-	sprintf(msg, "deltux %d\n", client->tux->id);
+	sprintf(msg, "deltux %d\n", client2->tux->id);
 
-	sendAllClientBut(msg, client);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -330,7 +356,7 @@ void proto_recv_deltux_client(char *msg)
 
 #endif
 
-void proto_send_additem_server(item_t *p)
+void proto_send_additem_server(int type, client_t *client, item_t *p)
 {
 	char msg[STR_SIZE];
 	int id = -1;
@@ -345,7 +371,7 @@ void proto_send_additem_server(item_t *p)
 	sprintf(msg, "additem %d %d %d %d %d %d\n",
 		p->type, p->x, p->y, p->count, p->frame, id);
 
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -376,7 +402,7 @@ void proto_recv_additem_client(char *msg)
 
 #endif
 
-void proto_send_shot_server(shot_t *p)
+void proto_send_shot_server(int type, client_t *client, shot_t *p)
 {
 	char msg[STR_SIZE];
 	int id = -1;
@@ -391,7 +417,7 @@ void proto_send_shot_server(shot_t *p)
 	sprintf(msg, "shot %d %d %d %d %d %d %d %d\n",
 		p->x, p->y, p->px, p->py, p->position, p->gun, id, p->isCanKillAuthor);
 
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -450,7 +476,7 @@ void proto_recv_context_server(client_t *client, char *msg)
 
 	strcpy(client->tux->name, name);
 	
-	proto_send_newtux_server(NULL, client->tux);
+//	proto_send_newtux_server(NULL, client->tux);
 }
 
 #ifndef BUBLIC_SERVER
@@ -493,11 +519,11 @@ void proto_recv_end_server(client_t *client, char *msg)
 	client->status = NET_STATUS_ZOMBIE;
 }
 
-void proto_send_ping_server()
+void proto_send_ping_server(int type, client_t *client)
 {
 	char msg[STR_SIZE];
 	strcpy(msg, "ping\n");
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 #ifndef BUBLIC_SERVER
@@ -513,11 +539,11 @@ void proto_recv_ping_client(char *msg)
 
 #endif
 
-void proto_send_end_server()
+void proto_send_end_server(int type, client_t *client)
 {
 	char msg[STR_SIZE];
 	strcpy(msg, "end\n");
-	sendAllClient(msg);
+	proto_send(type, client, msg);
 }
 
 

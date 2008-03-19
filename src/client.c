@@ -134,6 +134,10 @@ void sendServer(char *msg)
 #ifdef SUPPORT_NET_SDL_UDP
 	ret = writeSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, msg, strlen(msg));
 #endif
+
+#ifdef DEBUG_CLIENT_SEND
+	printf("send server msg->%s", msg);
+#endif
 }
 
 static int eventServerSelect()
@@ -194,7 +198,9 @@ void eventServerBuffer()
 
 	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
 	{
- 		//printf("spracuvavam %s", line);
+#ifdef DEBUG_CLIENT_RECV
+			printf("recv server msg->%s", line);
+#endif
 
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);

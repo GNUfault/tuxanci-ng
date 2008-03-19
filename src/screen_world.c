@@ -241,7 +241,7 @@ static void netAction(tux_t *tux, int action)
 {
 	if( getSettingGameType() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_event_server(tux , action, NULL);
+		proto_send_event_server(PROTO_SEND_ALL, NULL, tux , action);
 	}
 
 	if( getSettingGameType() == NET_GAME_TYPE_CLIENT )
@@ -290,8 +290,11 @@ static void control_keyboard_right(tux_t *tux)
 
 	if( mapa[(SDLKey)SDLK_KP1] == SDL_PRESSED )
 	{
-		netAction(tux, TUX_SWITCH_GUN);
-		actionTux(tux, TUX_SWITCH_GUN);
+		if( tux->isCanSwitchGun == TRUE )
+		{
+			netAction(tux, TUX_SWITCH_GUN);
+			actionTux(tux, TUX_SWITCH_GUN);
+		}
 	}
 }
 
@@ -308,7 +311,15 @@ static void control_keyboard_left(tux_t *tux)
 	if( mapa[(SDLKey)SDLK_a] == SDL_PRESSED )actionTux(tux, TUX_LEFT);
 	if( mapa[(SDLKey)SDLK_s] == SDL_PRESSED )actionTux(tux, TUX_DOWN);
 	if( mapa[(SDLKey)SDLK_q] == SDL_PRESSED )actionTux(tux, TUX_SHOT);
-	if( mapa[(SDLKey)SDLK_TAB] == SDL_PRESSED )actionTux(tux, TUX_SWITCH_GUN);
+
+	if( mapa[(SDLKey)SDLK_TAB] == SDL_PRESSED )
+	{
+		if( tux->isCanSwitchGun == TRUE )
+		{
+			netAction(tux, TUX_SWITCH_GUN);
+			actionTux(tux, TUX_SWITCH_GUN);
+		}
+	}
 }
 
 static void eventEsc()

@@ -274,10 +274,10 @@ static void eventCreateClient(client_t *client)
 
 	assert( client != NULL );
 
-	proto_send_init_server(client);
+	proto_send_init_server(PROTO_SEND_ONE, client, client);
 
 #ifndef BUBLIC_SERVER
-	proto_send_newtux_server(client, 
+	proto_send_newtux_server(PROTO_SEND_ONE, client,
 		(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]) );
 #endif
 
@@ -288,15 +288,15 @@ static void eventCreateClient(client_t *client)
 
 		if( thisTux != client->tux )
 		{
-			proto_send_newtux_server(thisClient, client->tux);
-			proto_send_newtux_server(client, thisTux);
+			proto_send_newtux_server(PROTO_SEND_ONE, thisClient, client->tux);
+			proto_send_newtux_server(PROTO_SEND_ONE, client, thisTux);
 		}
 	}
 
 	for( i = 0 ; i < getWorldArena()->listItem->count; i++)
 	{
 		thisItem = (item_t *) getWorldArena()->listItem->list[i];
-		proto_send_additem_server(thisItem);
+		proto_send_additem_server(PROTO_SEND_ONE, client, thisItem);
 	}
 }
 
@@ -385,7 +385,9 @@ static void eventClientBuffer(client_t *client)
 	
 	while( getBufferLine(client->buffer, line, STR_SIZE) >= 0 )
 	{
- 		//printf("spracuvavam %s", line);
+#ifdef DEBUG_SERVER_RECV
+			printf("recv client msg->%s", line);
+#endif
 
 		if( strncmp(line, "hello", 5) == 0 )proto_recv_hello_server(client, line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
@@ -454,7 +456,7 @@ void selectServerTcpSocket()
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{
-			proto_send_deltux_server(thisClient);
+			proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
 			delListItem(listClient, i, destroyClient);
 		}
 	}
@@ -484,7 +486,7 @@ static void delZombieCLient()
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{
-			proto_send_deltux_server(thisClient);
+			proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
 			delListItem(listClient, i, destroyClient);
 		}
 	}
@@ -503,10 +505,10 @@ void eventPeriodicSyncClient()
 		tux_t *thisTux;
 		int i, j;
 
-		proto_send_ping_server();
+		proto_send_ping_server(PROTO_SEND_ALL, NULL);
 	
 #ifndef BUBLIC_SERVER
-		proto_send_newtux_server(NULL,
+		proto_send_newtux_server(PROTO_SEND_ALL, NULL,
 			(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
 #endif
 		for( i = 0 ; i < listClient->count; i++)
@@ -521,7 +523,7 @@ void eventPeriodicSyncClient()
 				if( thisClientSend != thisClientInfo &&
 				    thisTux->status == TUX_STATUS_ALIVE )
 				{
-					proto_send_newtux_server(thisClientSend, thisTux);
+					proto_send_newtux_server(PROTO_SEND_ONE, thisClientSend, thisTux);
 				}
 			}
 		}
@@ -725,7 +727,7 @@ void selectServerSdlUdpSocket()
 
 static void quitServer()
 {
-	proto_send_end_server();
+	proto_send_end_server(PROTO_SEND_ALL, NULL);
 	assert( listClient != NULL );
 	destroyListItem(listClient, destroyClient);
 }

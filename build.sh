@@ -24,7 +24,7 @@ mkdir myusr
 mkdir myusr/bin
 mkdir myusr/share
 
-make install DISTDIR=./myusr/
+make install DESTDIR=./myusr/
 mv config.h path_config.h
 ./deb-build.sh
 

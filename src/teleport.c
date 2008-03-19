@@ -222,7 +222,7 @@ void eventTeleportTux(list_t *listTeleport, teleport_t *teleport, tux_t *tux)
 #endif
 		if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 		{
-			proto_send_newtux_server(NULL, tux);
+			proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 		}
 	}
 }

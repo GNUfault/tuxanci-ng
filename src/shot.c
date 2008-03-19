@@ -297,9 +297,12 @@ void moveShot(shot_t *shot, int position, int src_x, int src_y,
 		break;
 	}
 
+	shot->x += shot->px;
+	shot->y += shot->py;
+
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_shot_server(shot);
+		proto_send_shot_server(PROTO_SEND_ALL, NULL, shot);
 	}
 
 }

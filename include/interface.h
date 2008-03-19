@@ -19,7 +19,7 @@
 #define SDL_SUBSYSTEMS SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_DOUBLEBUF
 
 //napis na okne
-#define WINDOW_TITLE "Tuxanci next generation SVN revision 24"
+#define WINDOW_TITLE "Tuxanci next generation SVN revision 27"
 #define WIN_BPP 0
 #define USR_EVT_TIMER 0
 
