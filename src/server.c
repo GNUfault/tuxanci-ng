@@ -28,8 +28,6 @@
 #include "publicServer.h"
 #endif
 
-static int protocolType;
-
 #ifdef SUPPORT_NET_UNIX_TCP
 #include "tcp.h"
 static sock_tcp_t *sock_server_tcp;
@@ -47,18 +45,18 @@ static sock_sdl_udp_t *sock_server_sdl_udp;
 
 static list_t *listClient;
 static my_time_t lastSyncClient;
+static int maxClients;
 
 void static initServer()
 {
 	listClient = newList();
 	lastSyncClient = getMyTime();
+	setServerMaxClients(SERVER_MAX_CLIENTS);
 }
 
 #ifdef SUPPORT_NET_UNIX_TCP
 int initTcpServer(int port)
 {
-	protocolType = NET_PROTOCOL_TYPE_TCP;
-
 	sock_server_tcp = bindTcpSocket(port);
 
 	if( sock_server_tcp == NULL )
@@ -77,8 +75,6 @@ int initTcpServer(int port)
 #ifdef SUPPORT_NET_UNIX_UDP
 int initUdpServer(int port)
 {
-	protocolType = NET_PROTOCOL_TYPE_UDP;
-
 	sock_server_udp = bindUdpSocket(port);
 
 	if( sock_server_udp == NULL )
@@ -97,8 +93,6 @@ int initUdpServer(int port)
 #ifdef SUPPORT_NET_SDL_UDP
 int initSdlUdpServer(int port)
 {
-	protocolType = NET_PROTOCOL_TYPE_UDP;
-
 	sock_server_sdl_udp = bindSdlUdpSocket(port);
 
 	if( sock_server_sdl_udp == NULL )
@@ -123,9 +117,6 @@ static client_t* newAnyClient()
 	
 	new->status = NET_STATUS_OK;
 	new->buffer = newBuffer(LIMIT_BUFFER);
-	new->tux = newTux();
-	new->tux->control = TUX_CONTROL_NET;
-	addList(getWorldArena()->listTux, new->tux);
 
 	return new;
 }
@@ -199,10 +190,29 @@ void destroyClient(client_t *p)
 #endif
 
 	destroyBuffer(p->buffer);
-	index = searchListItem(getWorldArena()->listTux, p->tux);
-	delListItem(getWorldArena()->listTux, index, destroyTux);
+
+	if( p->tux != NULL )
+	{
+		index = searchListItem(getWorldArena()->listTux, p->tux);
+		delListItem(getWorldArena()->listTux, index, destroyTux);
+	}
 
 	free(p);
+}
+
+list_t* getListServerClient()
+{
+	return listClient;
+}
+
+int getServerMaxClients()
+{
+	return maxClients;
+}
+
+void setServerMaxClients(int n)
+{
+	maxClients = n;
 }
 
 void sendClient(client_t *p, char *msg)
@@ -210,7 +220,7 @@ void sendClient(client_t *p, char *msg)
 	assert( p != NULL );
 	assert( msg != NULL );
 
-	if( p->status == NET_STATUS_OK )
+	if( p->status != NET_STATUS_ZOMBIE )
 	{
 		int ret;
 
@@ -265,7 +275,7 @@ void sendAllClient(char *msg)
 	sendAllClientBut(msg, NULL);
 }
 
-static void eventCreateClient(client_t *client)
+void sendInfoCreateClient(client_t *client)
 {
 	client_t *thisClient;
 	tux_t *thisTux;
@@ -310,8 +320,6 @@ static void eventCreateNewTcpClient(sock_tcp_t *socket_tcp)
 
 	client = newTcpClient( getTcpNewClient(socket_tcp) );
 	addList(listClient, client);
-
-	eventCreateClient(client);
 }
 
 #endif
@@ -326,8 +334,6 @@ static void eventCreateNewUdpClient(sock_udp_t *socket_udp)
 
 	client = newUdpClient( socket_udp );
 	addList(listClient, client);
-
-	eventCreateClient(client);
 }
 
 #endif
@@ -342,8 +348,6 @@ static void eventCreateNewSdlUdpClient(sock_sdl_udp_t *socket_sdl_udp)
 
 	client = newSdlUdpClient( socket_sdl_udp );
 	addList(listClient, client);
-
-	eventCreateClient(client);
 }
 
 #endif
@@ -352,13 +356,13 @@ static void eventCreateNewSdlUdpClient(sock_sdl_udp_t *socket_sdl_udp)
 
 static void eventClientTcpSelect(client_t *client)
 {
-	char buffer[STR_SIZE];
+	char buffer[STR_PROTO_SIZE];
 	int ret;
 
 	assert( client != NULL );
 
 	memset(buffer, 0, STR_SIZE);
-	ret = readTcpSocket(client->socket_tcp, buffer, STR_SIZE-1);
+	ret = readTcpSocket(client->socket_tcp, buffer, STR_PROTO_SIZE-1);
 
 	if( ret <= 0 )
 	{
@@ -377,23 +381,27 @@ static void eventClientTcpSelect(client_t *client)
 
 static void eventClientBuffer(client_t *client)
 {
-	char line[STR_SIZE];
+	char line[STR_PROTO_SIZE];
 
 	assert( client != NULL );
 
 	/* obsluha udalosti od clientov */
 	
-	while( getBufferLine(client->buffer, line, STR_SIZE) >= 0 )
+	while( getBufferLine(client->buffer, line, STR_PROTO_SIZE) >= 0 )
 	{
 #ifdef DEBUG_SERVER_RECV
 			printf("recv client msg->%s", line);
 #endif
 
 		if( strncmp(line, "hello", 5) == 0 )proto_recv_hello_server(client, line);
-		if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
-		if( strncmp(line, "context", 7) == 0 )proto_recv_context_server(client, line);
-		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_server(client, line);
-		if( strncmp(line, "end", 3) == 0 )proto_recv_end_server(client, line);
+		if( strncmp(line, "status", 6) == 0 )proto_recv_status_server(client, line);
+
+		if( client->tux != NULL )
+		{
+			if( strncmp(line, "event", 5) == 0 )proto_recv_event_server(client, line);
+			if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_server(client, line);
+			if( strncmp(line, "end", 3) == 0 )proto_recv_end_server(client, line);
+		}
 	}
 }
 
@@ -456,7 +464,11 @@ void selectServerTcpSocket()
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{
-			proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+			if( thisClient->tux != NULL )
+			{
+				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+			}
+
 			delListItem(listClient, i, destroyClient);
 		}
 	}
@@ -486,7 +498,11 @@ static void delZombieCLient()
 
 		if( thisClient->status == NET_STATUS_ZOMBIE )
 		{
-			proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+			if( thisClient->tux != NULL )
+			{
+				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+			}
+
 			delListItem(listClient, i, destroyClient);
 		}
 	}
@@ -504,26 +520,33 @@ void eventPeriodicSyncClient()
 		client_t *thisClientSend;
 		tux_t *thisTux;
 		int i, j;
-
-		proto_send_ping_server(PROTO_SEND_ALL, NULL);
 	
-#ifndef BUBLIC_SERVER
-		proto_send_newtux_server(PROTO_SEND_ALL, NULL,
-			(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
-#endif
 		for( i = 0 ; i < listClient->count; i++)
 		{
-			thisClientInfo = (client_t *) listClient->list[i];
+			thisClientSend = (client_t *) listClient->list[i];
+
+			if( thisClientSend->tux != NULL )
+			{
+				proto_send_ping_server(PROTO_SEND_ONE, thisClientSend);
+
+#ifndef BUBLIC_SERVER
+				proto_send_newtux_server(PROTO_SEND_ONE, thisClientSend,
+				(tux_t *)(getWorldArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
+#endif
+			}
 
 			for( j = 0 ; j < listClient->count; j++)
 			{
-				thisClientSend = (client_t *) listClient->list[j];
+				thisClientInfo = (client_t *) listClient->list[j];
 				thisTux = thisClientInfo->tux;
 
-				if( thisClientSend != thisClientInfo &&
+				if( thisTux != NULL &&
+				    thisClientSend->tux != NULL &&
+				    thisClientSend != thisClientInfo &&
 				    thisTux->status == TUX_STATUS_ALIVE )
 				{
-					proto_send_newtux_server(PROTO_SEND_ONE, thisClientSend, thisTux);
+					proto_send_newtux_server(PROTO_SEND_ONE,
+						thisClientSend, thisTux);
 				}
 			}
 		}
@@ -575,6 +598,12 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 	if( client == NULL )
 	{
+		if( listClient->count+1 > maxClients )
+		{
+			destroySockUdp(sock_client);
+			return;
+		}
+
 		eventCreateNewUdpClient(sock_client);
 		client = findUdpClient(sock_client);
 		isCreateNewClient = TRUE;
@@ -666,7 +695,7 @@ void selectServerSdlUdpSocket()
 {
 	sock_sdl_udp_t *sock_client;
 	client_t *client;
-	char buffer[STR_SIZE];
+	char buffer[STR_PROTO_SIZE];
 	bool_t isCreateNewClient;
 	int ret;
 
@@ -678,9 +707,9 @@ void selectServerSdlUdpSocket()
 		sock_client = newSdlSockUdp();
 		isCreateNewClient = FALSE;
 	
-		memset(buffer, 0, STR_SIZE);
+		memset(buffer, 0, STR_PROTO_SIZE);
 	
-		ret = readSdlUdpSocket(sock_server_sdl_udp, sock_client, buffer, STR_SIZE-1);
+		ret = readSdlUdpSocket(sock_server_sdl_udp, sock_client, buffer, STR_PROTO_SIZE-1);
 	
 		if( ret < 0 )
 		{

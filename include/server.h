@@ -22,6 +22,7 @@
 
 #define SERVER_TIMEOUT		5000
 #define SERVER_TIME_SYNC	1000
+#define SERVER_MAX_CLIENTS	100
 
 #endif
 
@@ -31,6 +32,7 @@
 
 #define SERVER_TIMEOUT		5000
 #define SERVER_TIME_SYNC	1000
+#define SERVER_MAX_CLIENTS	100
 
 #endif
 
@@ -79,10 +81,16 @@ extern void quitSdlUdpServer();
 #endif
 
 extern void destroyClient(client_t *p);
+
+extern list_t* getListServerClient();
+extern int getServerMaxClients();
+extern void setServerMaxClients(int n);
+
 extern void sendClient(client_t *p, char *msg);
 extern void sendAllClientBut(char *msg, client_t *p);
 extern void sendAllClient(char *msg);
 extern void eventClientListBuffer();
+extern void sendInfoCreateClient(client_t *client);
 extern void eventPeriodicSyncClient();
 
 #endif 

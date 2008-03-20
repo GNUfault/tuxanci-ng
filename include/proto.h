@@ -41,8 +41,10 @@
 #include "publicServer.h"
 #endif
 
-extern void proto_send_hello_client();
+extern void proto_send_hello_client(char *name);
 extern void proto_recv_hello_server(client_t *client, char *msg);
+extern void proto_send_status_server(int type, client_t *client);
+extern void proto_recv_status_server(client_t *client, char *msg);
 extern void proto_send_init_server(int type, client_t *client, client_t *client2);
 extern void proto_recv_init_client(char *msg);
 extern void proto_send_event_server(int type, client_t *client, tux_t *tux, int action);

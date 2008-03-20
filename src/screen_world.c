@@ -282,13 +282,13 @@ static void control_keyboard_right(tux_t *tux)
 		actionTux(tux, TUX_DOWN);
 	}
 
-	if( mapa[(SDLKey)SDLK_LCTRL] == SDL_PRESSED )
+	if( mapa[(SDLKey)SDLK_KP0] == SDL_PRESSED )
 	{
 		netAction(tux, TUX_SHOT);
 		actionTux(tux, TUX_SHOT);
 	}
 
-	if( mapa[(SDLKey)SDLK_LSHIFT] == SDL_PRESSED )
+	if( mapa[(SDLKey)SDLK_KP1] == SDL_PRESSED )
 	{
 		if( tux->isCanSwitchGun == TRUE )
 		{
@@ -389,10 +389,10 @@ void eventWorld()
 
 	eventMoveListShot(arena->listShot);
 	eventListItem(arena->listItem);
-	eventListTux(arena->listTux);
 
-	eventTimer();
 	eventNetMultiplayer();
+	eventListTux(arena->listTux);
+	eventTimer();
 
 	eventEnd();
 	eventEsc();

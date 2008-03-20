@@ -62,11 +62,11 @@ static void proto_send(int type, client_t *client, char *msg)
 
 #ifndef BUBLIC_SERVER
 
-void proto_send_hello_client()
+void proto_send_hello_client(char *name)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
-	strcpy(msg, "hello\n");
+	sprintf(msg, "hello %s\n", name);
 	sendServer(msg);
 }
 
@@ -74,11 +74,48 @@ void proto_send_hello_client()
 
 void proto_recv_hello_server(client_t *client, char *msg)
 {
+	char cmd[STR_PROTO_SIZE];
+	char name[STR_NAME_SIZE];
+	
+	assert( client != NULL );
+
+	sscanf(msg, "%s %s\n", cmd, name);
+	
+	client->tux = newTux();
+	client->tux->control = TUX_CONTROL_NET;
+	addList(getWorldArena()->listTux, client->tux);
+
+	if( strlen(name) > STR_NAME_SIZE-1 )
+	{
+		name[STR_NAME_SIZE-1] = '\0';
+	}
+
+	strcpy(client->tux->name, name);
+	sendInfoCreateClient(client);
+}
+
+void proto_send_status_server(int type, client_t *client)
+{
+	char msg[STR_PROTO_SIZE];
+	
+	sprintf(msg,	"version: %s\n"
+			"clients: %d\n"
+			"maxclients: %d\n"
+			"uptime: %d\n",
+	TUXANCI_NG_VERSION, getListServerClient()->count,
+	getServerMaxClients(), getMyTime() );
+
+	proto_send(type, client, msg);
+}
+
+void proto_recv_status_server(client_t *client, char *msg)
+{
+	proto_send_status_server(PROTO_SEND_ONE, client);
 }
 
 void proto_send_init_server(int type, client_t *client, client_t *client2)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	int n = 9999;
 
 	assert( client2 != NULL );
@@ -98,8 +135,8 @@ void proto_send_init_server(int type, client_t *client, client_t *client2)
 
 void proto_recv_init_client(char *msg)
 {
-	char cmd[STR_SIZE];
-	char arena_name[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
+	char arena_name[STR_PROTO_SIZE];
 	tux_t *tux;
 	int id;
 	int x, y, n;
@@ -117,9 +154,10 @@ void proto_recv_init_client(char *msg)
 	tux->x = x;
 	tux->y = y;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
+
 	getSettingNameRight(tux->name);
 
-	proto_send_context_client(tux);
+//	proto_send_context_client(tux);
 	addList(getWorldArena()->listTux, tux);
 }
 
@@ -127,7 +165,7 @@ void proto_recv_init_client(char *msg)
 
 void proto_send_event_server(int type, client_t *client, tux_t *tux, int action)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	assert( tux != NULL );
 
@@ -140,7 +178,7 @@ void proto_send_event_server(int type, client_t *client, tux_t *tux, int action)
 
 void proto_recv_event_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int id, action;
 	tux_t *tux;
 
@@ -162,7 +200,7 @@ void proto_recv_event_client(char *msg)
 
 void proto_send_event_client(int action)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	sprintf(msg, "event %d\n", action);
 	
@@ -173,7 +211,7 @@ void proto_send_event_client(int action)
 
 void proto_recv_event_server(client_t *client, char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int action;
 
 	assert( client != NULL );
@@ -188,7 +226,7 @@ void proto_recv_event_server(client_t *client, char *msg)
 
 void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 
 	assert( tux != NULL );
 
@@ -206,7 +244,7 @@ void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 
 void proto_recv_newtux_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	char name[STR_NAME_SIZE];
 	int id, x, y, status, position, frame, score;
 	int myGun, myBonus;
@@ -254,7 +292,7 @@ void proto_recv_newtux_client(char *msg)
 
 void proto_send_kill_server(int type, client_t *client, tux_t *tux)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	assert( tux != NULL );
 
@@ -267,7 +305,7 @@ void proto_send_kill_server(int type, client_t *client, tux_t *tux)
 
 void proto_recv_kill_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int id;
 	tux_t *tux;
 
@@ -287,7 +325,7 @@ void proto_recv_kill_client(char *msg)
 
 void proto_send_score_server(int type, client_t *client, tux_t *tux)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	assert( tux != NULL );
 
@@ -300,7 +338,7 @@ void proto_send_score_server(int type, client_t *client, tux_t *tux)
 
 void proto_recv_score_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int id, score;
 	tux_t *tux;
 
@@ -322,7 +360,7 @@ void proto_recv_score_client(char *msg)
 
 void proto_send_deltux_server(int type, client_t *client, client_t *client2)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	assert( client2 != NULL );
 
@@ -335,7 +373,7 @@ void proto_send_deltux_server(int type, client_t *client, client_t *client2)
 
 void proto_recv_deltux_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int id;
 	tux_t *tux;
 
@@ -358,7 +396,7 @@ void proto_recv_deltux_client(char *msg)
 
 void proto_send_additem_server(int type, client_t *client, item_t *p)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	int id = -1;
 
 	assert( p != NULL );
@@ -378,7 +416,7 @@ void proto_send_additem_server(int type, client_t *client, item_t *p)
 
 void proto_recv_additem_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int type, x, y, count, frame, id;
 	item_t *item;
 
@@ -404,7 +442,7 @@ void proto_recv_additem_client(char *msg)
 
 void proto_send_shot_server(int type, client_t *client, shot_t *p)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	int id = -1;
 
 	assert( p != NULL );
@@ -424,7 +462,7 @@ void proto_send_shot_server(int type, client_t *client, shot_t *p)
 
 void proto_recv_shot_client(char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	int x, y, px, py, position, gun, id, isCanKillAuthor;
 	shot_t *shot;
 
@@ -449,11 +487,12 @@ void proto_recv_shot_client(char *msg)
 
 #endif
 
+/*
 #ifndef BUBLIC_SERVER
 
 void proto_send_context_client(tux_t *tux)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	
 	assert( tux != NULL );
 
@@ -466,7 +505,7 @@ void proto_send_context_client(tux_t *tux)
 
 void proto_recv_context_server(client_t *client, char *msg)
 {
-	char cmd[STR_SIZE];
+	char cmd[STR_PROTO_SIZE];
 	char name[STR_NAME_SIZE];
 
 	assert( client != NULL );
@@ -478,12 +517,13 @@ void proto_recv_context_server(client_t *client, char *msg)
 	
 //	proto_send_newtux_server(NULL, client->tux);
 }
+*/
 
 #ifndef BUBLIC_SERVER
 
 void proto_send_ping_client()
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	strcpy(msg, "ping\n");
 	sendServer(msg);
 }
@@ -504,7 +544,7 @@ void proto_recv_ping_server(client_t *client, char *msg)
 
 void proto_send_end_client()
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	strcpy(msg, "end\n");
 	sendServer(msg);
 }
@@ -521,7 +561,7 @@ void proto_recv_end_server(client_t *client, char *msg)
 
 void proto_send_ping_server(int type, client_t *client)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	strcpy(msg, "ping\n");
 	proto_send(type, client, msg);
 }
@@ -541,7 +581,7 @@ void proto_recv_ping_client(char *msg)
 
 void proto_send_end_server(int type, client_t *client)
 {
-	char msg[STR_SIZE];
+	char msg[STR_PROTO_SIZE];
 	strcpy(msg, "end\n");
 	proto_send(type, client, msg);
 }

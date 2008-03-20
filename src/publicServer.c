@@ -51,6 +51,8 @@ int initPublicServer()
 		return -1;
 	}
 
+	setServerMaxClients( atoi( getParamElse("--maxclients", "100") ));
+
 	return 0;
 }
 

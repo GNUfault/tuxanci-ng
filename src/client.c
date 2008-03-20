@@ -36,10 +36,14 @@ static my_time_t lastPingServerAlive;
 
 static void initClient()
 {
+	char name[STR_NAME_SIZE];
+
 	clientBuffer = newBuffer( LIMIT_BUFFER );
 	lastPing = getMyTime();
 	lastPingServerAlive = getMyTime();
-	proto_send_hello_client();
+
+	getSettingNameRight(name);
+	proto_send_hello_client(name);
 }
 
 #ifdef SUPPORT_NET_UNIX_TCP
@@ -142,13 +146,13 @@ void sendServer(char *msg)
 
 static int eventServerSelect()
 {
-	char buffer[STR_SIZE];
+	char buffer[STR_PROTO_SIZE];
 	int ret;
 
-	memset(buffer,0 ,STR_SIZE);
+	memset(buffer,0 ,STR_PROTO_SIZE);
 
 #ifdef SUPPORT_NET_UNIX_TCP
-	ret = readTcpSocket(sock_server_tcp, buffer, STR_SIZE-1);
+	ret = readTcpSocket(sock_server_tcp, buffer, STR_PROTO_SIZE-1);
 
 	if( ret == 0 )
 	{
@@ -166,11 +170,11 @@ static int eventServerSelect()
 #endif
 	
 #ifdef SUPPORT_NET_UNIX_UDP
-	ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_SIZE-1);
+	ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE-1);
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
-	ret = readSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, buffer, STR_SIZE-1);
+	ret = readSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, buffer, STR_PROTO_SIZE-1);
 
 	if( ret < 0 )
 	{
@@ -190,13 +194,13 @@ static int eventServerSelect()
 
 void eventServerBuffer()
 {
-	char line[STR_SIZE];
+	char line[STR_PROTO_SIZE];
 
 	/* obsluha udalosti od servera */
 	
 	assert( clientBuffer != NULL );
 
-	while ( getBufferLine(clientBuffer, line, STR_SIZE) >= 0 )
+	while ( getBufferLine(clientBuffer, line, STR_PROTO_SIZE) >= 0 )
 	{
 #ifdef DEBUG_CLIENT_RECV
 			printf("recv server msg->%s", line);

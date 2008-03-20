@@ -679,8 +679,8 @@ static void eventBonus(tux_t *tux)
 			tux->bonus_time--;
 		}
 
-		if( tux->bonus_time == 0 )
-		{			
+		if( tux->bonus_time == 0 && getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+		{
 			if( tux->bonus == BONUS_GHOST )
 			{
 				int x, y, w, h;
