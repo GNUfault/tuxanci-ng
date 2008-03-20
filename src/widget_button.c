@@ -47,7 +47,7 @@ void drawWidgetButton(widget_button_t *p)
 		drawImage(g_button0, p->x, p->y, 0, 0, g_button0->w, g_button0->h);
 	}
 
-	drawFont(p->text, p->x+WIDGET_BUTTON_WIDTH/2-p->w/2, p->y+p->h/2, COLOR_WHITE);
+	drawFont(p->text, p->x+WIDGET_BUTTON_WIDTH/2-p->w/2, p->y+p->h/2-6, COLOR_WHITE);
 }
 
 void eventWidgetButton(widget_button_t *p)
