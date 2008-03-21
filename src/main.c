@@ -24,19 +24,15 @@
 #include "screen_table.h"
 #include "screen_credits.h"
 #include "homeDirector.h"
+#include "item.h"
+#include "shot.h"
+#include "arenaFile.h"
 #include "panel.h"
 #include "audio.h"
 #include "sound.h"
 #include "music.h"
 
 #endif
-
-#include "wall.h"
-#include "shot.h"
-#include "myTimer.h"
-#include "arenaFile.h"
-#include "item.h"
-#include "publicServer.h"
 
 static int my_argc;
 static char **my_argv;

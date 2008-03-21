@@ -8,6 +8,7 @@
 #include "arena.h"
 
 #define TIMER_END_ARENA 5000
+#define WORLD_COUNT_ROUND_UNLIMITED	-1
 
 extern bool_t isScreenWorldInicialized();
 extern void initWorld();

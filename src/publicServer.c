@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <signal.h>
+#include <time.h>
 
 #include "main.h"
 #include "list.h"
@@ -10,10 +12,10 @@
 #include "wall.h"
 #include "teleport.h"
 #include "pipe.h"
-#include "item.h"
-#include "shot.h"
 #include "myTimer.h"
 #include "arena.h"
+#include "item.h"
+#include "shot.h"
 #include "arenaFile.h"
 #include "proto.h"
 #include "publicServer.h"
@@ -22,6 +24,9 @@
 static int arenaId;
 static arena_t *arena;
 static bool_t isSignalEnd;
+
+static int my_argc;
+static char **my_argv;
 
 arena_t* getWorldArena()
 {
@@ -99,6 +104,7 @@ void eventPublicServer()
 {
 	static my_time_t lastActive = 0;
 	my_time_t interval;
+	int i;
 
 	eventNetMultiplayer();
 
@@ -118,6 +124,7 @@ void eventPublicServer()
 	{
 		return;
 	}
+
 /*
 	printf("interval = %d\n", interval);
 */
@@ -126,12 +133,15 @@ void eventPublicServer()
 	eventConflictTuxWithTeleport(arena->listTux, arena->listTeleport);
 	eventConflictTuxWithShot(arena->listTux, arena->listShot);
 
-	eventConflictShotWithWall(arena->listWall, arena->listShot);
-	eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
-	eventConflictShotWithPipe(arena->listPipe, arena->listShot);
-	eventConflictShotWithItem(arena->listItem, arena->listShot);
+	for( i = 0 ; i < 4 ; i++)
+	{
+		eventMoveListShot(arena->listShot);
+		eventConflictShotWithWall(arena->listWall, arena->listShot);
+		eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
+		eventConflictShotWithPipe(arena->listPipe, arena->listShot);
+		eventConflictShotWithItem(arena->listItem, arena->listShot);
+	}
 
-	eventMoveListShot(arena->listShot);
 	eventListItem(arena->listItem);
 	eventListTux(arena->listTux);
 
@@ -153,4 +163,81 @@ void quitPublicServer()
 	quitTimer();
 	exit(0);
 }
+
+char* getParam(char *s)
+{
+	int i;
+
+	for( i = 0 ; i < my_argc - 1 ; i++ )
+	{
+		if( strcmp(s, my_argv[i]) == 0 )
+		{
+			return my_argv[i+1];
+		}
+	}
+
+	return NULL;
+}
+
+char* getParamElse(char *s1, char *s2)
+{
+	char *ret;
+	ret = getParam(s1);
+
+	if( ret == NULL)
+	{
+		return s2;
+	}
+
+	return ret;
+}
+
+bool_t isParamFlag(char *s)
+{
+	int i;
+
+	for( i = 0 ; i < my_argc ; i++ )
+	{
+		if( strcmp(s, my_argv[i]) == 0 )
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+char *getString(int n)
+{
+	char str[STR_NUM_SIZE];
+	sprintf(str, "%d", n);
+	return strdup(str);
+}
+
+int main(int argc, char *argv[])
+{
+	srand( (unsigned) time(NULL) );
+
+	my_argc = argc;
+	my_argv = argv;
+
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, my_handler_quit);
+	signal(SIGTERM, my_handler_quit);
+	signal(SIGQUIT, my_handler_quit);
+
+	if( initPublicServer() < 0 )
+	{
+		quitPublicServer();
+		return -1;
+	}
+
+	while(1)
+	{
+		eventPublicServer();
+	}
+
+	return 0;
+}
+
 

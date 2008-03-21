@@ -9,15 +9,12 @@ CFLAGS = -g -O0 -DBUBLIC_SERVER -DSUPPORT_NET_UNIX_UDP -I../include -Wall
 
 LIBS =
 
-FILES = list.o director.o configFile.o tux.o main.o wall.o shot.o myTimer.o  \
+FILES = list.o director.o configFile.o tux.o wall.o shot.o myTimer.o  \
 	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o gun.o item.o teleport.o pipe.o\
 	udp.o proto.o server.o publicServer.o net_multiplayer.o
 
 publicserver: $(FILES)
 	$(CC) $(CFLAGS) $(LIBS) -o publicserver $(FILES)
-
-main.o: main.c 
-	$(CC) $(CFLAGS) -o main.o -c main.c
 
 publicServer.o: publicServer.c 
 	$(CC) $(CFLAGS) -o publicServer.o -c publicServer.c

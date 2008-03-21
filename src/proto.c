@@ -21,6 +21,7 @@
 #include "screen_setting.h"
 #include "screen_choiceArena.h"
 #include "client.h"
+#include "term.h"
 #endif
 
 #ifdef BUBLIC_SERVER
@@ -102,7 +103,7 @@ void proto_send_status_server(int type, client_t *client)
 			"clients: %d\n"
 			"maxclients: %d\n"
 			"uptime: %d\n",
-	TUXANCI_NG_VERSION, getListServerClient()->count,
+	TUXANCI_NG_VERSION, getWorldArena()->listTux->count,
 	getServerMaxClients(), getMyTime() );
 
 	proto_send(type, client, msg);
@@ -116,7 +117,7 @@ void proto_recv_status_server(client_t *client, char *msg)
 void proto_send_init_server(int type, client_t *client, client_t *client2)
 {
 	char msg[STR_PROTO_SIZE];
-	int n = 9999;
+	int n = WORLD_COUNT_ROUND_UNLIMITED;
 
 	assert( client2 != NULL );
 
@@ -157,7 +158,6 @@ void proto_recv_init_client(char *msg)
 
 	getSettingNameRight(tux->name);
 
-//	proto_send_context_client(tux);
 	addList(getWorldArena()->listTux, tux);
 }
 
@@ -262,6 +262,10 @@ void proto_recv_newtux_client(char *msg)
 
 	if( tux == NULL )
 	{
+		char term_msg[STR_SIZE];
+		sprintf(term_msg, "connect new client( id = %d)\n", id);
+		appendTextInTerm(term_msg);
+
 		tux = newTux();
 		tux->control = TUX_CONTROL_NET;
 		addList(getWorldArena()->listTux, tux);
@@ -350,6 +354,10 @@ void proto_recv_score_client(char *msg)
 
 	if( tux != NULL )
 	{
+		char term_msg[STR_SIZE];
+		sprintf(term_msg, "tux with id %d set score to %d\n", tux->id, score);
+		appendTextInTerm(term_msg);
+
 		tux->score = score;
 	}
 
@@ -385,8 +393,12 @@ void proto_recv_deltux_client(char *msg)
 
 	if( tux != NULL )
 	{
+		char term_msg[STR_SIZE];
 		int index;
-		
+	
+		sprintf(term_msg, "tux with id %d is disconnect\n", tux->id);
+		appendTextInTerm(term_msg);
+
 		index = searchListItem(getWorldArena()->listTux, tux);
 		delListItem(getWorldArena()->listTux, index, destroyTux);
 	}
@@ -416,6 +428,7 @@ void proto_send_additem_server(int type, client_t *client, item_t *p)
 
 void proto_recv_additem_client(char *msg)
 {
+	char term_msg[STR_SIZE];
 	char cmd[STR_PROTO_SIZE];
 	int type, x, y, count, frame, id;
 	item_t *item;
@@ -436,6 +449,10 @@ void proto_recv_additem_client(char *msg)
 	item->frame = frame;
 
 	addList(getWorldArena()->listItem, item);
+
+	sprintf(term_msg, "in arena is new item\n");
+	appendTextInTerm(term_msg);
+
 }
 
 #endif
@@ -486,38 +503,6 @@ void proto_recv_shot_client(char *msg)
 }
 
 #endif
-
-/*
-#ifndef BUBLIC_SERVER
-
-void proto_send_context_client(tux_t *tux)
-{
-	char msg[STR_PROTO_SIZE];
-	
-	assert( tux != NULL );
-
-	sprintf(msg, "context %s\n", tux->name);
-
-	sendServer(msg);
-}
-
-#endif
-
-void proto_recv_context_server(client_t *client, char *msg)
-{
-	char cmd[STR_PROTO_SIZE];
-	char name[STR_NAME_SIZE];
-
-	assert( client != NULL );
-	assert( msg != NULL );
-
-	sscanf(msg, "%s %s\n", cmd, name);
-
-	strcpy(client->tux->name, name);
-	
-//	proto_send_newtux_server(NULL, client->tux);
-}
-*/
 
 #ifndef BUBLIC_SERVER
 

@@ -17,6 +17,7 @@
 #include "layer.h"
 #include "screen_world.h"
 #include "screen_setting.h"
+#include "term.h"
 #endif
 
 #ifdef BUBLIC_SERVER
@@ -122,6 +123,9 @@ item_t* newItem(int x, int y, int type, tux_t *author)
 
 void addNewItem(list_t *listItem, tux_t *author)
 {
+#ifndef BUBLIC_SERVER
+	char msg[STR_SIZE];
+#endif
 	arena_t *arena;
 	item_t *item;
 	int new_x, new_y;
@@ -178,6 +182,12 @@ void addNewItem(list_t *listItem, tux_t *author)
 	{
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
+
+#ifndef BUBLIC_SERVER
+	sprintf(msg, "in arena is new item\n");
+	appendTextInTerm(msg);
+#endif
+
 }
 
 #ifndef BUBLIC_SERVER	
@@ -321,12 +331,11 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 					{
 						int x, y;
 		
-						delListItem(listItem, j, destroyItem);
-		
 						x = ( thisItem->x + thisItem->w/2 ) - ITEM_BIG_EXPLOSION_WIDTH/2;
 						y = ( thisItem->y + thisItem->h/2 ) - ITEM_BIG_EXPLOSION_HEIGHT/2;
-		
-						addList(listItem, newItem(x, y, ITEM_BIG_EXPLOSION, NULL) );
+ 						addList(listItem, newItem(x, y, ITEM_BIG_EXPLOSION, NULL) );
+
+						delListItem(listItem, j, destroyItem);
 						j--;
 					}
 				break;
@@ -348,6 +357,9 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 
 void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 {
+#ifndef BUBLIC_SERVER	
+	char msg[STR_SIZE];
+#endif
 	item_t *thisItem;
 	int x, y, w, h;
 	int i;
@@ -384,6 +396,11 @@ void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 					tux->gun = thisItem->type;
 					delListItem(listItem, i, destroyItem);
 					i--;
+
+#ifndef BUBLIC_SERVER
+					sprintf(msg, "tux with id %d has new gun\n", tux->id);
+					appendTextInTerm(msg);
+#endif
 				break;
 
 				case ITEM_MINE :
@@ -425,6 +442,11 @@ void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 					tux->bonus_time = TUX_MAX_BONUS;
 					delListItem(listItem, i, destroyItem);
 					i--;
+
+#ifndef BUBLIC_SERVER
+					sprintf(msg, "tux with id %d bonus enabled\n", tux->id);
+					appendTextInTerm(msg);
+#endif
 				break;
 
 			}

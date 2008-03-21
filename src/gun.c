@@ -16,6 +16,7 @@
 #include "sound.h"
 #include "screen_world.h"
 #include "interface.h"
+#include "term.h"
 #endif
 
 #ifdef BUBLIC_SERVER
@@ -124,13 +125,13 @@ static void addShot(tux_t *tux,int x, int y, int px, int py)
 
 static void shotInGunSimpe(tux_t *tux)
 {
-	addShot(tux, 0, 0, +20, 0);
+	addShot(tux, 0, 0, +5, 0);
 }
 
 static void shotInGunDualSimpe(tux_t *tux)
 {
-	addShot(tux, 0, -5, +20, 0);
-	addShot(tux, 0, +5, +20, 0);
+	addShot(tux, 0, -10, +6, 0);
+	addShot(tux, 0, +10, +6, 0);
 }
 
 static void shotInGunScatter(tux_t *tux)
@@ -139,7 +140,7 @@ static void shotInGunScatter(tux_t *tux)
 
 	for( i = -2 ; i <= +2 ; i++ )
 	{
-		addShot(tux, 0, 0, +25, i);
+		addShot(tux, 0, 0, +8, i);
 	}
 }
 
@@ -158,7 +159,7 @@ static void timer_addShotTimer(void *p)
 
 	gun = tux->gun;
 	tux->gun = GUN_SIMPLE;
-	addShot(tux, 0, 0, +25, 0);
+	addShot(tux, 0, 0, +6, 0);
 	tux->gun = gun;
 }
 
@@ -188,7 +189,7 @@ static void timer_addLaserTimer(void *p)
 
 	gun = tux->gun;
 	tux->gun = GUN_LASSER;
-	addShot(tux, 0, 0, +25, 0);
+	addShot(tux, 0, 0, +10, 0);
 	tux->gun = gun;
 }
 
@@ -230,6 +231,13 @@ static void putInGunMine(tux_t *tux)
 
 	if( isFreeSpace(x, y, ITEM_MINE_WIDTH, ITEM_MINE_HEIGHT) )
 	{
+#ifndef BUBLIC_SERVER
+		char msg[STR_SIZE];
+		playSound("put_mine", SOUND_GROUP_BASE);
+		sprintf(msg, "tux with id %d pu mine\n", tux->id);
+		appendTextInTerm(msg);
+#endif
+
 		addList(arena->listItem, newItem(x, y, ITEM_MINE, tux) );
 		tux->shot[tux->gun]--;
 	}
@@ -275,9 +283,6 @@ void shotInGun(tux_t *tux)
 			shotInGunLasser(tux);
 		break;
 		case GUN_MINE :
-#ifndef BUBLIC_SERVER	
-			playSound("put_mine", SOUND_GROUP_BASE);
-#endif
 			putInGunMine(tux);
 		break;
 	}

@@ -31,6 +31,7 @@
 #include "arena.h"
 #include "arenaFile.h"
 #include "proto.h"
+#include "term.h"
 
 static arena_t *arena;
 static int count;
@@ -49,17 +50,7 @@ void setGameType()
 	int ret = 0;
 
 	ret = initNetMuliplayer( getSettingGameType(), getSettingIP(), getSettingPort() );
-/*
-	if( getSettingGameType() == NET_GAME_TYPE_SERVER )
-	{
-		ret = initServer( getSettingPort() );
-	}
 
-	if( getSettingGameType() == NET_GAME_TYPE_CLIENT )
-	{
-		ret = initClient( getSettingPort() , getSettingIP() );
-	}
-*/
 	if( ret != 0 )
 	{
 		fprintf(stderr, "Chyba inicalizacie sieti !\n");
@@ -99,7 +90,8 @@ static void timer_endArena()
 
 void countRoundInc()
 {
-	if( count >= max_count )
+	if( count == WORLD_COUNT_ROUND_UNLIMITED ||
+	    count >= max_count )
 	{
 		return;
 	}
@@ -201,6 +193,7 @@ void drawWorld()
 	}
 
 	drawPanel(arena->listTux);
+	drawTerm();
 }
 
 int conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
@@ -371,6 +364,8 @@ void tuxControl(tux_t *p)
 
 void eventWorld()
 {
+	int i;
+
 	if( arena == NULL )
 	{
 		eventNetMultiplayer();
@@ -379,21 +374,26 @@ void eventWorld()
 		return;
 	}
 
+	eventNetMultiplayer();
+
 	eventConflictTuxWithTeleport(arena->listTux, arena->listTeleport);
 	eventConflictTuxWithShot(arena->listTux, arena->listShot);
 
-	eventConflictShotWithWall(arena->listWall, arena->listShot);
-	eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
-	eventConflictShotWithPipe(arena->listPipe, arena->listShot);
-	eventConflictShotWithItem(arena->listItem, arena->listShot);
+	for( i = 0 ; i < 4 ; i++)
+	{
+		eventMoveListShot(arena->listShot);
+		eventConflictShotWithWall(arena->listWall, arena->listShot);
+		eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
+		eventConflictShotWithPipe(arena->listPipe, arena->listShot);
+		eventConflictShotWithItem(arena->listItem, arena->listShot);
+	}
 
-	eventMoveListShot(arena->listShot);
 	eventListItem(arena->listItem);
-
-	eventNetMultiplayer();
+	
 	eventListTux(arena->listTux);
 	eventTimer();
 
+	eventTerm();
 	eventEnd();
 	eventEsc();
 }
@@ -406,6 +406,7 @@ void startWorld()
 	count = 0;
 
 	setGameType();
+	initTerm();
 	prepareArena();
 	initTimer();
 }
@@ -469,6 +470,7 @@ void stoptWorld()
 	delAllImageInGroup(IMAGE_GROUP_USER);
 	delAllMusicInGroup(MUSIC_GROUP_USER);
 	quitTimer();
+	quitTerm();
 }
 
 void initWorld()

@@ -226,15 +226,6 @@ void sendClient(client_t *p, char *msg)
 
 #ifdef SUPPORT_NET_UNIX_TCP
 		ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));	
-#endif
-
-#ifdef SUPPORT_NET_UNIX_UDP
-		ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
-#endif
-
-#ifdef SUPPORT_NET_SDL_UDP
-		ret = writeSdlUdpSocket(sock_server_sdl_udp, p->socket_sdl_udp, msg, strlen(msg));
-#endif
 
 		if( ret == 0 )
 		{
@@ -247,6 +238,15 @@ void sendClient(client_t *p, char *msg)
 			fprintf(stderr, "nastala chyba pri posielanie spravy clientovy\n");
 			p->status = NET_STATUS_ZOMBIE;
 		}
+#endif
+
+#ifdef SUPPORT_NET_UNIX_UDP
+		ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
+#endif
+
+#ifdef SUPPORT_NET_SDL_UDP
+		ret = writeSdlUdpSocket(sock_server_sdl_udp, p->socket_sdl_udp, msg, strlen(msg));
+#endif
 	}
 }
 
@@ -598,7 +598,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 	if( client == NULL )
 	{
-		if( listClient->count+1 > maxClients )
+		if( getWorldArena()->listTux->count+1 > maxClients )
 		{
 			destroySockUdp(sock_client);
 			return;

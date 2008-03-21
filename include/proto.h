@@ -63,8 +63,6 @@ extern void proto_send_additem_server(int type, client_t *client, item_t *p);
 extern void proto_recv_additem_client(char *msg);
 extern void proto_send_shot_server(int type, client_t *client, shot_t *p);
 extern void proto_recv_shot_client(char *msg);
-extern void proto_send_context_client(tux_t *tux);
-extern void proto_recv_context_server(client_t *client, char *msg);
 extern void proto_send_ping_client();
 extern void proto_recv_ping_server(client_t *client, char *msg);
 extern void proto_send_end_client();

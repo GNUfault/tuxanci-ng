@@ -5,6 +5,8 @@
 
 #include "arena.h"
 
+#define WORLD_COUNT_ROUND_UNLIMITED	-1
+
 extern arena_t* getWorldArena();
 extern void countRoundInc();
 extern int initPublicServer();
