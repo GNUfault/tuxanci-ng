@@ -8,7 +8,10 @@
 
 #define TUX_STEP 6
 #define TUX_LAYER 0
+
 #define TUX_MAX_ANIMATION_FRAME 10
+#define TUX_KEY 1
+
 #define TUX_MAX_PICKUP	50
 #define TUX_MAX_BONUS	500
 

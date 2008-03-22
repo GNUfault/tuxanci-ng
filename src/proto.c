@@ -219,9 +219,10 @@ void proto_recv_event_server(client_t *client, char *msg)
 
 	sscanf(msg, "%s %d", cmd, &action);
 
+	proto_send_event_server(PROTO_SEND_BUT, client, client->tux, action);
+
 	actionTux(client->tux, action);
 
-	proto_send_event_server(PROTO_SEND_BUT, client, client->tux, action);
 }
 
 void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
@@ -517,12 +518,6 @@ void proto_send_ping_client()
 
 void proto_recv_ping_server(client_t *client, char *msg)
 {
-	assert( msg != NULL );
-	assert( client != NULL );
-	
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
-	client->lastPing = getMyTime();
-#endif
 }
 
 #ifndef BUBLIC_SERVER

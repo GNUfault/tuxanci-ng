@@ -333,7 +333,7 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 		
 						x = ( thisItem->x + thisItem->w/2 ) - ITEM_BIG_EXPLOSION_WIDTH/2;
 						y = ( thisItem->y + thisItem->h/2 ) - ITEM_BIG_EXPLOSION_HEIGHT/2;
- 						addList(listItem, newItem(x, y, ITEM_BIG_EXPLOSION, NULL) );
+ 						addList(listItem, newItem(x, y, ITEM_BIG_EXPLOSION, thisItem->author) );
 
 						delListItem(listItem, j, destroyItem);
 						j--;
@@ -355,11 +355,75 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 	}
 }
 
-void eventGiveTuxItem(tux_t *tux, list_t *listItem)
+static void eventTuxIsDeadWithItem(tux_t *tux, item_t *item)
+{
+	if( tux->bonus == BONUS_GHOST )
+	{
+		return;
+	}
+
+	if( tux->bonus == BONUS_TELEPORT )
+	{
+		tuxTeleport(tux);
+	}
+
+	if( item->author != NULL && item->author != tux )
+	{
+#ifndef BUBLIC_SERVER
+		char term_msg[STR_SIZE];
+
+		sprintf(term_msg, "tux with id %d set score to %d\n",
+			item->author->id, item->author->score+1);
+		
+		appendTextInTerm(term_msg);
+#endif
+		item->author->score++;
+
+		if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+		{
+			proto_send_score_server(PROTO_SEND_ALL, NULL, item->author);
+		}
+	}
+
+	countRoundInc();
+	eventTuxIsDead(tux);
+}
+
+static void tuxGiveBonus(tux_t *tux, item_t *item)
 {
 #ifndef BUBLIC_SERVER	
 	char msg[STR_SIZE];
+	playSound("item_bonus", SOUND_GROUP_BASE);
 #endif
+	tux->bonus = item->type;
+	tux->bonus_time = TUX_MAX_BONUS;
+
+#ifndef BUBLIC_SERVER
+	sprintf(msg, "tux with id %d bonus enabled\n", tux->id);
+	appendTextInTerm(msg);
+#endif
+}
+
+static void tuxGiveGun(tux_t *tux, item_t *item)
+{
+#ifndef BUBLIC_SERVER	
+	char msg[STR_SIZE];
+	playSound("item_gun", SOUND_GROUP_BASE);
+#endif
+
+	tux->pickup_time = 0;
+	tux->shot[ item->type ] += GUN_MAX_SHOT;
+	tux->gun = item->type;
+
+#ifndef BUBLIC_SERVER
+	sprintf(msg, "tux with id %d has new gun\n", tux->id);
+	appendTextInTerm(msg);
+#endif
+
+}
+
+void eventGiveTuxItem(tux_t *tux, list_t *listItem)
+{
 	item_t *thisItem;
 	int x, y, w, h;
 	int i;
@@ -388,45 +452,26 @@ void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 				case GUN_SCATTER :
 				case GUN_LASSER :
 				case GUN_MINE :
-					tux->pickup_time = 0;
-#ifndef BUBLIC_SERVER	
-					playSound("item_gun", SOUND_GROUP_BASE);
-#endif
-					tux->shot[ thisItem->type ] += GUN_MAX_SHOT;
-					tux->gun = thisItem->type;
+					tuxGiveGun(tux, thisItem);
 					delListItem(listItem, i, destroyItem);
 					i--;
-
-#ifndef BUBLIC_SERVER
-					sprintf(msg, "tux with id %d has new gun\n", tux->id);
-					appendTextInTerm(msg);
-#endif
 				break;
 
 				case ITEM_MINE :
 					if( tux->bonus != BONUS_GHOST )
 					{
-						if( thisItem->author != NULL )
-						{
-							thisItem->author->score++;
-						}
+						//eventTuxIsDeadWithItem(tux, thisItem);
+						addList(listItem, newItem(x, y,
+							ITEM_EXPLOSION, thisItem->author) );
 
 						delListItem(listItem, i, destroyItem);
-						addList(listItem, newItem(x, y, ITEM_EXPLOSION, NULL) );
 						i--;
 					}
 				break;
 
 				case ITEM_EXPLOSION :
 				case ITEM_BIG_EXPLOSION :
-					if( tux->bonus == BONUS_TELEPORT )
-					{
-						tuxTeleport(tux);
-					}
-					else
-					{
-						eventTuxIsDead(tux);
-					}
+					eventTuxIsDeadWithItem(tux, thisItem);
 				break;
 
 				case BONUS_SPEED :
@@ -435,18 +480,9 @@ void eventGiveTuxItem(tux_t *tux, list_t *listItem)
 				case BONUS_GHOST :
 				case BONUS_4X :
 				case BONUS_HIDDEN :
-#ifndef BUBLIC_SERVER	
-					playSound("item_bonus", SOUND_GROUP_BASE);
-#endif
-					tux->bonus = thisItem->type;
-					tux->bonus_time = TUX_MAX_BONUS;
+					tuxGiveBonus(tux, thisItem);
 					delListItem(listItem, i, destroyItem);
 					i--;
-
-#ifndef BUBLIC_SERVER
-					sprintf(msg, "tux with id %d bonus enabled\n", tux->id);
-					appendTextInTerm(msg);
-#endif
 				break;
 
 			}

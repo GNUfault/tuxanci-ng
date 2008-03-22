@@ -201,7 +201,7 @@ void drawTux(tux_t *tux)
 	addLayer(g_image,
 		tux->x - TUX_IMG_WIDTH / 2,
 		( tux->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,
-		tux->frame * TUX_IMG_WIDTH, 0,
+		(tux->frame/TUX_KEY) * TUX_IMG_WIDTH, 0,
 		TUX_IMG_WIDTH, TUX_IMG_HEIGHT, TUX_LAYER);
 }
 
@@ -583,9 +583,9 @@ void moveTux(tux_t *tux, int n)
 	}
 	else
 	{
+		eventGiveTuxItem(tux, getWorldArena()->listItem);
 		tux->frame++;
-
-		if( tux->frame == TUX_MAX_ANIMATION_FRAME ) tux->frame = 0;
+		if( tux->frame == TUX_KEY * TUX_MAX_ANIMATION_FRAME ) tux->frame = 0;
 	}
 
 //	printf("move %d %d %d\n", tux->id, tux->x, tux->y);

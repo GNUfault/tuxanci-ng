@@ -7,7 +7,7 @@
 
 #if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 
-#define CLIENT_TIMEOUT		2500
+#define CLIENT_TIMEOUT		1000
 #define SERVER_TIMEOUT_ALIVE	5000
 
 #endif

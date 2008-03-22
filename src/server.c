@@ -296,7 +296,7 @@ void sendInfoCreateClient(client_t *client)
 		thisClient = (client_t *) listClient->list[i];
 		thisTux = thisClient->tux;
 
-		if( thisTux != client->tux )
+		if( thisTux != NULL && thisTux != client->tux )
 		{
 			proto_send_newtux_server(PROTO_SEND_ONE, thisClient, client->tux);
 			proto_send_newtux_server(PROTO_SEND_ONE, client, thisTux);
@@ -402,6 +402,10 @@ static void eventClientBuffer(client_t *client)
 			if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_server(client, line);
 			if( strncmp(line, "end", 3) == 0 )proto_recv_end_server(client, line);
 		}
+
+#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
+	client->lastPing = getMyTime();
+#endif
 	}
 }
 

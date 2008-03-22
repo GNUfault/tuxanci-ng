@@ -65,7 +65,7 @@ int initSDL()
 
 	SDL_WM_SetCaption(WINDOW_TITLE, NULL);
 	//SDL_ShowCursor(0);
-	//SDL_EnableKeyRepeat(1,1);
+	SDL_EnableKeyRepeat(1,1);
 	timer = SDL_AddTimer(INTERVAL, TimerCallback, NULL);
 
 	srand((unsigned)time(NULL));
