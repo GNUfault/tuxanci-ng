@@ -93,7 +93,6 @@ void countRoundInc()
 	}
 
 	count++;
-	printf("count = %d\n", count);
 
 	if( count >= max_count )
 	{

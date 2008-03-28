@@ -536,7 +536,10 @@ void eventGiveTuxListItem(tux_t *tux, list_t *listItem)
 
 		if( conflictSpace(x, y, w, h, thisItem->x, thisItem->y, thisItem->w, thisItem->h) )
 		{
-			proto_send_item_server(PROTO_SEND_ALL, NULL, tux, thisItem);
+			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+			{
+				proto_send_item_server(PROTO_SEND_ALL, NULL, tux, thisItem);
+			}
 
 			if( eventGiveTuxItem(tux, listItem, thisItem) >= 0 )
 			{
