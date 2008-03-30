@@ -38,7 +38,6 @@ int initPublicServer()
 	initTux();
 	initItem();
 	initShot();
-	initTimer();
 
 	arenaId = getArenaIdFormNetName( getParamElse("--arena", "FAGN") );
 	arena = getArena(arenaId);
@@ -47,7 +46,8 @@ int initPublicServer()
 	addNewItem(arena->listItem, NULL);
 	isSignalEnd = FALSE;
 
-	if( initNetMuliplayer(NET_GAME_TYPE_SERVER, NULL, atoi( getParamElse("--port", "2200") ) ) < 0 )
+	if( initNetMuliplayer(NET_GAME_TYPE_SERVER,
+		getParamElse("--ip", "127.0.0.1") , atoi( getParamElse("--port", "2200") ) ) < 0 )
 	{
 		printf("Nemozem inicalizovat sietovy socket !\n");
 		return -1;
@@ -93,7 +93,6 @@ void eventPublicServer()
 	lastActive = getMyTime();
 
 	eventArena(arena);
-	eventTimer();
 }
 
 void my_handler_quit(int n)
@@ -108,19 +107,28 @@ void quitPublicServer()
 	quitNetMultiplayer();
 	destroyArena(arena);
 	quitArenaFile();
-	quitTimer();
 	exit(0);
 }
 
 char* getParam(char *s)
 {
 	int i;
+	int len;
 
-	for( i = 0 ; i < my_argc - 1 ; i++ )
+	len = strlen(s);
+
+	for( i = 1 ; i < my_argc ; i++ )
 	{
-		if( strcmp(s, my_argv[i]) == 0 )
+		//printf("%s %s\n", s, my_argv[i]);
+		
+		if( strlen(my_argv[i]) < len )
 		{
-			return my_argv[i+1];
+			continue;
+		}
+
+		if( strncmp(s, my_argv[i], len) == 0 )
+		{
+			return strchr(my_argv[i], '=')+1;
 		}
 	}
 

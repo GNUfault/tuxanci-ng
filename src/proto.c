@@ -265,11 +265,23 @@ void proto_recv_event_server(client_t *client, char *msg)
 void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 {
 	char msg[STR_PROTO_SIZE];
+	int x, y;
 
 	assert( tux != NULL );
 
+	if( tux->bonus == BONUS_HIDDEN )
+	{
+		x = -100;
+		y = -100;
+	}
+	else
+	{
+		x = tux->x;
+		y = tux->y;
+	}
+
 	sprintf(msg, "newtux %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d\n",
-	tux->id ,tux->x, tux->y, tux->status, tux->position ,tux->frame, tux->score, tux->name,
+	tux->id ,x, y, tux->status, tux->position ,tux->frame, tux->score, tux->name,
 	tux->gun, tux->bonus, tux->shot[GUN_SIMPLE], tux->shot[GUN_DUAL_SIMPLE],
 	tux->shot[GUN_SCATTER], tux->shot[GUN_TOMMY], tux->shot[GUN_LASSER],
 	tux->shot[GUN_MINE], tux->shot[GUN_BOMBBALL],
@@ -310,6 +322,7 @@ void proto_recv_newtux_client(char *msg)
 	}
 
 	tux->id = id;
+
 	tux->x = x;
 	tux->y = y;
 	tux->status = status;

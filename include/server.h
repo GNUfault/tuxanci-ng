@@ -67,7 +67,7 @@ extern void quitTcpServer();
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-extern int initUdpServer(int port);
+extern int initUdpServer(char *ip, int port);
 extern client_t* newUdpClient(sock_udp_t *sock_udp);
 extern void selectServerUdpSocket();
 extern void quitUdpServer();

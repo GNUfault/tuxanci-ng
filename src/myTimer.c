@@ -13,19 +13,10 @@
 #include "interface.h"
 #endif
 
-static list_t *listTime;
 
-static bool_t isTimerInit = FALSE;
-
-bool_t isMyTimerInicialized()
+list_t* newTimer()
 {
-	return isTimerInit;
-}
-
-void initTimer()
-{
-	listTime = newList();
-	isTimerInit = TRUE;
+	return newList();
 }
 
 my_time_t getMyTime()
@@ -46,7 +37,7 @@ my_time_t getMyTime()
 	return ticks;
 }
 
-int addTimer(void (*fce)(void *p), void *arg, my_time_t my_time)
+int addTimer(list_t *listTimer, void (*fce)(void *p), void *arg, my_time_t my_time)
 {
 	static int new_id = 0;
 	my_timer_t *new;
@@ -62,12 +53,12 @@ int addTimer(void (*fce)(void *p), void *arg, my_time_t my_time)
 	new->arg = arg;
 	new->time = currentTime + my_time;
 
-	addList(listTime, new);
+	addList(listTimer, new);
 
 	return new->id;
 }
 
-void eventTimer()
+void eventTimer(list_t *listTimer)
 {
 	int i;
 	my_timer_t *thisTimer;
@@ -75,39 +66,34 @@ void eventTimer()
 
  	currentTime = getMyTime();
 
-	for( i = 0 ; i < listTime->count ; i++ )
+	for( i = 0 ; i < listTimer->count ; i++ )
 	{
-		thisTimer = (my_timer_t *)listTime->list[i];
+		thisTimer = (my_timer_t *)listTimer->list[i];
 		assert( thisTimer != NULL );
 
 		if( currentTime >= thisTimer->time )
 		{
 			thisTimer->fce(thisTimer->arg);
 
-			if( isTimerInit == FALSE )
-			{
-				return;
-			}
-
-			delListItem(listTime, i, free);
+			delListItem(listTimer, i, free);
 			i--;
 		}
 	}
 }
 
-void delTimer(int id)
+void delTimer(list_t *listTimer, int id)
 {
 	int i;
 	my_timer_t *thisTimer;
 
-	for( i = 0 ; i < listTime->count ; i++ )
+	for( i = 0 ; i < listTimer->count ; i++ )
 	{
-		thisTimer = (my_timer_t *)listTime->list[i];
+		thisTimer = (my_timer_t *)listTimer->list[i];
 		assert( thisTimer != NULL );
 
 		if( thisTimer->id == id )
 		{
-			delListItem(listTime, i, free);
+			delListItem(listTimer, i, free);
 			return;
 		}
 	}
@@ -115,14 +101,8 @@ void delTimer(int id)
 	assert( ! "Uloha s id nenajdena !" );
 }
 
-void delAllItemTimer()
-{
-	quitTimer();
-	initTimer();
-}
 
-void quitTimer()
+void destroyTimer(list_t *listTimer)
 {
-	destroyListItem(listTime, free);
-	isTimerInit = FALSE;
+	destroyListItem(listTimer, free);
 }

@@ -98,7 +98,7 @@ void countRoundInc()
 	{
 		printf("count %d ending\n", count);
 		playSound("end", SOUND_GROUP_BASE);
-		addTimer(timer_endArena, NULL, TIMER_END_ARENA);
+		addTimer(getCurrentArena()->listTimer, timer_endArena, NULL, TIMER_END_ARENA);
 	}
 }
 
@@ -214,7 +214,7 @@ static void control_keyboard_right(tux_t *tux)
 		actionTux(tux, TUX_DOWN);
 	}
 
-	if( mapa[(SDLKey)SDLK_KP0] == SDL_PRESSED )
+	if( mapa[(SDLKey)SDLK_KP0] == SDL_PRESSED && tux->isCanShot == TRUE )
 	{
 		netAction(tux, TUX_SHOT);
 		actionTux(tux, TUX_SHOT);
@@ -314,7 +314,6 @@ void eventWorld()
 	eventNetMultiplayer();
 
 	eventArena(arena);
-	eventTimer();
 
 	eventTerm();
 	eventEnd();
@@ -331,7 +330,6 @@ void startWorld()
 	setGameType();
 	initTerm();
 	prepareArena();
-	initTimer();
 }
 
 static void setAnalyze()
@@ -392,8 +390,6 @@ void stoptWorld()
 	stopMusic();
 	delAllImageInGroup(IMAGE_GROUP_USER);
 	delAllMusicInGroup(MUSIC_GROUP_USER);
-	quitTimer();
-	quitTerm();
 }
 
 void initWorld()

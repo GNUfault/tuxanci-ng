@@ -125,7 +125,11 @@ int writeSdlUdpSocket(sock_sdl_udp_t *src, sock_sdl_udp_t *dst, void *address, i
 	assert( address != NULL );
 
 #ifdef DEBUG_LOST_PACKET
-	if( rand() % DEBUG_LOST_PACKET == 0 )return size;
+	if( rand() % DEBUG_LOST_PACKET == 0 )
+	{
+		printf("debug lost packet %s\n", address);
+		return size;
+	}
 #endif
 
 	memcpy(dst->packet->data, address, len);

@@ -15,7 +15,7 @@ typedef struct struct_sock_udp_t
 
 extern sock_udp_t* newSockUdp();
 extern void destroySockUdp(sock_udp_t *p);
-extern sock_udp_t* bindUdpSocket(int port);
+extern sock_udp_t* bindUdpSocket(char *address, int port);
 extern sock_udp_t* connectUdpSocket(char *address, int port);
 extern int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);
 extern int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);

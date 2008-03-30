@@ -100,17 +100,28 @@ void quit()
 char* getParam(char *s)
 {
 	int i;
+	int len;
 
-	for( i = 0 ; i < my_argc - 1 ; i++ )
+	len = strlen(s);
+
+	for( i = 1 ; i < my_argc ; i++ )
 	{
-		if( strcmp(s, my_argv[i]) == 0 )
+		//printf("%s %s\n", s, my_argv[i]);
+		
+		if( strlen(my_argv[i]) < len )
 		{
-			return my_argv[i+1];
+			continue;
+		}
+
+		if( strncmp(s, my_argv[i], len) == 0 )
+		{
+			return strchr(my_argv[i], '=')+1;
 		}
 	}
 
 	return NULL;
 }
+
 
 char* getParamElse(char *s1, char *s2)
 {

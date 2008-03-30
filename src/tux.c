@@ -87,7 +87,7 @@ tux_t* newTux()
 	new->gun = GUN_SIMPLE;
 	new->shot[ new->gun ] = GUN_MAX_SHOT;
 	
-	sprintf(new->name, "no_name_id_%d", new->id);
+	sprintf(new->name, "no_name_id_%dde", new->id);
 	new->score = 0;
 	new->frame = 0;
 
@@ -155,14 +155,14 @@ void drawTux(tux_t *tux)
 	SDL_Surface *g_image = NULL;
 
 	assert( tux != NULL );
-
-	if( tux->bonus == BONUS_HIDDEN && 
+/*
+	if( tux->bonus == BONUS_HIDDEN &&
 	    getNetTypeGame() != NET_GAME_TYPE_NONE &&
 	    tux->control == TUX_CONTROL_NET )
 	{
 		return;
 	}
-
+*/
 	switch( tux->position )
 	{
 		case TUX_UP :
@@ -391,7 +391,7 @@ void eventTuxIsDead(tux_t *tux)
 
 	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 	{
-		addTimer(timer_spawnTux, newInt(tux->id), TUX_TIME_SPAWN );
+		addTimer(getCurrentArena()->listTimer, timer_spawnTux, newInt(tux->id), TUX_TIME_SPAWN );
 	}
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
@@ -609,7 +609,8 @@ void switchTuxGun(tux_t *tux)
 		{
 			tux->gun = i;
 			tux->isCanSwitchGun = FALSE;
-			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
+			addTimer(getCurrentArena()->listTimer, timer_tuxCanSwitchGun,
+				newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
 #ifndef PUBLIC_SERVER
 			playSound("switch_gun", SOUND_GROUP_BASE);
 			sprintf(msg, "tux with id %d switch gun\n", tux->id);
@@ -625,7 +626,8 @@ void switchTuxGun(tux_t *tux)
 		{
 			tux->gun = i;
 			tux->isCanSwitchGun = FALSE;
-			addTimer(timer_tuxCanSwitchGun, newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
+			addTimer(getCurrentArena()->listTimer, timer_tuxCanSwitchGun,
+				newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
 
 #ifndef PUBLIC_SERVER
 			playSound("switch_gun", SOUND_GROUP_BASE);
@@ -655,7 +657,8 @@ void shotTux(tux_t *tux)
 	shotInGun(tux);
 
 	tux->isCanShot = FALSE;
-	addTimer(timer_tuxCanShot, newInt(tux->id), TUX_TIME_CAN_SHOT );
+	addTimer(getCurrentArena()->listTimer, timer_tuxCanShot,
+		newInt(tux->id), TUX_TIME_CAN_SHOT );
 
 	if( tux->shot[tux->gun] == 0 )
 	{

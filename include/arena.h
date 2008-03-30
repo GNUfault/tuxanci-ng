@@ -17,6 +17,7 @@ typedef struct arena_struct
 	SDL_Surface *background;
 #endif
 
+	list_t *listTimer;
 	list_t *listTux;
 	list_t *listShot;
 	list_t *listWall;

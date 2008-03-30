@@ -5,9 +5,11 @@
 
 #include "../config.h"
 
-#if defined SUPPORT_NET_UNIX_UDP && defined SUPPORT_NET_SDL_UDP
+#if defined PUBLIC_SERVER
 
+#undef DESTDIR
 #undef SUPPORT_NET_SDL_UDP
+#undef SUPPORT_NET_UNIX_TCP
 
 #endif
 

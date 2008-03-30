@@ -60,6 +60,11 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 	int dest_px = 0, dest_py = 0;
 	shot_t *shot;
 
+	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+	{
+		return;
+	}
+
 	modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
 	modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
 
@@ -79,6 +84,12 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 
 	shot = newShot(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux);
 	addList( getCurrentArena()->listShot, shot );
+
+	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+	{
+		proto_send_shot_server(PROTO_SEND_ALL, NULL, shot);
+	}
+
 }
 
 static void addShot(tux_t *tux,int x, int y, int px, int py)
@@ -156,6 +167,8 @@ static void timer_addShotTimer(void *p)
 
 	if( tux == NULL )return;
 
+	if( tux->status != TUX_STATUS_ALIVE )return;
+
 	gun = tux->gun;
 	tux->gun = GUN_SIMPLE;
 	addShot(tux, 0, 0, +6, 0);
@@ -168,7 +181,7 @@ static void shotInGunTommy(tux_t *tux)
 
 	for( i = 0 ; i < 10 ; i++ )
 	{
-		addTimer(timer_addShotTimer, newInt(tux->id), i * 100 );
+		addTimer(getCurrentArena()->listTimer, timer_addShotTimer, newInt(tux->id), i * 100 );
 	}
 }
 
@@ -185,6 +198,7 @@ static void timer_addLaserTimer(void *p)
 
 	if( tux == NULL )return;
 
+	if( tux->status != TUX_STATUS_ALIVE )return;
 
 	gun = tux->gun;
 	tux->gun = GUN_LASSER;
@@ -198,7 +212,7 @@ static void shotInGunLasser(tux_t *tux)
 
 	for( i = 0 ; i < 50 ; i++ )
 	{
-		addTimer(timer_addLaserTimer, newInt(tux->id), i * 10 );
+		addTimer(getCurrentArena()->listTimer, timer_addLaserTimer, newInt(tux->id), i * 10 );
 	}
 }
 
@@ -245,7 +259,12 @@ static void putInGunMine(tux_t *tux)
 		if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 		{
 			item = newItem(x, y, ITEM_MINE, tux);
-			proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
+
+			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+			{
+				proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
+			}
+
 			addList(arena->listItem, item );
 		}
 	}

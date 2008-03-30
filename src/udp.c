@@ -37,7 +37,7 @@ void destroySockUdp(sock_udp_t *p)
 	free(p);
 }
 
-sock_udp_t* bindUdpSocket(int port)
+sock_udp_t* bindUdpSocket(char *address, int port)
 {
 	sock_udp_t *new;
 
@@ -56,7 +56,7 @@ sock_udp_t* bindUdpSocket(int port)
 
 	new->sockAddr.sin_family = AF_INET;
 	new->sockAddr.sin_port = htons(port);
-	new->sockAddr.sin_addr.s_addr = INADDR_ANY;
+	new->sockAddr.sin_addr.s_addr = inet_addr(address);
 
 	if( bind(new->sock, (struct sockaddr *)&(new->sockAddr), sizeof(new->sockAddr)) < 0 )
 	{
@@ -122,7 +122,11 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	int size;
 
 #ifdef DEBUG_LOST_PACKET
-	if( rand() % DEBUG_LOST_PACKET == 0 )return size;
+	if( rand() % DEBUG_LOST_PACKET == 0 )
+	{
+		printf("debug lost packet %s\n", address);
+		return size;
+	}
 #endif
 
         addrlen = sizeof(src->sockAddr);
@@ -197,6 +201,7 @@ static int myWait(sock_udp_t *p)
 	return 0;
 }
 
+#if 0
 int test_udp_main(int argc, char *argv[])
 {
 	sock_udp_t *sock;
@@ -238,3 +243,5 @@ int test_udp_main(int argc, char *argv[])
 
 	return 0;
 }
+#endif
+

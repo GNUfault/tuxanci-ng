@@ -74,9 +74,9 @@ int initTcpServer(int port)
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-int initUdpServer(int port)
+int initUdpServer(char *ip, int port)
 {
-	sock_server_udp = bindUdpSocket(port);
+	sock_server_udp = bindUdpSocket(ip, port);
 
 	if( sock_server_udp == NULL )
 	{
@@ -85,7 +85,7 @@ int initUdpServer(int port)
 
 	initServer();
 
-	printf("server listen UDP port %d\n", port);
+	printf("server listen UDP port %s %d\n", ip, port);
 
 	return 0;
 }
@@ -144,10 +144,13 @@ client_t* newTcpClient(sock_tcp_t *sock_tcp)
 client_t* newUdpClient(sock_udp_t *sock_udp)
 {
 	client_t *new;
+	char str_ip[STR_IP_SIZE];
 
 	assert( sock_udp != NULL );
 
-	printf("new client from %d\n", getSockUdpPort(sock_udp));
+	getSockUdpIp(sock_udp, str_ip);
+	printf("new client from %s:%d\n", str_ip, getSockUdpPort(sock_udp));
+	
 	new = newAnyClient();
 	new->lastPing = getMyTime();
 	new->socket_udp = sock_udp;

@@ -12,6 +12,7 @@
 #include "item.h"
 #include "teleport.h"
 #include "pipe.h"
+#include "myTimer.h"
 
 #ifndef PUBLIC_SERVER
 #include "layer.h"
@@ -39,12 +40,13 @@ arena_t* newArena()
 	strcpy(new->music, "");
 #endif
 
+	new->listTimer = newList();
 	new->listTux = newList();
 	new->listShot = newList();
 	new->listWall = newList();
 	new->listItem = newList();
 	new->listTeleport = newList();
-	new->listPipe = newList();
+	new->listPipe = newTimer();
 
 	return new;
 }
@@ -133,6 +135,8 @@ void eventArena(arena_t *arena)
 	eventListItem(arena->listItem);
 	
 	eventListTux(arena->listTux);
+
+	eventTimer(arena->listTimer);
 }
 
 void destroyArena(arena_t *p)
@@ -143,6 +147,6 @@ void destroyArena(arena_t *p)
 	destroyListItem(p->listItem, destroyItem);
 	destroyListItem(p->listTeleport, destroyItem);
 	destroyListItem(p->listPipe, destroyItem);
-
+	destroyTimer(p->listTimer);
 	free(p);
 }

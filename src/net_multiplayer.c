@@ -51,7 +51,7 @@ int initNetMuliplayer(int type, char *ip, int port)
 			}
 #endif
 #ifdef SUPPORT_NET_UNIX_UDP
-			if( initUdpServer(port) != 0 )
+			if( initUdpServer(ip, port) != 0 )
 			{
 				fprintf(stderr, "Neomzem inicalizovat sietovu hru pre server !\n");
 				netGameType = NET_GAME_TYPE_NONE;
