@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "language.h"
 #include "interface.h"
 #include "screen.h"
 #include "image.h"
@@ -148,8 +149,8 @@ void initScreenGameType()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton("Back", 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton("Play", WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
+	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
 
 	check_none = newWidgetCheck(100, 150, FALSE, eventWidget);
 	check_server = newWidgetCheck(100, 200, FALSE, eventWidget);
@@ -168,12 +169,12 @@ void initScreenGameType()
 		check_none->status = TRUE;
 	}
 
-	label_none = newWidgetLabel("none", 130, 145, WIDGET_LABEL_LEFT);
-	label_server = newWidgetLabel("server", 130, 195, WIDGET_LABEL_LEFT);
-	label_client = newWidgetLabel("client", 130, 245, WIDGET_LABEL_LEFT);
+	label_none = newWidgetLabel(getMyText("NONE"), 130, 145, WIDGET_LABEL_LEFT);
+	label_server = newWidgetLabel(getMyText("SERVER"), 130, 195, WIDGET_LABEL_LEFT);
+	label_client = newWidgetLabel(getMyText("CLIENT"), 130, 245, WIDGET_LABEL_LEFT);
 
-	label_ip = newWidgetLabel("IP address :", 300, 145, WIDGET_LABEL_LEFT);
-	label_port = newWidgetLabel("net port :", 300, 245, WIDGET_LABEL_LEFT);
+	label_ip = newWidgetLabel(getMyText("IP_ADDR"), 300, 145, WIDGET_LABEL_LEFT);
+	label_port = newWidgetLabel(getMyText("NET_PORT"), 300, 245, WIDGET_LABEL_LEFT);
 
 	textfield_ip = newWidgetTextfield(getParamElse("--ip", "127.0.0.1"), 300, 180);
 	textfield_port = newWidgetTextfield(getParamElse("--port", "2200"), 300, 280);

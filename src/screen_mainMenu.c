@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "interface.h"
+#include "language.h"
 #include "screen.h"
 #include "image.h"
 #include "music.h"
@@ -92,11 +93,11 @@ void initScreenMainMenu()
 	image = addImageData("screen_main.png", IMAGE_NO_ALPHA, "screen_main", IMAGE_GROUP_BASE);
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_play = newWidgetButton("Play", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 200, eventWidget);
-	button_setting = newWidgetButton("Setting", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 250, eventWidget);
-	button_table = newWidgetButton("Table", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 300, eventWidget);
-	button_credits = newWidgetButton("Credits", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 350, eventWidget);
-	button_end = newWidgetButton("End", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 400, eventWidget);
+	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 200, eventWidget);
+	button_setting = newWidgetButton(getMyText("SETTING"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 250, eventWidget);
+	button_table = newWidgetButton(getMyText("TABLE"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 300, eventWidget);
+	button_credits = newWidgetButton(getMyText("CREDITS"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 350, eventWidget);
+	button_end = newWidgetButton(getMyText("END"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, 400, eventWidget);
 
 	addMusic("menu.ogg", "menu", MUSIC_GROUP_BASE);
 

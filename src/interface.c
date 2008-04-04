@@ -4,6 +4,7 @@
 #include "main.h"
 #include "interface.h"
 #include "screen.h"
+#include "myTimer.h"
 
 //povrch okna
 static SDL_Surface *screen;
@@ -140,6 +141,7 @@ static void action_esc()
 int eventAction()
 {
 	SDL_Event event;
+
 
 	while(SDL_WaitEvent(&event))
 	{

@@ -372,7 +372,11 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 				            conflictSpace(thisShot->x, thisShot->y, thisShot->w, thisShot->h,
 					    thisItem->x, thisItem->y, thisItem->w, thisItem->h) )
 					{
-						proto_send_item_server(PROTO_SEND_ALL, NULL, NULL, thisItem);
+						if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+						{
+							proto_send_item_server(PROTO_SEND_ALL, NULL, NULL, thisItem);
+						}
+
 						mineExplosion(listItem, thisItem);
 						j--;
 					}
@@ -403,6 +407,7 @@ static void eventTuxIsDeadWithItem(tux_t *tux, item_t *item)
 	if( tux->bonus == BONUS_TELEPORT )
 	{
 		tuxTeleport(tux);
+		return;
 	}
 
 	if( item->author != NULL && item->author != tux )

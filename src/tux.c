@@ -391,7 +391,7 @@ void eventTuxIsDead(tux_t *tux)
 
 	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 	{
-		addTimer(getCurrentArena()->listTimer, timer_spawnTux, newInt(tux->id), TUX_TIME_SPAWN );
+		addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_spawnTux, newInt(tux->id), TUX_TIME_SPAWN );
 	}
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
@@ -609,7 +609,7 @@ void switchTuxGun(tux_t *tux)
 		{
 			tux->gun = i;
 			tux->isCanSwitchGun = FALSE;
-			addTimer(getCurrentArena()->listTimer, timer_tuxCanSwitchGun,
+			addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_tuxCanSwitchGun,
 				newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
 #ifndef PUBLIC_SERVER
 			playSound("switch_gun", SOUND_GROUP_BASE);
@@ -626,7 +626,7 @@ void switchTuxGun(tux_t *tux)
 		{
 			tux->gun = i;
 			tux->isCanSwitchGun = FALSE;
-			addTimer(getCurrentArena()->listTimer, timer_tuxCanSwitchGun,
+			addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_tuxCanSwitchGun,
 				newInt(tux->id), TUX_TIME_CAN_SWITCH_GUN );
 
 #ifndef PUBLIC_SERVER
@@ -657,7 +657,7 @@ void shotTux(tux_t *tux)
 	shotInGun(tux);
 
 	tux->isCanShot = FALSE;
-	addTimer(getCurrentArena()->listTimer, timer_tuxCanShot,
+	addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_tuxCanShot,
 		newInt(tux->id), TUX_TIME_CAN_SHOT );
 
 	if( tux->shot[tux->gun] == 0 )

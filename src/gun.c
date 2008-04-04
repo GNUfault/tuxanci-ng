@@ -1,4 +1,4 @@
-
+// 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -181,7 +181,7 @@ static void shotInGunTommy(tux_t *tux)
 
 	for( i = 0 ; i < 10 ; i++ )
 	{
-		addTimer(getCurrentArena()->listTimer, timer_addShotTimer, newInt(tux->id), i * 100 );
+		addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_addShotTimer, newInt(tux->id), i * 100 );
 	}
 }
 
@@ -212,7 +212,7 @@ static void shotInGunLasser(tux_t *tux)
 
 	for( i = 0 ; i < 50 ; i++ )
 	{
-		addTimer(getCurrentArena()->listTimer, timer_addLaserTimer, newInt(tux->id), i * 10 );
+		addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_addLaserTimer, newInt(tux->id), i * 10 );
 	}
 }
 

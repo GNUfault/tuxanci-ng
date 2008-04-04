@@ -620,7 +620,7 @@ void proto_recv_shot_client(char *msg)
 void proto_send_ping_client()
 {
 	char msg[STR_PROTO_SIZE];
-	sprintf(msg, "ping\n");
+	sprintf(msg, "ping %d\n", getMyTime());
 	sendServer(msg);
 }
 
@@ -628,12 +628,11 @@ void proto_send_ping_client()
 
 void proto_recv_ping_server(client_t *client, char *msg)
 {
+	proto_send_ping_server(PROTO_SEND_ONE, client, msg);
 }
 
-void proto_send_ping_server(int type, client_t *client)
+void proto_send_ping_server(int type, client_t *client, char *msg)
 {
-	char msg[STR_PROTO_SIZE];
-	sprintf(msg, "ping\n");
 	proto_send(type, client, msg);
 }
 
@@ -641,6 +640,15 @@ void proto_send_ping_server(int type, client_t *client)
 
 void proto_recv_ping_client(char *msg)
 {
+	char cmd[STR_PROTO_SIZE];
+	my_time_t currentTime;
+	my_time_t time;
+
+	sscanf(msg, "%s %d", cmd, &time);
+
+	currentTime = getMyTime();
+	printf("lag = %d\n", (currentTime-time));
+	setLagServer((currentTime-time));
 }
 
 #endif

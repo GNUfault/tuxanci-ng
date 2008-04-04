@@ -75,12 +75,12 @@ extern void proto_send_shot_server(int type, client_t *client, shot_t *p);
 extern void proto_recv_shot_client(char *msg);
 extern void proto_send_ping_client();
 extern void proto_recv_ping_server(client_t *client, char *msg);
-extern void proto_send_end_client();
-extern void proto_recv_end_server(client_t *client, char *msg);
 extern void proto_send_ping_server(int type, client_t *client);
 extern void proto_recv_ping_client(char *msg);
 extern void proto_send_end_server(int type, client_t *client);
 extern void proto_recv_end_client(char *msg);
+extern void proto_send_end_client();
+extern void proto_recv_end_server(client_t *client, char *msg);
 
 #endif
 

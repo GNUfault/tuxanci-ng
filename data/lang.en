@@ -1,0 +1,30 @@
+
+# generally strings
+
+OK Ok
+BACK Back
+NEXT Next
+
+#main menu
+
+PLAY Play
+SETTING Setting
+TABLE Table
+CREDITS Credits
+END End
+
+# setting menu
+
+COUNT_ROUND Count Round
+NAME_PLAYER1 Name Player1 :
+NAME_PLAYER2 Name Player2 :
+MUSIC Music :
+SOUND Sound :
+
+# setting game type
+
+NONE none
+SERVER server
+CLIENT client
+IP_ADDR IP address :
+NET_PORT network port :

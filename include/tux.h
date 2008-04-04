@@ -12,6 +12,8 @@
 #define TUX_MAX_ANIMATION_FRAME 10
 #define TUX_KEY 1
 
+#define TUX_LOCATE_UNKNOWN -1
+
 #define TUX_MAX_PICKUP	50
 #define TUX_MAX_BONUS	500
 

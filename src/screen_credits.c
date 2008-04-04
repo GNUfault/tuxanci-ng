@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "language.h"
 #include "interface.h"
 #include "list.h"
 #include "textFile.h"
@@ -93,7 +94,7 @@ void initScreenCredits()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton("Back", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, WINDOW_SIZE_Y-80, eventWidget);
+	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, WINDOW_SIZE_Y-80, eventWidget);
 
 	listWidgetLabel = newList();
 	textFile = loadTextFile(PATH_DATA SCREEN_CREDITS_FILE);

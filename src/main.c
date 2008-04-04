@@ -11,6 +11,8 @@
 #ifndef PUBLIC_SERVER
 
 #include "font.h"
+#include "keytable.h"
+#include "language.h"
 #include "image.h"
 #include "layer.h"
 #include "interface.h"
@@ -46,6 +48,8 @@ static void init()
 	initSDL();
 	initLayer();
 	initFont("DejaVuSans.ttf", 16);
+	initKeyTable();
+	initLanguage();
 	initImageData();
 	initAudio();
 	initSound();
@@ -71,6 +75,8 @@ void quit()
 	quitSDL();
 	quitLayer();
 	quitFont();
+	quitKeyTable();
+	quitLanguage();
 	quitScreen();
 	quitArenaFile();
 	quitItem();
@@ -165,36 +171,12 @@ int main(int argc, char *argv[])
 	my_argc = argc;
 	my_argv = argv;
 
-#ifndef PUBLIC_SERVER
-
 	init();
 
 	setScreen("mainMenu");
 
 	eventSDL();
 	quit();
-#endif
-
-#ifdef PUBLIC_SERVER
-
-	signal(SIGPIPE, SIG_IGN);
-	signal(SIGINT, my_handler_quit);
-	signal(SIGTERM, my_handler_quit);
-	signal(SIGQUIT, my_handler_quit);
-
-	if( initPublicServer() < 0 )
-	{
-		quitPublicServer();
-		return -1;
-	}
-
-	while(1)
-	{
-		eventPublicServer();
-	}
-
-#endif
 
 	return 0;
 }
- 

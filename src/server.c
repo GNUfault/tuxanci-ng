@@ -45,33 +45,101 @@ static sock_sdl_udp_t *sock_server_sdl_udp;
 #endif
 
 static list_t *listClient;
+static list_t *listServerTimer;
 static my_time_t lastSyncClient;
 static int maxClients;
+
+#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
+
+static void delZombieCLient(void *p_nothink)
+{
+	client_t *thisClient;
+	my_time_t currentTime;
+	int i;
+
+ 	currentTime = getMyTime();
+
+	for( i = 0 ; i < listClient->count; i++)
+	{
+		thisClient = (client_t *) listClient->list[i];
+
+		if( currentTime - thisClient->lastPing > SERVER_TIMEOUT )
+		{
+			proto_send_error_server(PROTO_SEND_ONE, thisClient, PROTO_ERROR_CODE_TIMEOUT);
+			thisClient->status = NET_STATUS_ZOMBIE;
+		}
+
+		if( thisClient->status == NET_STATUS_ZOMBIE )
+		{
+			if( thisClient->tux != NULL )
+			{
+				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+			}
+
+			delListItem(listClient, i, destroyClient);
+		}
+	}
+}
+
+static void eventPeriodicSyncClient(void *p_nothink)
+{
+	my_time_t currentTime;
+	client_t *thisClientInfo;
+	client_t *thisClientSend;
+	tux_t *thisTux;
+	int i, j;
+
+	currentTime = getMyTime();
+
+	
+	for( i = 0 ; i < listClient->count; i++)
+	{
+		thisClientSend = (client_t *) listClient->list[i];
+
+		if( thisClientSend->tux != NULL )
+		{
+#ifndef PUBLIC_SERVER
+			proto_send_newtux_server(PROTO_SEND_ONE, thisClientSend,
+			(tux_t *)(getCurrentArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
+#endif
+		}
+
+		for( j = 0 ; j < listClient->count; j++)
+		{
+			thisClientInfo = (client_t *) listClient->list[j];
+			thisTux = thisClientInfo->tux;
+
+			if( thisTux != NULL &&
+			    thisClientSend->tux != NULL &&
+			    thisClientSend != thisClientInfo /*&&
+			    thisTux->status == TUX_STATUS_ALIVE*/ )
+			{
+				proto_send_newtux_server(PROTO_SEND_ONE,
+					thisClientSend, thisTux);
+			}
+		}
+	}
+}
+
+static void eventSendPingClients(void *p_nothink)
+{
+	proto_send_ping_server(PROTO_SEND_ALL, NULL);
+}
+
+#endif
 
 void static initServer()
 {
 	listClient = newList();
 	lastSyncClient = getMyTime();
 	setServerMaxClients(SERVER_MAX_CLIENTS);
+
+	listServerTimer = newTimer();
+
+	addTaskToTimer(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
+	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
+	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
 }
-
-#ifdef SUPPORT_NET_UNIX_TCP
-int initTcpServer(int port)
-{
-	sock_server_tcp = bindTcpSocket(port);
-
-	if( sock_server_tcp == NULL )
-	{
-		return -1;
-	}
-
-	initServer();
-
-	printf("server listen TCP port %d\n", port);
-
-	return 0;
-}
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 int initUdpServer(char *ip, int port)
@@ -122,24 +190,6 @@ static client_t* newAnyClient()
 	return new;
 }
 
-#ifdef SUPPORT_NET_UNIX_TCP
-client_t* newTcpClient(sock_tcp_t *sock_tcp)
-{
-	client_t *new;
-	char str_ip[STR_IP_SIZE];
-	
-	assert( sock_tcp != NULL );
-
-	getSockTcpIp(sock_tcp, str_ip);
-	printf("new client from %s:%d\n", str_ip, getSockTcpPort(sock_tcp));
-
-	new = newAnyClient();
-	new->socket_tcp = sock_tcp;
-
-	return new;
-}
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 client_t* newUdpClient(sock_udp_t *sock_udp)
 {
@@ -180,10 +230,6 @@ void destroyClient(client_t *p)
 	int index;
 
 	assert( p != NULL );
-
-#ifdef SUPPORT_NET_UNIX_TCP
-	closeTcpSocket(p->socket_tcp);
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 	closeUdpSocket(p->socket_udp);
@@ -227,22 +273,6 @@ void sendClient(client_t *p, char *msg)
 	if( p->status != NET_STATUS_ZOMBIE )
 	{
 		int ret;
-
-#ifdef SUPPORT_NET_UNIX_TCP
-		ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));	
-
-		if( ret == 0 )
-		{
-			fprintf(stderr, "client sa odpojil\n");
-			p->status = NET_STATUS_ZOMBIE;
-		}
-	
-		if( ret < 0 )
-		{
-			fprintf(stderr, "nastala chyba pri posielanie spravy clientovy\n");
-			p->status = NET_STATUS_ZOMBIE;
-		}
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 		ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
@@ -314,20 +344,6 @@ void sendInfoCreateClient(client_t *client)
 	}
 }
 
-#ifdef SUPPORT_NET_UNIX_TCP
-
-static void eventCreateNewTcpClient(sock_tcp_t *socket_tcp)
-{
-	client_t *client;
-
-	assert( socket_tcp != NULL );
-
-	client = newTcpClient( getTcpNewClient(socket_tcp) );
-	addList(listClient, client);
-}
-
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 
 static void eventCreateNewUdpClient(sock_udp_t *socket_udp)
@@ -356,33 +372,6 @@ static void eventCreateNewSdlUdpClient(sock_sdl_udp_t *socket_sdl_udp)
 
 #endif
 
-#ifdef SUPPORT_NET_UNIX_TCP
-
-static void eventClientTcpSelect(client_t *client)
-{
-	char buffer[STR_PROTO_SIZE];
-	int ret;
-
-	assert( client != NULL );
-
-	memset(buffer, 0, STR_SIZE);
-	ret = readTcpSocket(client->socket_tcp, buffer, STR_PROTO_SIZE-1);
-
-	if( ret <= 0 )
-	{
-		client->status = NET_STATUS_ZOMBIE;
-		return;
-	}
-
-	if( addBuffer(client->buffer, buffer, ret) != 0 )
-	{
-		client->status = NET_STATUS_ZOMBIE;
-		return;
-	}
-}
-
-#endif
-
 static void eventClientBuffer(client_t *client)
 {
 	char line[STR_PROTO_SIZE];
@@ -396,10 +385,8 @@ static void eventClientBuffer(client_t *client)
 #ifdef DEBUG_SERVER_RECV
 		printf("recv client msg->%s", line);
 #endif
-
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 		client->lastPing = getMyTime();
-#endif
+
 		if( strncmp(line, "hello", 5) == 0 )
 		{
 			proto_recv_hello_server(client, line);
@@ -451,146 +438,6 @@ void eventClientListBuffer()
 		eventClientBuffer(thisClient);
 	}
 }
-
-#ifdef SUPPORT_NET_UNIX_TCP
-
-void selectServerTcpSocket()
-{
-	fd_set readfds;
-	struct timeval tv;
-	client_t *thisClient;
-	int max_fd;
-	int i;
-
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-	
-	FD_ZERO(&readfds);
-	FD_SET(sock_server_tcp->sock, &readfds);
-	max_fd = sock_server_tcp->sock;
-
-	for( i = 0 ; i < listClient->count; i++)
-	{
-		thisClient = (client_t *) listClient->list[i];
-
-		FD_SET(thisClient->socket_tcp->sock, &readfds);
-	
-		if( thisClient->socket_tcp->sock > max_fd )
-		{
-			max_fd = thisClient->socket_tcp->sock;
-		}
-	}
-
-	select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-
-	if( FD_ISSET(sock_server_tcp->sock, &readfds) )
-	{
-		eventCreateNewTcpClient(sock_server_tcp);
-	}
-
-	for( i = 0 ; i < listClient->count; i++)
-	{
-		thisClient = (client_t *) listClient->list[i];
-
-		if( FD_ISSET(thisClient->socket_tcp->sock, &readfds) )
-		{
-			eventClientTcpSelect(thisClient);
-		}
-
-		if( thisClient->status == NET_STATUS_ZOMBIE )
-		{
-			if( thisClient->tux != NULL )
-			{
-				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
-			}
-
-			delListItem(listClient, i, destroyClient);
-		}
-	}
-}
-
-#endif
-
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
-
-static void delZombieCLient()
-{
-	client_t *thisClient;
-	my_time_t currentTime;
-	int i;
-
- 	currentTime = getMyTime();
-
-	for( i = 0 ; i < listClient->count; i++)
-	{
-		thisClient = (client_t *) listClient->list[i];
-
-		if( currentTime - thisClient->lastPing > SERVER_TIMEOUT )
-		{
-			proto_send_error_server(PROTO_SEND_ONE, thisClient, PROTO_ERROR_CODE_TIMEOUT);
-			thisClient->status = NET_STATUS_ZOMBIE;
-		}
-
-		if( thisClient->status == NET_STATUS_ZOMBIE )
-		{
-			if( thisClient->tux != NULL )
-			{
-				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
-			}
-
-			delListItem(listClient, i, destroyClient);
-		}
-	}
-}
-
-void eventPeriodicSyncClient()
-{
-	my_time_t currentTime;
-
- 	currentTime = getMyTime();
-
-	if( currentTime - lastSyncClient > SERVER_TIME_SYNC )
-	{
-		client_t *thisClientInfo;
-		client_t *thisClientSend;
-		tux_t *thisTux;
-		int i, j;
-	
-		for( i = 0 ; i < listClient->count; i++)
-		{
-			thisClientSend = (client_t *) listClient->list[i];
-
-			if( thisClientSend->tux != NULL )
-			{
-				proto_send_ping_server(PROTO_SEND_ONE, thisClientSend);
-
-#ifndef PUBLIC_SERVER
-				proto_send_newtux_server(PROTO_SEND_ONE, thisClientSend,
-				(tux_t *)(getCurrentArena()->listTux->list[SERVER_INDEX_ROOT_TUX]));
-#endif
-			}
-
-			for( j = 0 ; j < listClient->count; j++)
-			{
-				thisClientInfo = (client_t *) listClient->list[j];
-				thisTux = thisClientInfo->tux;
-
-				if( thisTux != NULL &&
-				    thisClientSend->tux != NULL &&
-				    thisClientSend != thisClientInfo &&
-				    thisTux->status == TUX_STATUS_ALIVE )
-				{
-					proto_send_newtux_server(PROTO_SEND_ONE,
-						thisClientSend, thisTux);
-				}
-			}
-		}
-
-		lastSyncClient = getMyTime();
-	}
-}
-
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
@@ -688,11 +535,17 @@ void selectServerUdpSocket()
 	FD_ZERO(&readfds);
 	FD_SET(sock_server_udp->sock, &readfds);
 	max_fd = sock_server_udp->sock;
-	
-	delZombieCLient();
-	
-	ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-	
+
+	if( listClient->count == 0 )
+	{
+		ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, NULL);
+		//restartTimer();
+	}
+	else
+	{
+		ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+	}
+
 	if( ret < 0 )
 	{
 		return;
@@ -735,8 +588,6 @@ void selectServerSdlUdpSocket()
 	int ret;
 
 	assert( sock_server_sdl_udp != NULL );
-
-	delZombieCLient();
 
 	do{
 		sock_client = newSdlSockUdp();
@@ -789,26 +640,27 @@ void selectServerSdlUdpSocket()
 
 #endif
 
+void eventServer()
+{
+#ifdef SUPPORT_NET_SDL_UDP
+	selectServerSdlUdpSocket();
+#endif
+
+#ifdef SUPPORT_NET_UNIX_UDP
+	selectServerUdpSocket();
+#endif
+
+	eventClientListBuffer();
+	eventTimer(listServerTimer);
+}
+
 static void quitServer()
 {
 	proto_send_end_server(PROTO_SEND_ALL, NULL);
 	assert( listClient != NULL );
 	destroyListItem(listClient, destroyClient);
+	destroyTimer(listServerTimer);
 }
-
-#ifdef SUPPORT_NET_UNIX_TCP
-
-void quitTcpServer()
-{
-	quitServer();
-
-	assert( sock_server_tcp != NULL );
-	closeTcpSocket(sock_server_tcp);
-
-	printf("quit TCP port\n");
-}
-
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 

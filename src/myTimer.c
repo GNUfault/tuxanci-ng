@@ -2,6 +2,7 @@
 #include <time.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <signal.h>
 
@@ -14,20 +15,27 @@
 #endif
 
 
+static struct timeval start = { .tv_sec = 0, .tv_usec = 0 };
+
 list_t* newTimer()
 {
 	return newList();
 }
 
+void restartTimer()
+{
+	gettimeofday(&start, NULL);
+}
+
+
 my_time_t getMyTime()
 {
-	static struct timeval start = { .tv_sec = 0, .tv_usec = 0 };
 	struct timeval now;
 	my_time_t ticks;
 
 	if(  start.tv_sec == 0 && start.tv_usec == 0 )
 	{
-		gettimeofday(&start, NULL);
+		restartTimer();
 	}
 
 	gettimeofday(&now, NULL);
@@ -37,22 +45,38 @@ my_time_t getMyTime()
 	return ticks;
 }
 
-int addTimer(list_t *listTimer, void (*fce)(void *p), void *arg, my_time_t my_time)
+my_timer_t* newTimerItem(int type, void (*fce)(void *p), void *arg, my_time_t my_time)
 {
 	static int new_id = 0;
 	my_timer_t *new;
-	my_time_t currentTime;
-
- 	currentTime = getMyTime();
+	
+	assert( fce != NULL );
 
 	new = malloc( sizeof(my_timer_t) );
-	assert( new != NULL );
+	memset(new, 0, sizeof(my_timer_t));
 
 	new->id = new_id++;
+	new->type = type;
 	new->fce = fce;
 	new->arg = arg;
-	new->time = currentTime + my_time;
 
+	new->createTime = getMyTime();
+	new->time = my_time;
+
+	return new;
+}
+
+static void destroyTimerItem(my_timer_t *p)
+{
+	assert( p != NULL );
+	free(p);
+}
+
+int addTaskToTimer(list_t *listTimer, int type, void (*fce)(void *p), void *arg, my_time_t my_time)
+{
+	my_timer_t *new;
+
+	new = newTimerItem(type, fce, arg, my_time);
 	addList(listTimer, new);
 
 	return new->id;
@@ -71,13 +95,29 @@ void eventTimer(list_t *listTimer)
 		thisTimer = (my_timer_t *)listTimer->list[i];
 		assert( thisTimer != NULL );
 
-		if( currentTime >= thisTimer->time )
+		switch( thisTimer->type )
 		{
-			thisTimer->fce(thisTimer->arg);
-
-			delListItem(listTimer, i, free);
-			i--;
+			case TIMER_ONE:
+				if( currentTime >= thisTimer->createTime + thisTimer->time )
+				{
+					thisTimer->fce(thisTimer->arg);
+		
+					delListItem(listTimer, i, free);
+					i--;
+				}
+			break;
+			case TIMER_PERIODIC:
+				if( currentTime >= thisTimer->createTime + thisTimer->time )
+				{
+					thisTimer->fce(thisTimer->arg);
+					thisTimer->createTime = getMyTime();
+				}
+			break;
+			default :
+				assert( ! "bad timer type !" );
+			break;
 		}
+
 	}
 }
 
@@ -104,5 +144,5 @@ void delTimer(list_t *listTimer, int id)
 
 void destroyTimer(list_t *listTimer)
 {
-	destroyListItem(listTimer, free);
+	destroyListItem(listTimer, destroyTimerItem);
 }

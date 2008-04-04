@@ -173,6 +173,8 @@ void closeUdpSocket(sock_udp_t *p)
 	destroySockUdp(p);
 }
 
+#if 0
+
 static int myWait(sock_udp_t *p)
 {
 	fd_set readfds;
@@ -201,7 +203,6 @@ static int myWait(sock_udp_t *p)
 	return 0;
 }
 
-#if 0
 int test_udp_main(int argc, char *argv[])
 {
 	sock_udp_t *sock;

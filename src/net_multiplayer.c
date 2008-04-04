@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,14 +41,6 @@ int initNetMuliplayer(int type, char *ip, int port)
 		break;
 
 		case NET_GAME_TYPE_SERVER :
-#ifdef SUPPORT_NET_UNIX_TCP
-			if( initTcpServer(port) != 0 )
-			{
-				fprintf(stderr, "Neomzem inicalizovat sietovu hru pre server !\n");
-				netGameType = NET_GAME_TYPE_NONE;
-				return -1;
-			}
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
 			if( initUdpServer(ip, port) != 0 )
 			{
@@ -70,14 +61,6 @@ int initNetMuliplayer(int type, char *ip, int port)
 
 #ifndef PUBLIC_SERVER	
 		case NET_GAME_TYPE_CLIENT :
-#ifdef SUPPORT_NET_UNIX_TCP
-			if( initTcpClient(ip, port) != 0 )
-			{
-				fprintf(stderr, "Neomzem inicalizovat sietovu hru pre clienta !\n");
-				netGameType = NET_GAME_TYPE_NONE;
-				return -1;
-			}
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
 			if( initUdpClient(ip, port) != 0 )
 			{
@@ -112,28 +95,16 @@ void eventNetMultiplayer()
 		break;
 
 		case NET_GAME_TYPE_SERVER :
-#ifdef SUPPORT_NET_UNIX_TCP
-			selectServerTcpSocket();
-			eventClientListBuffer();
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
-			selectServerUdpSocket();
-			eventClientListBuffer();
-			eventPeriodicSyncClient();
+			eventServer();
 #endif
 #ifdef SUPPORT_NET_SDL_UDP
-			selectServerSdlUdpSocket();
-			eventClientListBuffer();
-			eventPeriodicSyncClient();
+			eventServer();
 #endif
 		break;
 
 #ifndef PUBLIC_SERVER	
 		case NET_GAME_TYPE_CLIENT :
-#ifdef SUPPORT_NET_UNIX_TCP
-			selectClientTcpSocket();
-			eventServerBuffer();
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
 			eventPingServer();
 			selectClientUdpSocket();
@@ -160,9 +131,6 @@ void quitNetMultiplayer()
 		break;
 
 		case NET_GAME_TYPE_SERVER :
-#ifdef SUPPORT_NET_UNIX_TCP
-			quitTcpServer();
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
 			quitUdpServer();
 #endif
@@ -173,9 +141,6 @@ void quitNetMultiplayer()
 
 #ifndef PUBLIC_SERVER	
 		case NET_GAME_TYPE_CLIENT :
-#ifdef SUPPORT_NET_UNIX_TCP
-			quitTcpClient();
-#endif
 #ifdef SUPPORT_NET_UNIX_UDP
 			quitUdpClient();
 #endif

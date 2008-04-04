@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "language.h"
 #include "interface.h"
 #include "list.h"
 #include "screen.h"
@@ -121,8 +122,8 @@ void initScreenChoiceArena()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton("Back", 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton("Play", WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
+	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
 	
 	listWidgetButtonimage = newList();
 	choiceArenaId = 0;

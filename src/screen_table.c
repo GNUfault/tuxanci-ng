@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "language.h"
 #include "interface.h"
 #include "list.h"
 #include "textFile.h"
@@ -201,7 +202,7 @@ void initScreenTable()
 	image = addImageData("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton("Back", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
+	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
 		WINDOW_SIZE_Y-100, eventWidget);
 
 	loadHighscoreFile();

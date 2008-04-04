@@ -12,39 +12,29 @@
 #include "interface.h"
 #endif
 
-#ifdef SUPPORT_NET_UNIX_TCP
-#include "tcp.h"
+
+#ifdef SUPPORT_NET_SDL_UDP
+
+#include "sdl_udp.h"
+
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
 #include "udp.h"
 
-#define SERVER_TIMEOUT		5000
-#define SERVER_TIME_SYNC	1000
-#define SERVER_MAX_CLIENTS	100
-
 #endif
-
-#ifdef SUPPORT_NET_SDL_UDP
-
-#include "sdl_udp.h"
 
 #define SERVER_TIMEOUT		5000
 #define SERVER_TIME_SYNC	1000
+#define SERVER_TIME_PING	1000
 #define SERVER_MAX_CLIENTS	100
-
-#endif
 
 
 #define SERVER_INDEX_ROOT_TUX	0
 
 typedef struct client_struct
 {
-#ifdef SUPPORT_NET_UNIX_TCP
-	sock_tcp_t *socket_tcp;
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 	sock_udp_t *socket_udp;
 	my_time_t lastPing;
@@ -59,12 +49,6 @@ typedef struct client_struct
 	buffer_t *buffer;
 } client_t;
 
-#ifdef SUPPORT_NET_UNIX_TCP
-extern int initTcpServer(int port);
-extern client_t* newTcpClient(sock_tcp_t *sock_tcp);
-extern void selectServerTcpSocket();
-extern void quitTcpServer();
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 extern int initUdpServer(char *ip, int port);
@@ -91,7 +75,7 @@ extern void sendAllClientBut(char *msg, client_t *p);
 extern void sendAllClient(char *msg);
 extern void eventClientListBuffer();
 extern void sendInfoCreateClient(client_t *client);
-extern void eventPeriodicSyncClient();
+extern void eventServer();
 
 #endif 
  

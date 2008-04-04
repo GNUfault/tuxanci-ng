@@ -1,0 +1,30 @@
+
+# generally strings
+
+OK Ok
+BACK Späť
+NEXT Ďalej
+
+#main menu
+
+PLAY Hrať
+SETTING Nastavenia
+TABLE Tabuľka
+CREDITS Autori
+END Koniec
+
+# setting menu
+
+COUNT_ROUND Počet kôl
+NAME_PLAYER1 Meno Hraca1 :
+NAME_PLAYER2 Meno Hraca2 :
+MUSIC Hudba :
+SOUND Zvuk :
+
+# setting game type
+
+NONE žiadne
+SERVER server
+CLIENT client
+IP_ADDR IP adresa :
+NET_PORT sieotvy port :

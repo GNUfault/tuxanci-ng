@@ -20,6 +20,7 @@
 #include "proto.h"
 #include "publicServer.h"
 #include "net_multiplayer.h"
+#include "serverConfigFile.h"
 
 static int arenaId;
 static arena_t *arena;
@@ -32,14 +33,20 @@ void countRoundInc()
 {
 }
 
+static char *getSetting(char *env, char *param, char *default_val)
+{
+	return getParamElse(param, getServerConfigFileValue(env, default_val) );
+}
+
 int initPublicServer()
 {
 	initArenaFile();
 	initTux();
 	initItem();
 	initShot();
+	initServerConfigFile();
 
-	arenaId = getArenaIdFormNetName( getParamElse("--arena", "FAGN") );
+	arenaId = getArenaIdFormNetName( getSetting("ARENA", "--arena", "FAGN") );
 	arena = getArena(arenaId);
 	setCurrentArena(arena);
 
@@ -47,13 +54,13 @@ int initPublicServer()
 	isSignalEnd = FALSE;
 
 	if( initNetMuliplayer(NET_GAME_TYPE_SERVER,
-		getParamElse("--ip", "127.0.0.1") , atoi( getParamElse("--port", "2200") ) ) < 0 )
+		getSetting("IP", "--ip", "0.0.0.0") , atoi( getSetting("PORT", "--port", "2200") ) ) < 0 )
 	{
 		printf("Nemozem inicalizovat sietovy socket !\n");
 		return -1;
 	}
 
-	setServerMaxClients( atoi( getParamElse("--maxclients", "100") ));
+	setServerMaxClients( atoi( getSetting("MAX_CLIENTS", "--maxclients", "100") ));
 
 	return 0;
 }
@@ -107,6 +114,8 @@ void quitPublicServer()
 	quitNetMultiplayer();
 	destroyArena(arena);
 	quitArenaFile();
+	quitServerConfigFile();
+
 	exit(0);
 }
 
@@ -119,14 +128,7 @@ char* getParam(char *s)
 
 	for( i = 1 ; i < my_argc ; i++ )
 	{
-		//printf("%s %s\n", s, my_argv[i]);
-		
-		if( strlen(my_argv[i]) < len )
-		{
-			continue;
-		}
-
-		if( strncmp(s, my_argv[i], len) == 0 )
+		if( strstr(my_argv[i], s) == my_argv[i] )
 		{
 			return strchr(my_argv[i], '=')+1;
 		}

@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "language.h"
 #include "interface.h"
 #include "screen.h"
 #include "image.h"
@@ -267,21 +268,21 @@ void initScreenSetting()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton("Back", WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
 
-	label_count_round = newWidgetLabel("Count Round :", 100, WINDOW_SIZE_Y-200, WIDGET_LABEL_LEFT);
-	label_name_player1 = newWidgetLabel("Name player1 :", 100, WINDOW_SIZE_Y-160, WIDGET_LABEL_LEFT);
-	label_name_player2 = newWidgetLabel("Name player2 :", 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
+	label_count_round = newWidgetLabel(getMyText("COUNT_ROUND"), 100, WINDOW_SIZE_Y-200, WIDGET_LABEL_LEFT);
+	label_name_player1 = newWidgetLabel(getMyText("NAME_PLAYER1"), 100, WINDOW_SIZE_Y-160, WIDGET_LABEL_LEFT);
+	label_name_player2 = newWidgetLabel(getMyText("NAME_PLAYER2"), 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
 
 	textfield_count_cound = newWidgetTextfield(getParamElse("--count", "15"), 110+label_count_round->w, WINDOW_SIZE_Y-200);
 	
 	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", "name1"), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
 	textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", "name2"), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
 
-	label_music = newWidgetLabel("Music :", 100, WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
+	label_music = newWidgetLabel(getMyText("MUSIC"), 100, WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_music = newWidgetCheck(label_music->x + label_music->w  + 10,
 		WINDOW_SIZE_Y-80, isMusicActive() , eventWidget);
-	label_sound = newWidgetLabel("Sound :", check_music->x + WIDGET_CHECK_WIDTH + 10,
+	label_sound = newWidgetLabel(getMyText("SOUND"), check_music->x + WIDGET_CHECK_WIDTH + 10,
 		WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_sound = newWidgetCheck(label_sound->x + label_sound->w + 10,
 		WINDOW_SIZE_Y-80, isSoundActive() , eventWidget);
