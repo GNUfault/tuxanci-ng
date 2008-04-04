@@ -21,6 +21,8 @@ static int getKeyCode(char *s)
 	char *find;
 	int i;
 
+	sprintf(str, "keycode %s = ", s);
+
 	for( i = 0 ; i < keytableFile->text->count ; i++ )
 	{
 		char *line;
@@ -41,7 +43,9 @@ void initKeyTable()
 {
 	char path[STR_PATH_SIZE];
 	char val[STR_SIZE];
-
+/*
+	int i;
+*/
 	sprintf(path, PATH_DATA "keytable.conf");
 	keytableFile = loadTextFile(path);
 
@@ -104,12 +108,22 @@ void initKeyTable()
 	loadValueFromConfigFile(keycontrolFile, "TUX_LEFT_SWITCH_WEAPON", val, STR_SIZE, "SDLK_TAB");
 	keytable[ KEY_TUX_LEFT_SWITCH_WEAPON ] = getKeyCode(val);
 
+/*
+	for( i = 0 ; i < KEY_LENGTH ; i++)
+	{
+		printf("keytable[%d] = %d\n", i, keytable[i]);
+	}
+*/
+
 	saveTextFile(keycontrolFile);
 }
 
 int getKey(int n)
 {
 	assert( n >= 0 && n < KEY_LENGTH );
+/*
+	printf("keytable[n] = %d\n", keytable[n]);
+*/
 	return keytable[n];
 }
 
