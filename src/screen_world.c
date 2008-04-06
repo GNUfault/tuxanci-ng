@@ -210,9 +210,27 @@ static void netAction(tux_t *tux, int action)
 
 static void control_keyboard_right(tux_t *tux)
 {
+/*
+	static my_time_t lastTime = 0;
+	my_time_t currentTime;
+*/
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
+/*
+	if( lastTime == 0 )
+	{
+		lastTime = getMyTime();
+	}
 
+	currentTime = getMyTime();
+
+	if( currentTime - lastTime < 45 )
+	{
+		return;
+	}
+
+	lastTime = getMyTime();
+*/
 	assert( tux != NULL );
 	assert( mapa != NULL );
 

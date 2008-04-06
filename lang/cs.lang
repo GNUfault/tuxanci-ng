@@ -8,6 +8,8 @@ AUTHOR xHire
 AUTHOR_EMAIL xhire@tuxportal.cz
 AUTHOR_JABBER Miczek@gmail.com
 
+HEAD fontfile="DejaVuSans.ttf" fontsize="16"
+
 # general
 OK Ok
 BACK Zpět

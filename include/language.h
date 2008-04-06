@@ -3,8 +3,10 @@
 
 #define LANGUAGE_H
 
-extern void initLanguage();
+extern int initLanguage();
 extern char* getMyText(char *key);
+extern char* getLanguageFont();
+extern int getLanguageSize();
 extern void quitLanguage();
 
 #endif

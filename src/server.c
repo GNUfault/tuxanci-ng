@@ -29,11 +29,6 @@
 #include "publicServer.h"
 #endif
 
-#ifdef SUPPORT_NET_UNIX_TCP
-#include "tcp.h"
-static sock_tcp_t *sock_server_tcp;
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 #include "udp.h"
 static sock_udp_t *sock_server_udp;
@@ -48,8 +43,6 @@ static list_t *listClient;
 static list_t *listServerTimer;
 static my_time_t lastSyncClient;
 static int maxClients;
-
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 
 static void delZombieCLient(void *p_nothink)
 {
@@ -83,14 +76,21 @@ static void delZombieCLient(void *p_nothink)
 
 static void eventPeriodicSyncClient(void *p_nothink)
 {
-	my_time_t currentTime;
 	client_t *thisClientInfo;
 	client_t *thisClientSend;
+	item_t *thisItem;
 	tux_t *thisTux;
 	int i, j;
 
-	currentTime = getMyTime();
-
+	for( i = 0 ; i < getCurrentArena()->listItem->count; i++)
+	{
+		thisItem = (item_t *) getCurrentArena()->listItem->list[i];
+		
+		if( thisItem->type != ITEM_EXPLOSION || thisItem->type != ITEM_BIG_EXPLOSION )
+		{
+			proto_send_additem_server(PROTO_SEND_ALL, NULL, thisItem);
+		}
+	}
 	
 	for( i = 0 ; i < listClient->count; i++)
 	{
@@ -125,8 +125,6 @@ static void eventSendPingClients(void *p_nothink)
 {
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
-
-#endif
 
 void static initServer()
 {
@@ -186,6 +184,8 @@ static client_t* newAnyClient()
 	
 	new->status = NET_STATUS_OK;
 	new->buffer = newBuffer(LIMIT_BUFFER);
+	new->lastPing = getMyTime();
+	new->lastEvent = getMyTime();
 
 	return new;
 }
@@ -202,7 +202,6 @@ client_t* newUdpClient(sock_udp_t *sock_udp)
 	printf("new client from %s:%d\n", str_ip, getSockUdpPort(sock_udp));
 	
 	new = newAnyClient();
-	new->lastPing = getMyTime();
 	new->socket_udp = sock_udp;
 
 	return new;
@@ -218,7 +217,6 @@ client_t* newSdlUdpClient(sock_sdl_udp_t *sock_sdl_udp)
 
 	printf("new client from %d\n", getSockSdlUdpPort(sock_sdl_udp));
 	new = newAnyClient();
-	new->lastPing = getMyTime();
 	new->socket_sdl_udp = sock_sdl_udp;
 
 	return new;

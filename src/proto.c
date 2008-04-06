@@ -254,6 +254,7 @@ void proto_recv_event_server(client_t *client, char *msg)
 	assert( client != NULL );
 	assert( msg != NULL );
 
+
 	sscanf(msg, "%s %d", cmd, &action);
 
 	proto_send_event_server(PROTO_SEND_BUT, client, client->tux, action);
@@ -488,8 +489,9 @@ void proto_recv_additem_client(char *msg)
 
 	sscanf(msg, "%s %d %d %d %d %d %d %d", cmd, &id, &type, &x, &y, &count, &frame, &author_id);
 
-	if( getItemID(getCurrentArena()->listItem, id) != NULL )
+	if( ( item = getItemID(getCurrentArena()->listItem, id) ) != NULL )
 	{
+		item->lastSync = getMyTime();
 		return;
 	}
 
@@ -504,6 +506,7 @@ void proto_recv_additem_client(char *msg)
 	item->id = id;
 	item->count = count;
 	item->frame = frame;
+	item->lastSync = getMyTime();
 
 	addList(getCurrentArena()->listItem, item);
 

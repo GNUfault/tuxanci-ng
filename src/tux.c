@@ -87,7 +87,7 @@ tux_t* newTux()
 	new->gun = GUN_SIMPLE;
 	new->shot[ new->gun ] = GUN_MAX_SHOT;
 	
-	sprintf(new->name, "no_name_id_%dde", new->id);
+	sprintf(new->name, "no_name_id_%d", new->id);
 	new->score = 0;
 	new->frame = 0;
 
@@ -155,14 +155,14 @@ void drawTux(tux_t *tux)
 	SDL_Surface *g_image = NULL;
 
 	assert( tux != NULL );
-/*
+
 	if( tux->bonus == BONUS_HIDDEN &&
 	    getNetTypeGame() != NET_GAME_TYPE_NONE &&
 	    tux->control == TUX_CONTROL_NET )
 	{
 		return;
 	}
-*/
+
 	switch( tux->position )
 	{
 		case TUX_UP :
@@ -528,6 +528,22 @@ void moveTux(tux_t *tux, int n)
 	int x, y, w, h;
 	arena_t *arena;
 
+/*
+	static my_time_t lastTime = 0;
+	my_time_t currentTime;
+
+	if( lastTime == 0 )
+	{
+		lastTime = getMyTime();
+	}
+
+	currentTime = getMyTime();
+
+	printf("%d\n", currentTime - lastTime );
+
+	lastTime = getMyTime();
+*/
+
 	assert( tux != NULL );
 
 	if( tux->position != n )
@@ -668,7 +684,7 @@ void shotTux(tux_t *tux)
 
 void actionTux(tux_t *tux, int action)
 {
-	if( tux->status != TUX_STATUS_ALIVE )
+	if( tux->status == TUX_STATUS_DEAD )
 	{
 		return;
 	}

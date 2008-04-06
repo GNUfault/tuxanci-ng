@@ -49,7 +49,7 @@ server:
 
 install:
 	mkdir -p $(DESTDIR)/bin
-	mkdir -p $(DESTDIR)/share/tuxanci-ng/{arena,data,font,image,lang,music,sound}
+	mkdir -p $(DESTDIR)/share/tuxanci-ng/{arena,data,font,image,lang,music,sound,conf}
 	cp  ./src/tuxanci-ng $(DESTDIR)/bin/
 
 	cp  -rf ./arena/* $(DESTDIR)/share/tuxanci-ng/arena/
@@ -59,6 +59,7 @@ install:
 	cp  -rf ./music/* $(DESTDIR)/share/tuxanci-ng/music/
 	cp  -rf ./sound/* $(DESTDIR)/share/tuxanci-ng/sound/
 	cp  -rf ./data/* $(DESTDIR)/share/tuxanci-ng/data/
+	cp  -rf ./conf/* $(DESTDIR)/share/tuxanci-ng/conf/
 
 uninstall:
 	rm -rf $(DESTDIR)/{bin,share}/tuxanci-ng

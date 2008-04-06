@@ -45,11 +45,17 @@ static void init()
 {
 	createHomeDirector();
 
+	if( initLanguage() == -1 )
+	{
+		printf("fatal error !\n");
+		exit(-1);
+	}
+
 	initSDL();
+
 	initLayer();
-	initFont("DejaVuSans.ttf", 16);
+	initFont(getLanguageFont(), getLanguageSize());
 	initKeyTable();
-	initLanguage();
 	initImageData();
 	initAudio();
 	initSound();

@@ -37,15 +37,16 @@ typedef struct client_struct
 {
 #ifdef SUPPORT_NET_UNIX_UDP
 	sock_udp_t *socket_udp;
-	my_time_t lastPing;
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
 	sock_sdl_udp_t *socket_sdl_udp;
-	my_time_t lastPing;
 #endif
 	int status;
 	tux_t *tux;
+	my_time_t lastPing;
+	my_time_t lastEvent;
+
 	buffer_t *buffer;
 } client_t;
 

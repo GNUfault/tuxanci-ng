@@ -46,7 +46,7 @@ void initKeyTable()
 /*
 	int i;
 */
-	sprintf(path, PATH_DATA "keytable.conf");
+	sprintf(path, PATH_CONFIG "keytable.conf");
 	keytableFile = loadTextFile(path);
 
 	if( keytableFile == NULL )

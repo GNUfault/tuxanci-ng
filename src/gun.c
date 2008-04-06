@@ -60,11 +60,6 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 	int dest_px = 0, dest_py = 0;
 	shot_t *shot;
 
-	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
-	{
-		return;
-	}
-
 	modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
 	modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
 
@@ -95,6 +90,11 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 static void addShot(tux_t *tux,int x, int y, int px, int py)
 {
 	int gun;
+
+	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+	{
+		return;
+	}
 
 	if( tux->gun == GUN_LASSER )
 	{
@@ -252,7 +252,6 @@ static void putInGunMine(tux_t *tux)
 		sprintf(msg, "tux with id %d pu mine\n", tux->id);
 		appendTextInTerm(msg);
 #endif
-
 
 		tux->shot[tux->gun]--;
 

@@ -4,11 +4,16 @@
 #define ITEM_H
 
 #include "main.h"
+
+#define ITEM_SYNC_TIMEOUT	5000
+
 #ifndef PUBLIC_SERVER
 #include "interface.h"
 #endif
+
 #include "list.h"
 #include "tux.h"
+#include "myTimer.h"
 
 typedef struct item_struct
 {
@@ -23,6 +28,7 @@ typedef struct item_struct
 
 	int frame; //poradove cislo animacie
 	int count; 
+	my_time_t lastSync; 
 
 	tux_t *author;
 #ifndef PUBLIC_SERVER	

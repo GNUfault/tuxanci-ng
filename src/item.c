@@ -76,6 +76,7 @@ item_t* newItem(int x, int y, int type, tux_t *author)
 	new->img = g_item[type];
 #endif	
 	new->author = author;
+	new->lastSync = getMyTime();
 
 	switch( type )
 	{
@@ -242,8 +243,11 @@ void drawListItem(list_t *listItem)
 
 void eventListItem(list_t *listItem)
 {
+	my_time_t currentTime;
 	item_t *thisItem;
 	int i;
+
+	currentTime = getMyTime();
 
 	assert( listItem != NULL );
 
@@ -251,6 +255,16 @@ void eventListItem(list_t *listItem)
 	{
 		thisItem  = (item_t *)listItem->list[i];
 		assert( thisItem != NULL );
+
+		if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+		{
+			if( currentTime - thisItem->lastSync > ITEM_SYNC_TIMEOUT )
+			{
+				delListItem(listItem, i, destroyItem);
+				i--;
+				continue;
+			}
+		}
 
 		thisItem->count++;
 	

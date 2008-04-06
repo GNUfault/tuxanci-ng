@@ -15,11 +15,6 @@
 
 static int protocolType;
 
-#ifdef SUPPORT_NET_UNIX_TCP
-#include "tcp.h"
-static sock_tcp_t *sock_server_tcp;
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 #include "udp.h"
 static sock_udp_t *sock_server_udp;
@@ -45,27 +40,6 @@ static void initClient()
 	getSettingNameRight(name);
 	proto_send_hello_client(name);
 }
-
-#ifdef SUPPORT_NET_UNIX_TCP
-
-int initTcpClient(char *ip, int port)
-{
-	sock_server_tcp = connectTcpSocket(ip, port);
-
-	if( sock_server_tcp == NULL )
-	{
-		return -1;
-	}
-
-	printf("connect TCP %s %d\n", ip, port);
-
-	protocolType = NET_PROTOCOL_TYPE_TCP;
-	initClient();
-
-	return 0;
-}
-
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
@@ -115,22 +89,6 @@ void sendServer(char *msg)
 
 	assert( msg != NULL );
 
-#ifdef SUPPORT_NET_UNIX_TCP
-	ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
-
-	if ( ret == 0 )
-	{
-		fprintf(stderr, "server uzatvoril sietovy socket\n");
-		setWorldEnd();
-	}
-	
-	if ( ret < 0 )
-	{
-		fprintf(stderr, "nastala chyba pri poslani spravy serveru\n");
-		setWorldEnd();
-	}
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
 	ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
 #endif
@@ -151,24 +109,6 @@ static int eventServerSelect()
 
 	memset(buffer,0 ,STR_PROTO_SIZE);
 
-#ifdef SUPPORT_NET_UNIX_TCP
-	ret = readTcpSocket(sock_server_tcp, buffer, STR_PROTO_SIZE-1);
-
-	if( ret == 0 )
-	{
-		fprintf(stderr, "server uzatovril sietovy socket\n");
-		setWorldEnd();
-		return ret;
-	}
-	
-	if( ret < 0 )
-	{
-		fprintf(stderr, "chyba, spojenie prerusene \n");
-		setWorldEnd();
-		return ret;
-	}
-#endif
-	
 #ifdef SUPPORT_NET_UNIX_UDP
 	ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE-1);
 #endif
@@ -205,6 +145,7 @@ void eventServerBuffer()
 #ifdef DEBUG_CLIENT_RECV
 		printf("recv server msg->%s", line);
 #endif
+
 		if( strncmp(line, "error", 5) == 0 )proto_recv_error_client(line);
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
@@ -218,45 +159,10 @@ void eventServerBuffer()
 		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_client(line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_client(line);
 
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 		lastPingServerAlive = getMyTime();
-#endif
 	}
 }
 
-#ifdef SUPPORT_NET_UNIX_TCP
-
-void selectClientTcpSocket()
-{
-	fd_set readfds;
-	struct timeval tv;
-	int max_fd;
-	bool_t isNext;
-
-	do{
-		isNext = FALSE;
-
-		tv.tv_sec = 0;
-		tv.tv_usec = 0;
-		
-		FD_ZERO(&readfds);
-		FD_SET(sock_server_tcp->sock, &readfds);
-		max_fd = sock_server_tcp->sock;
-	
-		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
-	
-		if( FD_ISSET(sock_server_tcp->sock, &readfds) )
-		{
-			eventServerSelect();
-			isNext = TRUE;
-		}
-
-	}while( isNext == TRUE );
-}
-
-#endif
-
-#if defined SUPPORT_NET_UNIX_UDP || defined SUPPORT_NET_SDL_UDP
 
 void eventPingServer()
 {
@@ -284,8 +190,6 @@ bool_t isServerAlive()
 
 	return TRUE;
 }
-
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
@@ -353,20 +257,6 @@ static void quitClient()
 	assert( clientBuffer != NULL );
 	destroyBuffer(clientBuffer);
 }
-
-#ifdef SUPPORT_NET_UNIX_TCP
-
-void quitTcpClient()
-{
-	quitClient();
-
-	assert( sock_server_tcp != NULL );
-	closeTcpSocket(sock_server_tcp);
-
-	printf("quit TCP conenct\n");
-}
-
-#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
