@@ -129,7 +129,11 @@ static void eventPeriodicSyncSelfClient(void *p_nothink)
 	for( i = 0 ; i < listClient->count; i++)
 	{
 		thisClient = (client_t *) listClient->list[i];
-		proto_send_newtux_server(PROTO_SEND_ONE, thisClient, thisClient->tux);
+
+		if( thisClient->tux != NULL )
+		{
+			proto_send_newtux_server(PROTO_SEND_ONE, thisClient, thisClient->tux);
+		}
 	}
 }
 
