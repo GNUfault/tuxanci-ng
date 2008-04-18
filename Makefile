@@ -49,7 +49,7 @@ server:
 install:
 	mkdir -p $(DESTDIR)/bin
 	mkdir -p $(DESTDIR)/share/tuxanci-ng/{arena,data,font,image,lang,music,sound,conf}
-	cp  ./build/tuxanci-ng $(DESTDIR)/bin/
+	cp  ./src/tuxanci-ng $(DESTDIR)/bin/
 
 	cp  -rf ./arena/* $(DESTDIR)/share/tuxanci-ng/arena/
 	cp  -rf ./font/* $(DESTDIR)/share/tuxanci-ng/font/

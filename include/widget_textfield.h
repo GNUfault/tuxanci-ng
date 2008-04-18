@@ -19,6 +19,7 @@ typedef struct widget_textfield
 	int w, h;
 	int canWrite;
 	int timeBlick;
+	int time;
 	char text[STR_SIZE];
 	bool_t active;
 } widget_textfield_t;

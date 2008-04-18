@@ -20,7 +20,6 @@ FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o 
 tuxanci-ng: $(FILES)
 	$(CC) $(CFLAGS) $(LIBS) -o $(BUILD_DIR)/tuxanci-ng $(BUILD_DIR)/*.o
 
-
 main.o: main.c 
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/main.o -c main.c
 

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 
 #include "main.h"
@@ -192,3 +191,4 @@ void destroyWidgetTextfield(widget_textfield_t *p)
 {
 	free(p);
 }
+ 

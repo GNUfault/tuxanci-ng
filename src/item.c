@@ -375,8 +375,9 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 	
 	for( i = 0 ; i < listShot->count ; i++ )
 	{
-		bool_t isDelShot = FALSE;
+		bool_t isDelShot;
 
+		isDelShot = FALSE;
 		thisShot  = (shot_t *)listShot->list[i];
 		assert( thisShot != NULL );
 
@@ -385,33 +386,37 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 			thisItem  = (item_t *)listItem->list[j];
 			assert( thisItem != NULL );
 
-			switch( thisItem->type )
+			if( conflictSpace(thisShot->x, thisShot->y, thisShot->w, thisShot->h,
+			    thisItem->x, thisItem->y, thisItem->w, thisItem->h) )
 			{
-				case ITEM_MINE :
-
-					if( getNetTypeGame() != NET_GAME_TYPE_CLIENT &&
-				            conflictSpace(thisShot->x, thisShot->y, thisShot->w, thisShot->h,
-					    thisItem->x, thisItem->y, thisItem->w, thisItem->h) )
-					{
-						if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+				switch( thisItem->type )
+				{
+					case ITEM_MINE :
+	
+						if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 						{
-							proto_send_item_server(PROTO_SEND_ALL, NULL, NULL, thisItem);
+							if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+							{
+								proto_send_item_server(PROTO_SEND_ALL, NULL, NULL, thisItem);
+							}
+	
+							mineExplosion(listItem, thisItem);
+							j--;
 						}
-
-						mineExplosion(listItem, thisItem);
-						j--;
-					}
-				break;
-
-				case ITEM_EXPLOSION :
-				case ITEM_BIG_EXPLOSION :
-					isDelShot = TRUE;
-				break;
+					break;
+	
+					case ITEM_EXPLOSION :
+					case ITEM_BIG_EXPLOSION :
+							isDelShot = TRUE;
+					
+					break;
+				}
 			}
 		}
 
 		if( isDelShot )
 		{
+			printf("del shot\n");
 			delListItem(listShot, i, destroyShot);
 			i--;
 		}
