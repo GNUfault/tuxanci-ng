@@ -37,6 +37,8 @@ void initFont(char *file,int size)
 		return;
 	}
 
+	accessExistFile(str);
+
 	g_font = TTF_OpenFont(str, size);
 	TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
 

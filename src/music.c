@@ -54,8 +54,11 @@ static Mix_Music* loadMixMusic(char *file)
 	Mix_Music *new;
 	char str[STR_PATH_SIZE];
 
+
 	printf("load music %s..\n", file);
 	sprintf(str, PATH_MUSIC "%s", file);
+
+	accessExistFile(str);
 
 	new = Mix_LoadMUS(str);
 

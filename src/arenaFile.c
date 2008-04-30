@@ -311,6 +311,8 @@ void initArenaFile()
 			sprintf(path, PATH_ARENA "%s", line);
 
 			printf("load map %s\n", line);
+		
+			accessExistFile(path);
 			addList(listArenaFile, loadTextFile(path));
 		}
 	}

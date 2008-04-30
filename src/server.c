@@ -152,7 +152,7 @@ void static initServer()
 
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
-	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncSelfClient, NULL, 5000);
+	//addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncSelfClient, NULL, 5000);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
 }
 

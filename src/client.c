@@ -143,8 +143,8 @@ void eventServerBuffer()
 	while ( getBufferLine(clientBuffer, line, STR_PROTO_SIZE) >= 0 )
 	{
 #ifdef DEBUG_CLIENT_RECV
-		printf("recv server msg->%s", line);
 #endif
+		printf("recv server msg->%s", line);
 
 		if( strncmp(line, "error", 5) == 0 )proto_recv_error_client(line);
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);

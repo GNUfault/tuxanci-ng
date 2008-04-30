@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=tuxanci-ng
+Comment=game tuxanci next generation
+Exec=/usr/bin/tuxanci-ng
+Terminal=false
+Type=Application
+Icon=/usr/share/tuxanci-ng/image/tuxanci.png
+Encoding=UTF-8
+Categories=Game

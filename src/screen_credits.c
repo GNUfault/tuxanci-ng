@@ -97,6 +97,7 @@ void initScreenCredits()
 	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2, WINDOW_SIZE_Y-80, eventWidget);
 
 	listWidgetLabel = newList();
+	accessExistFile(PATH_DATA SCREEN_CREDITS_FILE);
 	textFile = loadTextFile(PATH_DATA SCREEN_CREDITS_FILE);
 
 	for( i = 0 ; i < textFile->text->count ; i++ )

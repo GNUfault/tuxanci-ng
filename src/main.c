@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/stat.h>
 
 #include "main.h"
 #include "tux.h"
@@ -168,6 +171,15 @@ char *getString(int n)
 	char str[STR_NUM_SIZE];
 	sprintf(str, "%d", n);
 	return strdup(str);
+}
+
+void accessExistFile(const char *s)
+{
+	if( access(s, F_OK) != 0 )
+	{
+		fprintf(stderr, "File %s not fount !\nProgram shutdown !\n", s);
+		exit(-1);
+	}
 }
 
 int main(int argc, char *argv[])

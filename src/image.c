@@ -38,8 +38,11 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 
 	char str[STR_PATH_SIZE];
 
+
 	sprintf(str, PATH_IMAGE "%s", filename);
 	
+	accessExistFile(str);
+
 	if( ( tmp = IMG_Load(str) ) == NULL )
 	{
 		fprintf(stderr, "%s\n", SDL_GetError());

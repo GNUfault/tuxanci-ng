@@ -138,6 +138,22 @@ int isPessAnyKey()
 	return 0;
 }
 
+void printPessAnyKey()
+{
+	Uint8 *mapa;
+	int i;
+
+	mapa = SDL_GetKeyState(NULL);
+
+	for( i = SDLK_BACKSPACE ; i < SDLK_KP9 ; i++ )
+		if( mapa[i] == SDL_PRESSED )
+		{
+			printf("press key with code : %d\n", i);
+		}
+
+}
+
+
 /*
 static void action_esc()
 {

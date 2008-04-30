@@ -416,7 +416,7 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 
 		if( isDelShot )
 		{
-			printf("del shot\n");
+			//printf("del shot\n");
 			delListItem(listShot, i, destroyShot);
 			i--;
 		}
