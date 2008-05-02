@@ -10,107 +10,16 @@
 
 #include "main.h"
 #include "tux.h"
+#include "game.h"
 
-#ifndef PUBLIC_SERVER
+#ifdef PUBLIC_SERVER
 
-#include "font.h"
-#include "keytable.h"
-#include "language.h"
-#include "image.h"
-#include "layer.h"
-#include "interface.h"
-#include "screen.h"
-#include "screen_world.h"
-#include "screen_mainMenu.h"
-#include "screen_analyze.h"
-#include "screen_setting.h"
-#include "screen_gameType.h"
-#include "screen_choiceArena.h"
-#include "screen_table.h"
-#include "screen_credits.h"
-#include "homeDirector.h"
-#include "item.h"
-#include "shot.h"
-#include "arenaFile.h"
-#include "panel.h"
-#include "audio.h"
-#include "sound.h"
-#include "music.h"
+#include "publicServer.h"
 
 #endif
 
 static int my_argc;
 static char **my_argv;
-
-#ifndef PUBLIC_SERVER
-
-static void init()
-{
-	createHomeDirector();
-
-	if( initLanguage() == -1 )
-	{
-		printf("fatal error !\n");
-		exit(-1);
-	}
-
-	initSDL();
-
-	initLayer();
-	initFont(getLanguageFont(), getLanguageSize());
-	initKeyTable();
-	initImageData();
-	initAudio();
-	initSound();
-	initMusic();
-	initScreen();
-	initArenaFile();
-	initTux();
-	initItem();
-	initShot();
-	initPanel();
-	initWorld();
-	initScreenMainMenu();
-	initScreenAnalyze();
-	initScreenSetting();
-	initScreenGameType();
-	initScreenChoiceArena();
-	initScreenCredits();
-	initScreenTable();
-}
-
-void quit()
-{
-	quitSDL();
-	quitLayer();
-	quitFont();
-	quitKeyTable();
-	quitLanguage();
-	quitScreen();
-	quitArenaFile();
-	quitItem();
-	quitTux();
-	quitShot();
-	quitPanel();
-	quitWorld();
-	quitImageData();
-	quitSound();
-	quitMusic();
-	quitAudio();
-	quitScreenMainMenu();
-	quitScreenAnalyze();
-	quitScreenSetting();
-	quitScreenGameType();
-	quitScreenChoiceArena();
-	quitScreenCredits();
-	quitScreenTable();
-
-	printf("quit..\n");
-
-	exit(0);
-}
-
-#endif
 
 char* getParam(char *s)
 {
@@ -136,7 +45,6 @@ char* getParam(char *s)
 
 	return NULL;
 }
-
 
 char* getParamElse(char *s1, char *s2)
 {
@@ -189,12 +97,13 @@ int main(int argc, char *argv[])
 	my_argc = argc;
 	my_argv = argv;
 
-	init();
+#ifndef PUBLIC_SERVER
+	startGame();
+#endif
 
-	setScreen("mainMenu");
-
-	eventSDL();
-	quit();
+#ifdef PUBLIC_SERVER
+	startPublicServer();
+#endif
 
 	return 0;
 }

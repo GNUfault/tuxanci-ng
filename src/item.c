@@ -370,6 +370,11 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 	item_t *thisItem;
 	int i, j;
 
+	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
+	{
+		return; 
+	}
+
 	assert( listItem != NULL );
 	assert( listShot != NULL );
 	
@@ -416,7 +421,11 @@ void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 
 		if( isDelShot )
 		{
-			//printf("del shot\n");
+			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
+			{
+				proto_send_delshot_server(PROTO_SEND_ALL, NULL, thisShot);
+			}
+
 			delListItem(listShot, i, destroyShot);
 			i--;
 		}

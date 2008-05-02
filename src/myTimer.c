@@ -42,6 +42,7 @@ my_time_t getMyTime()
 
 	ticks = (now.tv_sec-start.tv_sec)*1000+(now.tv_usec-start.tv_usec)/1000;
 
+	//printf("-> %d\n", ticks);
 	return ticks;
 }
 

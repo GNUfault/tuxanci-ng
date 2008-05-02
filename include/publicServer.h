@@ -13,5 +13,6 @@ extern int getChoiceArenaId();
 extern void eventPublicServer();
 extern void my_handler_quit(int n);
 extern void quitPublicServer();
+extern int startPublicServer();
 
 #endif

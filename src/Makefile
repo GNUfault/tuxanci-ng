@@ -15,7 +15,7 @@ FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o 
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
 	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
 	widget_buttonimage.o screen_credits.o teleport.o pipe.o homeDirector.o screen_table.o \
-	sdl_udp.o proto.o server.o client.o term.o keytable.o language.o
+	sdl_udp.o proto.o server.o client.o term.o keytable.o language.o game.o
  
 tuxanci-ng: $(FILES)
 	$(CC) $(CFLAGS) $(LIBS) -o $(BUILD_DIR)/tuxanci-ng $(BUILD_DIR)/*.o
@@ -175,6 +175,9 @@ keytable.o: keytable.c ../include/keytable.h
 
 language.o: language.c ../include/language.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/language.o -c language.c
+
+game.o: game.c ../include/game.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/game.o -c game.c
 
 clean:
 	rm -rf *.o *.c~ ../include/*.h~ Makefile~

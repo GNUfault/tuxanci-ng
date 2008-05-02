@@ -26,6 +26,5 @@ extern char* getParamElse(char *s1, char *s2);
 extern bool_t isParamFlag(char *s);
 extern char *getString(int n);
 extern void accessExistFile(const char *s);
-extern void quit();
 
 #endif

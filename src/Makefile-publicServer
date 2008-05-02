@@ -12,13 +12,16 @@ LIBS =
 
 FILES = list.o director.o configFile.o tux.o wall.o shot.o myTimer.o \
 	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o gun.o item.o teleport.o pipe.o \
-	udp.o proto.o server.o publicServer.o net_multiplayer.o serverConfigFile.o
+	udp.o proto.o server.o publicServer.o net_multiplayer.o serverConfigFile.o main.o
 
 $(BUILD_DIR)/publicserver: mkdir_build $(FILES)
 	$(CC) $(CFLAGS) $(LIBS) -o $(BUILD_DIR)/publicserver $(BUILD_DIR)/*.o
 
 mkdir_build:
 	mkdir -p $(BUILD_DIR)
+
+main.o: main.c 
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/main.o -c main.c
 
 publicServer.o: publicServer.c 
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/publicServer.o -c publicServer.c

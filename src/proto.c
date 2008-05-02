@@ -139,9 +139,11 @@ void proto_send_status_server(int type, client_t *client)
 	sprintf(msg,	"version: %s\n"
 			"clients: %d\n"
 			"maxclients: %d\n"
-			"uptime: %d\n",
+			"uptime: %d\n"
+			"arena: %s\n",
 	TUXANCI_NG_VERSION, getCurrentArena()->listTux->count,
-	getServerMaxClients(), getMyTime() );
+	getServerMaxClients(), (unsigned int)getUpdateServer(),
+	getArenaNetName( getChoiceArenaId() ) );
 
 	proto_send(type, client, msg);
 }

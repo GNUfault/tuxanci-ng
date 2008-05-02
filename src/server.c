@@ -41,8 +41,18 @@ static sock_sdl_udp_t *sock_server_sdl_udp;
 
 static list_t *listClient;
 static list_t *listServerTimer;
-static my_time_t lastSyncClient;
+static time_t timeUpdate;
 static int maxClients;
+
+static void startUpdateServer()
+{
+	timeUpdate = time(NULL);
+}
+
+time_t getUpdateServer()
+{
+	return time(NULL) - timeUpdate;
+}
 
 static void delZombieCLient(void *p_nothink)
 {
@@ -121,6 +131,7 @@ static void eventPeriodicSyncClient(void *p_nothink)
 	}
 }
 
+/*
 static void eventPeriodicSyncSelfClient(void *p_nothink)
 {
 	client_t *thisClient;
@@ -136,24 +147,38 @@ static void eventPeriodicSyncSelfClient(void *p_nothink)
 		}
 	}
 }
+*/
 
 static void eventSendPingClients(void *p_nothink)
 {
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
 
-void static initServer()
-{
-	listClient = newList();
-	lastSyncClient = getMyTime();
-	setServerMaxClients(SERVER_MAX_CLIENTS);
 
+static void setServerTimer()
+{
+	if( listServerTimer != NULL )
+	{
+		destroyTimer(listServerTimer);
+	}
+
+	restartTimer();
 	listServerTimer = newTimer();
 
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
 	//addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncSelfClient, NULL, 5000);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
+
+}
+
+void static initServer()
+{
+	startUpdateServer();
+	listServerTimer = NULL;
+	listClient = newList();
+	setServerMaxClients(SERVER_MAX_CLIENTS);
+	setServerTimer();
 }
 
 #ifdef SUPPORT_NET_UNIX_UDP
@@ -554,7 +579,7 @@ void selectServerUdpSocket()
 	if( listClient->count == 0 )
 	{
 		ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, NULL);
-		//restartTimer();
+		setServerTimer();
 	}
 	else
 	{

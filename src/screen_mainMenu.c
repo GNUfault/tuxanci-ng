@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "main.h"
+#include "game.h"
 #include "interface.h"
 #include "language.h"
 #include "screen.h"
@@ -82,7 +83,7 @@ static void eventWidget(void *p)
 
 	if( button == button_end )
 	{
-		quit();
+		quitGame();
 	}
 }
 

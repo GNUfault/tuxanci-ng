@@ -26,9 +26,6 @@ static int arenaId;
 static arena_t *arena;
 static bool_t isSignalEnd;
 
-static int my_argc;
-static char **my_argv;
-
 void countRoundInc()
 {
 }
@@ -119,66 +116,8 @@ void quitPublicServer()
 	exit(0);
 }
 
-char* getParam(char *s)
+int startPublicServer()
 {
-	int i;
-	int len;
-
-	len = strlen(s);
-
-	for( i = 1 ; i < my_argc ; i++ )
-	{
-		if( strstr(my_argv[i], s) == my_argv[i] )
-		{
-			return strchr(my_argv[i], '=')+1;
-		}
-	}
-
-	return NULL;
-}
-
-char* getParamElse(char *s1, char *s2)
-{
-	char *ret;
-	ret = getParam(s1);
-
-	if( ret == NULL)
-	{
-		return s2;
-	}
-
-	return ret;
-}
-
-bool_t isParamFlag(char *s)
-{
-	int i;
-
-	for( i = 0 ; i < my_argc ; i++ )
-	{
-		if( strcmp(s, my_argv[i]) == 0 )
-		{
-			return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-
-char *getString(int n)
-{
-	char str[STR_NUM_SIZE];
-	sprintf(str, "%d", n);
-	return strdup(str);
-}
-
-int main(int argc, char *argv[])
-{
-	srand( (unsigned) time(NULL) );
-
-	my_argc = argc;
-	my_argv = argv;
-
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, my_handler_quit);
 	signal(SIGTERM, my_handler_quit);
@@ -197,5 +136,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-

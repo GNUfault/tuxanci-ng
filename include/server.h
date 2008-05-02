@@ -3,6 +3,8 @@
 
 #define MY_SERVER
 
+#include <time.h>
+
 #include "list.h"
 #include "tux.h"
 #include "buffer.h"
@@ -67,6 +69,7 @@ extern void quitSdlUdpServer();
 
 extern void destroyClient(client_t *p);
 
+extern time_t getUpdateServer();
 extern list_t* getListServerClient();
 extern int getServerMaxClients();
 extern void setServerMaxClients(int n);
