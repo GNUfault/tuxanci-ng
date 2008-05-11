@@ -8,6 +8,7 @@
 #include "screen.h"
 #include "image.h"
 #include "music.h"
+#include "fake_audio.h"
 #include "screen_mainMenu.h"
 #include "list.h"
 #include "screen_analyze.h"

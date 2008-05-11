@@ -9,6 +9,8 @@
 #include "screen.h"
 #include "image.h"
 #include "music.h"
+#include "fake_audio.h"
+
 #include "screen_mainMenu.h"
 #include "screen_setting.h"
 

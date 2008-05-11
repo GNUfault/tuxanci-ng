@@ -14,6 +14,7 @@
 #include "layer.h"
 #include "screen_world.h"
 #include "sound.h"
+#include "fake_audio.h"
 #endif
 
 #ifdef PUBLIC_SERVER

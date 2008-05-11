@@ -3,6 +3,8 @@
 
 #define SOUND_H
 
+#ifndef NO_SOUND
+
 #include <SDL_mixer.h>
 #include "main.h"
 
@@ -26,3 +28,4 @@ extern void quitSound();
 
 #endif
 
+#endif

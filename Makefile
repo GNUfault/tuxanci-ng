@@ -46,6 +46,9 @@ svnr:
 server:
 	make -C ./src -f Makefile-publicServer
 
+nosound:
+	make -C ./src -f Makefile-nosound
+
 install:
 	mkdir -p $(DESTDIR)/bin
 	mkdir -p $(DESTDIR)/share/tuxanci-ng/{arena,data,font,image,lang,music,sound,conf}

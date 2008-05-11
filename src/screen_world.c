@@ -19,6 +19,7 @@
 #include "image.h"
 #include "music.h"
 #include "sound.h"
+#include "fake_audio.h"
 #include "tux.h"
 #include "wall.h"
 #include "teleport.h"
@@ -69,7 +70,6 @@ void setWorldArena(int id)
 
 void setMaxCountRound(int n)
 {
-	printf("max_count = %d\n", n);
 	max_count = n;
 }
 

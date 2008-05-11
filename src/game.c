@@ -34,6 +34,7 @@
 #include "audio.h"
 #include "sound.h"
 #include "music.h"
+#include "fake_audio.h"
 
 static void initGame()
 {

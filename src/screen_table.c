@@ -12,6 +12,8 @@
 #include "screen.h"
 #include "image.h"
 #include "music.h"
+#include "fake_audio.h"
+
 #include "screen_table.h"
 
 #include "widget_image.h"

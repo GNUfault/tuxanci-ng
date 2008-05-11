@@ -22,6 +22,7 @@
 #ifndef PUBLIC_SERVER
 #include "image.h"
 #include "sound.h"
+#include "fake_audio.h"
 #include "layer.h"
 #include "screen_world.h"
 #include "term.h"

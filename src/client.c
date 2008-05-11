@@ -1,4 +1,3 @@
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -286,20 +285,3 @@ void quitSdlUdpClient()
 }
 
 #endif
-/*
-recv server msg->additem 5 7 303 421 1 0 0
-recv server msg->ping
-recv server msg->shot 3 441 427 -5 0 4 0 0 0
-recv server msg->item -1 5
-recv server msg->delshot 3
-shot is not NULL
-index is 0
-
-recv server msg->additem 2 7 303 223 0 0 0
-recv server msg->additem 3 7 303 283 1 0 0
-recv server msg->additem 4 7 303 337 1 0 0
-recv server msg->ping
-recv server msg->shot 5 144 227 5 0 6 0 1 0
-recv server msg->item -1 2
-recv server msg->delshot 5
-*/

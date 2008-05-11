@@ -3,15 +3,15 @@
 CC = gcc
 
 #CFLAGS = -O2 -DSUPPORT_NET_SDL_UDP  -I../include -Wall `sdl-config --cflags`
-CFLAGS = -g -O0 -std=c99 -I../include -Wall `sdl-config --cflags`
+CFLAGS = -g -O0 -std=c99 -DNO_SOUND -I../include -Wall `sdl-config --cflags`
 #CFLAGS = -O2 -DDESTDIR=\"$(DESTDIR)\" `sdl-config --cflags` -I../include -Wall
 
 BUILD_DIR = .
-LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lSDL_net
+LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_net
 
 FILES = interface.o font.o list.o image.o layer.o director.o configFile.o tux.o main.o \
 	screen.o screen_world.o wall.o shot.o myTimer.o panel.o net_multiplayer.o \
-	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o audio.o sound.o music.o gun.o \
+	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o fake_audio.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
 	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
 	widget_buttonimage.o screen_credits.o teleport.o pipe.o homeDirector.o screen_table.o \
@@ -104,15 +104,6 @@ textFile.o: textFile.c ../include/textFile.h
 arenaFile.o: arenaFile.c ../include/arenaFile.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/arenaFile.o -c arenaFile.c
 
-audio.o: audio.c ../include/audio.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/audio.o -c audio.c
-
-sound.o: sound.c ../include/sound.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/sound.o -c sound.c
-
-music.o: music.c ../include/music.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/music.o -c music.c
-
 gun.o: gun.c ../include/gun.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/gun.o -c gun.c
 
@@ -178,6 +169,9 @@ language.o: language.c ../include/language.h
 
 game.o: game.c ../include/game.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/game.o -c game.c
+
+fake_audio.o: fake_audio.c ../include/fake_audio.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/fake_audio.o -c fake_audio.c
 
 clean:
 	rm -rf *.o *.c~ ../include/*.h~ Makefile~

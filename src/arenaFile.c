@@ -23,6 +23,7 @@
 #ifndef PUBLIC_SERVER
 #include "image.h"
 #include "music.h"
+#include "fake_audio.h"
 #endif
 
 static list_t *listArenaFile;

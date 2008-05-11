@@ -10,6 +10,8 @@
 #include "image.h"
 #include "music.h"
 #include "sound.h"
+#include "fake_audio.h"
+
 #include "screen_mainMenu.h"
 #include "list.h"
 #include "homeDirector.h"
@@ -31,12 +33,17 @@ static widget_button_t *button_back;
 static widget_label_t *label_count_round;
 static widget_label_t *label_name_player1;
 static widget_label_t *label_name_player2;
+
+#ifndef NO_SOUND
 static widget_label_t *label_music;
 static widget_label_t *label_sound;
+#endif
 
 static widget_check_t *check[ITEM_COUNT];
+#ifndef NO_SOUND
 static widget_check_t *check_music;
 static widget_check_t *check_sound;
+#endif
 
 static widget_image_t *image_gun_dual_revolver;
 static widget_image_t *image_gun_scatter;
@@ -72,8 +79,10 @@ void drawScreenSetting()
 	drawWidgetLabel(label_count_round);
 	drawWidgetLabel(label_name_player1);
 	drawWidgetLabel(label_name_player2);
+#ifndef NO_SOUND
 	drawWidgetLabel(label_music);
 	drawWidgetLabel(label_sound);
+#endif
 
 	drawWidgetTextfield(textfield_count_cound);
 	drawWidgetTextfield(textfield_name_player1);
@@ -93,8 +102,10 @@ void drawScreenSetting()
 	drawWidgetImage(image_bonus_4x);
 	drawWidgetImage(image_bonus_hidden);
 
+#ifndef NO_SOUND
 	drawWidgetCheck(check_music);
 	drawWidgetCheck(check_sound);
+#endif
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -117,8 +128,10 @@ void eventScreenSetting()
 	eventWidgetTextfield(textfield_name_player1);
 	eventWidgetTextfield(textfield_name_player2);
 
+#ifndef NO_SOUND
 	eventWidgetCheck(check_music);
 	eventWidgetCheck(check_sound);
+#endif
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -150,6 +163,7 @@ static void eventWidget(void *p)
 		setScreen("mainMenu");
 	}
 
+#ifndef NO_SOUND
 	if( check == check_music )
 	{
 		setMusicActive( check_music->status );
@@ -159,6 +173,7 @@ static void eventWidget(void *p)
 	{
 		setSoundActive( check_sound->status );
 	}
+#endif
 }
 
 static void initSettingFile()
@@ -217,11 +232,13 @@ static void initSettingFile()
 	loadValueFromConfigFile(configFile, "BONUS_HIDDEN", val, STR_SIZE, "YES");
 	check[BONUS_HIDDEN]->status = isYesOrNO(val);
 
+#ifndef NO_SOUND
 	loadValueFromConfigFile(configFile, "MUSIC", val, STR_SIZE, "YES");
 	check_music->status = isYesOrNO(val);
 
 	loadValueFromConfigFile(configFile, "SOUND", val, STR_SIZE, "YES");
 	check_sound->status = isYesOrNO(val);
+#endif
 
 	saveTextFile(configFile);
 }
@@ -253,8 +270,10 @@ static void saveAndDestroyConfigFile()
 	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(check[BONUS_4X]->status) );
 	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(check[BONUS_HIDDEN]->status) );
 
+#ifndef NO_SOUND
 	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(check_music->status) );
 	setValueInConfigFile(configFile, "SOUND", getYesOrNo(check_sound->status) );
+#endif
 
 	saveTextFile(configFile);
 	destroyTextFile(configFile);
@@ -279,6 +298,7 @@ void initScreenSetting()
 	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", "name1"), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
 	textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", "name2"), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
 
+#ifndef NO_SOUND
 	label_music = newWidgetLabel(getMyText("MUSIC"), 100, WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_music = newWidgetCheck(label_music->x + label_music->w  + 10,
 		WINDOW_SIZE_Y-80, isMusicActive() , eventWidget);
@@ -286,6 +306,7 @@ void initScreenSetting()
 		WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
 	check_sound = newWidgetCheck(label_sound->x + label_sound->w + 10,
 		WINDOW_SIZE_Y-80, isSoundActive() , eventWidget);
+#endif
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -346,8 +367,10 @@ void initScreenSetting()
 
 	initSettingFile();
 
+#ifndef NO_SOUND
 	eventWidget(check_music);
 	eventWidget(check_sound);
+#endif
 }
 
 void getSettingNameRight(char *s)
@@ -404,8 +427,11 @@ void quitScreenSetting()
 	destroyWidgetLabel(label_count_round);
 	destroyWidgetLabel(label_name_player1);
 	destroyWidgetLabel(label_name_player2);
+
+#ifndef NO_SOUND
 	destroyWidgetLabel(label_music);
 	destroyWidgetLabel(label_sound);
+#endif
 
 	destroyWidgetTextfield(textfield_count_cound);
 	destroyWidgetTextfield(textfield_name_player1);
@@ -425,8 +451,10 @@ void quitScreenSetting()
 	destroyWidgetImage(image_bonus_4x);
 	destroyWidgetImage(image_bonus_hidden);
 
+#ifndef NO_SOUND
 	destroyWidgetCheck(check_music);
 	destroyWidgetCheck(check_sound);
+#endif
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
