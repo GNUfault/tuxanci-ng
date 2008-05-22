@@ -19,6 +19,7 @@
 #include "dynamicInt.h"
 #include "proto.h"
 #include "modules.h"
+#include "idManager.h"
 
 #ifndef PUBLIC_SERVER
 #include "image.h"
@@ -43,6 +44,8 @@ static SDL_Surface *g_cross;
 
 #endif
 
+static list_t *listID;
+
 static bool_t isTuxInit = FALSE;
 
 bool_t isTuxInicialized()
@@ -64,12 +67,13 @@ void initTux()
 	g_cross = addImageData("cross.png", IMAGE_ALPHA, "cross", IMAGE_GROUP_BASE);
 #endif
 
+	listID = newListID();
+
 	isTuxInit = TRUE;
 }
 
 tux_t* newTux()
 {
-	static int last_id = 0;
 	int x, y;
 	tux_t *new;
 
@@ -78,7 +82,7 @@ tux_t* newTux()
 
 	memset(new, 0, sizeof(tux_t) );
 	
-	new->id = last_id++;
+	new->id = getNewID(listID);
 	new->status = TUX_STATUS_ALIVE;
 	new->control = TUX_CONTROL_NONE;
 
@@ -244,6 +248,12 @@ tux_t* getTuxID(list_t *listTux, int id)
 	}
 
 	return NULL;
+}
+
+void replaceTuxID(tux_t *tux, int id)
+{
+	replaceID(listID, tux->id, id);
+	tux->id = id;
 }
 
 tux_t* isConflictWithListTux(list_t *listTux, int x, int y, int w, int h)
@@ -626,7 +636,6 @@ void moveTux(tux_t *tux, int n)
 
 	if( tux->bonus != BONUS_GHOST && (
 	    isConflictTuxWithListTux(tux, arena->listTux) ||
-	    isConflictWithListWall(arena->listWall, x, y, w, h)  ||
 	    isConflictModule(x, y, w, h) ) )
 	{
 		tux->x = zal_x;
@@ -797,9 +806,8 @@ static void eventBonus(tux_t *tux)
 
 				tux->bonus = BONUS_NONE;
 
-				if ( isConflictWithListWall(getCurrentArena()->listWall, x, y, w, h) ||
-				     isConflictModule(x, y, w, h) ||
-                                     isConflictTuxWithListTux(tux, getCurrentArena()->listTux) )
+				if( isConflictTuxWithListTux(tux, getCurrentArena()->listTux) ||
+				    isConflictModule(x, y, w, h) )
 				{
 					tux->bonus = BONUS_GHOST;
 					return;
@@ -865,11 +873,12 @@ void setTuxProportion(tux_t *tux, int x, int y)
 void destroyTux(tux_t *tux)
 {
 	assert( tux != NULL );
+	delID(listID, tux->id);
 	free(tux);
 }
 
 void quitTux()
 {
+	destroyListID(listID);
 	isTuxInit = FALSE;
 }
-

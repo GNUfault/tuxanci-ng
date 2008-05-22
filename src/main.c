@@ -81,6 +81,14 @@ char *getString(int n)
 	return strdup(str);
 }
 
+int* newInt(int x)
+{
+	int *new;
+	new = malloc( sizeof(int) );
+	*new = x;
+	return new;
+}
+
 void accessExistFile(const char *s)
 {
 	if( access(s, F_OK) != 0 )

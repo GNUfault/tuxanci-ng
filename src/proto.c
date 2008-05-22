@@ -190,7 +190,7 @@ void proto_recv_init_client(char *msg)
 	setMaxCountRound(n);
 
 	tux = newTux();
-	tux->id = id;
+	replaceTuxID(tux, id);
 	tux->x = x;
 	tux->y = y;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
@@ -329,8 +329,7 @@ void proto_recv_newtux_client(char *msg)
 		addList(getCurrentArena()->listTux, tux);
 	}
 
-	tux->id = id;
-
+	replaceTuxID(tux, id);
 	tux->x = x;
 	tux->y = y;
 	tux->status = status;
@@ -508,7 +507,7 @@ void proto_recv_additem_client(char *msg)
 		return;
 	}
 */
-	item->id = id;
+	replaceItemID(item, id);
 	item->count = count;
 	item->frame = frame;
 	item->lastSync = getMyTime();
@@ -606,7 +605,7 @@ void proto_recv_shot_client(char *msg)
 */
 	shot = newShot(x, y, px, py, gun, author_id);
 
-	shot->id = shot_id;
+	replaceShotID(shot, shot_id);
 	shot->isCanKillAuthor = isCanKillAuthor;
 	shot->position = position;
 

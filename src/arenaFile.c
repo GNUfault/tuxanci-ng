@@ -91,85 +91,6 @@ static void cmd_playMusic(arena_t *arena, char *line)
 
 #endif
 
-static void cmd_wall(arena_t *arena, char *line)
-{
-	char str_x[STR_NUM_SIZE];
-	char str_y[STR_NUM_SIZE];
-	char str_img_x[STR_NUM_SIZE];
-	char str_img_y[STR_NUM_SIZE];
-	char str_w[STR_NUM_SIZE];
-	char str_h[STR_NUM_SIZE];
-	char str_layer[STR_NUM_SIZE];
-	char str_image[STR_SIZE];
-	wall_t *new;
-
-	if( getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "img_x", str_img_x, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
-
-#ifndef PUBLIC_SERVER
-	new = newWall(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_img_x), atoi(str_img_y),
-			atoi(str_layer), getImage(IMAGE_GROUP_USER, str_image) );
-#endif
-
-#ifdef PUBLIC_SERVER
-	new = newWall(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_img_x), atoi(str_img_y),
-			atoi(str_layer) );
-#endif
-
-	addList(arena->listWall, new);
-}
-
-/*
-static void cmd_pipe(arena_t *arena, char *line)
-{
-	char str_x[STR_NUM_SIZE];
-	char str_y[STR_NUM_SIZE];
-	char str_w[STR_NUM_SIZE];
-	char str_h[STR_NUM_SIZE];
-	char str_id[STR_NUM_SIZE];
-	char str_id_out[STR_NUM_SIZE];
-	char str_position[STR_NUM_SIZE];
-	char str_layer[STR_NUM_SIZE];
-	char str_image[STR_SIZE];
-	pipe_t *new;
-
-	if( getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "id", str_id, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "id_out", str_id_out, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "position", str_position, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( getValue(line, "image", str_image, STR_SIZE) != 0 )return;
-
-#ifndef PUBLIC_SERVER
-	new = newPipe(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_layer), atoi(str_id), atoi(str_id_out), atoi(str_position),
-			getImage(IMAGE_GROUP_USER, str_image) );
-#endif
-
-#ifdef PUBLIC_SERVER
-	new = newPipe(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_layer), atoi(str_id), atoi(str_id_out), atoi(str_position) );
-#endif
-
-	addList(arena->listPipe, new);
-}
-*/
-
 int getArenaCount()
 {
 	return listArenaFile->count;
@@ -260,7 +181,7 @@ arena_t* getArena(int id)
 #endif
 
 		if( strncmp(line, "loadModule", 10) == 0 )cmd_loadModule(line);
-		if( strncmp(line, "wall", 4) == 0 )cmd_wall(arena, line);
+		//if( strncmp(line, "wall", 4) == 0 )cmd_wall(arena, line);
 		//if( strncmp(line, "teleport", 8) == 0 )cmd_teleport(arena, line);
 		//if( strncmp(line, "pipe", 4) == 0 )cmd_pipe(arena, line);
 	}

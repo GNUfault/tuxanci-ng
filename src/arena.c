@@ -44,10 +44,7 @@ arena_t* newArena()
 	new->listTimer = newList();
 	new->listTux = newList();
 	new->listShot = newList();
-	new->listWall = newList();
 	new->listItem = newList();
-	new->listTeleport = newList();
-	new->listPipe = newTimer();
 
 	return new;
 }
@@ -59,12 +56,13 @@ int conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
 
 int isFreeSpace(arena_t *arena, int x, int y, int w, int h)
 {
-	if ( isConflictWithListTux(arena->listTux, x, y, w, h) )return 0;
-	if ( isConflictWithListWall(arena->listWall, x, y, w, h) )return 0;
-	if ( isConflictWithListShot(arena->listShot, x, y, w, h) )return 0;
-	if ( isConflictWithListItem(arena->listItem, x, y, w, h) )return 0;
-	//if ( isConflictWithListTeleport(arena->listTeleport, x, y, w, h) )return 0;
-	//if ( isConflictWithListPipe(arena->listPipe, x, y, w, h) )return 0;
+	if( isConflictWithListTux(arena->listTux, x, y, w, h) )return 0;
+	if( isConflictWithListShot(arena->listShot, x, y, w, h) )return 0;
+	if( isConflictWithListItem(arena->listItem, x, y, w, h) )return 0;
+	if( isConflictModule(x, y, w, h) )return 0;
+	//if( isConflictWithListWall(arena->listWall, x, y, w, h) )return 0;
+	//if( isConflictWithListTeleport(arena->listTeleport, x, y, w, h) )return 0;
+	//if( isConflictWithListPipe(arena->listPipe, x, y, w, h) )return 0;
 
 	return 1;
 }
@@ -95,7 +93,7 @@ void drawArena(arena_t *arena)
 	addLayer(arena->background, 0, 0, 0, 0, WINDOW_SIZE_X, WINDOW_SIZE_Y, -100);
 
 	drawListTux(arena->listTux);
-	drawListWall(arena->listWall);
+	//drawListWall(arena->listWall);
 	//drawListTeleport(arena->listTeleport);
 	//drawListPipe(arena->listPipe);
 	drawListShot(arena->listShot);
@@ -127,7 +125,7 @@ void eventArena(arena_t *arena)
 	for( i = 0 ; i < 4 ; i++)
 	{
 		eventMoveListShot(arena->listShot);
-		eventConflictShotWithWall(arena->listWall, arena->listShot);
+		//eventConflictShotWithWall(arena->listWall, arena->listShot);
 		//eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
 		//eventConflictShotWithPipe(arena->listPipe, arena->listShot);
 		eventConflictShotWithItem(arena->listItem, arena->listShot);
@@ -140,25 +138,11 @@ void eventArena(arena_t *arena)
 	eventTimer(arena->listTimer);
 }
 
-int isConflictWithObjectInArena(arena_t *arena, int x, int y, int w, int h)
-{
-	if( isConflictWithListWall(arena->listWall, x, y, w, h) ||
-	    isConflictModule(x, y, w, h) )
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
 void destroyArena(arena_t *p)
 {
 	destroyListItem(p->listTux, destroyTux);
 	destroyListItem(p->listShot, destroyShot);
-	destroyListItem(p->listWall, destroyWall);
 	destroyListItem(p->listItem, destroyItem);
-	destroyListItem(p->listTeleport, destroyItem);
-	destroyListItem(p->listPipe, destroyItem);
 	destroyTimer(p->listTimer);
 	free(p);
 }

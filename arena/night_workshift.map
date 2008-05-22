@@ -3,6 +3,7 @@ name night workshift
 netName NW
 screen night_workshift.png
 
+loadModule file="modWall.so"
 loadModule file="modPipe.so"
 
 loadMusic file="night_workshift.ogg" name="night_workshift"

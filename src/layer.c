@@ -129,6 +129,12 @@ void drawLayerCenter(int x, int y)
 	listLayer = newList();
 }
 
+void flushLayer()
+{
+	destroyListItem(listLayer, free);
+	listLayer = newList();
+}
+
 /*
  * Odstrani zoznam vrtsiev z pamete.
  */

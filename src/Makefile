@@ -9,9 +9,10 @@ CFLAGS = -g -O0 -std=c99 -I../include -Wall `sdl-config --cflags`
 BUILD_DIR = .
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lSDL_net
 
-FILES = interface.o font.o list.o modules.o image.o layer.o director.o configFile.o tux.o main.o \
-	screen.o screen_world.o wall.o shot.o myTimer.o panel.o net_multiplayer.o \
-	buffer.o dynamicInt.o arena.o arenaFile.o textFile.o audio.o sound.o music.o gun.o \
+FILES = interface.o idManager.o checkFront.o font.o list.o modules.o image.o layer.o director.o\
+	configFile.o tux.o main.o \
+	screen.o screen_world.o shot.o myTimer.o panel.o net_multiplayer.o \
+	buffer.o arena.o arenaFile.o textFile.o audio.o sound.o music.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
 	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
 	widget_buttonimage.o screen_credits.o homeDirector.o screen_table.o \
@@ -28,6 +29,12 @@ interface.o: interface.c ../include/interface.h
 
 modules.o: modules.c ../include/modules.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/modules.o -c modules.c
+
+idManager.o: idManager.c ../include/idManager.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/idManager.o -c idManager.c
+
+checkFront.o: checkFront.c ../include/checkFront.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/checkFront.o -c checkFront.c
 
 font.o: font.c ../include/font.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/font.o -c font.c
@@ -56,8 +63,8 @@ screen.o: screen.c ../include/screen.h
 screen_world.o: screen_world.c ../include/screen_world.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/screen_world.o -c screen_world.c
 
-wall.o: wall.c ../include/wall.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/wall.o -c wall.c
+#wall.o: wall.c ../include/wall.h
+#	$(CC) $(CFLAGS) -o $(BUILD_DIR)/wall.o -c wall.c
 
 shot.o: shot.c ../include/shot.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/shot.o -c shot.c
@@ -94,9 +101,6 @@ network.o: network.c ../include/network.h
 
 net_multiplayer.o: net_multiplayer.c ../include/net_multiplayer.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/net_multiplayer.o -c net_multiplayer.c
-
-dynamicInt.o: dynamicInt.c ../include/dynamicInt.h
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/dynamicInt.o -c dynamicInt.c
 
 arena.o: arena.c ../include/arena.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/arena.o -c arena.c

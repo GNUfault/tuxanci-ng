@@ -3,6 +3,7 @@ name In a captivity of 8-bit
 netName IACO8B
 screen in_a_captivity_of_8-bit.png
 
+loadModule file="modWall.so"
 loadModule file="modTeleport.so"
 
 loadMusic file="in_a_captivity_of_8-bit.ogg" name="in_a_captivity_of_8-bit"

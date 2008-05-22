@@ -84,6 +84,8 @@ void setScreen(char *name)
 
 		if( strcmp(name, this->name) == 0 )
 		{
+			flushLayer();
+
 			if( currentScreen != NULL )
 			{
 				printf("stop screen %s..\n", currentScreen->name);

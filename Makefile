@@ -53,6 +53,7 @@ nosound:
 mod:
 	make -C ./modules -f Makefile modTeleport
 	make -C ./modules -f Makefile modPipe
+	make -C ./modules -f Makefile modWall
 
 install:
 	mkdir -p $(DESTDIR)/bin

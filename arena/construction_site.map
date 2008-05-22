@@ -3,6 +3,8 @@ name construction site
 netName CS
 screen construction_site.png
 
+loadModule file="modWall.so"
+
 loadMusic file="night_workshift.ogg" name="night_workshift"
 
 loadImage file="l4.pozadi.png" name="pozadi" alpha="no"

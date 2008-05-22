@@ -3,6 +3,7 @@
 #include "main.h"
 #include "dynamicInt.h"
 
+
 int* newInt(int x)
 {
 	int *new;

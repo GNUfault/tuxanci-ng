@@ -10,6 +10,7 @@
 #include "pipe.h"
 #include "net_multiplayer.h"
 #include "proto.h"
+#include "idManager.h"
 
 #ifndef PUBLIC_SERVER
 #include "image.h"
@@ -31,6 +32,7 @@ static SDL_Surface *g_shot_bombball;
 #endif
 
 static bool_t isShotInit = FALSE;
+static list_t *listID;
 
 bool_t isShotInicialized()
 {
@@ -52,6 +54,8 @@ void initShot()
 
 #endif
 
+	listID = newListID();
+	
 	isShotInit = TRUE;
 }
 
@@ -59,12 +63,11 @@ shot_t* newShot(int x,int y, int px, int py, int gun, int author_id)
 {
 	shot_t *new;
 	tux_t *author;
-	static int last_id = 0;
 
 	new = malloc( sizeof(shot_t) );
 	memset(new, 0, sizeof(shot_t) );
 
-	new->id = ++last_id;
+	new->id = getNewID(listID);
 	new->x = x;
 	new->y = y;
 	new->px = px;
@@ -151,6 +154,12 @@ shot_t* getShotID(list_t *listShot, int id)
 	}
 
 	return NULL;
+}
+
+void replaceShotID(shot_t *shot, int id)
+{
+	replaceID(listID, shot->id, id);
+	shot->id = id;
 }
 
 
@@ -404,11 +413,13 @@ void moveShot(shot_t *shot, int position, int src_x, int src_y,
 void destroyShot(shot_t *p)
 {
 	assert( p != NULL );
+	delID(listID, p->id);
 	free(p);
 }
 
 void quitShot()
 {
+	destroyListID(listID);
 	isShotInit = FALSE;
 }
 

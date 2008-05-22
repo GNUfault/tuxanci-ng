@@ -211,7 +211,7 @@ void delAllMusicInGroup(int group)
 		if( this->group == group )
 		{
 			delListItem(listMusic, i, destroyMusic);
-			break;
+			i--;
 		}
 	}
 }

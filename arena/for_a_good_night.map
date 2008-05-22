@@ -3,6 +3,8 @@ name For a good night
 netName FAGN
 screen for_a_good_night.png
 
+loadModule file="modWall.so"
+
 loadMusic file="for_a_good_night.ogg" name="for_a_good_night"
 
 loadImage file="l1.grow.png" name="grow" alpha="no"

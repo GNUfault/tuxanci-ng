@@ -20,10 +20,7 @@ typedef struct arena_struct
 	list_t *listTimer;
 	list_t *listTux;
 	list_t *listShot;
-	list_t *listWall;
 	list_t *listItem;
-	list_t *listTeleport;
-	list_t *listPipe;
 } arena_t;
 
 extern void setCurrentArena(arena_t *p);

@@ -155,11 +155,11 @@ void delAllImageInGroup(char *group)
 	for(i = 0 ; i < listImageData->count; i++)
 	{
 		this = (image_data_t *) listImageData->list[i];
-	
+
 		if( strcmp(group, this->group) == 0 )
 		{
 			delListItem(listImageData, i, destroyImageData);
-			break;
+			i--;
 		}
 
 	}

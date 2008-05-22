@@ -8,6 +8,6 @@
 
 #define TUXANCI_NG_VERSION "svn52"
 
-#define DESTDIR "/usr/local/"
+//#define DESTDIR "/usr/local/"
 #define SUPPORT_NET_SDL_UDP
 //#define PUBLIC_SERVER
