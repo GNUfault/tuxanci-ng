@@ -14,6 +14,8 @@
 #include "server.h"
 #include "proto.h"
 #include "net_multiplayer.h"
+#include "checkFront.h"
+#include "idManager.h"
 
 #ifndef PUBLIC_SERVER
 #include "network.h"
@@ -37,23 +39,38 @@ static void proto_send(int type, client_t *client, char *msg)
 		case PROTO_SEND_ONE :
 			assert( client != NULL );
 			sendClient(client, msg);
-#ifdef DEBUG_SERVER_SEND
-			printf("send one client msg->%s\n", msg);
-#endif
 		break;
 		case PROTO_SEND_ALL :
 			assert( client == NULL );
 			sendAllClient(msg);
-#ifdef DEBUG_SERVER_SEND
-			printf("send all clients msg->%s\n", msg);
-#endif
 		break;
 		case PROTO_SEND_BUT :
 			assert( client != NULL );
 			sendAllClientBut(msg, client);
-#ifdef DEBUG_SERVER_SEND
-			printf("send but client msg->%s\n", msg);
-#endif
+		break;
+		default :
+			assert( ! "Premenna type ma zlu hodnotu !" );
+		break;
+	}
+}
+
+static void proto_check(int type, client_t *client, char *msg, int id)
+{
+	assert( msg != NULL );
+
+	switch( type )
+	{
+		case PROTO_SEND_ONE :
+			assert( client != NULL );
+			addMsgClient(client, msg, id);
+		break;
+		case PROTO_SEND_ALL :
+			assert( client == NULL );
+			addMsgAllClient(msg, id);
+		break;
+		case PROTO_SEND_BUT :
+			assert( client != NULL );
+			addMsgAllClientBut(msg, client, id);
 		break;
 		default :
 			assert( ! "Premenna type ma zlu hodnotu !" );
@@ -151,6 +168,31 @@ void proto_send_status_server(int type, client_t *client)
 void proto_recv_status_server(client_t *client, char *msg)
 {
 	proto_send_status_server(PROTO_SEND_ONE, client);
+}
+
+#ifndef PUBLIC_SERVER
+
+void proto_send_check_client(int id)
+{
+	char msg[STR_PROTO_SIZE];
+	
+	sprintf(msg, "check %d\n", id);
+	sendServer(msg);
+}
+
+#endif
+
+void proto_recv_check_server(client_t *client, char *msg)
+{
+	char cmd[STR_PROTO_SIZE];
+	int id;
+
+	assert( msg != NULL );
+
+	sscanf(msg, "%s %d",
+		cmd, &id);
+
+	delMsgInCheckFront(client->listCheck, id);
 }
 
 void proto_send_init_server(int type, client_t *client, client_t *client2)
@@ -467,13 +509,17 @@ void proto_recv_deltux_client(char *msg)
 void proto_send_additem_server(int type, client_t *client, item_t *p)
 {
 	char msg[STR_PROTO_SIZE];
+	int check_id;
 
 	assert( p != NULL );
 
-	sprintf(msg, "additem %d %d %d %d %d %d %d\n",
-		p->id, p->type, p->x, p->y, p->count, p->frame, p->author_id);
+	check_id = getNewID();
 
-	proto_send(type, client, msg);
+	sprintf(msg, "additem %d %d %d %d %d %d %d %d\n",
+		p->id, p->type, p->x, p->y, p->count, p->frame, p->author_id, check_id);
+
+	//proto_send(type, client, msg);
+	proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -481,7 +527,7 @@ void proto_send_additem_server(int type, client_t *client, item_t *p)
 void proto_recv_additem_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
-	int id, type, x, y, count, frame, author_id;
+	int id, type, x, y, count, frame, author_id, check_id;
 	item_t *item;
 
 	assert( msg != NULL );
@@ -491,11 +537,13 @@ void proto_recv_additem_client(char *msg)
 		return;
 	}
 
-	sscanf(msg, "%s %d %d %d %d %d %d %d", cmd, &id, &type, &x, &y, &count, &frame, &author_id);
+	sscanf(msg, "%s %d %d %d %d %d %d %d %d",
+		cmd, &id, &type, &x, &y, &count, &frame, &author_id, &check_id);
+
+	proto_send_check_client(check_id);
 
 	if( ( item = getItemID(getCurrentArena()->listItem, id) ) != NULL )
 	{
-		item->lastSync = getMyTime();
 		return;
 	}
 
@@ -510,7 +558,6 @@ void proto_recv_additem_client(char *msg)
 	replaceItemID(item, id);
 	item->count = count;
 	item->frame = frame;
-	item->lastSync = getMyTime();
 
 	addList(getCurrentArena()->listItem, item);
 }
@@ -521,6 +568,7 @@ void proto_send_item_server(int type, client_t *client, tux_t *tux, item_t *item
 {
 	char msg[STR_PROTO_SIZE];
 	int tux_id = -1;
+	int check_id;
 
 	assert( item != NULL );
 
@@ -529,10 +577,13 @@ void proto_send_item_server(int type, client_t *client, tux_t *tux, item_t *item
 		tux_id = tux->id;
 	}
 
-	sprintf(msg, "item %d %d\n",
-		tux_id, item->id);
+	check_id = getNewID();
 
-	proto_send(type, client, msg);
+	sprintf(msg, "item %d %d %d\n",
+		tux_id, item->id, check_id);
+
+	//proto_send(type, client, msg);
+	proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -540,7 +591,7 @@ void proto_send_item_server(int type, client_t *client, tux_t *tux, item_t *item
 void proto_recv_item_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
-	int tux_id, item_id;
+	int tux_id, item_id, check_id;
 	arena_t *arena;
 
 	item_t *item;
@@ -548,7 +599,10 @@ void proto_recv_item_client(char *msg)
 
 	assert( msg != NULL );
 
-	sscanf(msg, "%s %d %d", cmd, &tux_id, &item_id);
+	sscanf(msg, "%s %d %d %d",
+		cmd, &tux_id, &item_id, &check_id);
+
+	proto_send_check_client(check_id);
 
 	arena = getCurrentArena();
 
@@ -575,13 +629,16 @@ void proto_recv_item_client(char *msg)
 void proto_send_shot_server(int type, client_t *client, shot_t *p)
 {
 	char msg[STR_PROTO_SIZE];
+	int check_id;
 
 	assert( p != NULL );
-                      
-	sprintf(msg, "shot %d %d %d %d %d %d %d %d %d\n",
-		p->id, p->x, p->y, p->px, p->py, p->position, p->gun, p->author_id, p->isCanKillAuthor);
 
-	proto_send(type, client, msg);
+	check_id = getNewID();
+	sprintf(msg, "shot %d %d %d %d %d %d %d %d %d %d\n",
+		p->id, p->x, p->y, p->px, p->py, p->position, p->gun, p->author_id, p->isCanKillAuthor, check_id);
+
+	//proto_send(type, client, msg);
+	proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -589,14 +646,15 @@ void proto_send_shot_server(int type, client_t *client, shot_t *p)
 void proto_recv_shot_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
-	int x, y, px, py, position, gun, shot_id, author_id, isCanKillAuthor;
+	int x, y, px, py, position, gun, shot_id, author_id, isCanKillAuthor, check_id;
 	shot_t *shot;
 
 	assert( msg != NULL );
 
-	sscanf(msg, "%s %d %d %d %d %d %d %d %d %d",
-		cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id, &isCanKillAuthor);
+	sscanf(msg, "%s %d %d %d %d %d %d %d %d %d %d",
+		cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id, &isCanKillAuthor, &check_id);
 
+	proto_send_check_client(check_id);
 
 	if( ( shot = getShotID(getCurrentArena()->listShot, shot_id) )  != NULL )
 	{
@@ -625,12 +683,16 @@ void proto_recv_shot_client(char *msg)
 void proto_send_delshot_server(int type, client_t *client, shot_t *shot)
 {
 	char msg[STR_PROTO_SIZE];
+	int check_id;
 
 	assert( shot != NULL );
 
-	sprintf(msg, "delshot %d\n", shot->id);
+	check_id = getNewID();
 
-	proto_send(type, client, msg);
+	sprintf(msg, "delshot %d %d\n",
+		shot->id, check_id);
+
+	proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -639,12 +701,14 @@ void proto_recv_delshot_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
 	shot_t *shot;
-	int id;
+	int id, check_id;
 
 	assert( msg != NULL );
 
-	sscanf(msg, "%s %d",
-		cmd, &id);
+	sscanf(msg, "%s %d %d",
+		cmd, &id, &check_id);
+
+	proto_send_check_client(check_id);
 
 	shot = getShotID(getCurrentArena()->listShot, id);
 

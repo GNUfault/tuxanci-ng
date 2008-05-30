@@ -108,18 +108,24 @@ void addAnalyze(char *name, int score)
 
 void endAnalyze()
 {
-	analyze_t *this;
 	int i;
 
 	for( i = 0 ; i < listAnalyze->count ; i++ )
 	{
+		analyze_t *this;
+		char *str;
+
 		this = (analyze_t *)(listAnalyze->list[i]);
 
 		addList(listWidgetLabelName, newWidgetLabel(this->name,
 			100, 200 + 20*i, WIDGET_LABEL_LEFT) );
 
-		addList(listWidgetLabelScore, newWidgetLabel(getString(this->score),
+		str = getString(this->score);
+
+		addList(listWidgetLabelScore, newWidgetLabel(str,
 			WINDOW_SIZE_X - 100, 200 + 20*i, WIDGET_LABEL_RIGHT) );
+
+		free(str);
 	}
 }
 
@@ -148,5 +154,7 @@ void quitScreenAnalyze()
 	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
 	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
 	destroyListItem(listAnalyze, destroyAnalyze);
+
+	destroyWidgetButton(button_ok);
 }
 

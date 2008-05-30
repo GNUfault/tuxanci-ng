@@ -19,6 +19,7 @@
 #include "myTimer.h"
 #include "arena.h"
 #include "net_multiplayer.h"
+#include "checkFront.h"
 
 #ifndef PUBLIC_SERVER
 #include "screen_world.h"
@@ -88,10 +89,9 @@ static void eventPeriodicSyncClient(void *p_nothink)
 {
 	client_t *thisClientInfo;
 	client_t *thisClientSend;
-	item_t *thisItem;
 	tux_t *thisTux;
 	int i, j;
-
+/*
 	for( i = 0 ; i < getCurrentArena()->listItem->count; i++)
 	{
 		thisItem = (item_t *) getCurrentArena()->listItem->list[i];
@@ -101,7 +101,7 @@ static void eventPeriodicSyncClient(void *p_nothink)
 			proto_send_additem_server(PROTO_SEND_ALL, NULL, thisItem);
 		}
 	}
-	
+*/	
 	for( i = 0 ; i < listClient->count; i++)
 	{
 		thisClientSend = (client_t *) listClient->list[i];
@@ -227,7 +227,7 @@ static client_t* newAnyClient()
 	new->status = NET_STATUS_OK;
 	new->buffer = newBuffer(LIMIT_BUFFER);
 	new->lastPing = getMyTime();
-	new->lastEvent = getMyTime();
+	new->listCheck = newCheckFront();
 
 	return new;
 }
@@ -280,6 +280,7 @@ void destroyClient(client_t *p)
 #endif
 
 	destroyBuffer(p->buffer);
+	destroyCheckFront(p->listCheck);
 
 	if( p->tux != NULL )
 	{
@@ -314,6 +315,13 @@ void sendClient(client_t *p, char *msg)
 	{
 		int ret;
 
+#ifndef PUBLIC_SERVER
+		if( isParamFlag("--send") )
+		{
+			printf("send -> %s", msg);
+		}
+#endif
+
 #ifdef SUPPORT_NET_UNIX_UDP
 		ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
 #endif
@@ -347,6 +355,42 @@ void sendAllClient(char *msg)
 	assert( msg != NULL );
 
 	sendAllClientBut(msg, NULL);
+}
+
+void addMsgClient(client_t *p, char *msg, int id)
+{
+	assert( p != NULL );
+	assert( msg != NULL );
+
+	if( p->status != NET_STATUS_ZOMBIE )
+	{
+		addMsgInCheckFront(p->listCheck, msg, id);
+	}
+}
+
+void addMsgAllClientBut(char *msg, client_t *p, int id)
+{
+	client_t *thisClient;
+	int i;
+
+	assert( msg != NULL );
+
+	for( i = 0 ; i < listClient->count; i++)
+	{
+		thisClient = (client_t *) listClient->list[i];
+
+		if( thisClient->tux != NULL && thisClient != p )
+		{
+			addMsgClient(thisClient, msg, id);
+		}
+	}
+}
+
+void addMsgAllClient(char *msg,  int id)
+{
+	assert( msg != NULL );
+
+	addMsgAllClientBut(msg, NULL, id);
 }
 
 void sendInfoCreateClient(client_t *client)
@@ -422,8 +466,11 @@ static void eventClientBuffer(client_t *client)
 	
 	while( getBufferLine(client->buffer, line, STR_PROTO_SIZE) >= 0 )
 	{
-#ifdef DEBUG_SERVER_RECV
-		printf("recv client msg->%s", line);
+#ifndef PUBLIC_SERVER
+		if( isParamFlag("--recv") )
+		{
+			printf("recv -> %s", line);
+		}
 #endif
 		client->lastPing = getMyTime();
 
@@ -444,6 +491,12 @@ static void eventClientBuffer(client_t *client)
 			if( strncmp(line, "event", 5) == 0 )
 			{
 				proto_recv_event_server(client, line);
+				continue;
+			}
+
+			if( strncmp(line, "check", 5) == 0 )
+			{
+				proto_recv_check_server(client, line);
 				continue;
 			}
 
@@ -476,6 +529,7 @@ void eventClientListBuffer()
 	{
 		thisClient = (client_t *) listClient->list[i];
 		eventClientBuffer(thisClient);
+		eventMsgInCheckFront(thisClient);
 	}
 }
 

@@ -422,6 +422,7 @@ void stoptWorld()
 	delAllImageInGroup(IMAGE_GROUP_USER);
 	delAllMusicInGroup(MUSIC_GROUP_USER);
 	quitModule();
+	quitTerm();
 	quitListID();
 }
 

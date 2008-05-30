@@ -88,16 +88,19 @@ void sendServer(char *msg)
 
 	assert( msg != NULL );
 
+#ifndef PUBLIC_SERVER
+		if( isParamFlag("--send") )
+		{
+			printf("send -> %s", msg);
+		}
+#endif
+
 #ifdef SUPPORT_NET_UNIX_UDP
 	ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
 	ret = writeSdlUdpSocket(sock_server_sdl_udp, sock_server_sdl_udp, msg, strlen(msg));
-#endif
-
-#ifdef DEBUG_CLIENT_SEND
-	printf("send server msg->%s", msg);
 #endif
 }
 
@@ -141,10 +144,12 @@ void eventServerBuffer()
 
 	while ( getBufferLine(clientBuffer, line, STR_PROTO_SIZE) >= 0 )
 	{
-#ifdef DEBUG_CLIENT_RECV
+#ifndef PUBLIC_SERVER
+		if( isParamFlag("--recv") )
+		{
+			printf("recv -> %s", line);
+		}
 #endif
-		printf("recv server msg->%s", line);
-
 		if( strncmp(line, "error", 5) == 0 )proto_recv_error_client(line);
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
@@ -162,7 +167,6 @@ void eventServerBuffer()
 		lastPingServerAlive = getMyTime();
 	}
 }
-
 
 void eventPingServer()
 {

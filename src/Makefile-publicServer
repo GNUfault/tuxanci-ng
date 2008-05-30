@@ -11,7 +11,7 @@ BUILD_DIR = ../build-server
 LIBS = -ldl
 
 FILES = list.o modules.o director.o configFile.o tux.o shot.o myTimer.o \
-	buffer.o arena.o arenaFile.o textFile.o gun.o item.o idManager.o\
+	buffer.o arena.o arenaFile.o textFile.o gun.o item.o idManager.o checkFront.o\
 	udp.o proto.o server.o publicServer.o net_multiplayer.o serverConfigFile.o main.o
 
 $(BUILD_DIR)/publicserver: mkdir_build $(FILES)
@@ -28,6 +28,9 @@ idManager.o: idManager.c ../include/idManager.h
 
 modules.o: modules.c 
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/modules.o -c modules.c
+
+checkFront.o: checkFront.c ../include/checkFront.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/checkFront.o -c checkFront.c
 
 publicServer.o: publicServer.c 
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/publicServer.o -c publicServer.c

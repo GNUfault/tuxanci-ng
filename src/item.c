@@ -80,7 +80,6 @@ item_t* newItem(int x, int y, int type, int author_id)
 	new->img = g_item[type];
 #endif	
 	new->author_id = author_id;
-	new->lastSync = getMyTime();
 
 	switch( type )
 	{
@@ -270,16 +269,6 @@ void eventListItem(list_t *listItem)
 		thisItem  = (item_t *)listItem->list[i];
 		assert( thisItem != NULL );
 
-		if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
-		{
-			if( currentTime - thisItem->lastSync > ITEM_SYNC_TIMEOUT )
-			{
-				delListItem(listItem, i, destroyItem);
-				i--;
-				continue;
-			}
-		}
-
 		thisItem->count++;
 	
 		if( thisItem->count == ITEM_MAX_COUNT )
@@ -361,7 +350,7 @@ void mineExplosion(list_t *listItem, item_t *item)
 
 	index = searchListItem(listItem, item);
 
-	assert( index != -1 );
+	if( index == -1 )return;
 
 /*
 	x = ( item->x + item->w/2 ) - ITEM_BIG_EXPLOSION_WIDTH/2;
@@ -389,7 +378,6 @@ void mineExplosion(list_t *listItem, item_t *item)
 
 	delListItem(listItem, index, destroyItem);
 }
-
 
 void eventConflictShotWithItem(list_t *listItem, list_t *listShot)
 {
@@ -532,7 +520,7 @@ int eventGiveTuxItem(tux_t *tux, list_t *listItem, item_t *item)
 
 	index = searchListItem(listItem, item);
 
-	assert( index != -1 );
+	if( index == -1 ) return -1;
 
 	switch( item->type )
 	{

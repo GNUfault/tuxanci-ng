@@ -233,5 +233,9 @@ void quitScreenGameType()
 
 	destroyWidgetButton(button_back);
 	destroyWidgetButton(button_play);
+
+	destroyWidgetCheck(check_none);
+	destroyWidgetCheck(check_server);
+	destroyWidgetCheck(check_client);
 }
 

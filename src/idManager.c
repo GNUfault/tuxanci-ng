@@ -8,10 +8,12 @@
 #include "idManager.h"
 
 static list_t *listID;
+static int lastID;
 
 void initListID()
 {
 	listID = newList();
+	lastID = 0;
 	printf("init ID manger..\n");
 }
 
@@ -43,7 +45,13 @@ int getNewID()
 	assert( listID != NULL );
 
 	do{
-		ret = random() % MAX_ID + 1;
+		ret = ++lastID;
+
+		if( lastID > MAX_ID )
+		{
+			lastID = 0;
+		}
+
 	}while( isRegisterID(ret) != -1 );
 
 	addList(listID, newInt(ret) );

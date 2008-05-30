@@ -70,6 +70,8 @@ int initLanguage()
 	printf("select lang %s\n", lang);
 
 	sprintf(path, PATH_LANG "%s.lang", lang);
+
+	destroyTextFile(languageTypeFile);
 	
 	accessExistFile(path);
 	languageFile = loadTextFile(path);

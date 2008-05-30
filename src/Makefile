@@ -10,7 +10,7 @@ BUILD_DIR = .
 LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lSDL_net
 
 FILES = interface.o idManager.o font.o list.o modules.o image.o layer.o director.o\
-	configFile.o tux.o main.o \
+	configFile.o tux.o main.o checkFront.o\
 	screen.o screen_world.o shot.o myTimer.o panel.o net_multiplayer.o \
 	buffer.o arena.o arenaFile.o textFile.o audio.o sound.o music.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
@@ -33,8 +33,8 @@ modules.o: modules.c ../include/modules.h
 idManager.o: idManager.c ../include/idManager.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/idManager.o -c idManager.c
 
-#checkFront.o: checkFront.c ../include/checkFront.h
-#	$(CC) $(CFLAGS) -o $(BUILD_DIR)/checkFront.o -c checkFront.c
+checkFront.o: checkFront.c ../include/checkFront.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/checkFront.o -c checkFront.c
 
 font.o: font.c ../include/font.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/font.o -c font.c

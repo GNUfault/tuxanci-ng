@@ -47,8 +47,7 @@ typedef struct client_struct
 	int status;
 	tux_t *tux;
 	my_time_t lastPing;
-	my_time_t lastEvent;
-
+	list_t *listCheck;
 	buffer_t *buffer;
 } client_t;
 
@@ -77,6 +76,11 @@ extern void setServerMaxClients(int n);
 extern void sendClient(client_t *p, char *msg);
 extern void sendAllClientBut(char *msg, client_t *p);
 extern void sendAllClient(char *msg);
+
+extern void addMsgClient(client_t *p, char *msg, int id);
+extern void addMsgAllClientBut(char *msg, client_t *p, int id);
+extern void addMsgAllClient(char *msg,  int id);
+
 extern void eventClientListBuffer();
 extern void sendInfoCreateClient(client_t *client);
 extern void eventServer();

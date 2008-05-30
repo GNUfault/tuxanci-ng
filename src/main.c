@@ -93,7 +93,7 @@ void accessExistFile(const char *s)
 {
 	if( access(s, F_OK) != 0 )
 	{
-		fprintf(stderr, "File %s not fount !\nProgram shutdown !\n", s);
+		fprintf(stderr, "File %s not found !\nProgram shutdown !\n", s);
 		exit(-1);
 	}
 }

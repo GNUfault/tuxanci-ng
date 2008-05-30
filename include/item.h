@@ -28,7 +28,6 @@ typedef struct item_struct
 
 	int frame; //poradove cislo animacie
 	int count; 
-	my_time_t lastSync; 
 
 	int author_id;
 #ifndef PUBLIC_SERVER	
