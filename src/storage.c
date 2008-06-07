@@ -35,12 +35,16 @@ static storage_item_t* newStorageItem(char *group, char *name, void *data)
 	return new;
 }
 
-static void destroyStorageItem(storage_item_t *p, void(*f)(void *))
+static void destroyStorageItem(storage_item_t *p, void *f)
 {
+	void(*fce)(void *);
+
 	assert( p != NULL );
 	assert( f != NULL );
 
-	f(p->data);
+	fce = f;
+
+	fce(p->data);
 	free(p->name);
 	free(p->group);
 	free(p);
@@ -54,11 +58,10 @@ void addItemToStorage(list_t *list, char *group, char *name, void *data)
 void* getItemFromStorage(list_t *list, char *group, char *name)
 {
 	storage_item_t *this;
+	int i;
 
 	assert( group != NULL );
 	assert( name != NULL );
-
-	int i;
 	
 	for(i = 0 ; i < list->count; i++)
 	{
@@ -74,15 +77,14 @@ void* getItemFromStorage(list_t *list, char *group, char *name)
 	return NULL;
 }
 
-void delItemFromStorage(list_t *list, char *group, char *name, void(*f)(void *))
+void delItemFromStorage(list_t *list, char *group, char *name, void *f)
 {
 	storage_item_t *this;
+	int i;
 
 	assert( group != NULL );
 	assert( name != NULL );
 
-	int i;
-	
 	for(i = 0 ; i < list->count; i++)
 	{
 		this = (storage_item_t *) list->list[i];
@@ -98,7 +100,7 @@ void delItemFromStorage(list_t *list, char *group, char *name, void(*f)(void *))
 	return;
 }
 
-void delAllItemFromStorage(list_t *list, char *group, void(*f)(void *))
+void delAllItemFromStorage(list_t *list, char *group, void *f)
 {
 	storage_item_t *this;
 	int i;
@@ -118,7 +120,7 @@ void delAllItemFromStorage(list_t *list, char *group, void(*f)(void *))
 	}
 }
 
-void destroyStorage(list_t *p, void(*f)(void *) )
+void destroyStorage(list_t *p, void *f)
 {
 	storage_item_t *this;
 	int i;
