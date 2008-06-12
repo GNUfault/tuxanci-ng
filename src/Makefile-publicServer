@@ -10,7 +10,7 @@ CFLAGS = -g -O0 -I../include -Wall
 BUILD_DIR = ../build-server
 LIBS = -ldl
 
-FILES = list.o heightScore.o modules.o director.o configFile.o tux.o shot.o myTimer.o \
+FILES = list.o space.o heightScore.o modules.o director.o configFile.o tux.o shot.o myTimer.o \
 	buffer.o arena.o arenaFile.o textFile.o gun.o item.o idManager.o checkFront.o\
 	udp.o proto.o server.o publicServer.o net_multiplayer.o serverConfigFile.o main.o
 
@@ -19,6 +19,9 @@ $(BUILD_DIR)/publicserver: mkdir_build $(FILES)
 
 mkdir_build:
 	mkdir -p $(BUILD_DIR)
+
+space.o: space.c ../include/space.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/space.o -c space.c
 
 heightScore.o: heightScore.c 
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/heightScore.o -c heightScore.c

@@ -10,6 +10,7 @@
 #include "shot.h"
 #include "list.h"
 #include "gun.h"
+#include "space.h"
 
 #ifndef PUBLIC_SERVER
 #include "interface.h"
@@ -42,6 +43,7 @@ typedef struct pipe_struct
 static export_fce_t *export_fce;
 
 static list_t *listPipe;
+static space_t *spacePipe;
 
 #ifndef PUBLIC_SERVER	
 static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out, int position, SDL_Surface *img)
@@ -75,6 +77,31 @@ static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out
 	return new;
 }
 
+static void setStatusPipe(void *p, int x, int y, int w, int h)
+{
+	pipe_t *pipe;
+
+	pipe = p;
+
+	pipe->x = x;
+	pipe->y = y;
+	pipe->w = w;
+	pipe->h = h;
+}
+
+static void getStatusPipe(void *p, int *id, int *x, int *y, int *w, int *h)
+{
+	pipe_t *pipe;
+
+	pipe = p;
+
+	*id = pipe->id;
+	*x = pipe->x;
+	*y = pipe->y;
+	*w = pipe->w;
+	*h = pipe->h;
+}
+
 #ifndef PUBLIC_SERVER	
 
 static void drawPipe(pipe_t *p)
@@ -85,28 +112,6 @@ static void drawPipe(pipe_t *p)
 }
 
 #endif
-
-static pipe_t* isConflictWithListPipe(list_t *list, int x, int y, int w, int h)
-{
-	pipe_t *thisPipe;
-	int i;
-
-	assert( list != NULL );
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		thisPipe  = (pipe_t *)list->list[i];
-		assert( thisPipe != NULL );
-
-		if( export_fce->fce_conflictSpace(x, y, w, h,
-		    thisPipe->x, thisPipe->y, thisPipe->w, thisPipe->h) )
-		{
-			return thisPipe;
-		}
-	}
-
-	return NULL;
-}
 
 static void destroyPipe(pipe_t *p)
 {
@@ -151,7 +156,13 @@ static void cmd_teleport(char *line)
 			atoi(str_layer), atoi(str_id), atoi(str_id_out), atoi(str_position) );
 #endif
 
-	addList(listPipe, new);
+	if( spacePipe == NULL )
+	{
+		spacePipe  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
+				320, 240, getStatusPipe, setStatusPipe);
+	}
+
+	addObjectToSpace(spacePipe, new);
 }
 
 static int myAbs(int n)
@@ -256,30 +267,11 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 
 }
 
-static pipe_t* getPipeId(list_t *list, int id)
-{
-	int i;
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		pipe_t *thisPipe;
-
-		thisPipe = (pipe_t *) list->list[i];
-
-		if( thisPipe->id == id )
-		{
-			return thisPipe;
-		}
-	}
-
-	return NULL;
-}
-
-static void moveShotFromPipe(shot_t *shot, pipe_t *pipe, list_t *list)
+static void moveShotFromPipe(shot_t *shot, pipe_t *pipe)
 {
 	pipe_t *distPipe;
 
-	distPipe = getPipeId(list, pipe->id_out);
+	distPipe = getObjectFromSpaceWithID(spacePipe, pipe->id_out);
 
 	if( distPipe == NULL )
 	{
@@ -302,12 +294,19 @@ int init(export_fce_t *p)
 
 #ifndef PUBLIC_SERVER
 
-int draw()
+int draw(int x, int y, int w, int h)
 {
 	pipe_t *thisPipe;
 	int i;
 
-	assert( listPipe != NULL );
+	if( spacePipe == NULL )
+	{
+		return 0;
+	}
+
+	listDoEmpty(listPipe);
+	getObjectFromSpace(spacePipe, x, y, w, h, listPipe);
+	//printSpace(spacePipe);
 
 	for( i = 0 ; i < listPipe->count ; i++ )
 	{
@@ -347,6 +346,12 @@ int event()
 	pipe_t *thisPipe;
 	arena_t *arena;
 	int i;
+
+	if( spacePipe == NULL )
+	{
+		return 0;
+	}
+
 /*
 	if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT )
 	{
@@ -358,16 +363,21 @@ int event()
 	for( i = 0 ; i < arena->listShot->count ; i++ )
 	{
 		shot_t *thisShot;
+		int j;
 
 		thisShot  = (shot_t *)arena->listShot->list[i];
 		assert( thisShot != NULL );
 
-		if( ( thisPipe = isConflictWithListPipe(listPipe, thisShot->x, thisShot->y,
-		    thisShot->w, thisShot->h) ) != NULL )
+		listDoEmpty(listPipe);
+		getObjectFromSpace(spacePipe, thisShot->x, thisShot->y, thisShot->w, thisShot->h, listPipe);
+
+		for( j = 0 ; j < listPipe->count ; j++ )
 		{
 			tux_t *author;
 
-			author = export_fce->fce_getTuxID(arena->listTux, thisShot->author_id);
+			thisPipe = (pipe_t *)listPipe->list[j];
+
+			author = getObjectFromSpaceWithID(arena->spaceTux, thisShot->author_id);
 			
 			if( author != NULL &&
 			    author->bonus == BONUS_GHOST &&
@@ -390,7 +400,7 @@ int event()
 				}
 				else
 				{
-					moveShotFromPipe(thisShot, thisPipe, listPipe);
+					moveShotFromPipe(thisShot, thisPipe);
 				}
 
 			}
@@ -416,14 +426,12 @@ int event()
 
 int isConflict(int x, int y, int w, int h)
 {
-	if( isConflictWithListPipe(listPipe, x, y, w, h) != NULL )
-	{
-		return 1;
-	}
-	else
+	if( spacePipe == NULL )
 	{
 		return 0;
 	}
+
+	return isConflictWithObjectFromSpace(spacePipe, x, y, w, h);
 }
 
 void cmd(char *line)
@@ -433,7 +441,8 @@ void cmd(char *line)
 
 int destroy()
 {
-	destroyListItem(listPipe, destroyPipe);
+	destroySpace(spacePipe, destroyPipe);
+	destroyList(listPipe);
 
 	return 0;
 }

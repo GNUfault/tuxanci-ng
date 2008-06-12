@@ -42,7 +42,11 @@ typedef struct wall_struct
 static export_fce_t *export_fce;
 
 static space_t *spaceWall;
+
+#ifndef PUBLIC_SERVER	
 static space_t *spaceImgWall;
+#endif
+
 static list_t *listWall;
 
 #ifndef PUBLIC_SERVER	
@@ -102,28 +106,6 @@ void drawListWall(list_t *list)
 }
 
 #endif
-
-wall_t* isConflictWithListWall(list_t *list, int x, int y, int w, int h)
-{
-	wall_t *thisWall;
-	int i;
-
-	assert( list != NULL );
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		thisWall  = (wall_t *)list->list[i];
-		assert( thisWall != NULL );
-
-		if( export_fce->fce_conflictSpace(x, y, w, h,
-		    thisWall->x, thisWall->y, thisWall->w, thisWall->h) )
-		{
-			return thisWall;
-		}
-	}
-
-	return NULL;
-}
 
 void eventConflictShotWithWall(list_t *listShot)
 {
@@ -191,6 +173,8 @@ static void setStatusWall(void *p, int x, int y, int w, int h)
 	wall->h = h;
 }
 
+#ifndef PUBLIC_SERVER	
+
 static void getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
 {
 	wall_t *wall;
@@ -207,6 +191,8 @@ static void getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
 static void setStatusImgWall(void *p, int x, int y, int w, int h)
 {
 }
+
+#endif
 
 static void cmd_wall(char *line)
 {
@@ -248,12 +234,17 @@ static void cmd_wall(char *line)
 		spaceWall  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
 				320, 240, getStatusWall, setStatusWall);
 
+#ifndef PUBLIC_SERVER	
 		spaceImgWall  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
 				320, 240, getStatusImgWall, setStatusImgWall);
+#endif
 	}
 
 	addObjectToSpace(spaceWall, new);
+
+#ifndef PUBLIC_SERVER	
 	addObjectToSpace(spaceImgWall, new);
+#endif
 }
 
 int init(export_fce_t *p)
@@ -271,7 +262,10 @@ int draw(int x, int y, int w, int h)
 	wall_t *thisWall;
 	int i;
 
-	assert( spaceWall != NULL );
+	if( spaceWall == NULL )
+	{
+		return 0;
+	}
 
 	listDoEmpty(listWall);
 	getObjectFromSpace(spaceImgWall, x, y, w, h, listWall);
@@ -292,12 +286,22 @@ int draw(int x, int y, int w, int h)
 
 int event()
 {
+	if( spaceWall == NULL )
+	{
+		return 0;
+	}
+
 	eventConflictShotWithWall(export_fce->fce_getCurrentArena()->listShot);
 	return 0;
 }
 
 int isConflict(int x, int y, int w, int h)
 {
+	if( spaceWall == NULL )
+	{
+		return 0;
+	}
+
 	return isConflictWithObjectFromSpace(spaceWall, x, y, w, h);
 }
 
@@ -308,6 +312,7 @@ void cmd(char *line)
 
 int destroy()
 {
+	destroySpace(spaceWall, destroyWall);
 	destroyList(listWall);
 
 	return 0;

@@ -649,7 +649,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 	if( client == NULL )
 	{
-		if( getCurrentArena()->listTux->count+1 > maxClients )
+		if( getCurrentArena()->spaceTux->list->count+1 > maxClients )
 		{
 			destroySockUdp(sock_client);
 			return;

@@ -162,7 +162,7 @@ void drawArena(arena_t *arena)
 	getObjectFromSpace(arena->spaceItem, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y, listHelp);
 	drawListItem(listHelp);
 
-	printSpace(arena->spaceItem);
+	//printSpace(arena->spaceItem);
 
 	//drawListTux(arena->listTux);
 	//drawListWall(arena->listWall);

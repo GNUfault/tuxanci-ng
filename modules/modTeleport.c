@@ -10,6 +10,7 @@
 #include "shot.h"
 #include "list.h"
 #include "gun.h"
+#include "space.h"
 
 #ifndef PUBLIC_SERVER
 #include "interface.h"
@@ -37,6 +38,7 @@ typedef struct teleport_struct
 
 static export_fce_t *export_fce;
 
+static space_t *spaceTeleport;
 static list_t *listTeleport;
 
 #ifndef PUBLIC_SERVER	
@@ -68,6 +70,31 @@ teleport_t* newTeleport(int x, int y, int w, int h, int layer)
 	return new;
 }
 
+static void setStatusTeleport(void *p, int x, int y, int w, int h)
+{
+	teleport_t *teleport;
+
+	teleport = p;
+
+	teleport->x = x;
+	teleport->y = y;
+	teleport->w = w;
+	teleport->h = h;
+}
+
+static void getStatusTeleport(void *p, int *id, int *x, int *y, int *w, int *h)
+{
+	teleport_t *teleport;
+
+	teleport = p;
+
+	*id = -1;
+	*x = teleport->x;
+	*y = teleport->y;
+	*w = teleport->w;
+	*h = teleport->h;
+}
+
 #ifndef PUBLIC_SERVER
 
 static void drawTeleport(teleport_t *p)
@@ -78,28 +105,6 @@ static void drawTeleport(teleport_t *p)
 }
 
 #endif
-
-static teleport_t* isConflictWithListTeleport(list_t *list, int x, int y, int w, int h)
-{
-	teleport_t *thisTeleport;
-	int i;
-
-	assert( list != NULL );
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		thisTeleport  = (teleport_t *)list->list[i];
-		assert( thisTeleport != NULL );
-
-		if( export_fce->fce_conflictSpace(x, y, w, h,
-		    thisTeleport->x, thisTeleport->y, thisTeleport->w, thisTeleport->h) )
-		{
-			return thisTeleport;
-		}
-	}
-
-	return NULL;
-}
 
 static void destroyTeleport(teleport_t *p)
 {
@@ -137,7 +142,13 @@ static void cmd_teleport(char *line)
 			atoi(str_layer) );
 #endif
 
-	addList(listTeleport, new);
+	if( spaceTeleport == NULL )
+	{
+		spaceTeleport  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
+				320, 240, getStatusTeleport, setStatusTeleport);
+	}
+
+	addObjectToSpace(spaceTeleport, new);
 }
 
 static teleport_t* getRandomTeleportBut(list_t *list, teleport_t *teleport)
@@ -174,7 +185,6 @@ static int getRandomPosition()
 static void teleportTux(tux_t *tux, teleport_t *teleport)
 {
 	teleport_t *distTeleport;
-	int current_x, current_y;
 	int dist_x, dist_y;
 
 	if( tux->bonus == BONUS_GHOST ||
@@ -183,9 +193,9 @@ static void teleportTux(tux_t *tux, teleport_t *teleport)
 		return;
 	}
 
-	distTeleport = getRandomTeleportBut(listTeleport, teleport);
+	distTeleport = getRandomTeleportBut(spaceTeleport->list, teleport);
 	
-	export_fce->fce_getTuxProportion(tux, &current_x, &current_y, NULL, NULL);
+	//export_fce->fce_getTuxProportion(tux, &current_x, &current_y, NULL, NULL);
 	
 	switch( tux->position )
 	{
@@ -215,7 +225,8 @@ static void teleportTux(tux_t *tux, teleport_t *teleport)
 	
 	if( export_fce->fce_isFreeSpace(export_fce->fce_getCurrentArena(), dist_x, dist_y, TUX_WIDTH, TUX_HEIGHT) )
 	{
-		export_fce->fce_setTuxProportion(tux, dist_x, dist_y);
+		moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceTux, tux, dist_x, dist_y);
+		//export_fce->fce_setTuxProportion(tux, dist_x, dist_y);
 #ifndef PUBLIC_SERVER
 		//playSound("teleport", SOUND_GROUP_BASE);
 #endif
@@ -373,12 +384,19 @@ int init(export_fce_t *p)
 }
 
 #ifndef PUBLIC_SERVER
-int draw()
+int draw(int x, int y, int w, int h)
 {
 	teleport_t *thisTeleport;
 	int i;
 
-	assert( listTeleport != NULL );
+	if( spaceTeleport == NULL )
+	{
+		return 0;
+	}
+
+	listDoEmpty(listTeleport);
+	getObjectFromSpace(spaceTeleport, x, y, w, h, listTeleport);
+	//printSpace(spaceTeleport);
 
 	for( i = 0 ; i < listTeleport->count ; i++ )
 	{
@@ -397,6 +415,11 @@ int event()
 	arena_t *arena;
 	int i;
 
+	if( spaceTeleport == NULL )
+	{
+		return 0;
+	}
+
 	if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT )
 	{
 		return 0;
@@ -404,16 +427,21 @@ int event()
 
 	arena = export_fce->fce_getCurrentArena();
 
-	for( i = 0 ; i < arena->listTux->count ; i++ )
+	for( i = 0 ; i < arena->spaceTux->list->count ; i++ )
 	{
 		tux_t *thisTux;
 		int x, y, w, h;
+		int j;
 
-		thisTux = (tux_t *)arena->listTux->list[i];
+		thisTux = (tux_t *)arena->spaceTux->list->list[i];
 		export_fce->fce_getTuxProportion(thisTux, &x, &y, &w, &h);
 
-		if( ( thisTeleport = isConflictWithListTeleport(listTeleport, x, y, w, h) ) != NULL )
+		listDoEmpty(listTeleport);
+		getObjectFromSpace(spaceTeleport, x, y, w, h, listTeleport);
+
+		for( j = 0 ; j < listTeleport->count ; j++ )
 		{
+			thisTeleport = (teleport_t *)listTeleport->list[j];
 			teleportTux(thisTux, thisTeleport);
 		}
 	}
@@ -421,21 +449,20 @@ int event()
 	for( i = 0 ; i < arena->listShot->count ; i++ )
 	{
 		shot_t *thisShot;
-	
+		int j;
+
 		thisShot  = (shot_t *)arena->listShot->list[i];
 		assert( thisShot != NULL );
-/*
-		if( thisShot->gun == GUN_LASSER )
-		{
-			continue;
-		}
-*/
-		if( ( thisTeleport = isConflictWithListTeleport(listTeleport,
-			thisShot->x, thisShot->y, thisShot->w, thisShot->h) ) != NULL )
+
+		listDoEmpty(listTeleport);
+		getObjectFromSpace(spaceTeleport, thisShot->x, thisShot->y, thisShot->w, thisShot->h, listTeleport);
+
+		for( j = 0 ; j < listTeleport->count ; j++ )
 		{
 			tux_t *author;
 
-			author = export_fce->fce_getTuxID(arena->listTux, thisShot->author_id);
+			thisTeleport = (teleport_t *)listTeleport->list[j];
+			author = getObjectFromSpaceWithID(arena->spaceTux, thisShot->author_id);
 			
 			if( author != NULL && 
 			    author->bonus == BONUS_GHOST &&
@@ -444,18 +471,7 @@ int event()
 				continue;
 			}
 
-			moveShotFromTeleport(thisShot, thisTeleport, listTeleport);
-/*			
-			if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT )
-			{
-				delListItem(arena->listShot, i, export_fce->fce_destroyShot);
-				i--;
-			}
-			else
-			{
-				moveShotFromTeleport(thisShot, thisTeleport, listTeleport);
-			}
-*/
+			moveShotFromTeleport(thisShot, thisTeleport, spaceTeleport->list);
 		}
 	}
 
@@ -464,16 +480,12 @@ int event()
 
 int isConflict(int x, int y, int w, int h)
 {
+	if( spaceTeleport == NULL )
+	{
+		return 0;
+	}
+
 	return 0;
-}
-
-
-void eventConflictWithTux(tux_t *tux)
-{
-}
-
-void eventConflictWithShot(shot_t *tux)
-{
 }
 
 void cmd(char *line)
@@ -483,6 +495,7 @@ void cmd(char *line)
 
 int destroy()
 {
-	destroyListItem(listTeleport, destroyTeleport);
+	destroySpace(spaceTeleport, destroyTeleport);
+	destroyList(listTeleport);
 	return 0;
 }

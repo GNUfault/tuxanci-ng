@@ -50,7 +50,7 @@ int initPublicServer()
 	arena = getArena(arenaId);
 	setCurrentArena(arena);
 
-	addNewItem(arena->listItem, ID_UNKNOWN);
+	addNewItem(arena->spaceItem, ID_UNKNOWN);
 	isSignalEnd = FALSE;
 
 	if( initNetMuliplayer(NET_GAME_TYPE_SERVER,
@@ -100,7 +100,6 @@ void eventPublicServer()
 	lastActive = getMyTime();
 
 	eventArena(arena);
-	eventModule();
 }
 
 void my_handler_quit(int n)
@@ -125,6 +124,7 @@ void quitPublicServer()
 	quitModule();
 	quitListID();
 	quitHeightScore();
+	destroyList(listHelp);
 
 	exit(0);
 }

@@ -219,6 +219,42 @@ int isConflictWithObjectFromSpace(space_t *p, int x, int y, int w, int h)
 	return 0;
 }
 
+int isConflictWithObjectFromSpaceBut(space_t *p, int x, int y, int w, int h, void *but)
+{
+	int segX, segY, segW, segH;
+	int id, this_x, this_y, this_w, this_h;
+	int i, j, k;
+
+	getSegment(p, x, y, w, h, &segX, &segY, &segW, &segH);
+
+	for( i = segY ; i < segY + segH ; i++ )
+	{
+		for( j = segX ; j < segX + segW ; j++ )
+		{
+			void *this;
+
+			for( k = 0 ; k < p->area[j][i]->count ; k++ )
+			{
+				this = p->area[j][i]->list[k];
+
+				if( this == but )
+				{
+					continue;
+				}
+
+				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
+
+				if( my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h) )
+				{
+					return 1;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
 void delObjectFromSpace(space_t *p, void *item)
 {
 	int segX, segY, segW, segH;

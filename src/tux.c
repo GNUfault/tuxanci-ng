@@ -644,7 +644,7 @@ void moveTux(tux_t *tux, int n)
 	int px, py;
 	int zal_x, zal_y;
 	int new_x, new_y;
-	int x, y, w, h;
+	int w, h;
 	arena_t *arena;
 
 /*
@@ -724,7 +724,7 @@ void moveTux(tux_t *tux, int n)
 */
 
 	if( tux->bonus != BONUS_GHOST && (
-	    /*isConflictWithObjectFromSpace(arena->spaceTux, x, y, w, h) ||*/
+	    isConflictWithObjectFromSpaceBut(arena->spaceTux, new_x, new_y, w, h, tux) ||
 	    isConflictModule(new_x, new_y, w, h) ) )
 	{
 		setTuxProportion(tux, zal_x, zal_y);

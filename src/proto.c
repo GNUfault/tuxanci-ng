@@ -52,6 +52,7 @@ static void proto_send(int type, client_t *client, char *msg)
 			sendAllClientBut(msg, client);
 		break;
 		case PROTO_SEND_ALL_SEES_TUX :
+#ifndef PUBLIC_SERVER
 			if( client != NULL )
 			{
 				sendAllClientSeesTux(msg, client->tux);
@@ -60,6 +61,10 @@ static void proto_send(int type, client_t *client, char *msg)
 			{
 				sendAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT));
 			}
+#endif
+#ifdef PUBLIC_SERVER
+			sendAllClientSeesTux(msg, client->tux);
+#endif
 		break;
 		default :
 			assert( ! "Premenna type ma zlu hodnotu !" );
@@ -86,6 +91,7 @@ static void proto_check(int type, client_t *client, char *msg, int id)
 			addMsgAllClientBut(msg, client, id);
 		break;
 		case PROTO_SEND_ALL_SEES_TUX :
+#ifndef PUBLIC_SERVER
 			if( client != NULL )
 			{
 				addMsgAllClientSeesTux(msg, client->tux, id);
@@ -94,6 +100,10 @@ static void proto_check(int type, client_t *client, char *msg, int id)
 			{
 				addMsgAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT), id);
 			}
+#endif
+#ifdef PUBLIC_SERVER
+			addMsgAllClientSeesTux(msg, client->tux, id);
+#endif
 		break;
 		default :
 			assert( ! "Premenna type ma zlu hodnotu !" );

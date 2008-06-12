@@ -26,6 +26,7 @@ extern void addObjectToSpace(space_t *p, void *item);
 extern void getObjectFromSpace(space_t *p, int x, int y, int w, int h, list_t *list);
 extern void* getObjectFromSpaceWithID(space_t *p, int id);
 extern int isConflictWithObjectFromSpace(space_t *p, int x, int y, int w, int h);
+extern int isConflictWithObjectFromSpaceBut(space_t *p, int x, int y, int w, int h, void *but);
 extern void delObjectFromSpace(space_t *p, void *item);
 extern void delObjectFromSpaceWithMem(space_t *p, void *item, void *f);
 extern void moveObjectInSpace(space_t *p, void *item, int move_x, int move_y);

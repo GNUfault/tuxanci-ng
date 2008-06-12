@@ -66,8 +66,8 @@ extern void replaceItemID(item_t *item, int id);
 extern void addNewItem(space_t *spaceItem, int author_id);
 #ifndef PUBLIC_SERVER	
 extern void drawListItem(list_t *listItem);
-extern void eventListItem(space_t *listSpace);
 #endif
+extern void eventListItem(space_t *listSpace);
 extern void mineExplosion(space_t *spaceItem, item_t *item);
 extern void eventConflictShotWithItem(arena_t *arena);
 extern void eventGiveTuxItem(tux_t *tux, item_t *item, space_t *spaceItem);
