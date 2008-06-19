@@ -44,12 +44,9 @@ arena_t* newArena(int w, int h)
 
 	new->listTimer = newList();
 	
-	//new->listTux = newList();
-	//new->listItem = newList();
 	new->spaceTux = newSpace(w, h, 320, 240, getStatusTux, setStatusTux);
 	new->spaceItem = newSpace(w, h, 320, 240, getStatusItem, setStatusItem);
-	
-	new->listShot = newList();
+	new->spaceShot = newSpace(w, h, 320, 240, getStatusShot, setStatusShot);
 
 	return new;
 }
@@ -62,12 +59,11 @@ int conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
 int isFreeSpace(arena_t *arena, int x, int y, int w, int h)
 {
 	if( isConflictWithObjectFromSpace(arena->spaceTux, x, y, w, h) )return 0;
-	if( isConflictWithListShot(arena->listShot, x, y, w, h) )return 0;
+	if( isConflictWithObjectFromSpace(arena->spaceShot, x, y, w, h) )return 0;
 	if( isConflictWithObjectFromSpace(arena->spaceItem, x, y, w, h) )return 0;
+	if( isConflictWithObjectFromSpace(arena->spaceShot, x, y, w, h) )return 0;
+
 	if( isConflictModule(x, y, w, h) )return 0;
-	//if( isConflictWithListWall(arena->listWall, x, y, w, h) )return 0;
-	//if( isConflictWithListTeleport(arena->listTeleport, x, y, w, h) )return 0;
-	//if( isConflictWithListPipe(arena->listPipe, x, y, w, h) )return 0;
 
 	return 1;
 }
@@ -162,13 +158,17 @@ void drawArena(arena_t *arena)
 	getObjectFromSpace(arena->spaceItem, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y, listHelp);
 	drawListItem(listHelp);
 
-	//printSpace(arena->spaceItem);
+	listDoEmpty(listHelp);
+	getObjectFromSpace(arena->spaceShot, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y, listHelp);
+	drawListShot(listHelp);
+
+	//printSpace(arena->spaceShot);
 
 	//drawListTux(arena->listTux);
 	//drawListWall(arena->listWall);
 	//drawListTeleport(arena->listTeleport);
 	//drawListPipe(arena->listPipe);
-	drawListShot(arena->listShot);
+	//drawListShot(arena->listShot);
 	//drawListItem(arena->listItem);
 
 	drawModule(screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
@@ -200,7 +200,7 @@ void eventArena(arena_t *arena)
 
 	for( i = 0 ; i < 8 ; i++)
 	{
-		eventMoveListShot(arena->listShot);
+		eventMoveListShot(arena);
 		checkShotIsInTuxScreen(arena);
 		//eventConflictShotWithWall(arena->listWall, arena->listShot);
 		//eventConflictShotWithTeleport(arena->listTeleport, arena->listShot);
@@ -221,7 +221,7 @@ void destroyArena(arena_t *p)
 {
 	destroySpaceWithObject(p->spaceTux, destroyTux);
 	destroySpaceWithObject(p->spaceItem, destroyItem);
-	destroyListItem(p->listShot, destroyShot);
+	destroySpaceWithObject(p->spaceShot, destroyShot);
 	destroyTimer(p->listTimer);
 	free(p);
 }

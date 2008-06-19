@@ -89,7 +89,8 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 		return;
 	}
 */
-	addList( getCurrentArena()->listShot, shot );
+	//addList( getCurrentArena()->listShot, shot );
+	addObjectToSpace(getCurrentArena()->spaceShot, shot);
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{

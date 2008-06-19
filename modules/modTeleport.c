@@ -23,6 +23,8 @@
 
 typedef struct teleport_struct
 {
+	int id;
+
 	int x; // poloha steny	
 	int y;
 
@@ -49,6 +51,8 @@ teleport_t* newTeleport(int x, int y, int w, int h, int layer, SDL_Surface *img)
 teleport_t* newTeleport(int x, int y, int w, int h, int layer)
 #endif
 {
+	static int last_id = 0;
+
 	teleport_t *new;
 	
 #ifndef PUBLIC_SERVER	
@@ -58,6 +62,7 @@ teleport_t* newTeleport(int x, int y, int w, int h, int layer)
 	new  = malloc( sizeof(teleport_t) );
 	assert( new != NULL );
 
+	new->id = ++last_id;
 	new->x = x;
 	new->y = y;
 	new->w = w;
@@ -85,10 +90,9 @@ static void setStatusTeleport(void *p, int x, int y, int w, int h)
 static void getStatusTeleport(void *p, int *id, int *x, int *y, int *w, int *h)
 {
 	teleport_t *teleport;
-
 	teleport = p;
 
-	*id = -1;
+	*id = teleport->id;
 	*x = teleport->x;
 	*y = teleport->y;
 	*w = teleport->w;
@@ -315,6 +319,7 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	int dist_x, int dist_y, int dist_w, int dist_h)
 {
 	int offset = 0;
+	int new_x, new_y;
 
 	switch( shot->position )
 	{
@@ -334,34 +339,35 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	switch( shot->position )
 	{
 		case TUX_UP :
-			shot->x = dist_x + offset;
-			shot->y = dist_y;
+			new_x = dist_x + offset;
+			new_y = dist_y;
 		break;
 
 		case TUX_LEFT :
-			shot->x = dist_x;
-			shot->y = dist_y + offset;
+			new_x = dist_x;
+			new_y = dist_y + offset;
 		break;
 
 		case TUX_RIGHT :
-			shot->x = dist_x + dist_w;
-			shot->y = dist_y + offset;
+			new_x = dist_x + dist_w;
+			new_y = dist_y + offset;
 		break;
 
 		case TUX_DOWN :
-			shot->x = dist_x + offset;
-			shot->y = dist_y + dist_h;
+			new_x = dist_x + offset;
+			new_y = dist_y + dist_h;
 		break;
 	}
 
-	shot->x += shot->px;
-	shot->y += shot->py;
+	new_y += shot->px;
+	new_y += shot->py;
+
+	moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceShot, shot, new_x, new_y);
 
 	if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
 		export_fce->fce_proto_send_shot_server(PROTO_SEND_ALL, NULL, shot);
 	}
-
 }
 
 static void moveShotFromTeleport(shot_t *shot, teleport_t *teleport, list_t *list)
@@ -396,7 +402,6 @@ int draw(int x, int y, int w, int h)
 
 	listDoEmpty(listTeleport);
 	getObjectFromSpace(spaceTeleport, x, y, w, h, listTeleport);
-	//printSpace(spaceTeleport);
 
 	for( i = 0 ; i < listTeleport->count ; i++ )
 	{
@@ -446,12 +451,12 @@ int event()
 		}
 	}
 	
-	for( i = 0 ; i < arena->listShot->count ; i++ )
+	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
 	{
 		shot_t *thisShot;
 		int j;
 
-		thisShot  = (shot_t *)arena->listShot->list[i];
+		thisShot  = (shot_t *)arena->spaceShot->list->list[i];
 		assert( thisShot != NULL );
 
 		listDoEmpty(listTeleport);

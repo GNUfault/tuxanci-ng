@@ -753,10 +753,9 @@ void proto_recv_shot_client(char *msg)
 
 	proto_send_check_client(check_id);
 
-	if( ( shot = getShotID(getCurrentArena()->listShot, shot_id) )  != NULL )
+	if( ( shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, shot_id) )  != NULL )
 	{
-		delListItem(getCurrentArena()->listShot,
-			searchListItem(getCurrentArena()->listShot, shot), destroyShot);
+		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
 
 		//return;
 	}
@@ -772,7 +771,7 @@ void proto_recv_shot_client(char *msg)
 		transformOnlyLasser(shot);
 	}
 
-	addList(getCurrentArena()->listShot, shot);
+	addObjectToSpace(getCurrentArena()->spaceShot, shot);
 }
 
 #endif
@@ -807,18 +806,11 @@ void proto_recv_delshot_client(char *msg)
 
 	proto_send_check_client(check_id);
 
-	shot = getShotID(getCurrentArena()->listShot, id);
+	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, id);
 
 	if( shot != NULL )
 	{
-		int index;
-
-		index = searchListItem(getCurrentArena()->listShot, shot);
-
-		if( index >= 0 )
-		{
-			delListItem(getCurrentArena()->listShot, index, destroyShot);
-		}
+		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
 	}
 }
 

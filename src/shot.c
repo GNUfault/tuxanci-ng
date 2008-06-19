@@ -130,33 +130,35 @@ shot_t* newShot(int x,int y, int px, int py, int gun, int author_id)
 	return new;
 }
 
-shot_t* getShotID(list_t *listShot, int id)
-{
-	shot_t *thisShot;
-	int i;
-
-	assert( listShot != NULL );
-
-	for( i = 0 ; i < listShot->count ; i++ )
-	{
-		thisShot  = (shot_t *)listShot->list[i];
-		assert( thisShot != NULL );
-
-		if( thisShot->id == id )
-		{
-			return thisShot;
-		}
-	}
-
-	return NULL;
-}
-
 void replaceShotID(shot_t *shot, int id)
 {
 	replaceID(shot->id, id);
 	shot->id = id;
 }
 
+
+void getStatusShot(void *p, int *id, int *x,int *y, int *w, int *h)
+{
+	shot_t *shot;
+
+	shot = p;
+	*id = shot->id;
+	*x = shot->x;
+	*y = shot->y;
+	*w = shot->w;
+	*h = shot->h;
+}
+
+void setStatusShot(void *p, int x, int y, int w, int h)
+{
+	shot_t *shot;
+
+	shot = p;
+	shot->x = x;
+	shot->y = y;
+	shot->w = w;
+	shot->h = h;
+}
 
 #ifndef PUBLIC_SERVER	
 
@@ -182,28 +184,6 @@ void drawListShot(list_t *listShot)
 }
 
 #endif
-
-int isConflictWithListShot(list_t *listShot, int x, int y, int w, int h)
-{
-	shot_t *thisShot;
-	int i;
-
-	assert( listShot != NULL );
-
-	for( i = 0 ; i < listShot->count ; i++ )
-	{
-		thisShot  = (shot_t *)listShot->list[i];
-		assert( thisShot != NULL );
-
-		if( conflictSpace(x, y, w, h,
-		    thisShot->x, thisShot->y, thisShot->w, thisShot->h) )
-		{
-			return 1;
-		}
-	}
-
-	return 0;
-}
 
 static int getRandomCourse(int x, int y)
 {
@@ -267,44 +247,27 @@ void transformOnlyLasser(shot_t *shot)
 	}
 }
 
-void eventMoveListShot(list_t *listShot)
+void eventMoveListShot(arena_t *arena)
 {
-	arena_t *arena;
 	shot_t *thisShot;
+	int new_x, new_y;
 	int i;
 
-	assert( listShot != NULL );
-
-	arena = getCurrentArena();
-
-	for( i = 0 ; i < listShot->count ; i++ )
+	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
 	{
-		thisShot  = (shot_t *)listShot->list[i];
+		thisShot  = (shot_t *) arena->spaceShot->list->list[i];
 		assert( thisShot != NULL );
 
-		thisShot->x += thisShot->px;
-		thisShot->y += thisShot->py;
-/*
-		if( thisShot->gun == GUN_BOMBBALL && (
-		    isConflictWithListWall(getCurrentArena()->listWall, thisShot->x, thisShot->y, thisShot->w, thisShot->h) ||
-		    isConflictWithListPipe(getCurrentArena()->listPipe, thisShot->x, thisShot->y, thisShot->w, thisShot->h) ) )
-		{
-			if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
-			{
-				boundBombBall(thisShot);
-			}
-			else
-			{
-				delListItem(listShot, i, destroyShot);
-				i--;
-				continue;
-			}
-		}
-*/
+		new_x = thisShot->x + thisShot->px;
+		new_y = thisShot->y + thisShot->py;
+
+		moveObjectInSpace(getCurrentArena()->spaceShot, thisShot, new_x, new_y);
+
 		if( thisShot->x+thisShot->w < 0 || thisShot->x > arena->w ||
 		    thisShot->y+thisShot->h < 0 || thisShot->y > arena->h )
 		{
-			delListItem(listShot, i, destroyShot);
+			delObjectFromSpaceWithObject(arena->spaceShot,
+				thisShot, destroyShot);
 			i--;
 			continue;
 		}
@@ -316,7 +279,6 @@ static int myAbs(int n)
 	return ( n > 0 ? n : -n );
 }
 
-
 static int getSppedShot(shot_t *shot)
 {
 	return ( myAbs(shot->px) > myAbs(shot->py) ? myAbs(shot->px) : myAbs(shot->py) );
@@ -325,8 +287,6 @@ static int getSppedShot(shot_t *shot)
 
 void checkShotIsInTuxScreen(arena_t *arena)
 {
-	return;
-/*
 	int screen_x, screen_y;
 	shot_t *thisShot;
 	tux_t *thisTux;
@@ -338,9 +298,10 @@ void checkShotIsInTuxScreen(arena_t *arena)
 		return;
 	}
 
-	for( i = 0 ; i < arena->listTux->count ; i++ )
+	for( i = 0 ; i < arena->spaceTux->list->count ; i++ )
 	{
-		thisTux = (tux_t *)arena->listTux->list[i];
+		thisTux = (tux_t *)arena->spaceTux->list->list[i];
+		speed = 25;
 
 		if( thisTux->control != TUX_CONTROL_NET )
 		{
@@ -349,9 +310,53 @@ void checkShotIsInTuxScreen(arena_t *arena)
 
 		getCenterScreen(&screen_x, &screen_y, thisTux->x, thisTux->y);
 
-		for( j = 0 ; j < arena->listShot->count ; j++ )
+		listDoEmpty(listHelp);
+		getObjectFromSpace(arena->spaceShot, screen_x-speed, screen_y,  speed, WINDOW_SIZE_Y, listHelp);
+
+		for( j = 0 ; j <listHelp->count ; j++ )
 		{
-			thisShot = (shot_t *)arena->listShot->list[j];
+			thisShot = (shot_t *)listHelp->list[j];
+			client_t *thisClient;
+			thisClient = getClientFromTux(thisTux);
+			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+		}
+
+		listDoEmpty(listHelp);
+		getObjectFromSpace(arena->spaceShot, screen_x+WINDOW_SIZE_X, screen_y,  speed, WINDOW_SIZE_Y, listHelp);
+
+		for( j = 0 ; j <listHelp->count ; j++ )
+		{
+			thisShot = (shot_t *)listHelp->list[j];
+			client_t *thisClient;
+			thisClient = getClientFromTux(thisTux);
+			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+		}
+
+		listDoEmpty(listHelp);
+		getObjectFromSpace(arena->spaceShot, screen_x, screen_y-speed, WINDOW_SIZE_X, speed, listHelp);
+
+		for( j = 0 ; j <listHelp->count ; j++ )
+		{
+			thisShot = (shot_t *)listHelp->list[j];
+			client_t *thisClient;
+			thisClient = getClientFromTux(thisTux);
+			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+		}
+
+		listDoEmpty(listHelp);
+		getObjectFromSpace(arena->spaceShot, screen_x, screen_y+WINDOW_SIZE_Y, WINDOW_SIZE_X, speed, listHelp);
+
+		for( j = 0 ; j <listHelp->count ; j++ )
+		{
+			thisShot = (shot_t *)listHelp->list[j];
+			client_t *thisClient;
+			thisClient = getClientFromTux(thisTux);
+			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+		}
+#if 0
+		for( j = 0 ; j <listHelp->count ; j++ )
+		{
+			thisShot = (shot_t *)listHelp->list[j];
 	
 			speed = getSppedShot(thisShot);
 
@@ -387,8 +392,8 @@ void checkShotIsInTuxScreen(arena_t *arena)
 				proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
 			}
 		}
+#endif
 	}
-*/
 }
 
 /*

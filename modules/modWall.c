@@ -23,6 +23,8 @@
 
 typedef struct wall_struct
 {
+	int id;
+
 	int x; // poloha steny	
 	int y;
 
@@ -59,6 +61,7 @@ wall_t* newWall(int x, int y, int w, int h,
 	int img_x, int img_y, int layer)
 #endif
 {
+	static int last_id = 0;
 	wall_t *new;
 	
 #ifndef PUBLIC_SERVER	
@@ -67,6 +70,7 @@ wall_t* newWall(int x, int y, int w, int h,
 	new  = malloc( sizeof(wall_t) );
 	assert( new != NULL );
 
+	new->id = ++last_id;
 	new->x = x;
 	new->y = y;
 	new->w = w;
@@ -107,15 +111,18 @@ void drawListWall(list_t *list)
 
 #endif
 
-void eventConflictShotWithWall(list_t *listShot)
+void eventConflictShotWithWall()
 {
+	arena_t *arena;
 	shot_t *thisShot;
 	tux_t *author;
 	int i;
 
-	for( i = 0 ; i < listShot->count ; i++ )
+	arena = export_fce->fce_getCurrentArena();
+
+	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
 	{
-		thisShot  = (shot_t *)listShot->list[i];
+		thisShot  = (shot_t *)arena->spaceShot->list->list[i];
 		assert( thisShot != NULL );
 
 		if( isConflictWithObjectFromSpace(spaceWall, thisShot->x, thisShot->y, thisShot->w, thisShot->h) )
@@ -136,7 +143,10 @@ void eventConflictShotWithWall(list_t *listShot)
 				continue;
 			}
 
-			delListItem(listShot, i, export_fce->fce_destroyShot);
+			delObjectFromSpaceWithObject(export_fce->fce_getCurrentArena()->spaceShot,
+				thisShot, export_fce->fce_destroyShot);
+			
+			//delListItem(listShot, i, export_fce->fce_destroyShot);
 			i--;
 		}
 	}
@@ -154,7 +164,7 @@ static void getStatusWall(void *p, int *id, int *x, int *y, int *w, int *h)
 
 	wall = p;
 
-	*id = -1;
+	*id = wall->id;
 	*x = wall->x;
 	*y = wall->y;
 	*w = wall->w;
@@ -181,7 +191,7 @@ static void getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
 
 	wall = p;
 
-	*id = -1;
+	*id = wall->id;
 	*x = wall->img_x;
 	*y = wall->img_y;
 	*w = wall->img->w;
@@ -291,7 +301,7 @@ int event()
 		return 0;
 	}
 
-	eventConflictShotWithWall(export_fce->fce_getCurrentArena()->listShot);
+	eventConflictShotWithWall(export_fce->fce_getCurrentArena()->spaceShot->list);
 	return 0;
 }
 
@@ -313,8 +323,9 @@ void cmd(char *line)
 int destroy()
 {
 	destroySpace(spaceWall);
+#ifndef PUBLIC_SERVER	
 	destroySpace(spaceImgWall);
+#endif
 	destroyListItem(listWall, destroyWall);
-
 	return 0;
 }

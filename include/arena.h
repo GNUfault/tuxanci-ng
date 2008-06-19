@@ -22,7 +22,7 @@ typedef struct arena_struct
 	int w, h;
 	list_t *listTimer;
 	//list_t *listTux;
-	list_t *listShot;
+	space_t *spaceShot;
 	space_t *spaceTux;
 	space_t *spaceItem;
 } arena_t;

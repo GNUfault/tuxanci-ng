@@ -218,6 +218,7 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	int dist_x, int dist_y, int dist_w, int dist_h)
 {
 	int offset = 0;
+	int new_x, new_y;
 
 	switch( shot->position )
 	{
@@ -237,34 +238,35 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 	switch( shot->position )
 	{
 		case TUX_UP :
-			shot->x = dist_x + offset;
-			shot->y = dist_y;
+			new_x = dist_x + offset;
+			new_y = dist_y;
 		break;
 
 		case TUX_LEFT :
-			shot->x = dist_x;
-			shot->y = dist_y + offset;
+			new_x = dist_x;
+			new_y = dist_y + offset;
 		break;
 
 		case TUX_RIGHT :
-			shot->x = dist_x + dist_w;
-			shot->y = dist_y + offset;
+			new_x = dist_x + dist_w;
+			new_y = dist_y + offset;
 		break;
 
 		case TUX_DOWN :
-			shot->x = dist_x + offset;
-			shot->y = dist_y + dist_h;
+			new_x = dist_x + offset;
+			new_y = dist_y + dist_h;
 		break;
 	}
 
-	shot->x += shot->px;
-	shot->y += shot->py;
+	new_y += shot->px;
+	new_y += shot->py;
+
+	moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceShot, shot, new_x, new_y);
 
 	if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
 		export_fce->fce_proto_send_shot_server(PROTO_SEND_ALL, NULL, shot);
 	}
-
 }
 
 static void moveShotFromPipe(shot_t *shot, pipe_t *pipe)
@@ -360,12 +362,12 @@ int event()
 */
 	arena = export_fce->fce_getCurrentArena();
 
-	for( i = 0 ; i < arena->listShot->count ; i++ )
+	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
 	{
 		shot_t *thisShot;
 		int j;
 
-		thisShot  = (shot_t *)arena->listShot->list[i];
+		thisShot  = (shot_t *) arena->spaceShot->list->list[i];
 		assert( thisShot != NULL );
 
 		listDoEmpty(listPipe);
@@ -394,7 +396,9 @@ int event()
 				{
 					if( thisShot->gun != GUN_BOMBBALL )
 					{
-						delListItem(arena->listShot, i, export_fce->fce_destroyShot);
+						delObjectFromSpaceWithObject(export_fce->fce_getCurrentArena()->spaceShot,
+							thisShot, export_fce->fce_destroyShot);
+						//delListItem(arena->listShot, i, export_fce->fce_destroyShot);
 						i--;
 					}
 				}
@@ -414,7 +418,8 @@ int event()
 				}
 				else
 				{
-					delListItem(arena->listShot, i, export_fce->fce_destroyShot);
+					delObjectFromSpaceWithObject(export_fce->fce_getCurrentArena()->spaceShot,
+						thisShot, export_fce->fce_destroyShot);
 					i--;
 				}
 			}

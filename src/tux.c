@@ -560,9 +560,9 @@ void eventConflictTuxWithShot(arena_t *arena)
 	tux_t *thisTux;
 	int i, j;
 
-	for( i = 0 ; i < arena->listShot->count ; i++ )
+	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
 	{
-		thisShot = (shot_t *)arena->listShot->list[i];
+		thisShot = (shot_t *)arena->spaceShot->list->list[i];
 		assert( thisShot != NULL );
 
 		listDoEmpty(listHelp);
@@ -592,7 +592,7 @@ void eventConflictTuxWithShot(arena_t *arena)
 					if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 					{
 						bombBallExplosion(thisShot);
-						delListItem(arena->listShot, i, destroyShot);
+						delObjectFromSpaceWithObject(arena->spaceShot, thisShot, destroyShot);
 						i--;
 					}
 
@@ -605,7 +605,7 @@ void eventConflictTuxWithShot(arena_t *arena)
 				}
 			}
 
-			delListItem(arena->listShot, i, destroyShot);
+			delObjectFromSpaceWithObject(arena->spaceShot, thisShot, destroyShot);
 			i--;
 
 			continue;
