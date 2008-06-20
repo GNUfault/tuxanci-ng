@@ -32,6 +32,8 @@ arena_t* getCurrentArena()
 arena_t* newArena(int w, int h)
 {
 	arena_t *new;
+	int zone_w, zone_h;
+
 	new = malloc( sizeof(arena_t) );
 	
 #ifndef PUBLIC_SERVER
@@ -43,10 +45,21 @@ arena_t* newArena(int w, int h)
 	new->h = h;
 
 	new->listTimer = newList();
-	
-	new->spaceTux = newSpace(w, h, 320, 240, getStatusTux, setStatusTux);
-	new->spaceItem = newSpace(w, h, 320, 240, getStatusItem, setStatusItem);
-	new->spaceShot = newSpace(w, h, 320, 240, getStatusShot, setStatusShot);
+
+	if( w > 800 || h > 600)
+	{
+		zone_w = 320;
+		zone_h = 240;
+	}
+	else
+	{
+		zone_w = 80;
+		zone_h = 60;
+	}
+
+	new->spaceTux = newSpace(w, h, zone_w, zone_h, getStatusTux, setStatusTux);
+	new->spaceItem = newSpace(w, h, zone_w, zone_h, getStatusItem, setStatusItem);
+	new->spaceShot = newSpace(w, h, zone_w, zone_h, getStatusShot, setStatusShot);
 
 	return new;
 }
@@ -163,13 +176,6 @@ void drawArena(arena_t *arena)
 	drawListShot(listHelp);
 
 	//printSpace(arena->spaceShot);
-
-	//drawListTux(arena->listTux);
-	//drawListWall(arena->listWall);
-	//drawListTeleport(arena->listTeleport);
-	//drawListPipe(arena->listPipe);
-	//drawListShot(arena->listShot);
-	//drawListItem(arena->listItem);
 
 	drawModule(screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 /*

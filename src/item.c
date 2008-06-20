@@ -610,7 +610,7 @@ void eventGiveTuxItem(tux_t *tux, item_t *item, space_t *spaceItem)
 		case GUN_MINE :
 		case GUN_BOMBBALL :
 			tuxGiveGun(tux, item);
-			delObjectFromSpace(spaceItem, item);
+			delObjectFromSpaceWithObject(spaceItem, item, destroyItem);
 		break;
 
 		case ITEM_MINE :
@@ -632,7 +632,7 @@ void eventGiveTuxItem(tux_t *tux, item_t *item, space_t *spaceItem)
 		case BONUS_4X :
 		case BONUS_HIDDEN :
 			tuxGiveBonus(tux, item);
-			delObjectFromSpace(spaceItem, item);
+			delObjectFromSpaceWithObject(spaceItem, item, destroyItem);
 		break;
 	}
 }

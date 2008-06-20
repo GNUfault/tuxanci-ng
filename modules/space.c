@@ -9,7 +9,7 @@
 #include "space.h"
 
 #define DEBUG_SPACE
-//#define ERROR_SUPPORT
+#define ERROR_SUPPORT
 
 #ifdef DEBUG_SPACE
 
@@ -165,7 +165,7 @@ static void checkList(space_t *space)
 	}
 }
 
-static void addToList(space_t *space, void *p)
+static void addToListOnTheBaseIndex(space_t *space, void *p)
 {
 	int id, point_id, inc_point_id;
 	int x, y, w, h;
@@ -178,11 +178,10 @@ static void addToList(space_t *space, void *p)
 
 	space->getStatus(p, &id, &x, &y, &w, &h);
 /*
-	printf("addToList (%d)\n", id);
+	printf("addToListOnTheBaseIndex (%d)\n", id);
 	printListID(space);
 	assert( id >= 0 );
 */
-
 	if( len == 0 )
 	{
 		//printf("OK first\n");
@@ -224,13 +223,13 @@ static void addToList(space_t *space, void *p)
 		space->getStatus(space->list->list[min], &id_min, &x, &y, &w, &h);
 		space->getStatus(space->list->list[max], &id_max, &x, &y, &w, &h);
 */
-		printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
+		//printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
 
 		if(  max < 0 )
 		{
 			//printf("OK first\n");
 			insList(space->list, 0, p);
-			checkList(space);
+			//checkList(space);
 			return;
 		}
 
@@ -238,13 +237,13 @@ static void addToList(space_t *space, void *p)
 		{
 			addList(space->list, p);
 			//printf("OK height\n");
-			checkList(space);
+			//checkList(space);
 			return;
 		}
 		
 		space->getStatus(space->list->list[point], &point_id, &x, &y, &w, &h);
 		space->getStatus(space->list->list[point+1], &inc_point_id, &x, &y, &w, &h);
-
+/*
 		if( min == max )
 		{
 			//printf("OK\n");
@@ -252,12 +251,12 @@ static void addToList(space_t *space, void *p)
 			checkList(space);
 			return;
 		}
-
+*/
 		if( point_id < id && id < inc_point_id )
 		{
 			//printf("OK\n");
 			insList(space->list, point+1, p);
-			checkList(space);
+			//checkList(space);
 			return;
 		}
 
@@ -295,7 +294,7 @@ void addObjectToSpace(space_t *p, void *item)
 	}
 
 #ifdef ERROR_SUPPORT
-	addToList(p, item);
+	addToListOnTheBaseIndex(p, item);
 #endif
 
 #ifndef ERROR_SUPPORT
@@ -341,9 +340,10 @@ void* getObjectFromSpaceWithID(space_t *space, int id)
 	int min, max;
 	int point;
 
+/*
 	printf("getObjectFromSpaceWithID %d\n", id);
 	printListID(space);
-	
+*/	
 	len = space->list->count;
 
 	min = 0;
@@ -592,72 +592,23 @@ void destroySpaceWithObject(space_t *p, void *f)
 #ifdef DEBUG_SPACE
 
 void test_space()
-{
+{/*
 	space_t *space;
 	recv_t *recv;
 
 	space = newSpace(5000, 2500, 320, 240, getStatus, setStatus);
 
+	addObjectToSpace(space, newRecv(5, 0, 0, 1, 1) );
+	addObjectToSpace(space, newRecv(7, 0, 0, 1, 1) );
+	addObjectToSpace(space, newRecv(8, 0, 0, 1, 1) );
+	addObjectToSpace(space, newRecv(9, 0, 0, 1, 1) );
 	addObjectToSpace(space, newRecv(6, 0, 0, 1, 1) );
-	addObjectToSpace(space, newRecv(3, 0, 0, 1, 1) );
-	addObjectToSpace(space, newRecv(4, 0, 0, 1, 1) );
-
-	//printListID(space);
+*/
 /*
 	recv = getObjectFromSpaceWithID(space, 6);
 	if( recv != NULL )printf("id = %d\n", recv->id);
 */
-	recv = getObjectFromSpaceWithID(space, 3);
-
-	if( recv != NULL )
-	{
-		printf("id = %d\n", recv->id);
-	}
-	else
-	{
-		printf("recv = %p\n", recv);
-	}
-
-/*
-	recv = getObjectFromSpaceWithID(space, 4);
-	if( recv != NULL )printf("id = %d\n", recv->id);
-	recv = getObjectFromSpaceWithID(space, 1);
-	if( recv != NULL )printf("id = %d\n", recv->id);
-*/
-
-#if 0
-	for( i = 1 ; i < 16 ; i++ )
-		for( j = 1 ; j < 16 ; j++ )
-		{
-			recv_t *this;
-
-			this = newRecv(j*160, i*120, 32, 32);
-			//addToSpace(space, newRecv(j*550, i*550, 1, 1) );
-			addObjectToSpace(space, this );
-			delObjectFromSpaceWithMem(space, this, destroyRecv);
-		}
-#endif
-/*
-	list = newList();
-	getObjectFromSpace(space, 640, 480, 800 , 600, list);
-
-	printf("list->count = %d\n", list->count);
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		recv_t *recv;
-		recv = list->list[i];
-
-		printf("%3d %3d %3d %3d\n", recv->x, recv->y, recv->w, recv->h);
-	}
-*/
-/*
-	destroyList(list);
-
-	printSpace(space);
-
-	destroySpace(space);
-*/
+//	printListID(space);
 }
 
 #endif

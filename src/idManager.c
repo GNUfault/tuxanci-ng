@@ -45,13 +45,15 @@ int getNewID()
 	assert( listID != NULL );
 
 	do{
+		ret  = random() % MAX_ID;
+/*
 		ret = ++lastID;
 
 		if( lastID > MAX_ID )
 		{
 			lastID = 0;
 		}
-
+*/
 	}while( isRegisterID(ret) != -1 );
 
 	addList(listID, newInt(ret) );

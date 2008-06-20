@@ -322,10 +322,10 @@ void cmd(char *line)
 
 int destroy()
 {
-	destroySpace(spaceWall);
+	destroySpaceWithObject(spaceWall, destroyWall);
 #ifndef PUBLIC_SERVER	
 	destroySpace(spaceImgWall);
 #endif
-	destroyListItem(listWall, destroyWall);
+	destroyList(listWall);
 	return 0;
 }
