@@ -19,12 +19,14 @@
 #include "tux.h"
 #include "textFile.h"
 #include "configFile.h"
+#include "director.h"
 
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_image.h"
 #include "widget_textfield.h"
 #include "widget_check.h"
+#include "widget_select.h"
 
 static widget_image_t *image_backgorund;
 
@@ -33,6 +35,7 @@ static widget_button_t *button_back;
 static widget_label_t *label_count_round;
 static widget_label_t *label_name_player1;
 static widget_label_t *label_name_player2;
+static widget_label_t *label_ai;
 
 #ifndef NO_SOUND
 static widget_label_t *label_music;
@@ -63,6 +66,8 @@ static widget_textfield_t *textfield_count_cound;
 static widget_textfield_t *textfield_name_player1;
 static widget_textfield_t *textfield_name_player2;
 
+static widget_select_t *select_ai;
+
 static textFile_t *configFile;
 
 void startScreenSetting()
@@ -79,6 +84,8 @@ void drawScreenSetting()
 	drawWidgetLabel(label_count_round);
 	drawWidgetLabel(label_name_player1);
 	drawWidgetLabel(label_name_player2);
+	drawWidgetLabel(label_ai);
+
 #ifndef NO_SOUND
 	drawWidgetLabel(label_music);
 	drawWidgetLabel(label_sound);
@@ -117,13 +124,24 @@ void drawScreenSetting()
 		drawWidgetCheck(check[i]);
 	}
 
+	drawWidgetSelect(select_ai);
+
 	drawWidgetButton(button_back);
 }
 
 void eventScreenSetting()
 {
 	int i;
+/*
+	int x, y;
 
+	getMousePosition(&x, &y);
+
+	if( isMouseClicked() )
+	{
+		printf("x = %d y = %d\n", x, y);
+	}
+*/
 	eventWidgetTextfield(textfield_count_cound);
 	eventWidgetTextfield(textfield_name_player1);
 	eventWidgetTextfield(textfield_name_player2);
@@ -142,6 +160,8 @@ void eventScreenSetting()
 	{
 		eventWidgetCheck(check[i]);
 	}
+
+	eventWidgetSelect(select_ai);
 
 	eventWidgetButton(button_back);
 }
@@ -279,6 +299,29 @@ static void saveAndDestroyConfigFile()
 	destroyTextFile(configFile);
 }
 
+static void findModulesAI()
+{
+	director_t *listModules;
+	int i;
+
+	listModules = loadDirector(PATH_MODULES);
+
+	for( i = 0 ; i < listModules->list->count ; i++)
+	{
+		char *line;
+
+		line = (char *)listModules->list->list[i];
+
+		if( strstr(line,"AI") != NULL &&
+	 	    strstr(line,".so") != NULL )
+		{
+			addToWidgetSelect(select_ai, line);
+		}
+	}
+
+	destroyDirector(listModules);
+}
+
 void initScreenSetting()
 {
 	SDL_Surface *image;
@@ -292,6 +335,7 @@ void initScreenSetting()
 	label_count_round = newWidgetLabel(getMyText("COUNT_ROUND"), 100, WINDOW_SIZE_Y-200, WIDGET_LABEL_LEFT);
 	label_name_player1 = newWidgetLabel(getMyText("NAME_PLAYER1"), 100, WINDOW_SIZE_Y-160, WIDGET_LABEL_LEFT);
 	label_name_player2 = newWidgetLabel(getMyText("NAME_PLAYER2"), 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
+	label_ai = newWidgetLabel("AI :", 430, 400, WIDGET_LABEL_LEFT);
 
 	textfield_count_cound = newWidgetTextfield(getParamElse("--count", "15"), 110+label_count_round->w, WINDOW_SIZE_Y-200);
 	
@@ -367,6 +411,10 @@ void initScreenSetting()
 
 	initSettingFile();
 
+	select_ai = newWidgetSelect(label_ai->x, label_ai->y+40, eventWidget);
+	addToWidgetSelect(select_ai, "none");
+	findModulesAI();
+
 #ifndef NO_SOUND
 	eventWidget(check_music);
 	eventWidget(check_sound);
@@ -386,6 +434,11 @@ void getSettingNameLeft(char *s)
 void getSettingCountRound(int *n)
 {
 	*n = atoi( textfield_count_cound->text );
+}
+
+char* getSettingAI()
+{
+	return (char *) select_ai->list->list[ select_ai->select ];
 }
 
 bool_t isSettingAnyItem()
@@ -427,6 +480,7 @@ void quitScreenSetting()
 	destroyWidgetLabel(label_count_round);
 	destroyWidgetLabel(label_name_player1);
 	destroyWidgetLabel(label_name_player2);
+	destroyWidgetLabel(label_ai);
 
 #ifndef NO_SOUND
 	destroyWidgetLabel(label_music);
@@ -465,6 +519,8 @@ void quitScreenSetting()
 	{
 		destroyWidgetCheck(check[i]);
 	}
+
+	destroyWidgetSelect(select_ai);
 
 	destroyWidgetButton(button_back);
 }

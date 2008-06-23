@@ -341,8 +341,6 @@ void proto_send_event_server(int type, client_t *client, tux_t *tux, int action)
 {
 	char msg[STR_PROTO_SIZE];
 	
-	assert( tux != NULL );
-
 	sprintf(msg, "event %d %d\n", tux->id, action);
 	
 	proto_send(type, client, msg);
@@ -524,80 +522,66 @@ void proto_recv_kill_client(char *msg)
 
 #endif
 
-void proto_send_score_server(int type, client_t *client, tux_t *tux)
+void proto_send_del_server(int type, client_t *client, int id)
 {
 	char msg[STR_PROTO_SIZE];
-	
-	assert( tux != NULL );
+	int check_id;
 
-	sprintf(msg, "score %d %d\n", tux->id, tux->score);
-	
-	proto_send(type, client, msg);
+	check_id = getNewID();
+
+	sprintf(msg, "del %d %d\n",
+		id, check_id);
+
+	proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
 
-void proto_recv_score_client(char *msg)
+void proto_recv_del_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
-	int id, score;
+	int id, check_id;
 	tux_t *tux;
+	shot_t *shot;
+	item_t *item;
 
 	assert( msg != NULL );
 
-	sscanf(msg, "%s %d %d", cmd, &id, &score);
+	sscanf(msg, "%s %d %d",
+		cmd, &id, &check_id);
+
+	proto_send_check_client(check_id);
 
 	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
 
 	if( tux != NULL )
 	{
 		char term_msg[STR_SIZE];
-		sprintf(term_msg, "tux with id %d set score to %d\n", tux->id, score);
-		appendTextInTerm(term_msg);
-
-		tux->score = score;
-	}
-
-	countRoundInc();
-}
-
-#endif
-
-void proto_send_deltux_server(int type, client_t *client, client_t *client2)
-{
-	char msg[STR_PROTO_SIZE];
 	
-	assert( client2 != NULL );
-
-	sprintf(msg, "deltux %d\n", client2->tux->id);
-
-	proto_send(type, client, msg);
-}
-
-#ifndef PUBLIC_SERVER
-
-void proto_recv_deltux_client(char *msg)
-{
-	char cmd[STR_PROTO_SIZE];
-	int id;
-	tux_t *tux;
-
-	assert( msg != NULL );
-
-	sscanf(msg, "%s %d", cmd, &id);
-
-	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
-
-	if( tux != NULL )
-	{
-		char term_msg[STR_SIZE];
-		//int index;
-	
+		//printf("delete tux..\n");
 		sprintf(term_msg, "tux with id %d is disconnect\n", tux->id);
 		appendTextInTerm(term_msg);
 
-		//index = searchListItem(getCurrentArena()->listTux, tux);
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceTux, tux, destroyTux);
+		return;
+	}
+
+	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, id);
+
+	if( shot != NULL )
+	{
+		//printf("delete shot..\n");
+		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+		return;
+	}
+
+	item = getObjectFromSpaceWithID(getCurrentArena()->spaceItem, id);
+
+	if( item != NULL )
+	{
+		//printf("delete item..\n");
+		delObjectFromSpaceWithObject(getCurrentArena()->spaceItem, item, destroyItem);
+		return;
 	}
 }
 
@@ -645,80 +629,12 @@ void proto_recv_additem_client(char *msg)
 	}
 
 	item = newItem(x, y, type, author_id);
-/*
-	if( isConflictWithListItem(getCurrentArena()->listItem, item->x, item->y, item->w, item->h) )
-	{
-		destroyItem(item);
-		return;
-	}
-*/
+
 	replaceItemID(item, id);
 	item->count = count;
 	item->frame = frame;
 
 	addObjectToSpace(getCurrentArena()->spaceItem, item);
-}
-
-#endif
-
-void proto_send_item_server(int type, client_t *client, tux_t *tux, item_t *item)
-{
-	char msg[STR_PROTO_SIZE];
-	int tux_id = -1;
-	int check_id;
-
-	assert( item != NULL );
-
-	if( tux != NULL )
-	{
-		tux_id = tux->id;
-	}
-
-	check_id = getNewID();
-
-	sprintf(msg, "item %d %d %d\n",
-		tux_id, item->id, check_id);
-
-	//proto_send(type, client, msg);
-	proto_check(type, client, msg, check_id);
-}
-
-#ifndef PUBLIC_SERVER
-
-void proto_recv_item_client(char *msg)
-{
-	char cmd[STR_PROTO_SIZE];
-	int tux_id, item_id, check_id;
-	arena_t *arena;
-
-	item_t *item;
-	tux_t *tux;
-
-	assert( msg != NULL );
-
-	sscanf(msg, "%s %d %d %d",
-		cmd, &tux_id, &item_id, &check_id);
-
-	proto_send_check_client(check_id);
-
-	arena = getCurrentArena();
-
-	item = getObjectFromSpaceWithID(arena->spaceItem, item_id);
-	tux = getObjectFromSpaceWithID(arena->spaceTux, tux_id);
-
-	if( item == NULL)
-	{
-		return;
-	}
-
-	if( tux != NULL )
-	{
-		eventGiveTuxItem(tux, item, arena->spaceItem);
-	}
-	else
-	{
-		mineExplosion(arena->spaceItem, item);
-	}
 }
 
 #endif
@@ -772,46 +688,6 @@ void proto_recv_shot_client(char *msg)
 	}
 
 	addObjectToSpace(getCurrentArena()->spaceShot, shot);
-}
-
-#endif
-
-void proto_send_delshot_server(int type, client_t *client, shot_t *shot)
-{
-	char msg[STR_PROTO_SIZE];
-	int check_id;
-
-	assert( shot != NULL );
-
-	check_id = getNewID();
-
-	sprintf(msg, "delshot %d %d\n",
-		shot->id, check_id);
-
-	proto_check(type, client, msg, check_id);
-}
-
-#ifndef PUBLIC_SERVER
-
-void proto_recv_delshot_client(char *msg)
-{
-	char cmd[STR_PROTO_SIZE];
-	shot_t *shot;
-	int id, check_id;
-
-	assert( msg != NULL );
-
-	sscanf(msg, "%s %d %d",
-		cmd, &id, &check_id);
-
-	proto_send_check_client(check_id);
-
-	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, id);
-
-	if( shot != NULL )
-	{
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
-	}
 }
 
 #endif

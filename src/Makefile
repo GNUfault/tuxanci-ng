@@ -14,7 +14,7 @@ FILES = interface.o space.o idManager.o storage.o font.o list.o modules.o\
 	screen.o screen_world.o shot.o myTimer.o panel.o net_multiplayer.o \
 	buffer.o arena.o arenaFile.o textFile.o audio.o sound.o music.o gun.o \
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
-	widget_check.o widget_image.o screen_setting.o screen_gameType.o screen_choiceArena.o \
+	widget_check.o widget_image.o widget_select.o screen_setting.o screen_gameType.o screen_choiceArena.o \
 	widget_buttonimage.o screen_credits.o homeDirector.o screen_table.o \
 	sdl_udp.o proto.o server.o client.o term.o keytable.o language.o game.o
  
@@ -170,6 +170,9 @@ widget_check.o: widget_check.c ../include/widget_check.h
 
 widget_image.o: widget_image.c ../include/widget_image.h
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/widget_image.o -c widget_image.c
+
+widget_select.o: widget_select.c ../include/widget_select.h
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/widget_select.o -c widget_select.c
 
 #teleport.o: teleport.c ../include/teleport.h
 #	$(CC) $(CFLAGS) -o $(BUILD_DIR)/teleport.o -c teleport.c

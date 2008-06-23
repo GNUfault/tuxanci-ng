@@ -156,13 +156,10 @@ void eventServerBuffer()
 		if( strncmp(line, "init", 4) == 0 )proto_recv_init_client(line);
 		if( strncmp(line, "event", 5) == 0 )proto_recv_event_client(line);
 		if( strncmp(line, "newtux", 6) == 0 )proto_recv_newtux_client(line);
-		if( strncmp(line, "deltux", 6) == 0 )proto_recv_deltux_client(line);
+		if( strncmp(line, "del", 3) == 0 )proto_recv_del_client(line);
 		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem_client(line);
-		if( strncmp(line, "item", 4) == 0 )proto_recv_item_client(line);
 		if( strncmp(line, "shot", 4) == 0 )proto_recv_shot_client(line);
-		if( strncmp(line, "delshot", 7) == 0 )proto_recv_delshot_client(line);
 		if( strncmp(line, "kill", 4) == 0 )proto_recv_kill_client(line);
-		if( strncmp(line, "score", 5) == 0 )proto_recv_score_client(line);
 		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_client(line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_client(line);
 

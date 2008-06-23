@@ -356,7 +356,7 @@ static void eventTuxIsDeadWIthShot(tux_t *tux, shot_t *shot)
 
 			if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 			{
-				proto_send_score_server(PROTO_SEND_ALL, NULL, author);
+				proto_send_newtux_server(PROTO_SEND_ALL, NULL, author);
 			}
 		}
 
@@ -407,7 +407,7 @@ static void bombBallExplosion(shot_t *shot)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
-		proto_send_delshot_server(PROTO_SEND_ALL, NULL, shot);
+		proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
 }
@@ -470,6 +470,22 @@ void eventConflictTuxWithShot(arena_t *arena)
 	}
 }
 
+static void interval()
+{
+	static my_time_t lastEvent = 0;
+	my_time_t curentTime;
+
+	if( lastEvent == 0 )
+	{
+		lastEvent = getMyTime();
+	}
+
+	curentTime = getMyTime();
+
+	printf("time = %d\n", curentTime - lastEvent);
+
+	lastEvent = getMyTime();
+}
 
 void moveTux(tux_t *tux, int n)
 {
@@ -482,6 +498,7 @@ void moveTux(tux_t *tux, int n)
 	assert( tux != NULL );
 
 	arena = getCurrentArena();
+	//interval();
 
 	if( tux->position != n )
 	{
@@ -623,7 +640,7 @@ void actionTux(tux_t *tux, int action)
 	{
 		return;
 	}
-
+	
 	switch( action )
 	{
 		case TUX_UP :

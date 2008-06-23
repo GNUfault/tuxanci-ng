@@ -103,6 +103,7 @@ void countRoundInc()
 	}
 
 	count++;
+	printf("count %d/%d\n", count, max_count);
 
 	if( count >= max_count )
 	{
@@ -115,6 +116,8 @@ void countRoundInc()
 void prepareArena()
 {
 	tux_t *tux;
+
+	//printf("getSettingAI = %s\n", getSettingAI());
 
 	switch( getNetTypeGame() )
 	{
@@ -134,6 +137,12 @@ void prepareArena()
 			tuxWithControlLeftKeyboard = tux;
 			getSettingNameLeft(tux->name);
 			addObjectToSpace(arena->spaceTux, tux);
+
+			if( strcmp(getSettingAI(), "none") != 0 )
+			{
+				loadModule( getSettingAI() );
+				tux->control = TUX_CONTROL_AI;
+			}
 		break;
 
 		case NET_GAME_TYPE_SERVER :

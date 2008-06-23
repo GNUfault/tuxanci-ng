@@ -19,6 +19,10 @@ modWall:
 	gcc $(CFLAGS) -fPIC -I../include `sdl-config --cflags` -c modWall.c -o modWall.o
 	gcc $(CFLAGS) -I../include -shared -fPIC -o modWall.so modWall.o list.o space.o
 
+modAI:
+	gcc $(CFLAGS) -fPIC -I../include `sdl-config --cflags` -c modAI.c -o modAI.o
+	gcc $(CFLAGS) -I../include -shared -fPIC -o modAI.so modAI.o
+
 clean:
 	rm -rf *.o 
 	rm -rf *.so

@@ -39,6 +39,9 @@ static export_fce_t export_fce =
 		.fce_getTuxProportion = getTuxProportion,
 		.fce_setTuxProportion = setTuxProportion,
 		//.fce_getTuxID = getTuxID,
+		.fce_actionTux = actionTux,
+
+		.fce_getMyTime = getMyTime,
 
 		.fce_getCurrentArena = getCurrentArena,
 		.fce_conflictSpace = conflictSpace,

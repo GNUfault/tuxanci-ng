@@ -77,7 +77,7 @@ static void delZombieCLient(void *p_nothink)
 		{
 			if( thisClient->tux != NULL )
 			{
-				proto_send_deltux_server(PROTO_SEND_ALL, NULL, thisClient);
+				proto_send_del_server(PROTO_SEND_ALL, NULL, thisClient->tux->id);
 			}
 
 			delListItem(listClient, i, destroyClient);

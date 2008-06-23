@@ -54,6 +54,7 @@ mod:
 	make -C ./modules -f Makefile modTeleport
 	make -C ./modules -f Makefile modPipe
 	make -C ./modules -f Makefile modWall
+	make -C ./modules -f Makefile modAI
 
 servermod:
 	make -C ./modules -f Makefile-publicserver modTeleport

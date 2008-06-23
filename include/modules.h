@@ -7,6 +7,7 @@
 #include "shot.h"
 #include "arena.h"
 #include "proto.h"
+#include "myTimer.h"
 
 #ifndef PUBLIC_SERVER
 #include "image.h"
@@ -29,13 +30,16 @@ typedef struct export_fce_s
 	void (*fce_getTuxProportion)(tux_t *tux, int *x,int *y, int *w, int *h);
 	void (*fce_setTuxProportion)(tux_t *tux, int x, int y);
 	tux_t* (*fce_getTuxID)(list_t *listTux, int id);
-
+	void (*fce_actionTux)(tux_t *tux, int action);
+	
 	arena_t* (*fce_getCurrentArena)();
 	int (*fce_conflictSpace)(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2);
 	int (*fce_isFreeSpace)(arena_t *arena, int x, int y, int w, int h);
 	void (*fce_findFreeSpace)(arena_t *arena, int *x, int *y, int w, int h);
 	void (*fce_proto_send_newtux_server)(int type, client_t *client, tux_t *tux);
 	void (*fce_proto_send_shot_server)(int type, client_t *client, shot_t *p);
+
+	my_time_t (*fce_getMyTime)();
 
 	void (*fce_destroyShot)(shot_t *p);
 	void (*fce_boundBombBall)(shot_t *shot);
