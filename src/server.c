@@ -304,8 +304,10 @@ void destroyClient(client_t *p)
 
 	assert( p != NULL );
 
+#ifdef SUPPORT_NET_UNIX_UDP
 	getSockUdpIp(p->socket_udp, str_ip, STR_IP_SIZE);
 	printf("close connect %s %d\n", str_ip, getSockUdpPort(p->socket_udp) );
+#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
 	closeUdpSocket(p->socket_udp);
@@ -361,12 +363,23 @@ void sendClient(client_t *p, char *msg)
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-		if( p->socket_udp->proto == PROTO_UDPv4 )
+		if( p->socket_udp->proto == PROTO_UDPv4 && 
+		    sock_server_udp != NULL &&
+		    sock_server_udp->proto == PROTO_UDPv4 )
 		{
 			ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
 		}
 
-		if( p->socket_udp->proto == PROTO_UDPv6 )
+		if( p->socket_udp->proto == PROTO_UDPv6 &&
+		    sock_server_udp != NULL &&
+		    sock_server_udp->proto == PROTO_UDPv6 )
+		{
+			ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
+		}
+
+		if( p->socket_udp->proto == PROTO_UDPv6 &&
+		    sock_server_udp_second != NULL &&
+		    sock_server_udp_second->proto == PROTO_UDPv6 )
 		{
 			ret = writeUdpSocket(sock_server_udp_second, p->socket_udp, msg, strlen(msg));
 		}
