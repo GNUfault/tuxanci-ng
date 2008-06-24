@@ -9,24 +9,21 @@
 #include <string.h>
 #include <stdio.h>
 #include <netdb.h>
+#include <string.h>
 #include <assert.h>
+#include <netdb.h>
 
 #define BUFSIZE 1000
-
+#include "udp.h"
 #include "main.h"
 
-typedef struct struct_sock_udp_t
-{
-	int sock;
-	struct sockaddr_in sockAddr;
-} sock_udp_t;
-
-sock_udp_t* newSockUdp()
+sock_udp_t* newSockUdp(int proto)
 {
 	sock_udp_t *new;
 
 	new = malloc( sizeof(sock_udp_t) );
 	memset(new, 0, sizeof(sock_udp_t));
+	new->proto = proto;
 
 	return new;
 }
@@ -37,30 +34,61 @@ void destroySockUdp(sock_udp_t *p)
 	free(p);
 }
 
-sock_udp_t* bindUdpSocket(char *address, int port)
+sock_udp_t* bindUdpSocket(char *address, int port, int proto)
 {
 	sock_udp_t *new;
+	int res;
 
 	assert( port > 0 && port < 65535 );
 
-	new = newSockUdp();
+	new = newSockUdp(proto);
 
 	assert( new != NULL );
 
-	if( ( new->sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) < 0 )
+	if( new->proto == PROTO_UDPv4 )
 	{
-		fprintf(stderr, "nemozem obsadit sokcet !\n");
+		new->sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( new->proto == PROTO_UDPv6 )
+	{
+		new->sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+	}
+#endif
+
+	if( new->sock < 0 )
+	{
+		fprintf(stderr, "nemozem vytvorit socket !\n");
 		destroySockUdp(new);
 		return NULL;
 	}
 
-	new->sockAddr.sin_family = AF_INET;
-	new->sockAddr.sin_port = htons(port);
-	new->sockAddr.sin_addr.s_addr = inet_addr(address);
+	memset(&(new->sockAddr), 0, sizeof(new->sockAddr));
 
-	if( bind(new->sock, (struct sockaddr *)&(new->sockAddr), sizeof(new->sockAddr)) < 0 )
+	if( new->proto == PROTO_UDPv4 )
 	{
-		fprintf(stderr, "nemozem nastavit sokcet !\n");
+		new->sockAddr.sin_family = AF_INET;
+		new->sockAddr.sin_port = htons(port);
+		new->sockAddr.sin_addr.s_addr = inet_addr(address);
+
+		res = bind(new->sock, (struct sockaddr *)&(new->sockAddr), sizeof(new->sockAddr));
+	}
+
+#ifdef SUPPORT_IPv6
+	if( new->proto == PROTO_UDPv6 )
+	{
+		new->sockAddr6.sin6_family = AF_INET6;
+		new->sockAddr6.sin6_port = htons(port);
+		inet_pton(AF_INET6, address, &(new->sockAddr6.sin6_addr));
+
+		res = bind(new->sock, (struct sockaddr *)&(new->sockAddr6), sizeof(new->sockAddr6));
+	}
+#endif
+
+	if(  res < 0 )
+	{
+		fprintf(stderr, "nemozem nastavit sokcet %s %d !\n", address, port);
 		destroySockUdp(new);
 		return NULL;
 	}
@@ -68,30 +96,53 @@ sock_udp_t* bindUdpSocket(char *address, int port)
 	return new;
 }
 
-sock_udp_t* connectUdpSocket(char *address, int port)
+sock_udp_t* connectUdpSocket(char *address, int port, int proto)
 {
-	struct hostent *host;
 	sock_udp_t *new;
 
 	assert( address != NULL  );
 	assert( port > 0 && port < 65536 );
 
-	new = newSockUdp();
+	new = newSockUdp(proto);
 
 	assert( new != NULL );
 
-	if( ( new->sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP) ) < 0 )
+	if( new->proto == PROTO_UDPv4 )
 	{
-		fprintf(stderr, "nemozem sa pripojit na sokcet !\n");
+		new->sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( new->proto == PROTO_UDPv6 )
+	{
+		new->sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+	}
+#endif
+
+	if( new->sock < 0 )
+	{
+		fprintf(stderr, "nemozem vytvorit socket !\n");
 		destroySockUdp(new);
 		return NULL;
 	}
 
-	host = gethostbyname(address);
-	new->sockAddr.sin_family = AF_INET;
-	new->sockAddr.sin_port = htons(port);
-	memcpy(&(new->sockAddr.sin_addr), host->h_addr, host->h_length);
+	memset(&(new->sockAddr), 0, sizeof(new->sockAddr));
 
+	if( new->proto == PROTO_UDPv4 )
+	{
+		new->sockAddr.sin_family = AF_INET;
+		new->sockAddr.sin_port = htons(port);
+		new->sockAddr.sin_addr.s_addr = inet_addr(address);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( new->proto == PROTO_UDPv6 )
+	{
+		new->sockAddr6.sin6_family = AF_INET6;
+		new->sockAddr6.sin6_port = htons(port);
+		inet_pton(AF_INET6, address, &(new->sockAddr6.sin6_addr));
+	}
+#endif
 	return new;
 }
 
@@ -104,12 +155,31 @@ int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	assert( dst != NULL );
 	assert( address != NULL );
 
-        addrlen = sizeof(src->sockAddr);
+	if( dst->proto == PROTO_UDPv4 )
+	{
+	        addrlen = sizeof(src->sockAddr);
 
-        if( ( size = recvfrom(src->sock, address, len, 0,
-		(struct sockaddr *)&dst->sockAddr, (socklen_t *)&addrlen) ) < 0 )
+		size = recvfrom(src->sock, address, len, 0,
+			(struct sockaddr *)&dst->sockAddr, (socklen_t *)&addrlen);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( dst->proto == PROTO_UDPv6 )
+	{
+ 	       addrlen = sizeof(src->sockAddr6);
+
+		size = recvfrom(src->sock, address, len, 0,
+			(struct sockaddr *)&dst->sockAddr6, (socklen_t *)&addrlen);
+	}
+#endif
+
+        if( size < 0 )
         {
-		fprintf(stderr, "nemozem nacitat sokcet !\n");
+		char str_ip[STR_IP_SIZE];
+
+		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
+
+		fprintf(stderr, "nemozem zapisat zo socketu %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
 		return -1;
         }
 
@@ -121,53 +191,86 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	int addrlen;
 	int size;
 
-#ifdef DEBUG_LOST_PACKET
-	if( rand() % DEBUG_LOST_PACKET == 0 )
-	{
-		printf("debug lost packet %s\n", address);
-		return size;
-	}
-#endif
-
-        addrlen = sizeof(src->sockAddr);
-
 	assert( src != NULL );
 	assert( dst != NULL );
 	assert( address != NULL );
 
-       if( ( size = sendto(src->sock, address, len, 0,
-		(struct sockaddr *)&dst->sockAddr, (socklen_t)addrlen) ) < 0 )
-        {
-		fprintf(stderr, "nemozem nacitat sokcet !\n");
+	if( dst->proto == PROTO_UDPv4 )
+	{
+		addrlen = sizeof(src->sockAddr);
+
+		size = sendto(src->sock, address, len, 0,
+			(struct sockaddr *)&dst->sockAddr, (socklen_t)addrlen);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( dst->proto == PROTO_UDPv6 )
+	{
+		addrlen = sizeof(src->sockAddr6);
+
+		size = sendto(src->sock, address, len, 0,
+			(struct sockaddr *)&dst->sockAddr6, (socklen_t)addrlen);
+	}
+#endif
+
+       if( size < 0 )
+       {
+		char str_ip[STR_IP_SIZE];
+
+		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
+
+		fprintf(stderr, "nemozem zapisat na socket %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
 		return -1;
-        }
+       }
 
 	return size;
 }
 
-void getSockUdpIp(sock_udp_t *p, char *str_ip)
+void getSockUdpIp(sock_udp_t *p, char *str_ip, int len)
 {
 	assert( p != NULL  );
 	assert( str_ip != NULL );
 
-	strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
+	//strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
+	
+	if( p->proto == PROTO_UDPv4 )
+	{
+		inet_ntop(AF_INET, &(p->sockAddr.sin_addr), str_ip, len);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( p->proto == PROTO_UDPv6 )
+	{
+		inet_ntop(AF_INET6, &(p->sockAddr6.sin6_addr), str_ip, len);
+	}
+#endif
 }
 
 int getSockUdpPort(sock_udp_t *p)
 {
 	assert( p != NULL );
-	return htons(p->sockAddr.sin_port);
+
+	if( p->proto == PROTO_UDPv4 )
+	{
+		return htons(p->sockAddr.sin_port);
+	}
+
+#ifdef SUPPORT_IPv6
+	if( p->proto == PROTO_UDPv6 )
+	{
+		return htons(p->sockAddr6.sin6_port);
+	}
+#endif
+
+	assert( ! "bad proto !" );
+
+	return -1;
 }
 
 
 void closeUdpSocket(sock_udp_t *p)
 {
-	char str_ip[STR_IP_SIZE];
-
 	assert( p != NULL  );
-
-	getSockUdpIp(p, str_ip);
-	printf("close connect from %s:%d\n", str_ip, htons(p->sockAddr.sin_port));
 
 	close(p->sock);
 	destroySockUdp(p);
@@ -203,7 +306,7 @@ static int myWait(sock_udp_t *p)
 	return 0;
 }
 
-int test_udp_main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	sock_udp_t *sock;
 	char buf[BUFSIZE];
@@ -213,8 +316,11 @@ int test_udp_main(int argc, char *argv[])
 	{
 		sock_udp_t *cli;
 
-		sock = bindUdpSocket( atoi(argv[2]) );
-		cli = newSockUdp();
+		//sock = bindUdpSocket("::1", atoi(argv[2]), PROTO_UDPv6 );
+		sock = bindUdpSocket("127.0.0.1", atoi(argv[2]), PROTO_UDPv4 );
+
+		//cli = newSockUdp(PROTO_UDPv6);
+		cli = newSockUdp(PROTO_UDPv4);
 	
 		while(1)
 		{
@@ -229,8 +335,9 @@ int test_udp_main(int argc, char *argv[])
 
 	if( strcmp(argv[1], "c") == 0 )
 	{
-		sock = connectUdpSocket("127.0.0.1", atoi(argv[2]));
-	
+		//sock = connectUdpSocket("::1", atoi(argv[2]), PROTO_UDPv6);
+		sock = connectUdpSocket("127.0.0.1", atoi(argv[2]), PROTO_UDPv4);
+
 		strcpy(buf, "Hello world !\n");
 		writeUdpSocket(sock, sock, buf, strlen(buf));
 
@@ -238,7 +345,7 @@ int test_udp_main(int argc, char *argv[])
 		readUdpSocket(sock, sock, buf, BUFSIZE);
 
 		printf("buf = %s", buf);
-		
+		//while(1)sleep(1);
 		closeUdpSocket(sock);
 	}
 

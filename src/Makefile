@@ -16,7 +16,7 @@ FILES = interface.o space.o idManager.o storage.o font.o list.o modules.o\
 	item.o widget_label.o screen_mainMenu.o widget_button.o screen_analyze.o widget_textfield.o \
 	widget_check.o widget_image.o widget_select.o screen_setting.o screen_gameType.o screen_choiceArena.o \
 	widget_buttonimage.o screen_credits.o homeDirector.o screen_table.o \
-	sdl_udp.o proto.o server.o client.o term.o keytable.o language.o game.o
+	sdl_udp.o udp.o proto.o server.o client.o term.o keytable.o language.o game.o
  
 tuxanci-ng: $(FILES)
 	$(CC) $(CFLAGS) $(LIBS) -o $(BUILD_DIR)/tuxanci-ng $(BUILD_DIR)/*.o

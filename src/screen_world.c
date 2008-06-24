@@ -55,7 +55,7 @@ void setGameType()
 {
 	int ret = 0;
 
-	ret = initNetMuliplayer( getSettingGameType(), getSettingIP(), getSettingPort() );
+	ret = initNetMuliplayer( getSettingGameType(), getSettingIP(), getSettingPort(), getSettingProto() );
 
 	if( ret != 0 )
 	{

@@ -9,6 +9,7 @@ extern void initScreenGameType();
 extern int getSettingGameType();
 extern char* getSettingIP();
 extern int getSettingPort();
+extern int getSettingProto();
 extern void quitScreenGameType();
 
 #endif

@@ -51,9 +51,13 @@ typedef struct client_struct
 	buffer_t *buffer;
 } client_t;
 
+#ifdef PUBLIC_SERVER
+extern int initUdpPublicServer(char *ip4, int port4, char *ip6, int port6);
+#endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-extern int initUdpServer(char *ip, int port);
+extern int initUdpServer(char *ip, int port, int proto);
+extern int initUdpServerMultiProto(char *ip4, char *ip6, int port4, int port6);
 extern client_t* newUdpClient(sock_udp_t *sock_udp);
 extern void selectServerUdpSocket();
 extern void quitUdpServer();

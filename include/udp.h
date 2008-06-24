@@ -5,21 +5,27 @@
 
 #define MY_UDP
 
-#include "main.h"
+#define SUPPORT_IPv6
+
+#define PROTO_UDPv4	0
+#define PROTO_UDPv6	1
 
 typedef struct struct_sock_udp_t
 {
 	int sock;
+	int proto;
+
+	struct sockaddr_in6 sockAddr6;
 	struct sockaddr_in sockAddr;
 } sock_udp_t;
 
-extern sock_udp_t* newSockUdp();
+extern sock_udp_t* newSockUdp(int proto);
 extern void destroySockUdp(sock_udp_t *p);
-extern sock_udp_t* bindUdpSocket(char *address, int port);
-extern sock_udp_t* connectUdpSocket(char *address, int port);
+extern sock_udp_t* bindUdpSocket(char *address, int port, int proto);
+extern sock_udp_t* connectUdpSocket(char *address, int port, int proto);
 extern int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);
 extern int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);
-extern void getSockUdpIp(sock_udp_t *p, char *str_ip);
+extern void getSockUdpIp(sock_udp_t *p, char *str_ip, int len);
 extern int getSockUdpPort(sock_udp_t *p);
 extern void closeUdpSocket(sock_udp_t *p);
 

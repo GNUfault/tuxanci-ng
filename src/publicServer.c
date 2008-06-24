@@ -35,8 +35,46 @@ static char *getSetting(char *env, char *param, char *default_val)
 	return getParamElse(param, getServerConfigFileValue(env, default_val) );
 }
 
+static int initPublicServerNetwork()
+{
+	char ip4[STR_IP_SIZE];
+	char ip6[STR_IP_SIZE];
+	char *p_ip4, *p_ip6;
+	int port4;
+	int port6;
+	int ret;
+
+	ret = -1;
+
+	strcpy(ip4, getSetting("IP4", "--ip4", "none" ) );
+	strcpy(ip6, getSetting("IP6", "--ip6", "none" ) );
+
+	p_ip4 = ip4;
+
+	if( strcmp(ip4, "none") == 0 )
+	{
+		p_ip4 = NULL;
+	}
+
+	p_ip6 = ip6;
+
+	if( strcmp(ip6, "none") == 0 )
+	{
+		p_ip6= NULL;
+	}
+
+	port4 = atoi( getSetting("PORTv4", "--port", "2200") );
+	port6 = atoi( getSetting("PORTv6", "--port", "2200") );
+
+	ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+
+	return ret;
+}
+
 int initPublicServer()
 {
+	int ret;
+
 	initListID();
 	initModule();
 	initArenaFile();
@@ -53,8 +91,9 @@ int initPublicServer()
 	addNewItem(arena->spaceItem, ID_UNKNOWN);
 	isSignalEnd = FALSE;
 
-	if( initNetMuliplayer(NET_GAME_TYPE_SERVER,
-		getSetting("IP", "--ip", "0.0.0.0") , atoi( getSetting("PORT", "--port", "2200") ) ) < 0 )
+	ret = initPublicServerNetwork();
+
+	if( ret < 0 )
 	{
 		printf("Nemozem inicalizovat sietovy socket !\n");
 		return -1;

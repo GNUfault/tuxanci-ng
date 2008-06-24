@@ -23,7 +23,11 @@
 
 #define  LIMIT_BUFFER 10240
 
-extern int initNetMuliplayer(int type, char *ip, int port);
+#ifdef PUBLIC_SERVER
+extern int initNetMulitplayerPublicServer(char *ip4, int port4, char *ip6, int port6);
+#endif
+
+extern int initNetMuliplayer(int type, char *ip, int port, int proto);
 extern int getNetTypeGame();
 extern void eventNetMultiplayer();
 extern void quitNetMultiplayer();

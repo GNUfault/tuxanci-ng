@@ -11,6 +11,6 @@
 #define STR_NAME_SIZE		32
 #define STR_PATH_SIZE		4096
 #define STR_FILE_NAME_SIZE	256
-#define STR_IP_SIZE		24
+#define STR_IP_SIZE		64
 
 #endif

@@ -44,9 +44,9 @@ static void initClient()
 
 #ifdef SUPPORT_NET_UNIX_UDP
 
-int initUdpClient(char *ip, int port)
+int initUdpClient(char *ip, int port, int proto)
 {
-	sock_server_udp = connectUdpSocket(ip, port);
+	sock_server_udp = connectUdpSocket(ip, port, proto);
 
 	if( sock_server_udp == NULL )
 	{

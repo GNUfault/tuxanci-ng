@@ -33,6 +33,7 @@
 #ifdef SUPPORT_NET_UNIX_UDP
 #include "udp.h"
 static sock_udp_t *sock_server_udp;
+static sock_udp_t *sock_server_udp_second;
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
@@ -175,9 +176,10 @@ void static initServer()
 }
 
 #ifdef SUPPORT_NET_UNIX_UDP
-int initUdpServer(char *ip, int port)
+int initUdpServer(char *ip, int port, int proto)
 {
-	sock_server_udp = bindUdpSocket(ip, port);
+	sock_server_udp = bindUdpSocket(ip, port, proto);
+	sock_server_udp_second = NULL;
 
 	if( sock_server_udp == NULL )
 	{
@@ -190,6 +192,44 @@ int initUdpServer(char *ip, int port)
 
 	return 0;
 }
+#endif
+
+#ifdef PUBLIC_SERVER
+
+int initUdpPublicServer(char *ip4, int port4, char *ip6, int port6)
+{
+	sock_server_udp = NULL;
+	sock_server_udp_second = NULL;
+
+	if( ip4 != NULL )
+	{
+		sock_server_udp = bindUdpSocket(ip4, port4, PROTO_UDPv4);
+	
+		if( sock_server_udp == NULL )
+		{
+			return -1;
+		}
+	
+		printf("server listen UDP port %s %d\n", ip4, port4);
+	}
+
+	if( ip6 != NULL )
+	{
+		sock_server_udp_second = bindUdpSocket(ip6, port6, PROTO_UDPv6);
+	
+		if( sock_server_udp_second == NULL )
+		{
+			return -1;
+		}
+	
+		printf("server listen UDP port %s %d\n", ip6, port6);
+	}
+
+	initServer();
+
+	return 0;
+}
+
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
@@ -233,8 +273,8 @@ client_t* newUdpClient(sock_udp_t *sock_udp)
 
 	assert( sock_udp != NULL );
 
-	getSockUdpIp(sock_udp, str_ip);
-	printf("new client from %s:%d\n", str_ip, getSockUdpPort(sock_udp));
+	getSockUdpIp(sock_udp, str_ip, STR_IP_SIZE);
+	printf("new client from %s %d\n", str_ip, getSockUdpPort(sock_udp));
 	
 	new = newAnyClient();
 	new->socket_udp = sock_udp;
@@ -260,9 +300,12 @@ client_t* newSdlUdpClient(sock_sdl_udp_t *sock_sdl_udp)
 
 void destroyClient(client_t *p)
 {
-//	int index;
+	char str_ip[STR_IP_SIZE];
 
 	assert( p != NULL );
+
+	getSockUdpIp(p->socket_udp, str_ip, STR_IP_SIZE);
+	printf("close connect %s %d\n", str_ip, getSockUdpPort(p->socket_udp) );
 
 #ifdef SUPPORT_NET_UNIX_UDP
 	closeUdpSocket(p->socket_udp);
@@ -275,16 +318,11 @@ void destroyClient(client_t *p)
 	destroyBuffer(p->buffer);
 	destroyCheckFront(p->listCheck);
 
-
 	if( p->tux != NULL )
 	{
 #ifdef PUBLIC_SERVER
 		addPlayerInHighScore(p->tux->name, p->tux->score);
 #endif
-/*
-		index = searchListItem(getCurrentArena()->listTux, p->tux);
-		delListItem(getCurrentArena()->listTux, index, destroyTux);
-*/
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceTux, p->tux, destroyTux);
 	}
 
@@ -323,7 +361,15 @@ void sendClient(client_t *p, char *msg)
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-		ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
+		if( p->socket_udp->proto == PROTO_UDPv4 )
+		{
+			ret = writeUdpSocket(sock_server_udp, p->socket_udp, msg, strlen(msg));
+		}
+
+		if( p->socket_udp->proto == PROTO_UDPv6 )
+		{
+			ret = writeUdpSocket(sock_server_udp_second, p->socket_udp, msg, strlen(msg));
+		}
 #endif
 
 #ifdef SUPPORT_NET_SDL_UDP
@@ -637,7 +683,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 	assert( sock_server != NULL );
 
-	sock_client = newSockUdp();
+	sock_client = newSockUdp(sock_server->proto);
 	isCreateNewClient = FALSE;
 
 	memset(buffer, 0, STR_SIZE);
@@ -687,6 +733,7 @@ void selectServerUdpSocket()
 {
 	struct timeval tv;
 	fd_set readfds;
+	fd_set errorfds;
 	int max_fd;
 	int ret;
 
@@ -701,27 +748,74 @@ void selectServerUdpSocket()
 #endif	
 
 	FD_ZERO(&readfds);
-	FD_SET(sock_server_udp->sock, &readfds);
-	max_fd = sock_server_udp->sock;
+	FD_ZERO(&errorfds);
+
+	max_fd = 0;
+
+	if( sock_server_udp != NULL )
+	{
+		FD_SET(sock_server_udp->sock, &errorfds);
+		FD_SET(sock_server_udp->sock, &readfds);
+
+		if( sock_server_udp->sock > max_fd )
+		{
+			max_fd = sock_server_udp->sock;
+		}
+	}
+
+	if( sock_server_udp_second != NULL )
+	{
+		FD_SET(sock_server_udp_second->sock, &readfds);
+		FD_SET(sock_server_udp_second->sock, &errorfds);
+
+		if( sock_server_udp_second->sock > max_fd )
+		{
+			max_fd = sock_server_udp_second->sock;
+		}
+	}
+
+	//printf("select..\n");
 
 	if( listClient->count == 0 )
 	{
-		ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, NULL);
+		ret = select(max_fd+1, &readfds, (fd_set *)NULL, &errorfds,  &tv);
 		setServerTimer();
 	}
 	else
 	{
-		ret = select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+		ret = select(max_fd+1, &readfds, (fd_set *)NULL,&errorfds, &tv);
 	}
 
 	if( ret < 0 )
 	{
+		//printf("select ret = %d\n", ret);
 		return;
 	}
 	
-	if( FD_ISSET(sock_server_udp->sock, &readfds) )
+	if( sock_server_udp != NULL )
 	{
-		eventClientUdpSelect(sock_server_udp);
+		if( FD_ISSET(sock_server_udp->sock, &readfds) )
+		{
+			eventClientUdpSelect(sock_server_udp);
+		}
+	
+		if( FD_ISSET(sock_server_udp->sock, &errorfds) )
+		{
+			printf("error\n");
+		}
+	}
+
+	if( sock_server_udp_second != NULL )
+	{
+		if( FD_ISSET(sock_server_udp_second->sock, &readfds) )
+		{
+			eventClientUdpSelect(sock_server_udp_second);
+		}
+	
+		if( FD_ISSET(sock_server_udp_second->sock, &errorfds) )
+		{
+			printf("error\n");
+		}
 	}
 }
 
@@ -825,6 +919,7 @@ void eventServer()
 static void quitServer()
 {
 	proto_send_end_server(PROTO_SEND_ALL, NULL);
+
 	assert( listClient != NULL );
 	destroyListItem(listClient, destroyClient);
 	destroyTimer(listServerTimer);
@@ -836,8 +931,17 @@ void quitUdpServer()
 {
 	quitServer();
 
-	assert( sock_server_udp != NULL );
-	closeUdpSocket(sock_server_udp);
+	if( sock_server_udp != NULL )
+	{
+		printf("close port %d\n", getSockUdpPort(sock_server_udp));
+		closeUdpSocket(sock_server_udp);
+	}
+
+	if( sock_server_udp_second != NULL )
+	{
+		printf("close port %d\n", getSockUdpPort(sock_server_udp_second));
+		closeUdpSocket(sock_server_udp_second);
+	}
 
 	printf("quit UDP port\n");
 }

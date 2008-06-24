@@ -31,7 +31,16 @@ int getNetTypeGame()
 	return netGameType;
 }
 
-int initNetMuliplayer(int type, char *ip, int port)
+#ifdef PUBLIC_SERVER
+
+int initNetMulitplayerPublicServer(char *ip4, int port4, char *ip6, int port6)
+{
+	netGameType = NET_GAME_TYPE_SERVER;
+	return initUdpPublicServer(ip4, port4, ip6, port6);
+}
+#endif
+
+int initNetMuliplayer(int type, char *ip, int port, int proto)
 {
 	netGameType = type;
 
@@ -42,7 +51,7 @@ int initNetMuliplayer(int type, char *ip, int port)
 
 		case NET_GAME_TYPE_SERVER :
 #ifdef SUPPORT_NET_UNIX_UDP
-			if( initUdpServer(ip, port) != 0 )
+			if( initUdpServer(ip, port, proto) != 0 )
 			{
 				fprintf(stderr, "Neomzem inicalizovat sietovu hru pre server !\n");
 				netGameType = NET_GAME_TYPE_NONE;
@@ -62,7 +71,7 @@ int initNetMuliplayer(int type, char *ip, int port)
 #ifndef PUBLIC_SERVER	
 		case NET_GAME_TYPE_CLIENT :
 #ifdef SUPPORT_NET_UNIX_UDP
-			if( initUdpClient(ip, port) != 0 )
+			if( initUdpClient(ip, port, proto) != 0 )
 			{
 				fprintf(stderr, "Neomzem inicalizovat sietovu hru pre clienta !\n");
 				netGameType = NET_GAME_TYPE_NONE;

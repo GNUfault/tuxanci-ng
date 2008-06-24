@@ -16,6 +16,7 @@
 #include "list.h"
 #include "screen_setting.h"
 #include "tux.h"
+#include "udp.h"
 
 #include "widget_label.h"
 #include "widget_button.h"
@@ -31,6 +32,7 @@ static widget_button_t *button_play;
 static widget_label_t *label_none;
 static widget_label_t *label_server;
 static widget_label_t *label_client;
+static widget_label_t *label_ipv6;
 
 static widget_label_t *label_ip;
 static widget_label_t *label_port;
@@ -38,6 +40,8 @@ static widget_label_t *label_port;
 static widget_check_t *check_none;
 static widget_check_t *check_server;
 static widget_check_t *check_client;
+
+static widget_check_t *check_ipv6;
 
 static widget_textfield_t *textfield_ip;
 static widget_textfield_t *textfield_port;
@@ -55,22 +59,19 @@ void drawScreenGameType()
 	drawWidgetLabel(label_server);
 	drawWidgetLabel(label_client);
 
-	if( check_client->status == TRUE )
-	{
-		drawWidgetLabel(label_ip);
-		drawWidgetTextfield(textfield_ip);
-	}
-
 	if( check_none->status == FALSE )
 	{
 		drawWidgetLabel(label_port);
 		drawWidgetTextfield(textfield_port);
+		drawWidgetLabel(label_ip);
+		drawWidgetTextfield(textfield_ip);
+		drawWidgetCheck(check_ipv6);
+		drawWidgetLabel(label_ipv6);
 	}
 
 	drawWidgetCheck(check_none);
 	drawWidgetCheck(check_server);
 	drawWidgetCheck(check_client);
-
 
 	drawWidgetButton(button_back);
 	drawWidgetButton(button_play);
@@ -78,10 +79,10 @@ void drawScreenGameType()
 
 void eventScreenGameType()
 {
-
 	eventWidgetCheck(check_none);
 	eventWidgetCheck(check_server);
 	eventWidgetCheck(check_client);
+	eventWidgetCheck(check_ipv6);
 
 	eventWidgetTextfield(textfield_ip);
 	eventWidgetTextfield(textfield_port);
@@ -181,6 +182,9 @@ void initScreenGameType()
 	textfield_ip = newWidgetTextfield(getParamElse("--ip", "127.0.0.1"), 300, 180);
 	textfield_port = newWidgetTextfield(getParamElse("--port", "2200"), 300, 280);
 
+	check_ipv6 = newWidgetCheck(300, 330, FALSE, eventWidget);
+	label_ipv6 = newWidgetLabel("support IPv6", 330, 325, WIDGET_LABEL_LEFT);
+
 	registerScreen( newScreen("gameType", startScreenGameType, eventScreenGameType,
 		drawScreenGameType, stopScreenGameType) );
 }
@@ -215,6 +219,11 @@ char* getSettingIP()
 int getSettingPort()
 {
 	return atoi( textfield_port->text );
+}
+
+int getSettingProto()
+{
+	return ( check_ipv6->status == TRUE ? PROTO_UDPv6 : PROTO_UDPv4 );
 }
 
 void quitScreenGameType()

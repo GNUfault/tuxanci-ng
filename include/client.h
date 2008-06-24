@@ -12,14 +12,8 @@
 
 #endif
 
-#ifdef SUPPORT_NET_UNIX_TCP
-extern int initTcpClient(char *ip, int port);
-extern void selectClientTcpSocket();
-extern void quitTcpClient();
-#endif
-
 #ifdef SUPPORT_NET_UNIX_UDP
-extern int initUdpClient(char *ip, int port);
+extern int initUdpClient(char *ip, int port, int proto);
 extern void eventPingServer();
 extern void selectClientUdpSocket();
 extern void refreshPingServerAlive();
