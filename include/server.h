@@ -59,7 +59,7 @@ extern int initUdpPublicServer(char *ip4, int port4, char *ip6, int port6);
 extern int initUdpServer(char *ip, int port, int proto);
 extern int initUdpServerMultiProto(char *ip4, char *ip6, int port4, int port6);
 extern client_t* newUdpClient(sock_udp_t *sock_udp);
-extern void selectServerUdpSocket();
+extern int selectServerUdpSocket();
 extern void quitUdpServer();
 #endif
 
@@ -78,14 +78,7 @@ extern int getServerMaxClients();
 extern void setServerMaxClients(int n);
 
 extern void sendClient(client_t *p, char *msg);
-extern void sendAllClientBut(char *msg, client_t *p);
-extern void sendAllClient(char *msg);
-extern void sendAllClientSeesTux(char *msg, tux_t *tux);
-
-extern void addMsgClient(client_t *p, char *msg, int id);
-extern void addMsgAllClientBut(char *msg, client_t *p, int id);
-extern void addMsgAllClient(char *msg,  int id);
-extern void addMsgAllClientSeesTux(char *msg, tux_t *tux, int id);
+extern void protoSendClient(int type, client_t *client, char *msg, int type2, int id);
 
 extern tux_t *getServerTux();
 extern client_t *getClientFromTux(tux_t *tux);

@@ -33,91 +33,13 @@
 #include "publicServer.h"
 #endif
 
-static void proto_send(int type, client_t *client, char *msg)
-{
-	assert( msg != NULL );
-
-	switch( type )
-	{
-		case PROTO_SEND_ONE :
-			assert( client != NULL );
-			sendClient(client, msg);
-		break;
-		case PROTO_SEND_ALL :
-			assert( client == NULL );
-			sendAllClient(msg);
-		break;
-		case PROTO_SEND_BUT :
-			assert( client != NULL );
-			sendAllClientBut(msg, client);
-		break;
-		case PROTO_SEND_ALL_SEES_TUX :
-#ifndef PUBLIC_SERVER
-			if( client != NULL )
-			{
-				sendAllClientSeesTux(msg, client->tux);
-			}
-			else
-			{
-				sendAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT));
-			}
-#endif
-#ifdef PUBLIC_SERVER
-			sendAllClientSeesTux(msg, client->tux);
-#endif
-		break;
-		default :
-			assert( ! "Premenna type ma zlu hodnotu !" );
-		break;
-	}
-}
-
-static void proto_check(int type, client_t *client, char *msg, int id)
-{
-	assert( msg != NULL );
-
-	switch( type )
-	{
-		case PROTO_SEND_ONE :
-			assert( client != NULL );
-			addMsgClient(client, msg, id);
-		break;
-		case PROTO_SEND_ALL :
-			assert( client == NULL );
-			addMsgAllClient(msg, id);
-		break;
-		case PROTO_SEND_BUT :
-			assert( client != NULL );
-			addMsgAllClientBut(msg, client, id);
-		break;
-		case PROTO_SEND_ALL_SEES_TUX :
-#ifndef PUBLIC_SERVER
-			if( client != NULL )
-			{
-				addMsgAllClientSeesTux(msg, client->tux, id);
-			}
-			else
-			{
-				addMsgAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT), id);
-			}
-#endif
-#ifdef PUBLIC_SERVER
-			addMsgAllClientSeesTux(msg, client->tux, id);
-#endif
-		break;
-		default :
-			assert( ! "Premenna type ma zlu hodnotu !" );
-		break;
-	}
-}
-
 void proto_send_error_server(int type, client_t *client, int errorcode)
 {
 	char msg[STR_PROTO_SIZE];
 	
 	sprintf(msg, "error %d\n", errorcode);
 
-	proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -205,7 +127,8 @@ void proto_send_status_server(int type, client_t *client)
 	getServerMaxClients(), (unsigned int)getUpdateServer(),
 	getArenaNetName( getChoiceArenaId() ) );
 
-	proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	//proto_send(type, client, msg);
 }
 
 void proto_recv_status_server(client_t *client, char *msg)
@@ -237,7 +160,8 @@ void proto_send_listscore_server(int type, client_t *client, int max)
 		strcat(msg, "\n");
 	}
 
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 	free(msg);
 }
 
@@ -302,7 +226,8 @@ void proto_send_init_server(int type, client_t *client, client_t *client2)
 		client2->tux->id, client2->tux->x, client2->tux->y,
 		n, getArenaNetName( getChoiceArenaId() ));
 	
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -343,7 +268,8 @@ void proto_send_event_server(int type, client_t *client, tux_t *tux, int action)
 	
 	sprintf(msg, "event %d %d\n", tux->id, action);
 	
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -423,7 +349,8 @@ void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 	tux->shot[GUN_MINE], tux->shot[GUN_BOMBBALL],
 	tux->bonus_time, tux->pickup_time);
 	
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -497,7 +424,8 @@ void proto_send_kill_server(int type, client_t *client, tux_t *tux)
 
 	sprintf(msg, "kill %d\n", tux->id);
 	
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -532,7 +460,8 @@ void proto_send_del_server(int type, client_t *client, int id)
 	sprintf(msg, "del %d %d\n",
 		id, check_id);
 
-	proto_check(type, client, msg, check_id);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_CHECK, check_id);
+	//proto_check(type, client, msg, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -600,7 +529,8 @@ void proto_send_additem_server(int type, client_t *client, item_t *p)
 		p->id, p->type, p->x, p->y, p->count, p->frame, p->author_id, check_id);
 
 	//proto_send(type, client, msg);
-	proto_check(type, client, msg, check_id);
+	//proto_check(type, client, msg, check_id);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_CHECK, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -651,7 +581,8 @@ void proto_send_shot_server(int type, client_t *client, shot_t *p)
 		p->id, p->x, p->y, p->px, p->py, p->position, p->gun, p->author_id, p->isCanKillAuthor, check_id);
 
 	//proto_send(type, client, msg);
-	proto_check(type, client, msg, check_id);
+	//proto_check(type, client, msg, check_id);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_CHECK, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -711,7 +642,8 @@ void proto_send_ping_server(int type, client_t *client)
 {
 	char msg[STR_PROTO_SIZE];
 	sprintf(msg, "ping\n");
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -726,7 +658,8 @@ void proto_send_end_server(int type, client_t *client)
 {
 	char msg[STR_PROTO_SIZE];
 	strcpy(msg, "end\n");
-	proto_send(type, client, msg);
+	//proto_send(type, client, msg);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER

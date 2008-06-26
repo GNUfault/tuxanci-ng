@@ -17,9 +17,10 @@ typedef struct struct_checkfront_t
 	my_time_t time;
 	int id;
 	int count;
+	int type;
 } checkfront_t;
 
-static checkfront_t* newCheck(char *s, int id)
+static checkfront_t* newCheck(char *s, int type, int id)
 {
 	checkfront_t *new;
 
@@ -31,6 +32,7 @@ static checkfront_t* newCheck(char *s, int id)
 	new->msg = strdup(s);
 	new->time = getMyTime();
 	new->id = id;
+	new->type = type;
 	new->count = 0;
 
 	return new;
@@ -44,17 +46,15 @@ static void destroyCheck(checkfront_t *p)
 	free(p);
 }
 
-
 list_t* newCheckFront()
 {
 	return newList();
 }
 
-void addMsgInCheckFront(list_t *list, char *msg, int id)
+void addMsgInCheckFront(list_t *list, char *msg, int type, int id)
 {
-	addList(list, newCheck(msg, id) );
+	addList(list, newCheck(msg, type, id) );
 }
-
 
 void eventMsgInCheckFront(client_t *client)
 {
@@ -69,22 +69,37 @@ void eventMsgInCheckFront(client_t *client)
 
 		this = (checkfront_t *)client->listCheck->list[i];
 
-		if( this->count == 0 || currentTime - this->time > CHECK_FRONT_SEND_TIME_INTERVAL )
+		switch( this->type )
 		{
-			sendClient(client, this->msg);
-			this->time = currentTime;
-			this->count++;
-		}
+			case CHECK_FORNT_TYPE_SIMPLE :
+					sendClient(client, this->msg);
+					delListItem(client->listCheck, i, destroyCheck);
+					i--;
+			break;
 
-		if( this->count > CHECK_FRONT_MAX_COUNT_SEND )
-		{
-			if( isRegisterID(this->id) != -1 )
-			{
-				delID(this->id);
-			}
+			case CHECK_FORNT_TYPE_CHECK :
+				if( this->count == 0 || currentTime - this->time > CHECK_FRONT_SEND_TIME_INTERVAL )
+				{
+					sendClient(client, this->msg);
+					this->time = currentTime;
+					this->count++;
+				}
+		
+				if( this->count > CHECK_FRONT_MAX_COUNT_SEND )
+				{
+					if( isRegisterID(this->id) != -1 )
+					{
+						delID(this->id);
+					}
+		
+					delListItem(client->listCheck, i, destroyCheck);
+					i--;
+				}
+			break;
 
-			delListItem(client->listCheck, i, destroyCheck);
-			i--;
+			default :
+				assert( ! "Zly typ !" );
+			break;
 		}
 	}
 }

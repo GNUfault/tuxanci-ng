@@ -129,29 +129,10 @@ static void eventPeriodicSyncClient(void *p_nothink)
 	}
 }
 
-/*
-static void eventPeriodicSyncSelfClient(void *p_nothink)
-{
-	client_t *thisClient;
-	int i;
-
-	for( i = 0 ; i < listClient->count; i++)
-	{
-		thisClient = (client_t *) listClient->list[i];
-
-		if( thisClient->tux != NULL )
-		{
-			proto_send_newtux_server(PROTO_SEND_ONE, thisClient, thisClient->tux);
-		}
-	}
-}
-*/
-
 static void eventSendPingClients(void *p_nothink)
 {
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
-
 
 static void setServerTimer()
 {
@@ -165,9 +146,7 @@ static void setServerTimer()
 
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
-	//addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncSelfClient, NULL, 5000);
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
-
 }
 
 void static initServer()
@@ -395,65 +374,18 @@ void sendClient(client_t *p, char *msg)
 	}
 }
 
-void sendAllClientBut(char *msg, client_t *p)
-{
-	client_t *thisClient;
-	int i;
-
-	assert( msg != NULL );
-
-	for( i = 0 ; i < listClient->count; i++)
-	{
-		thisClient = (client_t *) listClient->list[i];
-
-		if( thisClient->tux != NULL && thisClient != p )
-		{
-			sendClient(thisClient, msg);
-		}
-	}
-}
-
-void sendAllClient(char *msg)
-{
-	assert( msg != NULL );
-
-	sendAllClientBut(msg, NULL);
-}
-
-void sendAllClientSeesTux(char *msg, tux_t *tux)
-{
-	int i;
-
-	assert( msg != NULL );
-
-	for( i = 0 ; i < listClient->count ; i++ )
-	{
-		client_t *thisClient;
-		tux_t *thisTux;
-
-		thisClient = (client_t *)listClient->list[i];
-		thisTux = (tux_t *)thisClient->tux;
-
-		if( tux != thisTux &&
-		    isTuxSeesTux(thisTux, tux) )
-		{
-			sendClient(thisClient, msg);
-		}
-	}
-}
-
-void addMsgClient(client_t *p, char *msg, int id)
+static void addMsgClient(client_t *p, char *msg, int type, int id)
 {
 	assert( p != NULL );
 	assert( msg != NULL );
 
 	if( p->status != NET_STATUS_ZOMBIE )
 	{
-		addMsgInCheckFront(p->listCheck, msg, id);
+		addMsgInCheckFront(p->listCheck, msg, type, id);
 	}
 }
 
-void addMsgAllClientBut(char *msg, client_t *p, int id)
+static void addMsgAllClientBut(char *msg, client_t *p, int type, int id)
 {
 	client_t *thisClient;
 	int i;
@@ -466,19 +398,19 @@ void addMsgAllClientBut(char *msg, client_t *p, int id)
 
 		if( thisClient->tux != NULL && thisClient != p )
 		{
-			addMsgClient(thisClient, msg, id);
+			addMsgClient(thisClient, msg, type, id);
 		}
 	}
 }
 
-void addMsgAllClient(char *msg,  int id)
+static void addMsgAllClient(char *msg, int type, int id)
 {
 	assert( msg != NULL );
 
-	addMsgAllClientBut(msg, NULL, id);
+	addMsgAllClientBut(msg, NULL, type, id);
 }
 
-void addMsgAllClientSeesTux(char *msg, tux_t *tux, int id)
+static void addMsgAllClientSeesTux(char *msg, tux_t *tux, int type, int id)
 {
 	int i;
 
@@ -495,8 +427,47 @@ void addMsgAllClientSeesTux(char *msg, tux_t *tux, int id)
 		if( tux != thisTux &&
 		    isTuxSeesTux(thisTux, tux) )
 		{
-			addMsgClient(thisClient, msg, id);
+			addMsgClient(thisClient, msg, type, id);
 		}
+	}
+}
+
+void protoSendClient(int type, client_t *client, char *msg, int type2, int id)
+{
+	assert( msg != NULL );
+
+	switch( type )
+	{
+		case PROTO_SEND_ONE :
+			assert( client != NULL );
+			addMsgClient(client, msg, type2, id);
+		break;
+		case PROTO_SEND_ALL :
+			assert( client == NULL );
+			addMsgAllClient(msg, type2, id);
+		break;
+		case PROTO_SEND_BUT :
+			assert( client != NULL );
+			addMsgAllClientBut(msg, client, type2, id);
+		break;
+		case PROTO_SEND_ALL_SEES_TUX :
+#ifndef PUBLIC_SERVER
+			if( client != NULL )
+			{
+				addMsgAllClientSeesTux(msg, client->tux, type2, id);
+			}
+			else
+			{
+				addMsgAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
+			}
+#endif
+#ifdef PUBLIC_SERVER
+			addMsgAllClientSeesTux(msg, client->tux, type2, id);
+#endif
+		break;
+		default :
+			assert( ! "Premenna type ma zlu hodnotu !" );
+		break;
 	}
 }
 
@@ -750,13 +721,14 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 	addList(client->buffer, strdup(buffer) );
 }
 
-void selectServerUdpSocket()
+int selectServerUdpSocket()
 {
 	struct timeval tv;
 	fd_set readfds;
 	fd_set errorfds;
 	int max_fd;
 	int ret;
+	int count;
 
 #ifndef PUBLIC_SERVER
 	tv.tv_sec = 0;
@@ -772,6 +744,7 @@ void selectServerUdpSocket()
 	FD_ZERO(&errorfds);
 
 	max_fd = 0;
+	count = 0;
 
 	if( sock_server_udp != NULL )
 	{
@@ -810,7 +783,7 @@ void selectServerUdpSocket()
 	if( ret < 0 )
 	{
 		//printf("select ret = %d\n", ret);
-		return;
+		return 0;
 	}
 	
 	if( sock_server_udp != NULL )
@@ -818,6 +791,7 @@ void selectServerUdpSocket()
 		if( FD_ISSET(sock_server_udp->sock, &readfds) )
 		{
 			eventClientUdpSelect(sock_server_udp);
+			count = 1;
 		}
 	
 		if( FD_ISSET(sock_server_udp->sock, &errorfds) )
@@ -831,6 +805,7 @@ void selectServerUdpSocket()
 		if( FD_ISSET(sock_server_udp_second->sock, &readfds) )
 		{
 			eventClientUdpSelect(sock_server_udp_second);
+			count = 1;
 		}
 	
 		if( FD_ISSET(sock_server_udp_second->sock, &errorfds) )
@@ -838,6 +813,8 @@ void selectServerUdpSocket()
 			printf("error\n");
 		}
 	}
+
+	return count;
 }
 
 #endif
@@ -920,12 +897,16 @@ void selectServerSdlUdpSocket()
 
 void eventServer()
 {
+	int count;
+
 #ifdef SUPPORT_NET_SDL_UDP
 	selectServerSdlUdpSocket();
 #endif
 
 #ifdef SUPPORT_NET_UNIX_UDP
-	selectServerUdpSocket();
+	do{
+		count = selectServerUdpSocket();
+	}while( count > 0 );
 #endif
 
 	eventClientListBuffer();
