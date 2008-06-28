@@ -1,0 +1,179 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include "base/main.h"
+#include "base/list.h"
+
+#include "client/interface.h"
+#include "client/screen.h"
+#include "client/image.h"
+
+#ifndef NO_SOUND
+#include "audio/music.h"
+#endif
+
+#include "screen/screen_mainMenu.h"
+#include "screen/screen_analyze.h"
+
+#include "widget/widget_label.h"
+#include "widget/widget_button.h"
+#include "widget/widget_image.h"
+
+static widget_image_t *image_backgorund;
+
+static list_t *listWidgetLabelName;
+static list_t *listWidgetLabelScore;
+static list_t *listAnalyze;
+static widget_label_t *widgetLabelMsg;
+
+static widget_button_t *button_ok;
+
+static analyze_t* newAnalyze(char *name, int score)
+{
+	analyze_t *new;
+
+	new = malloc( sizeof(analyze_t) );
+	new->name = strdup(name);
+	new->score = score;
+
+	return new;
+}
+
+static void destroyAnalyze(analyze_t *p)
+{
+	free(p->name);
+	free(p);
+}
+
+void startScreenAnalyze()
+{
+#ifndef NO_SOUND
+	playMusic("menu", MUSIC_GROUP_BASE);
+#endif
+}
+
+void drawScreenAnalyze()
+{
+	widget_label_t *this;
+	int i;
+
+	drawWidgetImage(image_backgorund);
+
+	for( i = 0 ; i < listWidgetLabelName->count ; i++ )
+	{
+		this = (widget_label_t *)(listWidgetLabelName->list[i]);
+		drawWidgetLabel(this);
+	}
+
+	for( i = 0 ; i < listWidgetLabelScore->count ; i++ )
+	{
+		this = (widget_label_t *)(listWidgetLabelScore->list[i]);
+		drawWidgetLabel(this);
+	}
+
+	drawWidgetLabel(widgetLabelMsg);
+	drawWidgetButton(button_ok);
+}
+
+void eventScreenAnalyze()
+{
+	eventWidgetButton(button_ok);
+}
+
+void stopScreenAnalyze()
+{
+	destroyWidgetLabel(widgetLabelMsg);
+	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
+}
+
+static void eventWidget(void *p)
+{
+	widget_button_t *button;
+	
+	button = (widget_button_t *)(p);
+
+	if( button == button_ok )
+	{
+		setScreen("mainMenu");
+	}
+}
+
+void restartAnalyze()
+{
+	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
+	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+	destroyListItem(listAnalyze, destroyAnalyze);
+
+	listWidgetLabelName = newList();
+	listWidgetLabelScore = newList();
+	listAnalyze = newList();
+}
+
+void addAnalyze(char *name, int score)
+{
+	addList(listAnalyze, newAnalyze(name, score) );
+}
+
+void setMsgToAnalyze(char *msg)
+{
+	destroyWidgetLabel(widgetLabelMsg);
+	widgetLabelMsg = newWidgetLabel(msg, WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
+}
+
+void endAnalyze()
+{
+	int i;
+
+	for( i = 0 ; i < listAnalyze->count ; i++ )
+	{
+		analyze_t *this;
+		char *str;
+
+		this = (analyze_t *)(listAnalyze->list[i]);
+
+		addList(listWidgetLabelName, newWidgetLabel(this->name,
+			100, 200 + 20*i, WIDGET_LABEL_LEFT) );
+
+		str = getString(this->score);
+
+		addList(listWidgetLabelScore, newWidgetLabel(str,
+			WINDOW_SIZE_X - 100, 200 + 20*i, WIDGET_LABEL_RIGHT) );
+
+		free(str);
+	}
+}
+
+void initScreenAnalyze()
+{
+	SDL_Surface *image;
+
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund  = newWidgetImage(0, 0, image);
+
+	listWidgetLabelName = newList();
+	listWidgetLabelScore = newList();
+	listAnalyze = newList();
+
+	button_ok = newWidgetButton("OK", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
+		WINDOW_SIZE_Y-100, eventWidget);
+
+	registerScreen( newScreen("analyze", startScreenAnalyze, eventScreenAnalyze,
+		drawScreenAnalyze, stopScreenAnalyze) );
+
+	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
+}
+
+void quitScreenAnalyze()
+{
+	destroyWidgetImage(image_backgorund);
+
+	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
+	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+	destroyListItem(listAnalyze, destroyAnalyze);
+
+	destroyWidgetButton(button_ok);
+	destroyWidgetLabel(widgetLabelMsg);
+}
+

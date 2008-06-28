@@ -45,7 +45,7 @@ svnr:
 	svn co http://opensvn.csie.org/tuxanci_ng/
 
 server:
-	make -C ./src -f Makefile-publicServer
+	make -C ./src -f Makefile-server
 
 nosound:
 	make -C ./src -f Makefile-nosound

@@ -1,0 +1,26 @@
+
+CC = gcc
+CFLAGS = -g -O0 -std=c99 -I.. -Wall -D_GNU_SOURCE=1 -DSUPPORT_NET_UNIX_UDP -DPUBLIC_SERVER -DNO_SOUND
+LIBS = -ldl
+
+all:
+	make -C ./base -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
+	make -C ./server -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
+	make -C ./net_unix -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
+	make -C ./modules -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
+	$(CC) $(CFLAGS) $(LIBS) -o publicserver base/*.o server/*.o net_unix/*.o
+	cp modules/*.so ../modules/
+	cp publicserver ../
+
+clean:
+	make -C ./base -f Makefile clean
+	make -C ./client -f Makefile clean
+	make -C ./screen -f Makefile clean
+	make -C ./widget -f Makefile clean
+	make -C ./net_unix -f Makefile clean
+	make -C ./net_sdl -f Makefile clean
+	make -C ./audio -f Makefile clean
+	make -C ./modules -f Makefile clean
+	rm -rf ../modules/*.so
+	rm publicserver
+	rm ../publicserver

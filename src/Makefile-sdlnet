@@ -1,17 +1,17 @@
 
 CC = gcc
-CFLAGS = -g -O0 -std=c99 -I.. -Wall `sdl-config --cflags` -DSUPPORT_NET_UNIX_UDP
-LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer
+CFLAGS = -g -O0 -std=c99 -I.. -Wall `sdl-config --cflags` -DSUPPORT_NET_SDL_UDP
+LIBS = `sdl-config --libs` -lSDL_image -lSDL_ttf -lSDL_mixer -lSDL_net
 
 all:
 	make -C ./audio -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
-	make -C ./net_unix -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
+	make -C ./net_sdl -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
 	make -C ./client -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
 	make -C ./screen -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
 	make -C ./widget -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
 	make -C ./base -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
 	make -C ./modules -f Makefile CC="$(CC)" CFLAGS="$(CFLAGS)"
-	$(CC) $(CFLAGS) $(LIBS) -o tuxanci-ng base/*.o client/*.o widget/*.o screen/*.o net_unix/*.o audio/*.o
+	$(CC) $(CFLAGS) $(LIBS) -o tuxanci-ng base/*.o client/*.o widget/*.o screen/*.o net_sdl/*.o audio/*.o
 	cp modules/*.so ../modules/
 	cp tuxanci-ng ../
 
