@@ -289,6 +289,11 @@ void addObjectToSpace(space_t *p, void *item)
 	{
 		for( j = segX ; j < segX + segW ; j++ )
 		{
+			if( j < 0 || j >= p->w || i < 0 || i >= p->h )
+			{
+				continue;
+			}
+
 			addList(p->area[j][i], item);
 		}
 	}
@@ -318,6 +323,11 @@ void getObjectFromSpace(space_t *p, int x, int y, int w, int h, list_t *list)
 
 			for( k = 0 ; k < p->area[j][i]->count ; k++ )
 			{
+				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
+				{
+					continue;
+				}
+
 				this = p->area[j][i]->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
@@ -410,6 +420,11 @@ int isConflictWithObjectFromSpace(space_t *p, int x, int y, int w, int h)
 
 			for( k = 0 ; k < p->area[j][i]->count ; k++ )
 			{
+				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
+				{
+					continue;
+				}
+
 				this = p->area[j][i]->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
@@ -440,6 +455,11 @@ int isConflictWithObjectFromSpaceBut(space_t *p, int x, int y, int w, int h, voi
 
 			for( k = 0 ; k < p->area[j][i]->count ; k++ )
 			{
+				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
+				{
+					continue;
+				}
+
 				this = p->area[j][i]->list[k];
 
 				if( this == but )
@@ -474,6 +494,11 @@ void delObjectFromSpace(space_t *p, void *item)
 	{
 		for( j = segX ; j < segX + segW ; j++ )
 		{
+			if( j < 0 || j >= p->w || i < 0 || i >= p->h )
+			{
+				continue;
+			}
+
 			index = searchListItem(p->area[j][i], item);
 			assert( index != -1 );
 			delList(p->area[j][i], index);
