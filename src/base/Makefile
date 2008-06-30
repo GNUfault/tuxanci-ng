@@ -1,5 +1,5 @@
 
-all: arena.o arenaFile.o director.o gun.o homeDirector.o checkFront.o idManager.o item.o list.o main.o modules.o myTimer.o net_multiplayer.o protect.o proto.o server.o shot.o space.o storage.o textFile.o tux.o
+all: arena.o arenaFile.o director.o gun.o homeDirector.o checkFront.o idManager.o item.o index.o list.o main.o modules.o myTimer.o net_multiplayer.o protect.o proto.o server.o shot.o space.o storage.o textFile.o tux.o
 
 arena.o: arena.c arena.h
 	$(CC) $(CFLAGS) -o arena.o -c arena.c
@@ -24,6 +24,9 @@ idManager.o: idManager.c idManager.h
 
 item.o: item.c item.h
 	$(CC) $(CFLAGS) -o item.o -c item.c
+
+index.o: index.c index.h
+	$(CC) $(CFLAGS) -o index.o -c index.c
 
 list.o: list.c list.h
 	$(CC) $(CFLAGS) -o list.o -c list.c

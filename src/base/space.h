@@ -10,10 +10,15 @@ typedef struct space_struct
 {
 	int w;
 	int h;
+
 	int segW;
 	int segH;
+
 	list_t ***area;
+
 	list_t *list;
+	list_t *listIndex;
+
 	void (*getStatus)(void *p, int *id, int *x, int *y, int *w, int *h);
 	void (*setStatus)(void *p, int x, int y, int w, int h);
 } space_t;

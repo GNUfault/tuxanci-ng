@@ -36,6 +36,7 @@
 #include "screen/screen_choiceArena.h"
 #include "screen/screen_table.h"
 #include "screen/screen_credits.h"
+#include "screen/screen_browser.h"
 
 static void initGame()
 {
@@ -72,6 +73,7 @@ static void initGame()
 	initScreenChoiceArena();
 	initScreenCredits();
 	initScreenTable();
+	initScreenBrowser();
 }
 
 void quitGame()
@@ -101,6 +103,7 @@ void quitGame()
 	quitScreenChoiceArena();
 	quitScreenCredits();
 	quitScreenTable();
+	quitScreenBrowser();
 
 	destroyList(listHelp);
 

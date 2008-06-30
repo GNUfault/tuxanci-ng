@@ -5,8 +5,6 @@ all:
 
 clean:
 	make -C ./src clean
-	make -C ./src -f Makefile-publicServer clean
-	make -C ./modules -f Makefile clean
 
 run:
 	./tuxanci-ng.sh
@@ -31,9 +29,6 @@ stat:
 
 tuxstat:
 	cat /proc/`pidof tuxanci-ng`/status
-
-line:
-	cat src/*.c include/*.h | wc -l
 
 core:
 	gcore `pidof publicserver`

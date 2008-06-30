@@ -1,8 +1,11 @@
 
-all: screen_analyze.o screen_credits.o screen_gameType.o screen_choiceArena.o screen_mainMenu.o screen_setting.o screen_table.o screen_world.o
+all: screen_analyze.o screen_browser.o screen_credits.o screen_gameType.o screen_choiceArena.o screen_mainMenu.o screen_setting.o screen_table.o screen_world.o
 
 screen_analyze.o: screen_analyze.c screen_analyze.h
 	$(CC) $(CFLAGS) -o screen_analyze.o -c screen_analyze.c
+
+screen_browser.o: screen_browser.c screen_browser.h
+	$(CC) $(CFLAGS) -o screen_browser.o -c screen_browser.c
 
 screen_credits.o: screen_credits.c screen_credits.h
 	$(CC) $(CFLAGS) -o screen_credits.o -c screen_credits.c
@@ -21,7 +24,6 @@ screen_table.o: screen_table.c screen_table.h
 
 screen_world.o: screen_world.c screen_world.h
 	$(CC) $(CFLAGS) -o screen_world.o -c screen_world.c
-
 
 clean:
 	rm -rf *.o

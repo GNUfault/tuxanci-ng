@@ -10,6 +10,7 @@
 
 #define WIDGET_TEXTFIELD_TEXT_OFFSET_X	10
 
+#define WIDGET_TEXTFIELD_TIME_MULTIPLE 		10
 #define WIDGET_TEXTFIELD_TIME_READ_KEY 		2
 #define WIDGET_TEXTFIELD_TIME_BLICK_CURSOR	20
 
@@ -20,6 +21,7 @@ typedef struct widget_textfield
 	int canWrite;
 	int timeBlick;
 	int time;
+	int atime;
 	char text[STR_SIZE];
 	bool_t active;
 } widget_textfield_t;

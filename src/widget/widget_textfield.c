@@ -87,16 +87,13 @@ static void readKey(widget_textfield_t *p)
 	int len;
 	int i;
 
-	if( p->time > 0 )
-	{
-		 p->time--;
-		return;
-	}
-
 	if( p->active == FALSE )
 	{
 		return;
 	}
+
+	if (p->atime < 100)
+		p->atime ++;
 
 	mapa = SDL_GetKeyState(NULL);
 	len = strlen(p->text);
@@ -106,7 +103,7 @@ static void readKey(widget_textfield_t *p)
 	{
 		if( len > 0 )
 		{
-			p->time = WIDGET_TEXTFIELD_TIME_READ_KEY;
+			p->time = 0;
 			p->text[len-1]='\0';
 			getTextSize(p->text, &p->w, &p->h);
 		}
@@ -125,9 +122,30 @@ static void readKey(widget_textfield_t *p)
 		//if(width<TEXTFIELD_SIZE_X-20 && mapa[i]==SDL_PRESSED)
 		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
 		{
-			 p->time = WIDGET_TEXTFIELD_TIME_READ_KEY;
+			if (i == SDLK_SPACE)
+			{
+				strcat( p->text, " " );
+				getTextSize(p->text, &p->w, &p->h);
+				return;
+			}
 
-			strcat( p->text, SDL_GetKeyName(i) );
+			const char *c = (const char *) SDL_GetKeyName(i);
+
+			if (len) {
+				if (p->text[len-1] == *c) {
+					p->time ++;
+
+					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
+						if (p->atime < 3)
+							return;
+					}
+				} else
+					p->time = 0;
+			}
+
+			p->atime = 0;
+
+			strcat( p->text, c );
 			getTextSize(p->text, &p->w, &p->h);
 			
 			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
@@ -145,8 +163,23 @@ static void readKey(widget_textfield_t *p)
 	{
 		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
 		{
-			p->time = WIDGET_TEXTFIELD_TIME_READ_KEY;
-			strcat( p->text, SDL_GetKeyName(i) );
+			const char *c = (const char *) SDL_GetKeyName(i);
+
+			if (len) {
+				if (p->text[len-1] == *c) {
+					p->time ++;
+
+					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
+						if (p->atime < 3)
+							return;
+					}
+				} else
+					p->time = 0;
+			}
+
+			p->atime = 0;
+
+			strcat( p->text, c );
 			getTextSize(p->text, &p->w, &p->h);
 			return;
 		}
@@ -157,8 +190,23 @@ static void readKey(widget_textfield_t *p)
 	{
 		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
 		{
-			 p->time = WIDGET_TEXTFIELD_TIME_READ_KEY;
-			strncat( p->text, SDL_GetKeyName(i)+1, 1 ); // napr. "[4]"
+			const char *c = (const char *) SDL_GetKeyName(i)+1;
+
+			if (len) {
+				if (p->text[len-1] == *c) {
+					p->time ++;
+
+					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
+						if (p->atime < 3)
+							return;
+					}
+				} else
+					p->time = 0;
+			}
+
+			p->atime = 0;
+
+			strncat( p->text, c, 1 ); // napr. "[4]"
 			getTextSize(p->text, &p->w, &p->h);
 			return;
 		}

@@ -7,68 +7,7 @@
 #include "main.h"
 #include "list.h"
 #include "space.h"
-
-#define DEBUG_SPACE
-#define ERROR_SUPPORT
-
-#ifdef DEBUG_SPACE
-
-
-typedef struct recv_struct
-{
-	int id;
-	int x, y;
-	int w, h;
-} recv_t;
-
-recv_t* newRecv(int id, int x , int y, int w, int h)
-{
-	recv_t *new;
-
-	new = malloc( sizeof(recv_t) );
-	memset(new, 0, sizeof(recv_t));
-
-	new->id = id;
-	new->x = x;
-	new->y = y;
-	new->w = w;
-	new->h = h;
-
-	return new;
-}
-
-void getStatus(void *p, int *id, int *x, int *y, int *w, int *h)
-{
-	recv_t *recv;
-
-	recv = p;
-
-	*id = recv->id;
-	*x = recv->x;
-	*y = recv->y;
-	*w = recv->w;
-	*h = recv->h;
-}
-
-void setStatus(void *p, int x, int y, int w, int h)
-{
-	recv_t *recv;
-
-	recv = p;
-
-	recv->x = x;
-	recv->y = y;
-	recv->w = w;
-	recv->h = h;
-	recv->x = x;
-}
-
-void destroyRecv(recv_t *p)
-{
-	free(p);
-}
-
-#endif
+#include "index.h"
 
 static int my_conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
 {
@@ -92,6 +31,7 @@ space_t *newSpace(int w, int h, int segW, int segH,
 	new->getStatus = getStatus;
 	new->setStatus = setStatus;
 	new->list = newList();
+	new->listIndex = newIndex();
 
 	new->area = malloc( new->w * sizeof(list_t **) );
 
@@ -120,167 +60,12 @@ static void getSegment(space_t *p, int x, int y, int w, int h,
 	*segH = ( (y+h) / p->segH + 1 ) - *segY;
 }
 
-#ifdef ERROR_SUPPORT
-
-void printListID(space_t *space)
-{
-	int i;
-
-	for( i = 0 ; i < space->list->count ; i++ )
-	{
-		int id, x, y, w, h;
-
-		space->getStatus(space->list->list[i], &id, &x, &y, &w, &h);
-		printf("%d\n", id);
-	}
-
-	putchar('\n');
-}
-
-static void checkList(space_t *space)
-{
-	int id, x, y, w, h;
-	int thisId;
-	int i;
-
-	if( space->list->count == 0 )
-	{
-		printf("nothing\n");
-		return;	
-	}
-
-	space->getStatus(space->list->list[0], &thisId, &x, &y, &w, &h);
-
-	for( i = 1 ; i < space->list->count ; i++ )
-	{
-		space->getStatus(space->list->list[i], &id, &x, &y, &w, &h);
-
-		if( id <= thisId )
-		{
-			printListID(space);
-			assert( ! "error" );
-		}
-
-		thisId = id;
-	}
-}
-
-static void addToListOnTheBaseIndex(space_t *space, void *p)
-{
-	int id, point_id, inc_point_id;
-	int x, y, w, h;
-	int len;
-	int min, max;
-	int point;
-
-
-	len = space->list->count;
-
-	space->getStatus(p, &id, &x, &y, &w, &h);
-/*
-	printf("addToListOnTheBaseIndex (%d)\n", id);
-	printListID(space);
-	assert( id >= 0 );
-*/
-	if( len == 0 )
-	{
-		//printf("OK first\n");
-		addList(space->list, p);
-		return;
-	}
-
-	if( len == 1 )
-	{
-		space->getStatus(space->list->list[0], &point_id, &x, &y, &w, &h);
-		
-		if( id > point_id )
-		{
-			addList(space->list, p);
-		}
-
-		if( id < point_id )
-		{
-			insList(space->list, 0, p);
-		}
-
-		//printf("OK\n");
-
-		return;
-	}
-
-	min = 0;
-	max = len-1;
-/*
-	if( max < 0 )
-	{
-		max = 0;
-	}
-*/
-	for(;;)
-	{
-		point = min + ( max - min ) / 2;
-/*
-		space->getStatus(space->list->list[min], &id_min, &x, &y, &w, &h);
-		space->getStatus(space->list->list[max], &id_max, &x, &y, &w, &h);
-*/
-		//printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
-
-		if(  max < 0 )
-		{
-			//printf("OK first\n");
-			insList(space->list, 0, p);
-			//checkList(space);
-			return;
-		}
-
-		if(  point+1 >= len /*|| min >= len*/ )
-		{
-			addList(space->list, p);
-			//printf("OK height\n");
-			//checkList(space);
-			return;
-		}
-		
-		space->getStatus(space->list->list[point], &point_id, &x, &y, &w, &h);
-		space->getStatus(space->list->list[point+1], &inc_point_id, &x, &y, &w, &h);
-/*
-		if( min == max )
-		{
-			//printf("OK\n");
-			insList(space->list, min, p);
-			checkList(space);
-			return;
-		}
-*/
-		if( point_id < id && id < inc_point_id )
-		{
-			//printf("OK\n");
-			insList(space->list, point+1, p);
-			//checkList(space);
-			return;
-		}
-
-		if( id > inc_point_id )
-		{
-			min = point + 1;
-			continue;
-		}
-
-		if( id < point_id )
-		{
-			max = point - 1;
-			continue;
-		}
-	}
-}
-
-#endif
-
 void addObjectToSpace(space_t *p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
 	int i, j;
+	int offset;
 
 	p->getStatus(item, &id, &x, &y, &w, &h);
 	getSegment(p, x, y, w, h, &segX, &segY, &segW, &segH);
@@ -298,13 +83,8 @@ void addObjectToSpace(space_t *p, void *item)
 		}
 	}
 
-#ifdef ERROR_SUPPORT
-	addToListOnTheBaseIndex(p, item);
-#endif
-
-#ifndef ERROR_SUPPORT
-	addList(p->list, item);
-#endif
+	offset = addToIndex(p->listIndex, id);
+	insList(p->list, offset, item);
 }
 
 void getObjectFromSpace(space_t *p, int x, int y, int w, int h, list_t *list)
@@ -341,65 +121,11 @@ void getObjectFromSpace(space_t *p, int x, int y, int w, int h, list_t *list)
 	}
 }
 
-int searchObjectInSpace(space_t *space, int id)
-{
-	int point_id;
-	int x, y, w, h;
-	int len;
-	int min, max;
-	int point;
-
-/*
-	printf("getObjectFromSpaceWithID %d\n", id);
-	printListID(space);
-*/	
-	len = space->list->count;
-
-	min = 0;
-	max = len-1;
-
-	for(;;)
-	{
-		point = min + ( max - min ) / 2;
-
-		//printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
-
-		if(  max < 0 || point >= len || max < min )
-		{
-			return -1;
-		}
-
-		space->getStatus(space->list->list[point], &point_id, &x, &y, &w, &h);
-
-		if( min == max )
-		{
-			space->getStatus(space->list->list[min], &point_id, &x, &y, &w, &h);
-		}
-
-		if( point_id == id )
-		{
-			return point;
-		}
-
-		if( id > point_id )
-		{
-			min = point + 1;
-			continue;
-		}
-
-		if( id < point_id )
-		{
-			max = point - 1;
-			continue;
-		}
-	}
-}
-
 void* getObjectFromSpaceWithID(space_t *space, int id)
 {
 	int index;
 
-	index = searchObjectInSpace(space, id);
+	index = getFormIndex(space->listIndex, id);
 
 	return ( index != -1 ? space->list->list[index] : NULL );
 }
@@ -505,9 +231,12 @@ void delObjectFromSpace(space_t *p, void *item)
 		}
 	}
 
-	index = searchObjectInSpace(p, id);
+	index = getFormIndex(p->listIndex, id);
 	assert( index != -1 );
+
 	delList(p->list, index);
+
+	delFromIndex(p->listIndex, id);
 }
 
 void delObjectFromSpaceWithObject(space_t *p, void *item, void *f)
@@ -568,6 +297,7 @@ void destroySpace(space_t *p)
 	int j, i;
 
 	destroyList(p->list);
+	destroyIndex(p->listIndex);
 
 	for( i = 0 ; i < p->h ; i++ )
 	{

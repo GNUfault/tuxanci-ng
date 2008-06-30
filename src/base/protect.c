@@ -42,11 +42,12 @@ void refreshLastMove(protect_t *p)
 		p->avarage = 0;
 		p->count = 0;
 
+#if 0
 		if( index < PROTECT_SPEED_INTERVAL_TIMEOUT )
 		{
 			p->isDown = TRUE;
 		}
-
+#endif
 		//printf("speed index = %d\n", index);
 	}
 }

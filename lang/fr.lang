@@ -16,6 +16,7 @@ HEAD fontfile="DejaVuSans.ttf" fontsize="16"
 OK Ok
 BACK Précédent
 NEXT Suivant
+BROWSER Browser
 
 # error message
 ERROR_BAD_VERSION Version of your client isn't supported by the server.

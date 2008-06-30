@@ -30,6 +30,7 @@ static widget_image_t *image_backgorund;
 
 static widget_button_t *button_back;
 static widget_button_t *button_play;
+static widget_button_t *button_browser;
 
 static widget_label_t *label_none;
 static widget_label_t *label_server;
@@ -74,6 +75,9 @@ void drawScreenGameType()
 
 	drawWidgetButton(button_back);
 	drawWidgetButton(button_play);
+
+	if( check_client->status == TRUE )
+		drawWidgetButton(button_browser);
 }
 
 void eventScreenGameType()
@@ -87,6 +91,7 @@ void eventScreenGameType()
 
 	eventWidgetButton(button_back);
 	eventWidgetButton(button_play);
+	eventWidgetButton(button_browser);
 }
 
 void stopScreenGameType()
@@ -141,6 +146,11 @@ static void eventWidget(void *p)
 			setScreen("chiceArena");
 		}
 	}
+
+	if( button == button_browser )
+	{
+		setScreen("browser");
+	}
 }
 
 void initScreenGameType()
@@ -152,6 +162,7 @@ void initScreenGameType()
 
 	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
 	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_browser = newWidgetButton(getMyText("BROWSER"), 300, 345, eventWidget);
 
 	check_none = newWidgetCheck(100, 150, FALSE, eventWidget);
 	check_server = newWidgetCheck(100, 200, FALSE, eventWidget);
@@ -184,6 +195,13 @@ void initScreenGameType()
 		drawScreenGameType, stopScreenGameType) );
 }
 
+int setSettingGameType(int status)
+{
+	check_none->status = status;
+
+	return 0;
+}
+
 int getSettingGameType()
 {
 	if( check_none->status == TRUE )
@@ -206,9 +224,23 @@ int getSettingGameType()
 	return -1;
 }
 
+int setSettingIP(char *address)
+{
+	strcpy (textfield_ip->text, address);
+
+	return 1;
+}
+
 char* getSettingIP()
 {
 	return textfield_ip->text;
+}
+
+int setSettingPort(int port)
+{
+	sprintf (textfield_port->text, "%d", port);
+
+	return 0;
 }
 
 int getSettingPort()
@@ -248,6 +280,7 @@ void quitScreenGameType()
 
 	destroyWidgetButton(button_back);
 	destroyWidgetButton(button_play);
+	destroyWidgetButton(button_browser);
 
 	destroyWidgetCheck(check_none);
 	destroyWidgetCheck(check_server);
