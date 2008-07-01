@@ -48,6 +48,7 @@ void initServerConfigFile()
 	prepareConfigFile(serverTextFile);
 
 }
+
 char* getServerConfigFileValue(char *env, char *s)
 {
 	int i;

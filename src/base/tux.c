@@ -409,13 +409,13 @@ static void bombBallExplosion(shot_t *shot)
 
 	addObjectToSpace(getCurrentArena()->spaceItem, item );
 
-	delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
-
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
 		proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
+
+	delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
 }
 
 void eventConflictTuxWithShot(arena_t *arena)

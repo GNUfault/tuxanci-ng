@@ -126,6 +126,7 @@ void prepareArena()
 	tux_t *tux;
 
 	//printf("getSettingAI = %s\n", getSettingAI());
+	arena  = NULL;
 
 	switch( getNetTypeGame() )
 	{

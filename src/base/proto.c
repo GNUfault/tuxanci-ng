@@ -31,6 +31,7 @@
 #ifdef PUBLIC_SERVER
 #include "server/heightScore.h"
 #include "server/publicServer.h"
+#include "server/serverConfigFile.h"
 #endif
 
 void proto_send_error_server(int type, client_t *client, int errorcode)
@@ -117,15 +118,36 @@ void proto_recv_hello_server(client_t *client, char *msg)
 void proto_send_status_server(int type, client_t *client)
 {
 	char msg[STR_PROTO_SIZE];
-	
-	sprintf(msg,	"version: %s\n"
+	char *name;
+	char *version;
+	int clients;
+	int maxclients;
+	unsigned int uptime;
+	char *arena;
+
+#ifndef PUBLIC_SERVER
+	name = "noname";
+#endif
+
+#ifdef PUBLIC_SERVER
+	name = getServerConfigFileValue("NAME", "noname");
+#endif
+
+	version = TUXANCI_NG_VERSION;
+	clients = getCurrentArena()->spaceTux->list->count;
+	maxclients = getServerMaxClients();
+	uptime = (unsigned int)getUpdateServer();
+	arena = getArenaNetName( getChoiceArenaId() );
+
+	sprintf(msg,	"name: %s\n"
+			"version: %s\n"
 			"clients: %d\n"
 			"maxclients: %d\n"
 			"uptime: %d\n"
 			"arena: %s\n",
-	TUXANCI_NG_VERSION, getCurrentArena()->spaceTux->list->count,
-	getServerMaxClients(), (unsigned int)getUpdateServer(),
-	getArenaNetName( getChoiceArenaId() ) );
+
+			name, version, clients,
+			maxclients, uptime, arena);
 
 	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 	//proto_send(type, client, msg);
@@ -144,7 +166,7 @@ void proto_send_listscore_server(int type, client_t *client, int max)
 	char *msg;
 	int i;
 
-	msg = malloc( (max * 24) * sizeof(char) );
+	msg = malloc( (max * 48) * sizeof(char) );
 	strcpy(msg, "");
 
 	for( i = 0 ; i < max ; i++ )
@@ -214,20 +236,25 @@ void proto_recv_check_server(client_t *client, char *msg)
 void proto_send_init_server(int type, client_t *client, client_t *client2)
 {
 	char msg[STR_PROTO_SIZE];
-	int n = WORLD_COUNT_ROUND_UNLIMITED;
+	int count;
+	int check_id;
 
 	assert( client2 != NULL );
 
+	count = WORLD_COUNT_ROUND_UNLIMITED;
+
 #ifndef PUBLIC_SERVER
-	getSettingCountRound(&n);
+	getSettingCountRound(&count);
 #endif
 
-	sprintf(msg, "init %d %d %d %d %s\n",
+	check_id = getNewID();
+	
+	sprintf(msg, "init %d %d %d %d %s %d\n",
 		client2->tux->id, client2->tux->x, client2->tux->y,
-		n, getArenaNetName( getChoiceArenaId() ));
+		count, getArenaNetName( getChoiceArenaId() ), check_id);
 	
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_CHECK, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -239,11 +266,19 @@ void proto_recv_init_client(char *msg)
 	tux_t *tux;
 	int id;
 	int x, y, n;
+	int check_id;
 
 	assert( msg != NULL );
 
-	sscanf(msg, "%s %d %d %d %d %s",
-	cmd, &id, &x, &y, &n, arena_name);
+	sscanf(msg, "%s %d %d %d %d %s %d",
+	cmd, &id, &x, &y, &n, arena_name, &check_id);
+
+	proto_send_check_client(check_id);
+	
+	if( getCurrentArena() != NULL )
+	{
+		return;
+	}
 
 	setWorldArena( getArenaIdFormNetName(arena_name) );
 	setMaxCountRound(n);
@@ -307,25 +342,6 @@ void proto_send_event_client(int action)
 
 #endif
 
-/*
-static void debug_interval()
-{
-	static my_time_t lastEvent = 0;
-	my_time_t curentTime;
-
-	if( lastEvent == 0 )
-	{
-		lastEvent = getMyTime();
-	}
-
-	curentTime = getMyTime();
-
-	printf("time = %d\n", curentTime - lastEvent);
-
-	lastEvent = getMyTime();
-}
-*/
-
 void proto_recv_event_server(client_t *client, char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
@@ -338,9 +354,13 @@ void proto_recv_event_server(client_t *client, char *msg)
 
 	sscanf(msg, "%s %d", cmd, &action);
 
-	proto_send_event_server(PROTO_SEND_ALL_SEES_TUX, client, client->tux, action);
+	if( client->tux->bonus != BONUS_HIDDEN )
+	{
+		proto_send_event_server(PROTO_SEND_ALL_SEES_TUX, client, client->tux, action);
+	}
 
 	refreshLastMove(client->protect);
+
 	actionTux(client->tux, action);
 }
 

@@ -227,10 +227,19 @@ void boundBombBall(shot_t *shot)
 void transformOnlyLasser(shot_t *shot)
 {
 	space_t *space;
+	int mustRefesh = 0;
 
 	space  = getCurrentArena()->spaceShot;
 
-	delObjectFromSpace(space, shot);
+	if( getObjectFromSpaceWithID(space, shot->id) != NULL )
+	{
+		mustRefesh = 1;
+	}
+
+	if( mustRefesh )
+	{
+		delObjectFromSpace(space, shot);
+	}
 
 	switch( shot->position )
 	{
@@ -252,7 +261,10 @@ void transformOnlyLasser(shot_t *shot)
 		break;
 	}
 
-	addObjectToSpace(space, shot);
+	if( mustRefesh) 
+	{
+		addObjectToSpace(space, shot);
+	}
 }
 
 void eventMoveListShot(arena_t *arena)
