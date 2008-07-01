@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +51,10 @@ static void destroyStorageItem(storage_item_t *p, void *f)
 
 void addItemToStorage(list_t *list, char *group, char *name, void *data)
 {
+	assert( list != NULL );
+	assert( group != NULL );
+	assert( name != NULL );
+
 	addList(list, newStorageItem(group, name, data) );
 }
 
@@ -60,6 +63,7 @@ void* getItemFromStorage(list_t *list, char *group, char *name)
 	storage_item_t *this;
 	int i;
 
+	assert( list != NULL );
 	assert( group != NULL );
 	assert( name != NULL );
 	
@@ -82,6 +86,7 @@ void delItemFromStorage(list_t *list, char *group, char *name, void *f)
 	storage_item_t *this;
 	int i;
 
+	assert( list != NULL );
 	assert( group != NULL );
 	assert( name != NULL );
 
@@ -105,6 +110,7 @@ void delAllItemFromStorage(list_t *list, char *group, void *f)
 	storage_item_t *this;
 	int i;
 
+	assert( list != NULL );
 	assert( group != NULL );
 	
 	for(i = 0 ; i < list->count; i++)

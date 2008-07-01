@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <assert.h>
+#include <fcntl.h>
 
 #define BUFSIZE 1000
 
@@ -147,6 +148,20 @@ sock_udp_t* connectUdpSocket(char *address, int port, int proto)
 	}
 #endif
 	return new;
+}
+
+int setUdpSockNonBlock(sock_udp_t *p)
+{
+	int oldFlag;
+
+	oldFlag = fcntl (p->sock, F_GETFL, 0);
+
+	if( fcntl(p->sock, F_SETFL, oldFlag|O_NONBLOCK ) == -1 )
+	{
+		return -1;
+	}
+
+	return 0;
 }
 
 int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)

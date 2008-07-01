@@ -226,6 +226,12 @@ void boundBombBall(shot_t *shot)
 
 void transformOnlyLasser(shot_t *shot)
 {
+	space_t *space;
+
+	space  = getCurrentArena()->spaceShot;
+
+	delObjectFromSpace(space, shot);
+
 	switch( shot->position )
 	{
 		case TUX_RIGHT :
@@ -245,6 +251,8 @@ void transformOnlyLasser(shot_t *shot)
 #endif
 		break;
 	}
+
+	addObjectToSpace(space, shot);
 }
 
 void eventMoveListShot(arena_t *arena)

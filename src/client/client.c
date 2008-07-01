@@ -221,6 +221,7 @@ void selectClientUdpSocket()
 	if( isServerAlive() == FALSE )
 	{
 		fprintf(stderr, "server neodpoveda !\n");
+		setMsgToAnalyze(getMyText("ERROR_SERVER_DONT_ALIVE"));
 		setWorldEnd();
 		return;
 	}

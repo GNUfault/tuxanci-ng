@@ -77,7 +77,6 @@ int addToIndex(list_t *list, int index)
 
 	if( len == 0 )
 	{
-		//printf("OK first\n");
 		addList(list, index_newInt(index));
 		checkIndex(list);
 		return 0;
@@ -85,79 +84,53 @@ int addToIndex(list_t *list, int index)
 
 	if( len == 1 )
 	{
-		//space->getStatus(space->list->list[0], &point_id, &x, &y, &w, &h);
 		point_index = *(int *)list->list[0];
 		
 		if( index > point_index )
 		{
 			addList(list, index_newInt(index));
-			//checkIndex(list);
+			checkIndex(list);
 			return 1;
 		}
 
 		if( index < point_index )
 		{
 			insList(list, 0, index_newInt(index));
-			//checkIndex(list);
+			checkIndex(list);
 			return 0;
 		}
 
-		//printf("OK\n")
 		return -1;
 	}
 
 	min = 0;
 	max = len-1;
-/*
-	if( max < 0 )
-	{
-		max = 0;
-	}
-*/
+
 	for(;;)
 	{
 		point = min + ( max - min ) / 2;
-/*
-		space->getStatus(space->list->list[min], &id_min, &x, &y, &w, &h);
-		space->getStatus(space->list->list[max], &id_max, &x, &y, &w, &h);
-*/
-		//printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
 
 		if(  max < 0 )
 		{
-			//printf("OK first\n");
 			insList(list, 0, index_newInt(index));
-			//checkIndex(list);
+			checkIndex(list);
 			return 0;
 		}
 
-		if(  point+1 >= len /*|| min >= len*/ )
+		if(  point+1 >= len )
 		{
 			addList(list, index_newInt(index) );
-			//printf("OK height\n");
-			//checkIndex(list);
+			checkIndex(list);
 			return len;
 		}
 		
-//		space->getStatus(space->list->list[point], &point_id, &x, &y, &w, &h);
-//		space->getStatus(space->list->list[point+1], &inc_point_id, &x, &y, &w, &h);
-
 		point_index = *(int *)list->list[point];
 		inc_point_index = *(int *)list->list[point+1];
-/*
-		if( min == max )
-		{
-			//printf("OK\n");
-			insList(space->list, min, p);
-			checkList(space);
-			return;
-		}
-*/
+
 		if( point_index < index && index < inc_point_index )
 		{
-			//printf("OK\n");
 			insList(list, point+1,  index_newInt(index) );
-			//checkIndex(list);
+			checkIndex(list);
 			return point+1;
 		}
 
@@ -182,7 +155,6 @@ int getFormIndex(list_t *list, int index)
 	int min, max;
 	int point;
 
-
 	//printf("getFormIndex %d\n", index);
 	//printIndex(list);
 
@@ -195,22 +167,12 @@ int getFormIndex(list_t *list, int index)
 	{
 		point = min + ( max - min ) / 2;
 
-		//printf("min = %d max = %d point = %d len = %d id = %d\n", min, max, point, len, id);
-
 		if(  max < 0 || point >= len || max < min )
 		{
 			return -1;
 		}
 
-		//space->getStatus(space->list->list[point], &point_id, &x, &y, &w, &h);
-
 		point_index = *(int *)list->list[point];
-
-		if( min == max )
-		{
-			//space->getStatus(space->list->list[min], &point_id, &x, &y, &w, &h);
-			point_index = *(int *)list->list[point];
-		}
 
 		if( point_index == index )
 		{

@@ -192,6 +192,11 @@ char* getCurrentMusic()
 
 void delAllMusicInGroup(char *group)
 {
+	if( isMusicInit == FALSE )
+	{
+		return;
+	}
+
 	delAllItemFromStorage(listStorage, group, destroyMusic);
 }
 

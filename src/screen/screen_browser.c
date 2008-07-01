@@ -22,8 +22,11 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include "net_unix/udp.h"
+
+extern int errno;
 #endif
 
 #ifndef NO_SOUND
@@ -165,55 +168,94 @@ int server_getinfo (server_t *server)
 {
 #ifdef SUPPORT_NET_UNIX_UDP
 	struct sockaddr_in srv;
+	int mySocket;
+
+	if ((mySocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+	    return -1;
+	}
+
+	// Lets make socket non-blocking
+	int oldFlag = fcntl (mySocket, F_GETFL, 0);
+	if (fcntl (mySocket, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
+		return -1;
+	}
+
+	struct timeval tv;
+	// Mno¾ina
+	fd_set myset;
+	// Mno¾ina obsahuje náhodná data. Odstraním je.
+	FD_ZERO(&myset);
+	// Zaplnìní mno¾iny sokety
+	FD_SET(mySocket, &myset);
+	// Vyplním èasový údaj (napøíklad na 3 minuty)
+	tv.tv_sec = 2;// Poèet sekund
+	tv.tv_usec = 0;// Poèet mikrosekund
+
+	srv.sin_family = AF_INET;
+	srv.sin_port = htons (server->port);
 	srv.sin_addr.s_addr = server->ip;
 
-	sock_udp_t *sock = connectUdpSocket(inet_ntoa (srv.sin_addr), server->port, PROTO_UDPv4);
+	if (connect (mySocket, (struct sockaddr *) &srv, sizeof (srv)) == -1) {
+		if (errno != EINPROGRESS)
+		    return -1;
+	}
+
+	// Zavolám select (V Linuxu musím mít nastavenou promìnnou max.)
+	int ret = select (mySocket+1, NULL, &myset, NULL, &tv);
+
+	if (ret == -1)
+		return 0;
+
+	if (ret == 0)
+		return -2;
 
 	char request[8];
 	memcpy (request, "status\n", 7);
 
-	writeUdpSocket(sock, sock, request, 7);
+	int r = send (mySocket, request, 7, 0);
+
+	if (r == -1)
+		return -2;
+
+	FD_ZERO(&myset);
+	FD_SET(mySocket, &myset);
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
 	char *str = (char *) malloc (sizeof (char) * 257);
 
-	// Lets make socket non-blocking
-	int oldFlag = fcntl (sock->sock, F_GETFL, 0);
-	if (fcntl (sock->sock, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
+	if (!str)
 		return -1;
+
+	while (1) {
+		int sel = select (mySocket + 1, &myset, NULL, NULL, &tv);
+
+		if (sel == 0)
+			return -2;
+
+		if (sel == -1)
+			return -2;
+  
+		if ((ret = recv(mySocket, str, 256, 0)) == -1)
+			return -1;
+    
+		if (ret > 0)
+			break;
 	}
+
+	close (mySocket);
+
+	server->ping = 1000 - (tv.tv_usec/1000);
 #else
 	return 0;
 #endif
-	/* 500ms timeout */
-	unsigned timeout = SERVER_TIMEOUT;
-	int ret = 0;
 
-	while (timeout) {
-		usleep (1);
-#ifdef SUPPORT_NET_UNIX_UDP
-		ret = readUdpSocket(sock, sock, str, 256);
-#endif
-		if (ret > 0)
-			break;
-
-		timeout --;
-	}
-
-	/* server not respond */
-	if (timeout < 1) {
-		free (str);
-		server->state = 0;
-		return 0;
-	}
-
-	server->ping = SERVER_TIMEOUT - timeout;
-
-/*
- "version: svnX\n"
- "clients: N\n"
- "maxclients: M\n"
- "uptime: D\n"
-*/
+	/*
+		"version: svnX\n"
+		"clients: N\n"
+		"maxclients: M\n"
+		"uptime: D\n"
+	*/
 
 	typedef struct {
 		char *version;
@@ -298,14 +340,56 @@ static int LoadServers ()
 		return 0;
 	}
 
-	if (connect (s, (struct sockaddr *) &server, sizeof (server)) == -1)
+	int oldFlag = fcntl (s, F_GETFL, 0);
+	if (fcntl (s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
+		return -1;
+	}
+
+	if (connect (s, (struct sockaddr *) &server, sizeof (server)) == -1) {
+		if (errno != EINPROGRESS)
+		    return -1;
+	}
+
+	struct timeval tv;
+	// Mno¾ina
+	fd_set myset;
+	// Mno¾ina obsahuje náhodná data. Odstraním je.
+	FD_ZERO(&myset);
+	// Zaplnìní mno¾iny sokety
+	FD_SET(s, &myset);
+	// Vyplním èasový údaj (napøíklad na 3 minuty)
+	tv.tv_sec = 3;// Poèet sekund
+	tv.tv_usec = 0;// Poèet mikrosekund
+	// Zavolám select (V Linuxu musím mít nastavenou promìnnou max.)
+	int ret = select (s+1, NULL, &myset, NULL, &tv);
+
+	if (ret == -1)
 		return 0;
+
+	if (ret == 0)
+		return -2;
 
 	/* send request for server list */
 	send (s, "l", 1, 0);
 
+	// Mno¾ina obsahuje náhodná data. Odstraním je.
+	FD_ZERO(&myset);
+	// Zaplnìní mno¾iny sokety
+	FD_SET(s, &myset);
+
+	ret = select (s+1, &myset, NULL, NULL, &tv);
+
+	if (ret == -1)
+		return 0;
+
+	if (ret == 0)
+		return -2;
+
 	/* receive server list if exist */
+	//int len;
+	//do {
 	int len = recv (s, buf, 1024, 0);
+	//} while (len < 1);
 
 	close (s);
 #else
@@ -340,10 +424,12 @@ static int LoadServers ()
 
 		int ret = server_getinfo (ctx);
   
-		if (ret) {
+		if (ret == 1) {
 			sprintf (list, "%s:%d (%s) - %s - %d/%d - %dms", inet_ntoa (srv.sin_addr), ctx->port, ctx->version,
 				ctx->arena, ctx->clients, ctx->maxclients, ctx->ping);
-		} else
+		} else if (ret == -2)
+			sprintf (list, "%s:%d - Timeout", inet_ntoa (srv.sin_addr), ctx->port);
+		else
 			sprintf (list, "%s:%d - Offline", inet_ntoa (srv.sin_addr), ctx->port);
 
 		addToWidgetSelect(select_server, list);
