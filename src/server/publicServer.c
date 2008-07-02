@@ -8,6 +8,7 @@
 
 #ifdef SUPPORT_NET_UNIX_UDP
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>

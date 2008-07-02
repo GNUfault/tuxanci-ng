@@ -16,6 +16,7 @@
 
 #ifdef SUPPORT_NET_UNIX_UDP
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
