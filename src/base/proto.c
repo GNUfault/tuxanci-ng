@@ -96,6 +96,7 @@ void proto_recv_hello_server(client_t *client, char *msg)
 	if( strncmp(version, TUXANCI_NG_VERSION, strlen(TUXANCI_NG_VERSION)) != 0 )
 	{
 		proto_send_error_server(PROTO_SEND_ONE, client, PROTO_ERROR_CODE_BAD_VERSION);
+		eventMsgInCheckFront(client);
 		client->status = NET_STATUS_ZOMBIE;
 		return;
 	}
