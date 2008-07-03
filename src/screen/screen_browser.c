@@ -48,6 +48,7 @@ static widget_image_t *image_backgorund;
 
 static widget_button_t *button_play;
 static widget_button_t *button_back;
+static widget_button_t *button_refresh;
 
 static widget_label_t *label_server;
 
@@ -55,24 +56,11 @@ static widget_select_t *select_server;
 
 static server_t server_list;
 
+/* function prototypes */
 static int LoadServers ();
+static int RefreshServers ();
 static server_t *server_getcurr ();
 
-
-static int net_ip_convert (unsigned ip, char *ip_addr)
-{
-	if (!ip_addr)
-		return -1;
-
-	unsigned char a = (unsigned char) ip;
-	unsigned char b = (unsigned char) (ip >> 8);
-	unsigned char c = (unsigned char) (ip >> 16);
-	unsigned char d = (unsigned char) (ip >> 24);
-
-	sprintf (ip_addr, "%d.%d.%d.%d", a, b, c, d);
-
-	return 0;
-}
 
 void startScreenBrowser()
 {
@@ -93,6 +81,7 @@ void drawScreenBrowser()
 
 	drawWidgetButton(button_play);
 	drawWidgetButton(button_back);
+	drawWidgetButton(button_refresh);
 }
 
 void eventScreenBrowser()
@@ -101,6 +90,7 @@ void eventScreenBrowser()
 
 	eventWidgetButton(button_play);
 	eventWidgetButton(button_back);
+	eventWidgetButton(button_refresh);
 }
 
 void stopScreenBrowser()
@@ -153,12 +143,14 @@ static void eventWidget(void *p)
 		/* server je offline */
 		if (!server->state)
 			return;
-#ifdef SUPPORT_NET_UNIX_UDP
-		struct sockaddr_in srv;
-		srv.sin_addr.s_addr = server->ip;
-#endif
+
+		struct in_addr srv;
+		srv.s_addr = server->ip;
+
+		char *address = (char *) inet_ntoa (srv);
+
 		setSettingGameType (NET_GAME_TYPE_CLIENT);
-		setSettingIP(inet_ntoa (srv.sin_addr));
+		setSettingIP(address);
 		setSettingPort(server->port);
 
 		setScreen("world");
@@ -167,6 +159,11 @@ static void eventWidget(void *p)
 	if( button == button_back )
 	{
 		setScreen("gameType");
+	}
+
+	if( button == button_refresh )
+	{
+		RefreshServers ();
 	}
 }
 
@@ -248,14 +245,23 @@ int server_getinfo (server_t *server)
 	while (1) {
 		int sel = select (mySocket + 1, &myset, NULL, NULL, &tv);
 
-		if (sel == 0)
+		if (sel == 0) {
+			free (str);
+			close (mySocket);
 			return -2;
+		}
 
-		if (sel == -1)
+		if (sel == -1) {
+			free (str);
+			close (mySocket);
 			return -2;
+		}
   
-		if ((ret = recv(mySocket, str, 256, 0)) == -1)
+		if ((ret = recv(mySocket, str, 256, 0)) == -1) {
+			free (str);
+			close (mySocket);
 			return -1;
+		}
     
 		if (ret > 0)
 			break;
@@ -438,7 +444,7 @@ static int LoadServers ()
 	unsigned i = 0;
 	char list[256];
 
-	char address[16];
+	struct in_addr srv;
 
 	typedef struct {
 		unsigned port;
@@ -460,8 +466,10 @@ static int LoadServers ()
 		ctx->arena = 0;
 
 		int ret = server_getinfo (ctx);
-  
-		net_ip_convert (ctx->ip, address);
+
+		srv.s_addr = ctx->ip;
+
+		char *address = (char *) inet_ntoa (srv);
 
 		if (ret == 1) {
 			sprintf (list, "%s (%s) - %s:%d - %s - %d/%d - %dms", ctx->name ? ctx->name : "Unknown", ctx->version, address, ctx->port,
@@ -489,6 +497,51 @@ static int LoadServers ()
 	return 1;
 }
 
+static int RefreshServers ()
+{
+	destroyListItem(select_server->list, free);
+	select_server->list = newList();
+
+	struct in_addr srv;
+
+	server_t *server;
+	for (server = server_list.next; server != &server_list; server = server->next) {
+		if (server->name)
+			free (server->name);
+
+		if (server->version)
+			free (server->version);
+
+		if (server->arena)
+			free (server->arena);
+
+		server->name = 0;
+		server->version = 0;
+		server->arena = 0;
+
+		char list[256];
+	
+		int ret = server_getinfo (server);
+
+		srv.s_addr = server->ip;
+
+		char *address = (char *) inet_ntoa (srv);
+	
+		if (ret == 1) {
+			sprintf (list, "%s (%s) - %s:%d - %s - %d/%d - %dms", server->name ? server->name : "Unknown", server->version, 
+				address, server->port, server->arena ? server->arena : "Unknown", server->clients, server->maxclients, server->ping);
+		} else if (ret == -2)
+			sprintf (list, "%s:%d - Timeout", address, server->port);
+		else
+			sprintf (list, "%s:%d - Offline", address, server->port);
+
+		addToWidgetSelect(select_server, list);
+
+	}
+
+	return 1;
+}
+
 void initScreenBrowser()
 {
 	SDL_Surface *image;
@@ -497,7 +550,8 @@ void initScreenBrowser()
 	image_backgorund  = newWidgetImage(0, 0, image);
 
 	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);;
+	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_refresh = newWidgetButton(getMyText("REFRESH"), WINDOW_SIZE_X/2-50, WINDOW_SIZE_Y-100, eventWidget);
 
 	label_server = newWidgetLabel("Server list", 50, 145, WIDGET_LABEL_LEFT);
 
@@ -516,6 +570,7 @@ void quitScreenBrowser()
 
 	destroyWidgetButton(button_play);
 	destroyWidgetButton(button_back);
+	destroyWidgetButton(button_refresh);
 	destroyWidgetLabel(label_server);
 	destroyWidgetSelect(select_server);
 }

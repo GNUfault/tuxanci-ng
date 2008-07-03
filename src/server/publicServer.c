@@ -128,6 +128,8 @@ static int registerPublicServer()
 	/* send request for server list */
 	int r = send (s, str, 9, 0);
 
+	free (str);
+
 	if (r == -1) {
 		close(s);
 		return -1;

@@ -15,7 +15,9 @@ HEAD fontfile="DejaVuSans.ttf" fontsize="16"
 OK Ok
 BACK Zpět
 NEXT Další
-BROWSER Vyhledávač
+
+# browser
+REFRESH Obnovit
 
 # error message
 ERROR_BAD_VERSION Máte verzi klienta, kterou server nepodporuje.
@@ -41,3 +43,4 @@ SERVER Vytvoření serveru
 CLIENT Síťová hra
 IP_ADDR IP adresa serveru:
 NET_PORT Síťový port:
+BROWSER Vyhledávač

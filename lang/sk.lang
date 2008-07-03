@@ -15,7 +15,9 @@ HEAD fontfile="DejaVuSans.ttf" fontsize="16"
 OK Ok
 BACK Späť
 NEXT Ďalej
-BROWSER Browser
+
+# browser
+REFRESH Refresh
 
 # error message
 ERROR_BAD_VERSION Mate verziu clienta, ktoru server nepodporuje.
@@ -34,6 +36,7 @@ NAME_PLAYER1 Meno Hraca 1:
 NAME_PLAYER2 Meno Hraca 2:
 MUSIC Hudba:
 SOUND Zvuk:
+BROWSER Browser
 
 # settings - game type
 NONE žiadne

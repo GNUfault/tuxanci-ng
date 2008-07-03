@@ -16,7 +16,9 @@ HEAD fontfile="DejaVuSans.ttf" fontsize="16"
 OK Ok
 BACK Précédent
 NEXT Suivant
-BROWSER Browser
+
+# browser
+REFRESH Refresh
 
 # error message
 ERROR_BAD_VERSION Version of your client isn't supported by the server.
@@ -34,3 +36,4 @@ NAME_PLAYER1 Joueur de droite :
 NAME_PLAYER2 Joueur de gauche :
 MUSIC Musique :
 SOUND Son :
+BROWSER Browser
