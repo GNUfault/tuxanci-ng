@@ -294,6 +294,7 @@ void eventMoveListShot(arena_t *arena)
 	}
 }
 
+#if 0
 static int myAbs(int n)
 {
 	return ( n > 0 ? n : -n );
@@ -303,14 +304,30 @@ static int getSppedShot(shot_t *shot)
 {
 	return ( myAbs(shot->px) > myAbs(shot->py) ? myAbs(shot->px) : myAbs(shot->py) );
 }
+#endif
 
+static int isValueInList(list_t *list, int x)
+{
+	int i;
+
+	for( i = 0 ; i < list->count ; i++ )
+	{
+		if( x == ( *(int *)list->list[i] ) )
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
 
 void checkShotIsInTuxScreen(arena_t *arena)
 {
 	int screen_x, screen_y;
 	shot_t *thisShot;
 	tux_t *thisTux;
-	int speed;
+	client_t *thisClient;
+	list_t *listClient;
 	int i, j;
 
 	if( getNetTypeGame() != NET_GAME_TYPE_SERVER )
@@ -318,12 +335,14 @@ void checkShotIsInTuxScreen(arena_t *arena)
 		return;
 	}
 
-	for( i = 0 ; i < arena->spaceTux->list->count ; i++ )
-	{
-		thisTux = (tux_t *)arena->spaceTux->list->list[i];
-		speed = 25;
+	listClient = getListServerClient();
 
-		if( thisTux->control != TUX_CONTROL_NET )
+	for( i = 0 ; i < listClient->count ; i++ )
+	{
+		thisClient = (client_t *)listClient->list[i];
+		thisTux = (tux_t *)thisClient->tux;
+
+		if( thisTux == NULL || thisTux->control != TUX_CONTROL_NET )
 		{
 			continue;
 		}
@@ -331,47 +350,23 @@ void checkShotIsInTuxScreen(arena_t *arena)
 		getCenterScreen(&screen_x, &screen_y, thisTux->x, thisTux->y);
 
 		listDoEmpty(listHelp);
-		getObjectFromSpace(arena->spaceShot, screen_x-speed, screen_y,  speed, WINDOW_SIZE_Y, listHelp);
+
+		getObjectFromSpace(arena->spaceShot, screen_x, screen_y,  WINDOW_SIZE_X, WINDOW_SIZE_Y, listHelp);
 
 		for( j = 0 ; j <listHelp->count ; j++ )
 		{
 			thisShot = (shot_t *)listHelp->list[j];
-			client_t *thisClient;
-			thisClient = getClientFromTux(thisTux);
-			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+
+			if( isValueInList(thisClient->listSeesShot, thisShot->id) == 0 )
+			{
+				addList(thisClient->listSeesShot, newInt(thisShot->id) );
+				proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+			}
 		}
 
-		listDoEmpty(listHelp);
-		getObjectFromSpace(arena->spaceShot, screen_x+WINDOW_SIZE_X, screen_y,  speed, WINDOW_SIZE_Y, listHelp);
-
-		for( j = 0 ; j <listHelp->count ; j++ )
+		while( thisClient->listSeesShot->count > 100 )
 		{
-			thisShot = (shot_t *)listHelp->list[j];
-			client_t *thisClient;
-			thisClient = getClientFromTux(thisTux);
-			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
-		}
-
-		listDoEmpty(listHelp);
-		getObjectFromSpace(arena->spaceShot, screen_x, screen_y-speed, WINDOW_SIZE_X, speed, listHelp);
-
-		for( j = 0 ; j <listHelp->count ; j++ )
-		{
-			thisShot = (shot_t *)listHelp->list[j];
-			client_t *thisClient;
-			thisClient = getClientFromTux(thisTux);
-			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
-		}
-
-		listDoEmpty(listHelp);
-		getObjectFromSpace(arena->spaceShot, screen_x, screen_y+WINDOW_SIZE_Y, WINDOW_SIZE_X, speed, listHelp);
-
-		for( j = 0 ; j <listHelp->count ; j++ )
-		{
-			thisShot = (shot_t *)listHelp->list[j];
-			client_t *thisClient;
-			thisClient = getClientFromTux(thisTux);
-			proto_send_shot_server(PROTO_SEND_ONE, thisClient, thisShot);
+			delListItem(thisClient->listSeesShot, 0, free);
 		}
 	}
 }

@@ -18,9 +18,13 @@ arena background="nic" w="800" h="600"
 
 playMusic music="in_a_captivity_of_8-bit"
 
-wall x="512" y="320" w="125" h="100" img_x="500" img_y="125" layer="0" image="ihlan"
-wall x="273" y="152" w="180" h="75" img_x="250" img_y="62" layer="0" image="kvader1"
-wall x="90" y="275" w="87" h="205" img_x="62" img_y="187" layer="0" image="kvader2"
+wall rel="1" x="512" y="320" w="125" h="100" img_x="-12" img_y="-195" layer="0" image="ihlan"
+wall rel="1" x="273" y="152" w="180" h="75" img_x="-23" img_y="-90" layer="0" image="kvader1"
+wall rel="1" x="90" y="275" w="87" h="205" img_x="-28" img_y="-88" layer="0" image="kvader2"
+
+#wall x="512" y="320" w="125" h="100" img_x="500" img_y="125" layer="0" image="ihlan"
+#wall x="273" y="152" w="180" h="75" img_x="250" img_y="62" layer="0" image="kvader1"
+#wall x="90" y="275" w="87" h="205" img_x="62" img_y="187" layer="0" image="kvader2"
 
 teleport x="112" y="112" w="58" h="58" layer="-1" image="teleport"
 teleport x="375" y="375" w="58" h="58" layer="-1" image="teleport"

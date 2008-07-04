@@ -1,6 +1,6 @@
 
 
-all: client.o configFile.o font.o game.o image.o interface.o keytable.o language.o layer.o panel.o screen.o term.o
+all: client.o configFile.o font.o game.o image.o interface.o keytable.o language.o layer.o panel.o radar.o screen.o term.o
 
 client.o: client.c client.h
 	$(CC) $(CFLAGS) -o client.o -c client.c
@@ -26,6 +26,8 @@ layer.o: layer.c layer.h
 panel.o: panel.c panel.h
 	$(CC) $(CFLAGS) -o panel.o -c panel.c
 
+radar.o: radar.c radar.h
+	$(CC) $(CFLAGS) -o radar.o -c radar.c
 screen.o: screen.c screen.h
 	$(CC) $(CFLAGS) -o screen.o -c screen.c
 

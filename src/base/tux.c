@@ -21,6 +21,7 @@
 #include "client/image.h"
 #include "client/layer.h"
 #include "client/term.h"
+#include "client/radar.h"
 
 #include "audio/sound.h"
 

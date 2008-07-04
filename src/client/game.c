@@ -23,6 +23,7 @@
 #include "client/keytable.h"
 #include "client/language.h"
 #include "client/panel.h"
+#include "client/radar.h"
 
 #include "audio/audio.h"
 #include "audio/sound.h"

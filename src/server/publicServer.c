@@ -246,12 +246,10 @@ void eventPublicServer()
 		return;
 	}
 
-/*
-	printf("interval = %d\n", interval);
-*/
+	//printf("interval = %d\n", interval);
+
 	lastActive = getMyTime();
 
-	//fce_interval();
 	eventArena(arena);
 }
 

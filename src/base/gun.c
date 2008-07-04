@@ -95,6 +95,7 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 	//addList( getCurrentArena()->listShot, shot );
 	addObjectToSpace(getCurrentArena()->spaceShot, shot);
 
+/*
 	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 	{
 		client_t *thisClient;
@@ -108,7 +109,7 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 
 		proto_send_shot_server(PROTO_SEND_ALL_SEES_TUX, thisClient, shot);
 	}
-
+*/
 }
 
 static void addShot(tux_t *tux,int x, int y, int px, int py)

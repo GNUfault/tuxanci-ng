@@ -26,6 +26,7 @@
 #include "screen/screen_analyze.h"
 #include "client/client.h"
 #include "client/term.h"
+#include "client/radar.h"
 #endif
 
 #ifdef PUBLIC_SERVER
@@ -325,6 +326,7 @@ void proto_recv_event_client(char *msg)
 	if( tux != NULL )
 	{
 		actionTux(tux, action);
+		addToRadar(tux->id, tux->x, tux->y, RADAR_TYPE_TUX);
 	}
 }
 
@@ -438,6 +440,8 @@ void proto_recv_newtux_client(char *msg)
 		addObjectToSpace(getCurrentArena()->spaceTux, tux);
 	}
 
+	addToRadar(id, x, y, RADAR_TYPE_TUX);
+
 	moveObjectInSpace(getCurrentArena()->spaceTux, tux, x, y);
 	tux->status = status;
 	tux->position = position;
@@ -534,6 +538,7 @@ void proto_recv_del_client(char *msg)
 		sprintf(term_msg, "tux with id %d is disconnect\n", tux->id);
 		appendTextInTerm(term_msg);
 
+		delFromRadar(id);
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceTux, tux, destroyTux);
 		return;
 	}
@@ -543,6 +548,7 @@ void proto_recv_del_client(char *msg)
 	if( shot != NULL )
 	{
 		//printf("delete shot..\n");
+		delFromRadar(id);
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
 		return;
 	}
@@ -552,6 +558,7 @@ void proto_recv_del_client(char *msg)
 	if( item != NULL )
 	{
 		//printf("delete item..\n");
+		delFromRadar(id);
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceItem, item, destroyItem);
 		return;
 	}
@@ -600,6 +607,8 @@ void proto_recv_additem_client(char *msg)
 	{
 		return;
 	}
+
+	addToRadar(id, x, y, RADAR_TYPE_ITEM);
 
 	item = newItem(x, y, type, author_id);
 

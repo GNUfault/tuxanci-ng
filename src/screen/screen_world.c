@@ -24,6 +24,7 @@
 #include "client/term.h"
 #include "client/font.h"
 #include "client/panel.h"
+#include "client/radar.h"
 
 #ifndef NO_SOUND
 #include "audio/music.h"
@@ -196,6 +197,11 @@ void drawWorld()
 	{
 		drawArena(arena);
 		drawPanel(arena->spaceTux->list);
+
+		if( arena->w > WINDOW_SIZE_X || arena->h > WINDOW_SIZE_Y )
+		{
+			drawRadar(arena);
+		}
 	}
 
 	drawTerm();
@@ -481,6 +487,11 @@ void eventWorld()
 	eventArena(arena);
 	//eventModule();
 
+	addToRadar(tuxWithControlRightKeyboard->id,
+		tuxWithControlRightKeyboard->x,
+		tuxWithControlRightKeyboard->y,
+		RADAR_TYPE_YOU);
+
 	eventTerm();
 	eventEnd();
 	eventEsc();
@@ -495,6 +506,7 @@ void startWorld()
 	lastServerLag = LAG_SERVER_UNKNOWN;
 
 	initListID();
+	initRadar();
 	initModule();
 	setGameType();
 	initTerm();
@@ -555,6 +567,8 @@ void stoptWorld()
 	{
 		destroyArena(arena);
 	}
+
+	quitRadar();
 
 #ifndef NO_SOUND
 	stopMusic();

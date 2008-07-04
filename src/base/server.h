@@ -52,6 +52,8 @@ typedef struct client_struct
 
 	list_t *listSendMsg;
 	list_t *listRecvMsg;
+
+	list_t *listSeesShot;
 } client_t;
 
 #ifdef PUBLIC_SERVER

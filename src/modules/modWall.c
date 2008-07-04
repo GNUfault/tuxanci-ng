@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -214,8 +213,14 @@ static void cmd_wall(char *line)
 	char str_h[STR_NUM_SIZE];
 	char str_layer[STR_NUM_SIZE];
 	char str_image[STR_SIZE];
+	char str_rel[STR_SIZE];
+	int x, y, w, h, img_x, img_y, layer;
+	int rel;
 	wall_t *new;
 
+	rel = 0;
+
+	if( export_fce->fce_getValue(line, "rel", str_rel, STR_NUM_SIZE) != 0 );
 	if( export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
@@ -225,18 +230,28 @@ static void cmd_wall(char *line)
 	if( export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
+
+	rel = atoi(str_rel);
+	x  = atoi(str_x);
+	y  = atoi(str_y);
+	w  = atoi(str_w);
+	h  = atoi(str_h);
+	img_x  = atoi(str_img_x);
+	img_y  = atoi(str_img_y);
+	layer  = atoi(str_layer);
+
+	if( rel == 1 )
+	{
+		img_x += x;
+		img_y += y;
+	}
+
 #ifndef PUBLIC_SERVER
-	new = newWall(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_img_x), atoi(str_img_y),
-			atoi(str_layer), export_fce->fce_getImage(IMAGE_GROUP_USER, str_image) );
+	new = newWall(x, y, w, h, img_x, img_y, layer, export_fce->fce_getImage(IMAGE_GROUP_USER, str_image) );
 #endif
 
 #ifdef PUBLIC_SERVER
-	new = newWall(atoi(str_x), atoi(str_y),
-			atoi(str_w), atoi(str_h),
-			atoi(str_img_x), atoi(str_img_y),
-			atoi(str_layer) );
+	new = newWall(x, y, w, h, img_x, img_y, layer);
 #endif
 
 	if( spaceWall == NULL )

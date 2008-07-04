@@ -120,7 +120,8 @@ static void eventPeriodicSyncClient(void *p_nothink)
 			continue;
 		}
 
-		proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, thisClientSend, thisTux);
+		//proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, thisClientSend, thisTux);
+		proto_send_newtux_server(PROTO_SEND_BUT, thisClientSend, thisTux);
 	}
 }
 
@@ -228,6 +229,7 @@ client_t* newUdpClient(sock_udp_t *sock_udp)
 	new->status = NET_STATUS_OK;
 	new->listRecvMsg = newList();
 	new->listSendMsg = newCheckFront();
+	new->listSeesShot = newList();
 	new->protect = newProtect();
 	new->socket_udp = sock_udp;
 
@@ -248,6 +250,7 @@ void destroyClient(client_t *p)
 	closeUdpSocket(p->socket_udp);
 
 	destroyListItem(p->listRecvMsg, free);
+	destroyListItem(p->listSeesShot, free);
 	destroyCheckFront(p->listSendMsg);
 
 	destroyProtect(p->protect);
@@ -367,11 +370,11 @@ static void addMsgAllClientSeesTux(char *msg, tux_t *tux, int type, int id)
 	arena = getCurrentArena();
 	space = arena->spaceTux;
 	
-	x = tux->x-(WINDOW_SIZE_X/2)*1.25;
-	y = tux->y-(WINDOW_SIZE_Y/2)*1.25;
+	x = tux->x - WINDOW_SIZE_X;
+	y = tux->y - WINDOW_SIZE_Y;
 
-	w = WINDOW_SIZE_X*1.5;
-	h = WINDOW_SIZE_Y*1.5;
+	w = 2 * WINDOW_SIZE_X;
+	h = 2 * WINDOW_SIZE_Y;
 
 	if( x < 0 )
 	{
@@ -730,7 +733,7 @@ int selectServerUdpSocket()
 
 #ifdef PUBLIC_SERVER
 	tv.tv_sec = 0;
-	tv.tv_usec = 5000;
+	tv.tv_usec = 1000;
 #endif	
 
 	FD_ZERO(&readfds);
