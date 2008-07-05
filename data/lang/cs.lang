@@ -18,6 +18,12 @@ NEXT Další
 
 # browser
 REFRESH Obnovit
+SERVER Server
+VERSION Verze
+ADDRESS Adresa
+ARENA Aréna
+CLIENTS Hráči
+PING Odezva
 
 # error message
 ERROR_BAD_VERSION Máte verzi klienta, kterou server nepodporuje.

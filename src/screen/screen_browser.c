@@ -52,6 +52,11 @@ static widget_button_t *button_back;
 static widget_button_t *button_refresh;
 
 static widget_label_t *label_server;
+static widget_label_t *label_version;
+static widget_label_t *label_address;
+static widget_label_t *label_arena;
+static widget_label_t *label_players;
+static widget_label_t *label_ping;
 
 static widget_select_t *select_server;
 
@@ -77,6 +82,11 @@ void drawScreenBrowser()
 	drawWidgetImage(image_backgorund);
 
 	drawWidgetLabel(label_server);
+	drawWidgetLabel(label_version);
+	drawWidgetLabel(label_address);
+	drawWidgetLabel(label_arena);
+	drawWidgetLabel(label_players);
+	drawWidgetLabel(label_ping);
 
 	drawWidgetSelect(select_server);
 
@@ -411,16 +421,15 @@ static int LoadServers ()
 	}
 
 	struct timeval tv;
-	// Mno�ina
+
 	fd_set myset;
-	// Mno�ina obsahuje n�hodn� data. Odstran�m je.
+
 	FD_ZERO(&myset);
-	// Zapln�n� mno�iny sokety
 	FD_SET(s, &myset);
-	// Vypln�m �asov� �daj (nap��klad na 3 minuty)
-	tv.tv_sec = 3;// Po�et sekund
-	tv.tv_usec = 0;// Po�et mikrosekund
-	// Zavol�m select (V Linuxu mus�m m�t nastavenou prom�nnou max.)
+
+	tv.tv_sec = 3;
+	tv.tv_usec = 0;
+
 	int ret = select (s+1, NULL, &myset, NULL, &tv);
 
 	if (ret == -1)
@@ -432,9 +441,7 @@ static int LoadServers ()
 	/* send request for server list */
 	send (s, "l", 1, 0);
 
-	// Mno�ina obsahuje n�hodn� data. Odstran�m je.
 	FD_ZERO(&myset);
-	// Zapln�n� mno�iny sokety
 	FD_SET(s, &myset);
 
 	ret = select (s+1, &myset, NULL, NULL, &tv);
@@ -485,14 +492,38 @@ static int LoadServers ()
 
 		char *address = (char *) inet_ntoa (srv);
 
-		if (ret == 1) {
-			sprintf (list, "%s (%s) - %s:%d - %s - %d/%d - %dms", ctx->name ? ctx->name : "Unknown", ctx->version, address, ctx->port,
-				ctx->arena ? ctx->arena : "Unknown", ctx->clients, ctx->maxclients, ctx->ping);
-		} else if (ret == -2)
-			sprintf (list, "%s:%d - Timeout", address, ctx->port);
-		else
-			sprintf (list, "%s:%d - Offline", address, ctx->port);
+		memset (list, ' ', 254);
+		list[255] = '\0';
 
+		if (ret == 1) {
+			/*sprintf (list, "%s (%s) - %s:%d - %s - %d/%d - %dms", ctx->name ? ctx->name : "Unknown", ctx->version, address, ctx->port,
+				ctx->arena ? ctx->arena : "Unknown", ctx->clients, ctx->maxclients, ctx->ping);*/
+
+			if (ctx->name)
+				memcpy (list, ctx->name, strlen (ctx->name));
+			else
+				memcpy (list, "Unknown", 7);
+
+			memcpy (list+30, ctx->version, strlen (ctx->version));
+
+			unsigned a_len = strlen (address);
+			memcpy (list+38, address, a_len);
+			memcpy (list+38+a_len, ":", 1);
+
+			sprintf (buf, "%d", ctx->port);
+
+			memcpy (list+39+a_len, buf, strlen (buf));
+
+			memcpy (list+60, ctx->arena, strlen (ctx->arena));
+
+			sprintf (buf, "%d/%d", ctx->clients, ctx->maxclients);
+
+			memcpy (list+75, buf, strlen (buf));
+
+			sprintf (buf, "%dms", ctx->ping);
+
+			memcpy (list+83, buf, strlen (buf));
+		}
 
 		addToWidgetSelect(select_server, list);
 
@@ -534,6 +565,7 @@ static int RefreshServers ()
 		server->arena = 0;
 
 		char list[256];
+		char buf[32];
 	
 		int ret = server_getinfo (server);
 
@@ -542,12 +574,34 @@ static int RefreshServers ()
 		char *address = (char *) inet_ntoa (srv);
 	
 		if (ret == 1) {
-			sprintf (list, "%s (%s) - %s:%d - %s - %d/%d - %dms", server->name ? server->name : "Unknown", server->version, 
-				address, server->port, server->arena ? server->arena : "Unknown", server->clients, server->maxclients, server->ping);
-		} else if (ret == -2)
-			sprintf (list, "%s:%d - Timeout", address, server->port);
-		else
-			sprintf (list, "%s:%d - Offline", address, server->port);
+			memset (list, ' ', 254);
+			list[255] = '\0';
+
+			if (server->name)
+				memcpy (list, server->name, strlen (server->name));
+			else
+				memcpy (list, "Unknown", 7);
+
+			memcpy (list+30, server->version, strlen (server->version));
+
+			unsigned a_len = strlen (address);
+			memcpy (list+38, address, a_len);
+			memcpy (list+38+a_len, ":", 1);
+
+			sprintf (buf, "%d", server->port);
+
+			memcpy (list+39+a_len, buf, strlen (buf));
+
+			memcpy (list+60, server->arena, strlen (server->arena));
+
+			sprintf (buf, "%d/%d", server->clients, server->maxclients);
+
+			memcpy (list+75, buf, strlen (buf));
+
+			sprintf (buf, "%dms", server->ping);
+
+			memcpy (list+83, buf, strlen (buf));
+		}
 
 		addToWidgetSelect(select_server, list);
 
@@ -567,9 +621,14 @@ void initScreenBrowser()
 	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
 	button_refresh = newWidgetButton(getMyText("REFRESH"), WINDOW_SIZE_X/2-50, WINDOW_SIZE_Y-100, eventWidget);
 
-	label_server = newWidgetLabel("Server list", 50, 145, WIDGET_LABEL_LEFT);
+	label_server = newWidgetLabel(getMyText("SERVER"), 120, 145, WIDGET_LABEL_LEFT);
+	label_version = newWidgetLabel(getMyText("VERSION"), 290, 145, WIDGET_LABEL_LEFT);
+	label_address = newWidgetLabel(getMyText("ADDRESS"), 400, 145, WIDGET_LABEL_LEFT);
+	label_arena = newWidgetLabel(getMyText("ARENA"), 550, 145, WIDGET_LABEL_LEFT);
+	label_players = newWidgetLabel(getMyText("CLIENTS"), 645, 145, WIDGET_LABEL_LEFT);
+	label_ping = newWidgetLabel(getMyText("PING"), 720, 145, WIDGET_LABEL_LEFT);
 
-	select_server = newWidgetSelect(label_server->x, label_server->y+40, eventWidget);
+	select_server = newWidgetSelect(50, label_server->y+40, eventWidget);
 
 	registerScreen( newScreen("browser", startScreenBrowser, eventScreenBrowser,
 		drawScreenBrowser, stopScreenBrowser) );
@@ -585,7 +644,14 @@ void quitScreenBrowser()
 	destroyWidgetButton(button_play);
 	destroyWidgetButton(button_back);
 	destroyWidgetButton(button_refresh);
+
 	destroyWidgetLabel(label_server);
+	destroyWidgetLabel(label_version);
+	destroyWidgetLabel(label_address);
+	destroyWidgetLabel(label_arena);
+	destroyWidgetLabel(label_players);
+	destroyWidgetLabel(label_ping);
+
 	destroyWidgetSelect(select_server);
 }
 

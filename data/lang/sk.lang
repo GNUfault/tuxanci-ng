@@ -18,6 +18,12 @@ NEXT Ďalej
 
 # browser
 REFRESH Refresh
+SERVER Server
+VERSION Version
+ADDRESS Address
+ARENA Arena
+CLIENTS Players
+PING Ping
 
 # error message
 ERROR_BAD_VERSION Mate verziu clienta, ktoru server nepodporuje.
@@ -36,7 +42,6 @@ NAME_PLAYER1 Meno Hraca 1:
 NAME_PLAYER2 Meno Hraca 2:
 MUSIC Hudba:
 SOUND Zvuk:
-BROWSER Browser
 
 # settings - game type
 NONE žiadne
@@ -44,3 +49,4 @@ SERVER server
 CLIENT client
 IP_ADDR IP adresa:
 NET_PORT Sieotvy port:
+BROWSER Browser

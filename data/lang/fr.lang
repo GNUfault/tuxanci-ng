@@ -19,6 +19,12 @@ NEXT Suivant
 
 # browser
 REFRESH Refresh
+SERVER Server
+VERSION Version
+ADDRESS Address
+ARENA Arena
+CLIENTS Players
+PING Ping
 
 # error message
 ERROR_BAD_VERSION Version of your client isn't supported by the server.

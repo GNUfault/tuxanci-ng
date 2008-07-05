@@ -18,6 +18,12 @@ NEXT Next
 
 # browser
 REFRESH Refresh
+SERVER Server
+VERSION Version
+ADDRESS Address
+ARENA Arena
+CLIENTS Players
+PING Ping
 
 # error message
 ERROR_BAD_VERSION Version of your client isn't supported by the server.
@@ -36,7 +42,6 @@ NAME_PLAYER1 Player 1:
 NAME_PLAYER2 Player 2:
 MUSIC Music:
 SOUND Sound:
-BROWSER Browser
 
 # settings - game type
 NONE Local game
@@ -44,3 +49,5 @@ SERVER Set up a server
 CLIENT Network game
 IP_ADDR IP address:
 NET_PORT Network port:
+BROWSER Browser
+
