@@ -1,13 +1,13 @@
 # Created by Tomas Chvatal
-# volani se vsemy externimy moznostmy:
+# volani se vsema externima moznostma:
 
 # cmake . -DNO_Server=1 -DNO_Audio=1 -DDebug=1 -DCMAKE_C_FLAGS="-Wall -DDist=1"
 # make
 # make install
 
 # DDist=1 vyrobi binarku do adresare dist/ -> vhodne pro distribuci binarniho baliku...
-# pri zmene zdrojovych souboru se podivejte co je treba delat do souboru
-# CMakeLists.txt v adresari src
+# !! pri zmene zdrojovych souboru se podivejte co je treba delat do souboru !!
+# !! CMakeLists.txt v adresari src !!
 SET ( APPNAME "tuxanci-ng")
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )
@@ -60,9 +60,10 @@ ADD_SUBDIRECTORY ( src )
 # data !TODO
 #MESSAGE ( STATUS "<Installing datafiles>" )
 #MESSAGE ( STATUS "<******************************>" )
+
 IF ( NOT CMAKE_INSTALL_DATADIR )
 	SET ( CMAKE_INSTALL_DATADIR share/ )
-ENDIF ( CMAKE_INSTALL_DATADIR )
+ENDIF ( NOT CMAKE_INSTALL_DATADIR )
 SET ( CMAKE_INSTALL_ETCDIR /etc )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/data/tuxanci-ng.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/doc/)
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/data/LICENCE DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/doc/)
