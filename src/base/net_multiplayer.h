@@ -23,8 +23,9 @@
 
 #define  LIMIT_BUFFER 10240
 
-#define NET_MASTER_SERVER	"193.85.244.165"
-#define NET_MASTER_PORT		2200
+#define NET_MASTER_SERVER_DOMAIN	"ms.tuxanci.org"
+#define NET_MASTER_SERVER		"193.85.244.165"
+#define NET_MASTER_PORT			2200
 
 #ifdef PUBLIC_SERVER
 extern int initNetMulitplayerPublicServer(char *ip4, int port4, char *ip6, int port6);

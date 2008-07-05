@@ -69,7 +69,7 @@ static widget_textfield_t *textfield_count_cound;
 static widget_textfield_t *textfield_name_player1;
 static widget_textfield_t *textfield_name_player2;
 
-static widget_select_t *select_ai;
+static widget_check_t *check_ai;
 
 static textFile_t *configFile;
 
@@ -129,7 +129,7 @@ void drawScreenSetting()
 		drawWidgetCheck(check[i]);
 	}
 
-	drawWidgetSelect(select_ai);
+	drawWidgetCheck(check_ai);
 
 	drawWidgetButton(button_back);
 }
@@ -166,7 +166,7 @@ void eventScreenSetting()
 		eventWidgetCheck(check[i]);
 	}
 
-	eventWidgetSelect(select_ai);
+	eventWidgetCheck(check_ai);
 
 	eventWidgetButton(button_back);
 }
@@ -257,6 +257,9 @@ static void initSettingFile()
 	loadValueFromConfigFile(configFile, "BONUS_HIDDEN", val, STR_SIZE, "YES");
 	check[BONUS_HIDDEN]->status = isYesOrNO(val);
 
+	loadValueFromConfigFile(configFile, "AI", val, STR_SIZE, "NO");
+	check_ai->status = isYesOrNO(val);
+
 #ifndef NO_SOUND
 	loadValueFromConfigFile(configFile, "MUSIC", val, STR_SIZE, "YES");
 	check_music->status = isYesOrNO(val);
@@ -295,6 +298,8 @@ static void saveAndDestroyConfigFile()
 	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(check[BONUS_4X]->status) );
 	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(check[BONUS_HIDDEN]->status) );
 
+	setValueInConfigFile(configFile, "AI", getYesOrNo(check_ai->status) );
+
 #ifndef NO_SOUND
 	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(check_music->status) );
 	setValueInConfigFile(configFile, "SOUND", getYesOrNo(check_sound->status) );
@@ -302,29 +307,6 @@ static void saveAndDestroyConfigFile()
 
 	saveTextFile(configFile);
 	destroyTextFile(configFile);
-}
-
-static void findModulesAI()
-{
-	director_t *listModules;
-	int i;
-
-	listModules = loadDirector(PATH_MODULES);
-
-	for( i = 0 ; i < listModules->list->count ; i++)
-	{
-		char *line;
-
-		line = (char *)listModules->list->list[i];
-
-		if( strstr(line,"AI") != NULL &&
-	 	    strstr(line,".so") != NULL )
-		{
-			addToWidgetSelect(select_ai, line);
-		}
-	}
-
-	destroyDirector(listModules);
 }
 
 void initScreenSetting()
@@ -356,6 +338,8 @@ void initScreenSetting()
 	check_sound = newWidgetCheck(label_sound->x + label_sound->w + 10,
 		WINDOW_SIZE_Y-80, isSoundActive() , eventWidget);
 #endif
+
+	check_ai = newWidgetCheck(460, 405, FALSE, eventWidget);
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -416,10 +400,6 @@ void initScreenSetting()
 
 	initSettingFile();
 
-	select_ai = newWidgetSelect(label_ai->x, label_ai->y+40, eventWidget);
-	addToWidgetSelect(select_ai, "none");
-	findModulesAI();
-
 #ifndef NO_SOUND
 	eventWidget(check_music);
 	eventWidget(check_sound);
@@ -441,9 +421,9 @@ void getSettingCountRound(int *n)
 	*n = atoi( textfield_count_cound->text );
 }
 
-char* getSettingAI()
+bool_t isSettingAI()
 {
-	return (char *) select_ai->list->list[ select_ai->select ];
+	return check_ai->status;
 }
 
 bool_t isSettingAnyItem()
@@ -515,6 +495,8 @@ void quitScreenSetting()
 	destroyWidgetCheck(check_sound);
 #endif
 
+	destroyWidgetCheck(check_ai);
+
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
 		destroyWidgetCheck(check[i]);
@@ -524,8 +506,6 @@ void quitScreenSetting()
 	{
 		destroyWidgetCheck(check[i]);
 	}
-
-	destroyWidgetSelect(select_ai);
 
 	destroyWidgetButton(button_back);
 }

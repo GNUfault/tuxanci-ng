@@ -618,7 +618,10 @@ void proto_recv_additem_client(char *msg)
 		return;
 	}
 
-	addToRadar(id, x, y, RADAR_TYPE_ITEM);
+	if( type != ITEM_MINE && type != ITEM_EXPLOSION && type != ITEM_BIG_EXPLOSION )
+	{
+		addToRadar(id, x, y, RADAR_TYPE_ITEM);
+	}
 
 	item = newItem(x, y, type, author_id);
 

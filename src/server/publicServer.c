@@ -32,6 +32,8 @@
 #include "server/serverConfigFile.h"
 #include "server/heightScore.h"
 
+#include "net_unix/dns.h"
+
 static int arenaId;
 static arena_t *arena;
 static bool_t isSignalEnd;
@@ -58,11 +60,23 @@ static int registerPublicServer()
 	/* TODO: dodelat TCP makro */
 #ifdef SUPPORT_NET_UNIX_UDP
 	struct sockaddr_in server;
-	
+	char *master_server_ip;
+
+	master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
+
+	//printf("master_server_ip = %s\n", master_server_ip);
+
+	if( master_server_ip == NULL ) // master server is down
+	{
+		return -1;
+	}
+
 	server.sin_family = AF_INET;
 	server.sin_port = htons (NET_MASTER_PORT);
-	server.sin_addr.s_addr = inet_addr (NET_MASTER_SERVER);
+	server.sin_addr.s_addr = inet_addr (master_server_ip);
 	
+	free(master_server_ip);
+
 	if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
 		close (s);
 		return 0;

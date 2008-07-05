@@ -148,10 +148,12 @@ void prepareArena()
 			getSettingNameLeft(tux->name);
 			addObjectToSpace(arena->spaceTux, tux);
 
-			if( strcmp(getSettingAI(), "none") != 0 )
+			if( isSettingAI() )
 			{
-				loadModule( getSettingAI() );
-				tux->control = TUX_CONTROL_AI;
+				if( loadModule("modAI.so") == 0 )
+				{
+					tux->control = TUX_CONTROL_AI;
+				}
 			}
 		break;
 
@@ -237,6 +239,16 @@ static void control_keyboard_right(tux_t *tux)
 	if( mapa[(SDLKey)getKey(KEY_TUX_RIGHT_MOVE_LEFT)] == SDL_PRESSED )countKey++;
 	if( mapa[(SDLKey)getKey(KEY_TUX_RIGHT_MOVE_DOWN)] == SDL_PRESSED )countKey++;
 
+	if( mapa[(SDLKey)getKey(KEY_TUX_RIGHT_SWITCH_WEAPON)] == SDL_PRESSED )
+	{
+		if( tux->isCanSwitchGun == TRUE )
+		{
+			netAction(tux, TUX_SWITCH_GUN);
+			actionTux(tux, TUX_SWITCH_GUN);
+			return;
+		}
+	}
+
 	if( mapa[(SDLKey)getKey(KEY_TUX_RIGHT_SHOOT)] == SDL_PRESSED && tux->isCanShot == TRUE )
 	{
 		netAction(tux, TUX_SHOT);
@@ -292,16 +304,6 @@ static void control_keyboard_right(tux_t *tux)
 
 		tuDown:;
 	}
-
-	if( mapa[(SDLKey)getKey(KEY_TUX_RIGHT_SWITCH_WEAPON)] == SDL_PRESSED )
-	{
-		if( tux->isCanSwitchGun == TRUE )
-		{
-			netAction(tux, TUX_SWITCH_GUN);
-			actionTux(tux, TUX_SWITCH_GUN);
-			return;
-		}
-	}
 }
 
 static void control_keyboard_left(tux_t *tux)
@@ -320,6 +322,15 @@ static void control_keyboard_left(tux_t *tux)
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_RIGHT)] == SDL_PRESSED )countKey++;
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_LEFT)] == SDL_PRESSED )countKey++;
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_DOWN)] == SDL_PRESSED )countKey++;
+
+	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_SWITCH_WEAPON)] == SDL_PRESSED )
+	{
+		if( tux->isCanSwitchGun == TRUE )
+		{
+			actionTux(tux, TUX_SWITCH_GUN);
+			return;
+		}
+	}
 
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_SHOOT)] == SDL_PRESSED && tux->isCanShot == TRUE )
 	{
@@ -372,14 +383,6 @@ static void control_keyboard_left(tux_t *tux)
 		tuDown:;
 	}
 
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_SWITCH_WEAPON)] == SDL_PRESSED )
-	{
-		if( tux->isCanSwitchGun == TRUE )
-		{
-			actionTux(tux, TUX_SWITCH_GUN);
-			return;
-		}
-	}
 /*
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_UP)] == SDL_PRESSED )actionTux(tux, TUX_UP);
 	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_RIGHT)] == SDL_PRESSED )actionTux(tux, TUX_RIGHT);

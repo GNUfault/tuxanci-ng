@@ -754,7 +754,7 @@ void eventListTux(list_t *listTux)
 #endif
 		pickUpGun(thisTux);
 		eventBonus(thisTux);
-		eventGiveTuxListItem(thisTux, arena->spaceItem);
+		//eventGiveTuxListItem(thisTux, arena->spaceItem);
 	}
 }
 
