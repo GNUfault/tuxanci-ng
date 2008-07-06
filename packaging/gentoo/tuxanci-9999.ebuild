@@ -30,29 +30,20 @@ src_unpack() {
 	cd "${S}"
 	# setting proper prefix
 	sed -i \
-		-e "s:/usr/local/:${GAMES_PREFIX}/:" config.h \
+		-e "s:PATH_DIR\tPREFIX:PATH_DIR:" src/base/path.h \
 		|| die "sed config.h failed!"
 	sed -i \
 		-e "s:share/tuxanci-ng:${GAMES_DATADIR}/tuxanci-ng:" src/base/path.h \
 		|| die "sed config.h failed!"
 	sed -i \
-		-e "s:DESTDIR PATH_DIR:PATH_DIR:" src/base/path.h \
-		|| die "sed config.h failed!"
-	# setting proper install path
-	sed -i \
 		-e "s:CMAKE_INSTALL_DATADIR share/:CMAKE_INSTALL_DATADIR /usr/share/games/:" CMakeLists.txt \
 		|| die "sed CMakeLists.txt failed!"
-	sed -i \
-		-e "s:CMAKE_INSTALL_BINDIR bin:CMAKE_INSTALL_BINDIR /usr/games/bin:" src/CMakeLists.txt \
-		|| die "sed src/CMakeLists.txt failed!"
-	sed -i \
-		-e "s:CMAKE_INSTALL_LIBDIR lib:CMAKE_INSTALL_LIBDIR /usr/games/lib:" src/CMakeLists.txt \
-		|| die "sed src/MakeLists.txt failed!"	
 }
 src_compile() {
 	local mycmakeargs
 	use alsa || mycmakeargs="${mycmakeargs} -DNO_Audio=1"
 	use dedicated && mycmakeargs="${mycmakeargs} -DNO_Server=1"
+	mycmakeargs="${mycmakeargs} -DPREFIX=\\\"/usr/games\\\"	-DCMAKE_INSTALL_PREFIX:PATH=/usr/games"
 	cmake-utils_src_compile
 }
 src_install() {
