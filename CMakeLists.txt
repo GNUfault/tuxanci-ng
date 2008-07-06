@@ -9,9 +9,9 @@
 # !! pri zmene zdrojovych souboru se podivejte co je treba delat do souboru !!
 # !! CMakeLists.txt v adresari src !!
 SET ( APPNAME "tuxanci-ng")
-IF ( NOT NO_Server )
+IF ( Server )
 	SET ( APPNAME "tuxanci-ng-server" )
-ENDIF ( NOT NO_Server )
+ENDIF ( Server )
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )
 MESSAGE ( "<******************************>" )
@@ -65,9 +65,7 @@ ADD_SUBDIRECTORY ( src )
 #MESSAGE ( STATUS "<Installing datafiles>" )
 #MESSAGE ( STATUS "<******************************>" )
 
-IF ( NOT CMAKE_INSTALL_DATADIR )
-	SET ( CMAKE_INSTALL_DATADIR share/ )
-ENDIF ( NOT CMAKE_INSTALL_DATADIR )
+SET ( CMAKE_INSTALL_DATADIR share/ )
 SET ( CMAKE_INSTALL_ETCDIR /etc )
 IF ( Server )
 	INSTALL ( FILES ${CMAKE_SOURCE_DIR}/data/conf/server.conf DESTINATION ${CMAKE_INSTALL_ETCDIR}/${APPNAME} )
