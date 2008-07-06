@@ -1,4 +1,4 @@
 
-#define TUXANCI_NG_VERSION "svn101"
+#define TUXANCI_NG_VERSION "svn102"
 
 #define DESTDIR "/usr/local/"
