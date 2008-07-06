@@ -1,0 +1,123 @@
+ABOUT
+=====
+	Tuxanci is first cushion shooter based on well-known Czech game Bulanci.
+	
+	Game supports 1 player and multiplayer game on one computer and also
+	supports gameplay over network (LAN/Internet [IPv4 and IPv6]).
+	
+	Goal in this game is to shoot enemy penguin before he does so. Penguin
+	can shoot only in X and Y axes so no diagonal shooting is availible.
+
+	Weapon list
+	-----------
+		Pistol
+		~~~~~~
+			Basic gun - one shot at the time
+		Two Pistols
+		~~~~~~~~~~~
+			2x Basic gun - two shots at once
+		Machine gun
+		~~~~~~~~~~
+			Few shots per fire, small intervals
+		Shot gun
+		~~~~~~~~
+			5 shots per fire, high dispersion
+		Laser
+		~~~~~
+			Shoots fast and long coherent light
+		Mine
+		~~~~
+			Put them around, stem on them *KABOOM*
+		Bomb ball
+		~~~~~~~~~
+			Fires bomb which mirrors any obstacles and explodes only if it
+			hits penguin.
+
+	Bonus list
+	----------
+		Speedy tux: tux move faster
+		Infinite ammo: you have really big backpack of ammo (fire at will)
+		4way shoot: tux fire on shoot in every direction (cost only 1 ammo)
+		Teleport: if somebody shoots at Tux he teleport himself away
+		Ghost: Tux can move and shoot through obstracles
+		Note
+		~~~~
+			Bonuses last only few seconds and if tux take another bonus
+			first loses its effects.
+
+HOWTO COMPILE
+=============
+	This howto is written for linux. For other platforms please think about
+	rather using binary modules.
+	First of all we need some libraries:
+		(g)libc, SDL, SDL_image, SDL_ttf, optionally SDL_mixer
+
+	And some applications:
+		cmake version 2.4.8 and above
+
+	Now we have two options what we can do:
+	(all commands are supposed to be written in tuxanci sources directory)
+	Building Client
+	---------------
+		$ cmake . -DNO_Server=1 -DNO_Audio=1	
+		$ make
+		# make install
+	Building Server
+	--------------
+		$ cmake .
+		$ make
+		$ make install
+	Removing current install
+	-----------------------
+		Same for both client and server
+		# make uninstall
+	Notes
+	-----
+		Option -DNO_AUDIO=1 says we want no audio support for client so change
+		if you want so.
+		Server and client can be both on same computer they use different
+		folders.
+		Cleaning data from previous compilation "$ make clean".
+
+
+GAME USAGE
+==========
+	Starting game is simple tuxanci-ng or tuxanci-ng-server based on what we
+	compiled (based on presumption user installed into directories where path
+	is set).
+
+	For client we create some configuration files in $HOME. There is created
+	".tuxanci-ng" directory and in there are pretty explaining .conf files.
+
+	For server we create directory /etc/tuxanci_ng/server.conf where you could
+	do some changes for it (again pretty selfexplaining).
+
+	Controls
+	--------
+		Player one
+		~~~~~~~~~~
+			movement: cursor arows
+			fire: zero or rctrl
+			change weapon: one or rshift
+		Player two
+		~~~~~~~~~~
+			movement: W(u) S(d) A(l) D(r)
+			fire: Q
+			change weapon: tab
+		Common
+		~~~~~~
+			Fullscreen/window mode: F1 (dangerous with multiple monitors)
+			Pause: P
+			Quit: Esc
+HAVE PROBLEM/FOUND BUG/ETC...
+=============================
+	If you found some bug or have feature request please fill it into: 
+	http://www.tuxanci.org/buglist (you need account for that).
+
+	You need some help with install/etc... feel free to join us on our irc
+	channel which is #tuxanci on server irc.tuxportal.cz. If you don't like
+	irc you can can contact us on our forum also: http://czf.tuxanci.org.
+
+MORE
+====
+	More informations you can find on our website: http://www.tuxanci.org/

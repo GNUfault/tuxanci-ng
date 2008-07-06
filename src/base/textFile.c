@@ -81,14 +81,14 @@ textFile_t* loadTextFile(char *s)
 
 	if( lstat(s, &buf) < 0 )
 	{
-		fprintf(stderr, "CHYBA: nemozem ziskat status suboru %s!\n", s);
+		fprintf(stderr, "ERROR: unable to get file status for %s!\n", s);
 		return NULL;
 	}
 
 	file_length = buf.st_size;
 	if( (file = fopen(s, "rt")) == NULL )
 	{
-		fprintf(stderr, "CHYBA: nemozem otvorit subor %s pre citanie\n", s);
+		fprintf(stderr, "ERROR: unable to open file %s for reading\n", s);
 		return NULL;
 	}
 
@@ -96,7 +96,7 @@ textFile_t* loadTextFile(char *s)
 
 	if( fread(p, file_length * sizeof(char), 1, file) != 1 )
 	{
-		fprintf(stderr, "CHYBA: nemozem nacitat udaje zo suboru %s\n",s);
+		fprintf(stderr, "ERROR: unable to read data from file %s\n",s);
 		fclose(file);
 		return NULL;
 	}

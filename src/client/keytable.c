@@ -21,9 +21,9 @@ static int getKeyCode(char *s)
 	char str[STR_SIZE];
 	char *find;
 	int i;
-
+	
 	sprintf(str, "keycode %s = ", s);
-
+	
 	for( i = 0 ; i < keytableFile->text->count ; i++ )
 	{
 		char *line;
