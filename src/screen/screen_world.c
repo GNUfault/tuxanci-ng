@@ -20,11 +20,11 @@
 #include "keytable.h"
 #include "layer.h"
 #include "image.h"
-//#include "heightScore.h"
 #include "term.h"
 #include "font.h"
 #include "panel.h"
 #include "radar.h"
+#include "chat.h"
 
 #ifndef NO_SOUND
 #include "music.h"
@@ -150,7 +150,7 @@ void prepareArena()
 
 			if( isSettingAI() )
 			{
-				if( loadModule("modAI.so") == 0 )
+				if( loadModule("libmodAI.so") == 0 )
 				{
 					tux->control = TUX_CONTROL_AI;
 				}
@@ -174,25 +174,6 @@ void prepareArena()
 	}
 }
 
-/*
-static void drawServerLag()
-{
-	char msg[STR_SIZE];
-
-	if( lastServerLag == LAG_SERVER_UNKNOWN )
-	{
-		sprintf(msg, "lag server: unknown");
-	}
-	else
-	{
-		sprintf(msg, "lag server: %d", lastServerLag);
-	}
-
-	drawFont(msg, WINDOW_SIZE_X-150, 20, COLOR_WHITE);
-	
-}
-*/
-
 void drawWorld()
 {
 	if( arena != NULL )
@@ -207,6 +188,7 @@ void drawWorld()
 	}
 
 	drawTerm();
+	drawChat();
 }
 
 static void netAction(tux_t *tux, int action)
@@ -382,22 +364,6 @@ static void control_keyboard_left(tux_t *tux)
 
 		tuDown:;
 	}
-
-/*
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_UP)] == SDL_PRESSED )actionTux(tux, TUX_UP);
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_RIGHT)] == SDL_PRESSED )actionTux(tux, TUX_RIGHT);
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_LEFT)] == SDL_PRESSED )actionTux(tux, TUX_LEFT);
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_MOVE_DOWN)] == SDL_PRESSED )actionTux(tux, TUX_DOWN);
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_SHOOT)] == SDL_PRESSED )actionTux(tux, TUX_SHOT);
-
-	if( mapa[(SDLKey)getKey(KEY_TUX_LEFT_SWITCH_WEAPON)] == SDL_PRESSED )
-	{
-		if( tux->isCanSwitchGun == TRUE )
-		{
-			actionTux(tux, TUX_SWITCH_GUN);
-		}
-	}
-*/
 }
 
 static void eventEsc()
@@ -405,7 +371,7 @@ static void eventEsc()
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
 
-	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED )
+	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED && isChatActive() == FALSE )
 	{
 		isEndWorld = TRUE;
 		setWorldEnd();
@@ -466,11 +432,17 @@ void tuxControl(tux_t *p)
 		break;
 
 		case TUX_CONTROL_KEYBOARD_LEFT :
-			control_keyboard_left(p);
+			if( isChatActive() == FALSE)
+			{
+				control_keyboard_left(p);
+			}
 		break;
 
 		case TUX_CONTROL_KEYBOARD_RIGHT :
-			control_keyboard_right(p);
+			if( isChatActive() == FALSE)
+			{
+				control_keyboard_right(p);
+			}
 		break;
 	}
 }
@@ -498,6 +470,7 @@ void eventWorld()
 	eventTerm();
 	eventEnd();
 	eventEsc();
+	eventChat();
 }
 
 void startWorld()
@@ -513,6 +486,7 @@ void startWorld()
 	initModule();
 	setGameType();
 	initTerm();
+	initChat();
 	prepareArena();
 }
 
@@ -583,6 +557,7 @@ void stoptWorld()
 #endif
 	quitModule();
 	quitTerm();
+	quitChat();
 	quitListID();
 }
 

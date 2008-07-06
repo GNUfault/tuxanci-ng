@@ -613,6 +613,12 @@ static void eventClientBuffer(client_t *client)
 				continue;
 			}
 
+			if( strncmp(line, "chat", 4) == 0 )
+			{
+				proto_recv_chat_server(client, line);
+				continue;
+			}
+
 			if( strncmp(line, "ping", 4) == 0 )
 			{
 				proto_recv_ping_server(client, line);

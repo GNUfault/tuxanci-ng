@@ -27,6 +27,7 @@
 #include "client.h"
 #include "term.h"
 #include "radar.h"
+#include "chat.h"
 #endif
 
 #ifdef PUBLIC_SERVER
@@ -681,6 +682,60 @@ void proto_recv_shot_client(char *msg)
 	}
 
 	addObjectToSpace(getCurrentArena()->spaceShot, shot);
+}
+
+#endif
+
+#ifndef PUBLIC_SERVER
+
+void proto_send_chat_client(char *s)
+{
+	char msg[STR_PROTO_SIZE];
+	sprintf(msg, "chat %s\n", s);
+	sendServer(msg);
+}
+
+#endif
+
+void proto_recv_chat_server(client_t *client, char *msg)
+{
+	char out[STR_PROTO_SIZE];
+	int len;
+	
+	if( client->tux == NULL )
+	{
+		return;
+	}
+
+	len = strlen(msg);
+	msg[len-1] = '\0';
+
+	snprintf(out, STR_PROTO_SIZE, "chat %s:%s\n", client->tux->name, msg+5);
+
+	proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
+}
+
+void proto_send_chat_server(int type, client_t *client, char *msg)
+{
+	protoSendClient(type, client, msg, CHECK_FORNT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+
+#ifndef PUBLIC_SERVER
+	proto_recv_chat_client(msg);
+#endif
+}
+
+#ifndef PUBLIC_SERVER
+
+void proto_recv_chat_client(char *msg)
+{
+	int len;
+
+	assert( msg != NULL );
+
+	len = strlen(msg);
+	msg[len-1] = '\0';
+
+	addToChat(msg+5);
 }
 
 #endif

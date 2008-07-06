@@ -69,6 +69,47 @@ void drawFont(char *s, int x, int y, int r, int g, int b)
 	SDL_FreeSurface(text);
 }
 
+void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
+{
+	SDL_Rect src_rect, dst_rect;
+	SDL_Surface *text;
+	SDL_Surface *p;
+	SDL_Color farba_pisma = {r, g, b, 0};
+	int my_w, my_h;
+
+	assert( s != NULL );
+
+	p = getSDL_Screen();
+
+	text = TTF_RenderUTF8_Blended(g_font, s, farba_pisma);
+
+	
+	my_w = text->w;
+
+	if( my_w > w )
+	{
+		my_w = w;
+	}
+
+	my_h = text->h;
+
+	if( my_w > w )
+	{
+		my_h = h;
+	}
+
+	src_rect.x = 0;
+	src_rect.y = 0;
+	src_rect.w = my_w;
+	src_rect.h = my_h;
+
+	dst_rect.x = x;
+	dst_rect.y = y;
+	
+	SDL_BlitSurface(text, &src_rect, p, &dst_rect);
+	SDL_FreeSurface(text);
+}
+
 /*
  * Vrati velkost daneho fontu.
  */

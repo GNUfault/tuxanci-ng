@@ -19,6 +19,7 @@
 extern bool_t isFontInicialized();
 extern void initFont(char *file,int size);
 extern void drawFont(char *s,int x,int y,int r,int g,int b);
+extern void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b);
 extern int getFontSize();
 extern void getTextSize(char *s, int *w, int *h);
 extern void quitFont();

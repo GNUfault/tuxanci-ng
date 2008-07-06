@@ -10,6 +10,7 @@
 #include "image.h"
 #include "panel.h"
 #include "font.h"
+#include "chat.h"
 
 static SDL_Surface *g_panel;
 static SDL_Surface *g_shot;
@@ -144,6 +145,11 @@ void drawPanel(list_t *listTux)
 
 	drawImage(g_panel, PANEL_LOCATION_X, PANEL_LOCATION_Y, 0, 0, g_panel->w, g_panel->h);
 	drawScore(listTux);
+
+	if( isRecivedNewMsg() )
+	{
+		drawFont("recived new msg", PANEL_LOCATION_X, PANEL_LOCATION_Y, COLOR_WHITE);
+	}
 
 	for( i = 0 ; i < listTux->count ; i++ )
 	{

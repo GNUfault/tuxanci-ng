@@ -172,6 +172,7 @@ void eventServerBuffer()
 		if( strncmp(line, "additem", 7) == 0 )proto_recv_additem_client(line);
 		if( strncmp(line, "shot", 4) == 0 )proto_recv_shot_client(line);
 		if( strncmp(line, "kill", 4) == 0 )proto_recv_kill_client(line);
+		if( strncmp(line, "chat", 4) == 0 )proto_recv_chat_client(line);
 		if( strncmp(line, "ping", 4) == 0 )proto_recv_ping_client(line);
 		if( strncmp(line, "end", 3) == 0 )proto_recv_end_client(line);
 

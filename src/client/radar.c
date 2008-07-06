@@ -85,7 +85,7 @@ void initRadar()
 	assert( isImageInicialized() == TRUE );
 	assert( isInterfaceInicialized() == TRUE );
 
-	g_radar = addImageData("radar.png", IMAGE_ALPHA, "radar", IMAGE_GROUP_USER);
+	g_radar = addImageData("radar.png", IMAGE_NO_ALPHA, "radar", IMAGE_GROUP_USER);
 	listRadar = newList();
 }
 
