@@ -100,7 +100,7 @@ static module_t* newModule(char *name)
 	ret->fce_event = getFce(ret, "event");
 	ret->fce_destroy = getFce(ret, "destroy");
 	ret->fce_isConflict = getFce(ret, "isConflict");
-	ret->fce_cmd = getFce(ret, "cmd");
+	ret->fce_cmd = getFce(ret, "cmdArena");
 
 	printf("load module.. (%s)\n", name);
 

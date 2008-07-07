@@ -43,7 +43,6 @@
 static arena_t *arena;
 static int count;
 static int max_count;
-static my_time_t lastServerLag;
 static bool_t isScreenWorldInit = FALSE;
 static bool_t isEndWorld;
 
@@ -80,11 +79,6 @@ void setWorldArena(int id)
 void setMaxCountRound(int n)
 {
 	max_count = n;
-}
-
-void setLagServer(my_time_t lag)
-{
-	lastServerLag = lag;
 }
 
 void setWorldEnd()
@@ -373,7 +367,6 @@ static void eventEsc()
 
 	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED && isChatActive() == FALSE )
 	{
-		isEndWorld = TRUE;
 		setWorldEnd();
 		return;
 	}
@@ -493,7 +486,6 @@ void startWorld()
 	isEndWorld = FALSE;
 
 	count = 0;
-	lastServerLag = LAG_SERVER_UNKNOWN;
 
 	initListID();
 	initRadar();

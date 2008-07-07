@@ -441,7 +441,7 @@ int isConflict(int x, int y, int w, int h)
 	return isConflictWithObjectFromSpace(spacePipe, x, y, w, h);
 }
 
-void cmd(char *line)
+void cmdArena(char *line)
 {
 	if( strncmp(line, "pipe", 4) == 0 )cmd_teleport(line);
 }

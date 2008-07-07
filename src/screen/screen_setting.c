@@ -207,22 +207,6 @@ static void eventWidget(void *p)
 		setSoundActive( check_sound->status );
 	}
 #endif
-	if( check == check_ai )
-	{
-		if ( check_ai->status )
-		{
-			// ai je zapnuto nechceme hrace 2
-			destroyWidgetTextfield(textfield_name_player2);
-			destroyWidgetLabel(label_name_player2);
-		}
-		else {
-			// ai je vypnuto chceme hrace 2
-			label_name_player2 = newWidgetLabel(getMyText("NAME_PLAYER2"), 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
-			drawWidgetLabel(label_name_player2);
-			textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", "TUX Warrior #02"), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
-			drawWidgetTextfield(textfield_name_player2);
-		}
-	}
 }
 
 static void initSettingFile()
@@ -309,17 +293,7 @@ static void saveAndDestroyConfigFile()
 
 	setValueInConfigFile(configFile, "COUNT_ROUND", textfield_count_cound->text );
 	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", textfield_name_player1->text );
-
-	if( check_ai->status )
-	{
-		loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, "TUX Warrior #02");
-		strcpy(name2, val);
-		setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", name2 );
-	}
-	else
-	{
-		setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", textfield_name_player2->text );
-	}
+	setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", textfield_name_player2->text );
 
 	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(check[GUN_DUAL_SIMPLE]->status) );
 	setValueInConfigFile(configFile, "GUN_SCATTER", getYesOrNo(check[GUN_SCATTER]->status) );
@@ -327,6 +301,7 @@ static void saveAndDestroyConfigFile()
 	setValueInConfigFile(configFile, "GUN_LASSER", getYesOrNo(check[GUN_LASSER]->status) );
 	setValueInConfigFile(configFile, "GUN_MINE", getYesOrNo(check[GUN_MINE]->status) );
 	setValueInConfigFile(configFile, "GUN_BOMBBALL", getYesOrNo(check[GUN_BOMBBALL]->status) );
+
 	setValueInConfigFile(configFile, "BONUS_SPEED", getYesOrNo(check[BONUS_SPEED]->status) );
 	setValueInConfigFile(configFile, "BONUS_SHOT", getYesOrNo(check[BONUS_SHOT]->status) );
 	setValueInConfigFile(configFile, "BONUS_TELEPORT", getYesOrNo(check[BONUS_TELEPORT]->status) );
@@ -376,9 +351,8 @@ void initScreenSetting()
 
 	textfield_count_cound = newWidgetTextfield(getParamElse("--count", "15"), 110+label_count_round->w, WINDOW_SIZE_Y-200);
 	
-	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", "TUX Warrior #01"), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
-	if ( check_ai->status == 0 )
-		textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", "TUX Warrior #02"), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
+	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", NAME_PLAYER_RIGHT), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
+	textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", NAME_PLAYER_LEFT), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -452,7 +426,14 @@ void getSettingNameRight(char *s)
 
 void getSettingNameLeft(char *s)
 {
-	strcpy(s, textfield_name_player2->text);
+	if( check_ai->status )
+	{
+		strcpy(s, NAME_AI);
+	}
+	else
+	{
+		strcpy(s, textfield_name_player2->text);
+	}
 }
 
 void getSettingCountRound(int *n)
@@ -509,11 +490,8 @@ void quitScreenSetting()
 	destroyWidgetLabel(label_music);
 	destroyWidgetLabel(label_sound);
 #endif
-	if ( check_ai->status == 0 )
-	{
-		destroyWidgetLabel(label_name_player2);
-		destroyWidgetTextfield(textfield_name_player2);
-	}
+	destroyWidgetLabel(label_name_player2);
+	destroyWidgetTextfield(textfield_name_player2);
 
 	destroyWidgetTextfield(textfield_name_player1);
 	destroyWidgetTextfield(textfield_count_cound);

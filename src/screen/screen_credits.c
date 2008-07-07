@@ -27,6 +27,7 @@ static list_t *listWidgetLabel;
 static textFile_t *textFile;
 static int offset;
 static int creditExists;
+
 void startScreenCredits()
 {
 #ifndef NO_SOUND

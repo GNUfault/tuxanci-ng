@@ -220,7 +220,7 @@ static void cmd_wall(char *line)
 
 	rel = 0;
 
-	if( export_fce->fce_getValue(line, "rel", str_rel, STR_NUM_SIZE) != 0 );
+	if( export_fce->fce_getValue(line, "rel", str_rel, STR_NUM_SIZE) != 0 )strcpy(str_rel, "0");
 	if( export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
@@ -229,7 +229,6 @@ static void cmd_wall(char *line)
 	if( export_fce->fce_getValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
 	if( export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0 )return;
-
 
 	rel = atoi(str_rel);
 	x  = atoi(str_x);
@@ -330,7 +329,7 @@ int isConflict(int x, int y, int w, int h)
 	return isConflictWithObjectFromSpace(spaceWall, x, y, w, h);
 }
 
-void cmd(char *line)
+void cmdArena(char *line)
 {
 	if( strncmp(line, "wall", 4) == 0 )cmd_wall(line);
 }

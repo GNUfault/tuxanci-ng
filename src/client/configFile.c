@@ -26,8 +26,7 @@ int getValue(char *line, char *env, char *val, int len)
 	char clone_env[STR_SIZE];
 	int val_len;
 
-	strcpy(clone_env, " ");
-	strcat(clone_env, env);
+	strcpy(clone_env, env);
 
 	offset_env = strstr(line, clone_env);
 	if( offset_env == NULL )return -1;
@@ -83,8 +82,10 @@ int getValueInConfigFile(textFile_t *textFile, char *env, char *val, int len)
 	for( i = 0 ; i < textFile->text->count ; i++ )
 	{
 		line = (char *) (textFile->text->list[i]);
-		
-		if( strstr(line, env) != NULL )
+	
+		//printf("env = %s line = %s\n", env, line);
+
+		if( strncmp(line, env, strlen(env)) == 0 )
 		{
 			return getValue(line, env, val, len);
 		}
@@ -103,7 +104,7 @@ int setValueInConfigFile(textFile_t *textFile, char *env, char *val)
 	{
 		line = (char *) (textFile->text->list[i]);
 		
-		if( strstr(line, env) != NULL )
+		if( strncmp(line, env, strlen(env)) == 0 )
 		{
 			ret = setValue(line, env, val);
 
@@ -128,7 +129,7 @@ void loadValueFromConfigFile(textFile_t *textFile, char *env, char *val, int len
 	{
 		char line[STR_SIZE];
 
-		sprintf(line, " %s=\"%s\"", env, butVal);
+		sprintf(line, "%s=\"%s\"", env, butVal);
 		addList(textFile->text, strdup(line) );
 
 		printf("Add line \"%s\" in config file.\n", line);

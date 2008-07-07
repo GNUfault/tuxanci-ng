@@ -494,7 +494,7 @@ int isConflict(int x, int y, int w, int h)
 	return 0;
 }
 
-void cmd(char *line)
+void cmdArena(char *line)
 {
 	if( strncmp(line, "teleport", 8) == 0 )cmd_teleport(line);
 }

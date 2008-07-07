@@ -26,7 +26,9 @@ bool_t isLayerInicialized()
  */
 void initLayer()
 {
+	printf("*******************\nnew layer\n**********************\n");
 	listLayer = newList();
+	isLayerInit = TRUE;
 }
 
 /*
@@ -42,7 +44,7 @@ void addLayer(SDL_Surface *img,
 {
 	layer_t *new;
 	layer_t *this;
-	int i;
+	int i, j;
 
 	assert( img != NULL );
 
@@ -56,32 +58,26 @@ void addLayer(SDL_Surface *img,
 	new->layer = player;
 	new->image = img;
 
-	if( listLayer->count == 0 )
+	for( i = 0 ; i < listLayer->count ; i++ )
 	{
-		addList(listLayer, new);
-		return;
+		this = (layer_t *)listLayer->list[i];
+		
+		if( this->layer == new->layer )
+		{
+			for( j = i ; j < listLayer->count ; j++ )
+			{
+				this = (layer_t *)listLayer->list[j];
+
+				if( this->y+this->h > new->y+new->h )
+				{
+					insList(listLayer, j, new);
+					return;
+				}
+			}
+		}
 	}
 
-	i = 0;
-	this = (layer_t *)listLayer->list[0];
-
-	//vyhladaj svoju vrstvu
-	while( i < listLayer->count && this->layer < new->layer )
-	{
-		this = (layer_t *)listLayer->list[++i];
-	}
-
-	//porovnaj s vyskami na tvojej vrstve,
-	//ak neexistuje, rovno to tam hod
-	this = (layer_t *)listLayer->list[i];
-
-	while( i < listLayer->count && this->y+this->h < new->y+new->h && new->layer == this->layer )
-	{
-		this = (layer_t *)listLayer->list[++i];
-	}
-
-	insList(listLayer, i, new);
-	isLayerInit = TRUE;
+	addList(listLayer, new);
 }
 
 /*
