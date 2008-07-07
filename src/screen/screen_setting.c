@@ -88,8 +88,6 @@ void drawScreenSetting()
 	
 	drawWidgetLabel(label_count_round);
 	drawWidgetLabel(label_name_player1);
-	if ( check_ai->status == 0 )
-		drawWidgetLabel(label_name_player2);
 	drawWidgetLabel(label_ai);
 
 #ifndef NO_SOUND
@@ -99,8 +97,12 @@ void drawScreenSetting()
 
 	drawWidgetTextfield(textfield_count_cound);
 	drawWidgetTextfield(textfield_name_player1);
+
 	if ( check_ai->status == 0 )
+	{
+		drawWidgetLabel(label_name_player2);
 		drawWidgetTextfield(textfield_name_player2);
+	}
 
 	drawWidgetImage(image_gun_dual_revolver);
 	drawWidgetImage(image_gun_scatter);
@@ -151,7 +153,11 @@ void eventScreenSetting()
 */
 	eventWidgetTextfield(textfield_count_cound);
 	eventWidgetTextfield(textfield_name_player1);
-	eventWidgetTextfield(textfield_name_player2);
+
+	if ( check_ai->status == 0 )
+	{
+		eventWidgetTextfield(textfield_name_player2);
+	}
 
 #ifndef NO_SOUND
 	eventWidgetCheck(check_music);
@@ -203,11 +209,13 @@ static void eventWidget(void *p)
 #endif
 	if( check == check_ai )
 	{
-		if ( check_ai->status ) {
+		if ( check_ai->status )
+		{
 			// ai je zapnuto nechceme hrace 2
 			destroyWidgetTextfield(textfield_name_player2);
 			destroyWidgetLabel(label_name_player2);
-		} else {
+		}
+		else {
 			// ai je vypnuto chceme hrace 2
 			label_name_player2 = newWidgetLabel(getMyText("NAME_PLAYER2"), 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
 			drawWidgetLabel(label_name_player2);
@@ -290,6 +298,7 @@ static void initSettingFile()
 static void saveAndDestroyConfigFile()
 {
 	char val[STR_SIZE], name2[STR_SIZE];
+
 	if( configFile == NULL )
 	{
 		fprintf(stderr, "i can't save configure, "
@@ -300,13 +309,18 @@ static void saveAndDestroyConfigFile()
 
 	setValueInConfigFile(configFile, "COUNT_ROUND", textfield_count_cound->text );
 	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", textfield_name_player1->text );
-	if ( check_ai->status ) {
+
+	if( check_ai->status )
+	{
 		loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, "TUX Warrior #02");
 		strcpy(name2, val);
 		setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", name2 );
-	} else {
+	}
+	else
+	{
 		setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", textfield_name_player2->text );
 	}
+
 	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(check[GUN_DUAL_SIMPLE]->status) );
 	setValueInConfigFile(configFile, "GUN_SCATTER", getYesOrNo(check[GUN_SCATTER]->status) );
 	setValueInConfigFile(configFile, "GUN_TOMMY", getYesOrNo(check[GUN_TOMMY]->status) );
@@ -489,8 +503,6 @@ void quitScreenSetting()
 
 	destroyWidgetLabel(label_count_round);
 	destroyWidgetLabel(label_name_player1);
-	if ( check_ai->status == 0 )
-		destroyWidgetLabel(label_name_player2);
 	destroyWidgetLabel(label_ai);
 
 #ifndef NO_SOUND
@@ -498,9 +510,13 @@ void quitScreenSetting()
 	destroyWidgetLabel(label_sound);
 #endif
 	if ( check_ai->status == 0 )
-		destroyWidgetTextfield(textfield_count_cound);
+	{
+		destroyWidgetLabel(label_name_player2);
+		destroyWidgetTextfield(textfield_name_player2);
+	}
+
 	destroyWidgetTextfield(textfield_name_player1);
-	destroyWidgetTextfield(textfield_name_player2);
+	destroyWidgetTextfield(textfield_count_cound);
 
 	destroyWidgetImage(image_gun_dual_revolver);
 	destroyWidgetImage(image_gun_scatter);
