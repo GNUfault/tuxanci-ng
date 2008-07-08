@@ -196,6 +196,7 @@ static int initPublicServerNetwork()
 int initPublicServer()
 {
 	int ret;
+	int i;
 
 	initListID();
 	initModule();
@@ -210,7 +211,11 @@ int initPublicServer()
 	arena = getArena(arenaId);
 	setCurrentArena(arena);
 
-	addNewItem(arena->spaceItem, ID_UNKNOWN);
+	for( i = 0 ; i < atoi(getSetting("ITEM", "--item", "10")) ; i++ )
+	{
+		addNewItem(arena->spaceItem, ID_UNKNOWN);
+	}
+
 	isSignalEnd = FALSE;
 
 	ret = initPublicServerNetwork();

@@ -382,8 +382,13 @@ void proto_send_newtux_server(int type, client_t *client, tux_t *tux)
 	}
 	else
 	{
-		//x = tux->x;
-		//y = tux->y;
+		getTuxProportion(tux, &x, &y, NULL, NULL);
+	}
+
+	if( type == PROTO_SEND_ONE &&
+	    tux->bonus == BONUS_HIDDEN &&
+	    client->tux == tux )
+	{
 		getTuxProportion(tux, &x, &y, NULL, NULL);
 	}
 

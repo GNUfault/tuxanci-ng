@@ -582,9 +582,11 @@ void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
 
 		eventGiveTuxItem(tux, thisItem, spaceItem);
 
+#ifdef PUBLIC_SERVER
+		addNewItem(spaceItem, ID_UNKNOWN);
+#endif		
 		if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
 		{
-			//proto_send_item_server(PROTO_SEND_ALL, NULL, tux, thisItem);
 			proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 		}
 	}

@@ -184,6 +184,7 @@ static int getRandomPosition()
 	}
 
 	assert( ! "Stupid error ! " );
+
 	return -1; // no warnning
 }
 
@@ -199,8 +200,6 @@ static void teleportTux(tux_t *tux, teleport_t *teleport)
 	}
 
 	distTeleport = getRandomTeleportBut(spaceTeleport->list, teleport);
-	
-	//export_fce->fce_getTuxProportion(tux, &current_x, &current_y, NULL, NULL);
 	
 	switch( tux->position )
 	{
@@ -237,7 +236,14 @@ static void teleportTux(tux_t *tux, teleport_t *teleport)
 #endif
 		if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER )
 		{
-			export_fce->fce_proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+			if( tux->bonus == BONUS_HIDDEN )
+			{
+				export_fce->fce_proto_send_newtux_server(PROTO_SEND_ONE, (client_t *)tux->client, tux);
+			}
+			else
+			{
+				export_fce->fce_proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+			}
 		}
 	}
 }
@@ -252,31 +258,6 @@ static int getSppedShot(shot_t *shot)
 {
 	return ( myAbs(shot->px) > myAbs(shot->py) ? myAbs(shot->px) : myAbs(shot->py) );
 }
-
-/*
-static void transformOnlyLasser(shot_t *shot)
-{
-	switch( shot->position )
-	{
-		case TUX_RIGHT :
-		case TUX_LEFT :
-			shot->w = GUN_LASSER_HORIZONTAL; 
-			shot->h = GUN_SHOT_VERTICAL; 
-#ifndef PUBLIC_SERVER	
-			shot->img = g_shot_lasserX;
-#endif
-		break;
-		case TUX_UP :
-		case TUX_DOWN :
-			shot->w = GUN_SHOT_VERTICAL; 
-			shot->h = GUN_LASSER_HORIZONTAL; 
-#ifndef PUBLIC_SERVER	
-			shot->img = g_shot_lasserY;
-#endif
-		break;
-	}
-}
-*/
 
 static void transformShot(shot_t *shot, int position)
 {

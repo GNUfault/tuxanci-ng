@@ -136,9 +136,13 @@ void eventConflictShotWithWall()
 				continue;
 			}
 
-			if( thisShot->gun == GUN_BOMBBALL && export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+			if( thisShot->gun == GUN_BOMBBALL)
 			{
-				export_fce->fce_boundBombBall(thisShot);
+				if( export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+				{
+					export_fce->fce_boundBombBall(thisShot);
+				}
+
 				continue;
 			}
 

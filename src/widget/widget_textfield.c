@@ -34,12 +34,12 @@ static void drawBackground(widget_textfield_t *p)
 
 	if( g_textfield0 == NULL )
 	{
-		g_textfield0 = addImageData("button0.png", IMAGE_ALPHA, "textfiled0", IMAGE_GROUP_BASE);
+		g_textfield0 = addImageData("textfield0.png", IMAGE_ALPHA, "textfiled0", IMAGE_GROUP_BASE);
 	}
 
 	if( g_textfield1 == NULL )
 	{
-		g_textfield1 = addImageData("button1.png", IMAGE_ALPHA, "textfiled1", IMAGE_GROUP_BASE);
+		g_textfield1 = addImageData("textfield1.png", IMAGE_ALPHA, "textfiled1", IMAGE_GROUP_BASE);
 	}
 
 	if( p->active )

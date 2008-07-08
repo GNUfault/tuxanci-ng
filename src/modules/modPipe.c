@@ -258,8 +258,8 @@ static void moveShot(shot_t *shot, int position, int src_x, int src_y,
 		break;
 	}
 
-	new_y += shot->px;
-	new_y += shot->py;
+	new_x += myAbs(shot->px) * shot->px;
+	new_y += myAbs(shot->py) * shot->py;
 
 	moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceShot, shot, new_x, new_y);
 
@@ -356,12 +356,6 @@ int event()
 		return 0;
 	}
 
-/*
-	if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT )
-	{
-		return;
-	}
-*/
 	arena = export_fce->fce_getCurrentArena();
 
 	for( i = 0 ; i < arena->spaceShot->list->count ; i++ )
@@ -390,25 +384,10 @@ int event()
 				continue;
 			}
 
-			if( negPosition( thisShot->position ) == thisPipe->position )
+			if( negPosition( thisShot->position ) == thisPipe->position &&
+			     export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 			{
-				//moveShotFromPipe(thisShot, thisPipe, listPipe);
-
-				if( export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT )
-				{
-					if( thisShot->gun != GUN_BOMBBALL )
-					{
-						delObjectFromSpaceWithObject(export_fce->fce_getCurrentArena()->spaceShot,
-							thisShot, export_fce->fce_destroyShot);
-						//delListItem(arena->listShot, i, export_fce->fce_destroyShot);
-						i--;
-					}
-				}
-				else
-				{
-					moveShotFromPipe(thisShot, thisPipe);
-				}
-
+				moveShotFromPipe(thisShot, thisPipe);
 			}
 			else
 			{
@@ -416,7 +395,6 @@ int event()
 				    export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT  )
 				{
 					export_fce->fce_boundBombBall(thisShot);
-					continue;
 				}
 				else
 				{
