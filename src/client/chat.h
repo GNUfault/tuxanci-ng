@@ -14,6 +14,8 @@
 #define CHAT_LOCATION_X		(WINDOW_SIZE_X/2 - CHAT_SIZE_X/2)
 #define CHAT_LOCATION_Y		(WINDOW_SIZE_Y/2 - CHAT_SIZE_Y/2)
 
+#define CHAT_LAST_ENTER_INTERVAL	50
+
 extern void initChat();
 extern void drawChat();
 extern void eventChat();

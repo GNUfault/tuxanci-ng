@@ -365,7 +365,7 @@ static void eventEsc()
 	Uint8 *mapa;
 	mapa = SDL_GetKeyState(NULL);
 
-	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED && isChatActive() == FALSE )
+	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED )
 	{
 		setWorldEnd();
 		return;
@@ -471,7 +471,7 @@ void eventWorld()
 		addToRadar(thisTux->id,
 			thisTux->x,
 			thisTux->y,
-			RADAR_TYPE_YOU);
+			RADAR_TYPE_TUX);
 	}
 
 	eventTerm();

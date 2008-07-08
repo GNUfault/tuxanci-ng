@@ -23,5 +23,6 @@ extern bool_t isParamFlag(char *s);
 extern char *getString(int n);
 extern int* newInt(int x);
 extern void accessExistFile(const char *s);
+extern int tryExistFile (const char *s);
 
 #endif

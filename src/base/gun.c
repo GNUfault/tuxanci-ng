@@ -85,31 +85,13 @@ static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 
 	shot = newShot(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux->id);
 
-/*
-	if( isFreeSpace( getCurrentArena(), shot->x, shot->y, shot->w, shot->h ) == 0 )
+	if(1)// isFreeSpace(getCurrentArena(), shot->x, shot->y, shot->w, shot->h) )
 	{
-		destroyShot(shot);
+		addObjectToSpace(getCurrentArena()->spaceShot, shot);
 		return;
 	}
-*/
-	//addList( getCurrentArena()->listShot, shot );
-	addObjectToSpace(getCurrentArena()->spaceShot, shot);
 
-/*
-	if( getNetTypeGame() == NET_GAME_TYPE_SERVER )
-	{
-		client_t *thisClient;
-
-		thisClient = getClientFromTux(tux);
-
-		if( thisClient != NULL )
-		{
-			proto_send_shot_server(PROTO_SEND_ONE, thisClient, shot);
-		}
-
-		proto_send_shot_server(PROTO_SEND_ALL_SEES_TUX, thisClient, shot);
-	}
-*/
+	destroyShot(shot);
 }
 
 static void addShot(tux_t *tux,int x, int y, int px, int py)
@@ -232,7 +214,10 @@ static void timer_addLaserTimer(void *p)
 	gun = tux->gun;
 	tux->gun = GUN_LASSER;
 
+
 	addShot(tux, 0, 0, +10, 0);
+	addShot(tux, +40, 0, +10, 0);
+	//addShot(tux, +40, 0, +10, 0);
 
 	tux->gun = gun;
 }

@@ -6,7 +6,7 @@
 #include "image.h"
 #include "widget_textfield.h"
 
-widget_textfield_t* newWidgetTextfield(char *text, int x, int y)
+widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y)
 {
 	widget_textfield_t *new;
 
@@ -18,6 +18,7 @@ widget_textfield_t* newWidgetTextfield(char *text, int x, int y)
 	new->timeBlick = 0;
 	new->atime = 0;
 	new->active = FALSE;
+	new->filter = filter;
 	getTextSize(text, &new->w, &new->h);
 
 	return new;
@@ -82,11 +83,85 @@ void drawWidgetTextfield(widget_textfield_t *p)
 	drawText(p);
 }
 
+void setWidgetTextFiledText(widget_textfield_t *p, char *text)
+{
+	strcpy(p->text, text);
+	getTextSize(text, &p->w, &p->h);
+}
+
+static void checkText(widget_textfield_t *p)
+{
+	int len;
+	int i;
+
+	//printf("check\n");
+
+	len = strlen(p->text);
+
+	for( i = 0 ; i < len ; i++ )
+	{
+		char c;
+		bool_t isDel;
+
+		c = p->text[i];
+		isDel = TRUE;
+
+		switch( p->filter )
+		{
+			case WIDGET_TEXTFIELD_FILTER_ALL :
+				isDel = FALSE;
+			break;
+
+			case WIDGET_TEXTFIELD_FILTER_NUM :
+				if( c >= '0' && c <= '9' )
+				{
+					isDel = FALSE;
+				}
+			break;
+
+			case WIDGET_TEXTFIELD_FILTER_ALPHANUM :
+				if( ( c >= '0' && c <= '9' ) ||
+				    ( c >= 'a' && c <= 'z' ) ||
+				    ( c >= 'A' && c <= 'Z' ) ||
+				    c == '-' )
+				{
+					isDel = FALSE;
+				}
+			break;
+
+			case WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN :
+				if( ( c >= '0' && c <= '9' ) ||
+				    ( c == '.' || c == ':' ||  c == '-' ) )
+				{
+					isDel = FALSE;
+				}
+			break;
+
+			default :
+				assert( ! "bad filter" );
+			break;
+		}
+
+		if( isDel )
+		{
+			memmove(p->text+i, p->text+i+1, len - i );
+			len = strlen(p->text);
+			i--;
+		}
+	}
+
+	getTextSize(p->text, &p->w, &p->h);
+
+}
+
+#if 0
 static void readKey(widget_textfield_t *p)
 {
 	Uint8 *mapa;
 	int len;
 	int i;
+
+	//printf("readKey w=%d\n", p->w);
 
 	if( p->active == FALSE )
 	{
@@ -126,7 +201,7 @@ static void readKey(widget_textfield_t *p)
 			if (i == SDLK_SPACE)
 			{
 				strcat( p->text, " " );
-				getTextSize(p->text, &p->w, &p->h);
+				checkText(p);
 				return;
 			}
 
@@ -147,13 +222,13 @@ static void readKey(widget_textfield_t *p)
 			p->atime = 0;
 
 			strcat( p->text, c );
-			getTextSize(p->text, &p->w, &p->h);
+			checkText(p);
 			
 			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
 			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
 			{
 				p->text[ strlen( p->text ) - 1 ] -= 32;
-				getTextSize(p->text, &p->w, &p->h);
+				checkText(p);
 				return;
 			}
 		}
@@ -181,7 +256,7 @@ static void readKey(widget_textfield_t *p)
 			p->atime = 0;
 
 			strcat( p->text, c );
-			getTextSize(p->text, &p->w, &p->h);
+			checkText(p);
 			return;
 		}
 	}
@@ -208,11 +283,92 @@ static void readKey(widget_textfield_t *p)
 			p->atime = 0;
 
 			strncat( p->text, c, 1 ); // napr. "[4]"
-			getTextSize(p->text, &p->w, &p->h);
+			checkText(p);
 			return;
 		}
 	}
 }
+#endif
+
+#if 1
+static void readKey(widget_textfield_t *p)
+{
+	Uint8 *mapa;
+	int len;
+	int i;
+
+	if( p->active == FALSE )
+	{
+		return;
+	}
+
+	if (p->atime < 100)
+		p->atime ++;
+
+	mapa = SDL_GetKeyState(NULL);
+	len = strlen(p->text);
+
+	for( i = SDLK_FIRST ; i <= SDLK_F15 ; i++ )
+	{
+		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
+		{
+			char *name = (char *) SDL_GetKeyName(i);
+			char c = '\0';
+
+			if( name == NULL )continue;
+
+			if( strlen(name) == 1 )c = name[0];
+			if( strlen(name) == 3 )c = name[1];
+			if( strcmp(name, "space") == 0 )c = ' ';
+
+			//printf("name %s\n", name);
+
+			if( strcmp(name, "backspace") == 0 && len > 0 )
+			{
+				p->time = 0;
+				p->text[len-1]='\0';
+				checkText(p);
+				return;
+			}
+
+			if( c == '\0' || p->w > WIDGET_TEXTFIELD_WIDTH-40 )
+			{
+				continue;
+			}
+
+			if( len > 0 )
+			{
+				if( p->text[len-1] == c )
+				{
+					p->time++;
+
+					if( p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE )
+					{
+						if( p->atime < 3 )return;
+					}
+				}
+				else
+				{
+					p->time = 0;
+				}
+			}
+
+			p->atime = 0;
+
+			p->text[len] = c;
+
+			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
+			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
+			{
+				p->text[len] -= 32;
+			}
+
+			checkText(p);
+			return;
+		}
+	}
+}
+#endif
 
 void eventWidgetTextfield(widget_textfield_t *p)
 {

@@ -133,29 +133,6 @@ item_t* newItem(int x, int y, int type, int author_id)
 	return new;
 }
 
-/*
-item_t* getItemID(list_t *listItem, int id)
-{
-	item_t *thisItem;
-	int i;
-
-	assert( listItem != NULL );
-
-	for( i = 0 ; i < listItem->count ; i++ )
-	{
-		thisItem  = (item_t *)listItem->list[i];
-		assert( thisItem != NULL );
-
-		if( thisItem->id == id )
-		{
-			return thisItem;
-		}
-	}
-
-	return NULL;
-}
-*/
-
 void getStatusItem(void *p, int *id, int *x, int *y ,int *w, int *h)
 {
 	item_t *item;
@@ -353,7 +330,7 @@ void eventListItem(space_t *spaceItem)
 	}
 }
 
-void mineExplosion(space_t *spaceItem, item_t *item)
+static void mineExplosion(space_t *spaceItem, item_t *item)
 {
 	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
 	{
@@ -378,7 +355,10 @@ void mineExplosion(space_t *spaceItem, item_t *item)
 			proto_send_del_server(PROTO_SEND_ALL, NULL, item->id);
 	}
 
-	delObjectFromSpaceWithObject(spaceItem, item, destroyItem);
+	if( getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+	{
+		delObjectFromSpaceWithObject(spaceItem, item, destroyItem);
+	}
 }
 
 void eventConflictShotWithItem(arena_t *arena)
@@ -547,7 +527,10 @@ void eventGiveTuxItem(tux_t *tux, item_t *item, space_t *spaceItem)
 
 		case ITEM_EXPLOSION :
 		case ITEM_BIG_EXPLOSION :
-			eventTuxIsDeadWithItem(tux, item);
+			if( tux->bonus != BONUS_GHOST )
+			{
+				eventTuxIsDeadWithItem(tux, item);
+			}
 		break;
 
 		case BONUS_SPEED :

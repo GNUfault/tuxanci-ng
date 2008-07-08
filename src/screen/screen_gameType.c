@@ -73,11 +73,13 @@ void drawScreenGameType()
 		drawWidgetTextfield(textfield_ip);
 	}
 
+#if 0
 	if( check_server->status == TRUE )
 	{
 		setSettingIP (getParamElse ("--ip", "127.0.0.1"));
 		setSettingPort (atoi (getParamElse("--port", "2200")));
 	}
+#endif
 
 	if( check_client->status == TRUE )
 		drawWidgetButton(button_browser);
@@ -102,7 +104,9 @@ void eventScreenGameType()
 
 	eventWidgetButton(button_back);
 	eventWidgetButton(button_play);
-	eventWidgetButton(button_browser);
+
+	if( check_client->status == TRUE )
+		eventWidgetButton(button_browser);
 }
 
 void stopScreenGameType()
@@ -199,8 +203,15 @@ void initScreenGameType()
 	label_ip = newWidgetLabel(getMyText("IP_ADDR"), 300, 145, WIDGET_LABEL_LEFT);
 	label_port = newWidgetLabel(getMyText("NET_PORT"), 300, 245, WIDGET_LABEL_LEFT);
 
-	textfield_ip = newWidgetTextfield(getParamElse("--ip", "127.0.0.1"), 300, 180);
-	textfield_port = newWidgetTextfield(getParamElse("--port", "2200"), 300, 280);
+	textfield_ip = newWidgetTextfield(
+		getParamElse("--ip", "127.0.0.1"),
+		WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN,
+		300, 180);
+	
+	textfield_port = newWidgetTextfield(
+		getParamElse("--port", "2200"),
+		WIDGET_TEXTFIELD_FILTER_NUM,
+		300, 280);
 
 	registerScreen( newScreen("gameType", startScreenGameType, eventScreenGameType,
 		drawScreenGameType, stopScreenGameType) );

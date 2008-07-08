@@ -6,8 +6,8 @@
 #include "main.h"
 
 #define NAME_AI			"tuxAI"
-#define NAME_PLAYER_RIGHT	"TUX Warrior #01"
-#define NAME_PLAYER_LEFT	"TUX Warrior #02"
+#define NAME_PLAYER_RIGHT	"name1"
+#define NAME_PLAYER_LEFT	"name2"
 
 extern void initScreenSetting();
 extern void drawScreenSetting();

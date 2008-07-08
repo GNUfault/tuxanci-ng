@@ -204,10 +204,12 @@ void eventArena(arena_t *arena)
 	for( i = 0 ; i < 8 ; i++)
 	{
 		checkShotIsInTuxScreen(arena);
-		eventMoveListShot(arena);
+
 		eventConflictShotWithItem(arena);
 		eventConflictTuxWithShot(arena);
 		eventModule();
+
+		eventMoveListShot(arena);
 	}
 
 	eventListItem(arena->spaceItem);

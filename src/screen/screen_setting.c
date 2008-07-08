@@ -141,16 +141,7 @@ void drawScreenSetting()
 void eventScreenSetting()
 {
 	int i;
-/*
-	int x, y;
 
-	getMousePosition(&x, &y);
-
-	if( isMouseClicked() )
-	{
-		printf("x = %d y = %d\n", x, y);
-	}
-*/
 	eventWidgetTextfield(textfield_count_cound);
 	eventWidgetTextfield(textfield_name_player1);
 
@@ -233,11 +224,13 @@ static void initSettingFile()
 	}
 
 	loadValueFromConfigFile(configFile, "COUNT_ROUND", val, STR_SIZE, "15");
-	strcpy(textfield_count_cound->text, val);
-	loadValueFromConfigFile(configFile, "NAME_PLAYER_RIGHT", val, STR_SIZE, "TUX Warrior #01");
-	strcpy(textfield_name_player1->text, val);
-	loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, "TUX Warrior #02");
-	strcpy(textfield_name_player2->text, val);
+	setWidgetTextFiledText(textfield_count_cound, val);
+
+	loadValueFromConfigFile(configFile, "NAME_PLAYER_RIGHT", val, STR_SIZE, NAME_PLAYER_RIGHT);
+	setWidgetTextFiledText(textfield_name_player1, val);
+
+	loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, NAME_PLAYER_LEFT);
+	setWidgetTextFiledText(textfield_name_player2, val);
 
 	loadValueFromConfigFile(configFile, "GUN_DUAL_SIMPLE", val, STR_SIZE, "YES");
 	check[GUN_DUAL_SIMPLE]->status = isYesOrNO(val);
@@ -281,8 +274,6 @@ static void initSettingFile()
 
 static void saveAndDestroyConfigFile()
 {
-	char val[STR_SIZE], name2[STR_SIZE];
-
 	if( configFile == NULL )
 	{
 		fprintf(stderr, "i can't save configure, "
@@ -349,10 +340,23 @@ void initScreenSetting()
 	label_name_player1 = newWidgetLabel(getMyText("NAME_PLAYER1"), 100, WINDOW_SIZE_Y-160, WIDGET_LABEL_LEFT);
 	label_name_player2 = newWidgetLabel(getMyText("NAME_PLAYER2"), 100, WINDOW_SIZE_Y-120, WIDGET_LABEL_LEFT);
 
-	textfield_count_cound = newWidgetTextfield(getParamElse("--count", "15"), 110+label_count_round->w, WINDOW_SIZE_Y-200);
+	textfield_count_cound = newWidgetTextfield(
+		getParamElse("--count", "15"),
+		WIDGET_TEXTFIELD_FILTER_NUM,
+		110+label_count_round->w,
+		WINDOW_SIZE_Y-200);
 	
-	textfield_name_player1 = newWidgetTextfield(getParamElse("--name1", NAME_PLAYER_RIGHT), 110+label_name_player1->w, WINDOW_SIZE_Y-160);
-	textfield_name_player2 = newWidgetTextfield(getParamElse("--name2", NAME_PLAYER_LEFT), 110+label_name_player2->w, WINDOW_SIZE_Y-120);
+	textfield_name_player1 = newWidgetTextfield(
+		getParamElse("--name1", NAME_PLAYER_RIGHT),
+		WIDGET_TEXTFIELD_FILTER_ALPHANUM,
+		110+label_name_player1->w,
+		WINDOW_SIZE_Y-160);
+
+	textfield_name_player2 = newWidgetTextfield(
+		getParamElse("--name2", NAME_PLAYER_LEFT),
+		WIDGET_TEXTFIELD_FILTER_ALPHANUM,
+		110+label_name_player2->w,
+		WINDOW_SIZE_Y-120);
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
@@ -458,7 +462,7 @@ bool_t isSettingAnyItem()
 		}
 	}
 
-	for( i = BONUS_SPEED ; i <= BONUS_HIDDEN ; i++ )
+	for( i = BONUS_SPEED ; i < BONUS_HIDDEN ; i++ )
 	{
 		if( check[i]->status == TRUE )
 		{

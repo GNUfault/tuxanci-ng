@@ -26,6 +26,8 @@ static int timeBlick;
 static bool_t chat_active;
 static bool_t revicedNewMsg;
 
+static my_time_t lastActive;
+
 void initChat()
 {
 	g_chat = addImageData("chat.png", IMAGE_NO_ALPHA, "chat", IMAGE_GROUP_USER);
@@ -37,6 +39,7 @@ void initChat()
 	line_time = 0;
 	line_atime = 0;
 	timeBlick = 0;
+	lastActive = 0;
 }
 
 void drawChat()
@@ -84,8 +87,8 @@ void drawChat()
 static void readKey()
 {
 	Uint8 *mapa;
-	int len;
 	int w, h;
+	int len;
 	int i;
 
 	if (line_atime < 100)
@@ -93,134 +96,96 @@ static void readKey()
 
 	mapa = SDL_GetKeyState(NULL);
 	len = strlen(line);
-
 	getTextSize(line, &w, &h);
-	
-	// mazanie posledneho klavesu
-	if( mapa[SDLK_BACKSPACE] == SDL_PRESSED )
-	{
-		if( len > 0 )
-		{
-			line_time = 0;
-			line[len-1]='\0';
-		}
 
-		return;
-	}
-
-	if( w > CHAT_LINE_WIDTH-40 )
+	for( i = SDLK_FIRST ; i <= SDLK_F15 ; i++ )
 	{
-		return;
-	}
-
-	// klavesy abecedy
-	for(i=SDLK_SPACE /*SDLK_a*/;i<=SDLK_z;i++)
-	{
-		//if(width<TEXTFIELD_SIZE_X-20 && mapa[i]==SDL_PRESSED)
 		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
 		{
-			if (i == SDLK_SPACE)
+			char *name = (char *) SDL_GetKeyName(i);
+			char c = '\0';
+
+			if( name == NULL )continue;
+
+			if( strlen(name) == 1 )c = name[0];
+			if( strlen(name) == 3 )c = name[1];
+			if( strcmp(name, "space") == 0 )c = ' ';
+
+			//printf("name %s\n", name);
+
+			if( strcmp(name, "backspace") == 0 && len > 0 )
 			{
-				strcat( line, " " );
+				line_time = 0;
+				line[len-1]='\0';
 				return;
 			}
 
-			const char *c = (const char *) SDL_GetKeyName(i);
+			if( c == '\0' || w > CHAT_SIZE_X-40 )
+			{
+				continue;
+			}
 
-			if (len) {
-				if (line[len-1] == *c) {
-					line_time ++;
+			if( len > 0 )
+			{
+				if( line[len-1] == c )
+				{
+					line_time++;
 
-					if ( line_time < CHAT_TIME_MULTIPLE) {
-						if ( line_atime < 3)
-							return;
+					if( line_time < CHAT_TIME_MULTIPLE )
+					{
+						if( line_atime < 3 )return;
 					}
-				} else
+				}
+				else
+				{
 					line_time = 0;
+				}
 			}
 
 			line_atime = 0;
 
-			strcat( line, c );
-			getTextSize(line, &w, &h);
-			
+			line[len] = c;
+
 			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
 			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
 			{
-				line[ strlen( line ) - 1 ] -= 32;
-				return;
-			}
-		}
-	}
-
-	// aby ve jmene bulanka fungovaly take cislice alfanumericke klavesnice
-	for( i = SDLK_0 ; i <= SDLK_9 ; i++ )
-	{
-		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
-		{
-			const char *c = (const char *) SDL_GetKeyName(i);
-
-			if (len) {
-				if (line[len-1] == *c) {
-					line_time ++;
-
-					if (line_time < CHAT_TIME_MULTIPLE) {
-						if (line_atime < 3)
-							return;
-					}
-				} else
-					line_time = 0;
+				line[len] -= 32;
 			}
 
-			line_atime = 0;
-
-			strcat( line, c );
 			return;
 		}
 	}
-	
-	// aby ve jmene bulanka fungovaly take cislice napsane na numericke klavesnici
-	for( i=SDLK_KP0 ; i<=SDLK_KP9 ; i++ )
+}
+
+static void switchChatActive()
+{
+	if( chat_active == TRUE )
 	{
-		if( mapa[i] == SDL_PRESSED && len < STR_SIZE )
-		{
-			const char *c = (const char *) SDL_GetKeyName(i)+1;
-
-			if (len) {
-				if (line[len-1] == *c) {
-					line_time ++;
-
-					if (line_time < CHAT_TIME_MULTIPLE) {
-						if (line_atime < 3)
-							return;
-					}
-				} else
-					line_time = 0;
-			}
-
-			line_atime = 0;
-
-			strncat( line, c, 1 ); // napr. "[4]"
-			return;
-		}
+		chat_active = FALSE;
+	}
+	else
+	{
+		chat_active = TRUE;
 	}
 }
 
 void eventChat()
 {
 	Uint8 *mapa;
-	
+	my_time_t currentTime;
+
 	mapa = SDL_GetKeyState(NULL);
-
-	if( mapa[SDLK_RETURN] == SDL_PRESSED && chat_active == FALSE )
+	currentTime = getMyTime();
+	
+	if( mapa[SDLK_RETURN] == SDL_PRESSED &&
+	    strcmp(line, "") == 0 &&
+	    currentTime - lastActive > CHAT_LAST_ENTER_INTERVAL )
 	{
+		lastActive = getMyTime();
 		revicedNewMsg = FALSE;
-		chat_active = TRUE;
-	}
-
-	if( mapa[SDLK_ESCAPE] == SDL_PRESSED && chat_active == TRUE )
-	{
-		chat_active = FALSE;
+		switchChatActive();
+		memset(line, '\0', STR_SIZE);
+		return;
 	}
 
 	if( chat_active == FALSE )
@@ -245,7 +210,7 @@ void eventChat()
 			proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
 		}
 
-		strcpy(line, "");
+		memset(line, '\0', STR_SIZE);
 		return;
 	}
 
