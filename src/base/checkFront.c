@@ -53,6 +53,11 @@ list_t* newCheckFront()
 
 void addMsgInCheckFront(list_t *list, char *msg, int type, int id)
 {
+	if( type == CHECK_FORNT_TYPE_CHECK )
+	{
+		incID(id);
+	}
+
 	addList(list, newCheck(msg, type, id) );
 }
 
@@ -87,11 +92,7 @@ void eventMsgInCheckFront(client_t *client)
 		
 				if( this->count > CHECK_FRONT_MAX_COUNT_SEND )
 				{
-					if( isRegisterID(this->id) != -1 )
-					{
-						delID(this->id);
-					}
-		
+					delID(this->id);
 					delListItem(client->listSendMsg, i, destroyCheck);
 					i--;
 				}
@@ -116,11 +117,7 @@ void delMsgInCheckFront(list_t *listCheckFront, int id)
 
 		if( this->id == id )
 		{
-			if( isRegisterID(this->id) != -1 )
-			{
-				delID(this->id);
-			}
-
+			delID(this->id);
 			delListItem(listCheckFront, i, destroyCheck);
 			return;
 		}

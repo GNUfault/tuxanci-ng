@@ -86,6 +86,11 @@ item_t* newItem(int x, int y, int type, int author_id)
 #endif	
 	new->author_id = author_id;
 
+	if( author_id != ID_UNKNOWN )
+	{
+		incID(author_id);
+	}
+
 	switch( type )
 	{
 		case GUN_DUAL_SIMPLE :
@@ -216,6 +221,7 @@ void addNewItem(space_t *spaceItem, int author_id)
 			case 11 : type = BONUS_HIDDEN;
 			break;
 		}
+
 #ifndef PUBLIC_SERVER
 	}while( isSettingItem(type) == FALSE ||
 	        (getNetTypeGame() == NET_GAME_TYPE_NONE && type == BONUS_HIDDEN) );
@@ -399,7 +405,7 @@ void eventConflictShotWithItem(arena_t *arena)
 	
 				case ITEM_EXPLOSION :
 				case ITEM_BIG_EXPLOSION :
-					isDelShot = TRUE;	
+					isDelShot = TRUE;
 				break;
 			}
 		}
@@ -595,7 +601,14 @@ void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
 void destroyItem(item_t *p)
 {
 	assert( p != NULL );
+	
 	delID(p->id);
+
+	if( p->author_id != ID_UNKNOWN )
+	{
+		delID(p->author_id);
+	}
+
 	free(p);
 }
 

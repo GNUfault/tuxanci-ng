@@ -70,6 +70,11 @@ shot_t* newShot(int x,int y, int px, int py, int gun, int author_id)
 	new->gun = gun;
 	new->author_id = author_id;
 
+	if( author_id != ID_UNKNOWN )
+	{
+		incID(author_id);
+	}
+
 	new->position = POSITION_UNKNOWN;
 
 	author = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, author_id);
@@ -294,18 +299,6 @@ void eventMoveListShot(arena_t *arena)
 	}
 }
 
-#if 0
-static int myAbs(int n)
-{
-	return ( n > 0 ? n : -n );
-}
-
-static int getSppedShot(shot_t *shot)
-{
-	return ( myAbs(shot->px) > myAbs(shot->py) ? myAbs(shot->px) : myAbs(shot->py) );
-}
-#endif
-
 static int isValueInList(list_t *list, int x)
 {
 	int i;
@@ -374,7 +367,14 @@ void checkShotIsInTuxScreen(arena_t *arena)
 void destroyShot(shot_t *p)
 {
 	assert( p != NULL );
+	
 	delID(p->id);
+
+	if( p->author_id != ID_UNKNOWN )
+	{
+		delID(p->author_id);
+	}
+
 	free(p);
 }
 

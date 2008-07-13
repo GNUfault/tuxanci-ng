@@ -6,6 +6,11 @@
 #include "main.h"
 #include "list.h"
 
+typedef struct zone_struct
+{
+	list_t *list;
+} zone_t;
+
 typedef struct space_struct
 {
 	int w;
@@ -14,7 +19,7 @@ typedef struct space_struct
 	int segW;
 	int segH;
 
-	list_t ***area;
+	zone_t ***zone;
 
 	list_t *list;
 	list_t *listIndex;

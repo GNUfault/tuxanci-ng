@@ -10,6 +10,30 @@
 static list_t *listID;
 static int lastID;
 
+typedef struct id_item_struct
+{
+	int id;
+	int count;
+} id_item_t;
+
+static id_item_t* newIdItem(int id, int count)
+{
+	id_item_t *new;
+
+	new = malloc( sizeof(id_item_t) );
+	new->id = id;
+	new->count = count;
+
+	return new;
+}
+
+static void destroyIdItem(id_item_t *p)
+{
+	assert( p != NULL );
+
+	free(p);
+}
+
 void initListID()
 {
 	listID = newList();
@@ -25,11 +49,11 @@ int isRegisterID(int id)
 
 	for( i = 0 ; i < listID->count ; i++ )
 	{
-		int *z;
+		id_item_t *this;
 
-		z = (int *) listID->list[i];
+		this = listID->list[i];
 
-		if( *z == id )
+		if( this->id == id )
 		{
 			return i;
 		}
@@ -38,7 +62,7 @@ int isRegisterID(int id)
 	return -1;
 }
 
-int getNewID()
+static int findNewID()
 {
 	int ret;
 
@@ -46,26 +70,33 @@ int getNewID()
 
 	do{
 		ret  = random() % MAX_ID;
-/*
-		ret = ++lastID;
 
-		if( lastID > MAX_ID )
-		{
-			lastID = 0;
-		}
-*/
 	}while( isRegisterID(ret) != -1 );
 
-	addList(listID, newInt(ret) );
-
-	//printf("new ID -> %d\n", ret);
 	return ret;
 }
 
-void delID(int id)
+int getNewIDcount(int count)
 {
-	int index;
+	int id;
 
+	id = findNewID();
+
+	addList(listID, newIdItem(id, count) );
+
+	return id;
+}
+
+int getNewID()
+{
+	return getNewIDcount(1);
+}
+
+void incID(int id)
+{
+	id_item_t *this;
+	int index;
+	
 	assert( listID != NULL );
 
 	index = isRegisterID(id);
@@ -76,25 +107,83 @@ void delID(int id)
 		return; // ha ha ha
 	}
 
-	delListItem(listID, index, free);
+	this = listID->list[index];
 
+	this->count++;
+
+	//printf("inc ID %d %d\n", this->id, this->count);
+	return;
+}
+
+void delID(int id)
+{
+	id_item_t *this;
+	int index;
+	
+	assert( listID != NULL );
+
+	index = isRegisterID(id);
+
+	if( index == -1 )
+	{
+		assert( ! "takyto ID nebol nikdy registrovany !" );
+		return; // ha ha ha
+	}
+
+	this = listID->list[index];
+
+	this->count--;
+	//printf("dec ID %d %d\n", this->id, this->count);
+
+	if( this->count <= 0 )
+	{
+		delListItem(listID, index, free);
+	}
+	
 	return;
 }
 
 void replaceID(int old_id, int new_id)
 {
+	int index_old_id;
+	int index_new_id;
+	id_item_t *this;
+
 	if( old_id == new_id )
 	{
 		return;
 	}
 
-	delID(old_id);
+	index_old_id = isRegisterID(old_id);
+	assert( index_old_id != -1 );
 
-	if( new_id != -1 )
+	index_new_id = isRegisterID(new_id);
+	assert( index_new_id == -1 );
+
+	this = listID->list[index_old_id];
+	this->id = new_id;
+}
+
+void infoID(int id)
+{
+	id_item_t *this;
+	int index;
+	
+	assert( listID != NULL );
+
+	index = isRegisterID(id);
+
+	if( index == -1 )
 	{
-		assert( isRegisterID(new_id) == -1 );
-		addList(listID, newInt(new_id) );
+		printf("ID %d not exists\n", id);
+		return;
 	}
+
+	this = listID->list[index];
+
+	printf("ID %d ( count %d )\n", this->id, this->count);
+
+	return;
 }
 
 void quitListID()
@@ -102,6 +191,6 @@ void quitListID()
 	printf("quit ID manger..\n");
 
 	assert( listID != NULL );
-	destroyListItem(listID, free);
+	destroyListItem(listID, destroyIdItem);
 }
 

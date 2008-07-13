@@ -26,7 +26,6 @@ bool_t isLayerInicialized()
  */
 void initLayer()
 {
-	printf("*******************\nnew layer\n**********************\n");
 	listLayer = newList();
 	isLayerInit = TRUE;
 }

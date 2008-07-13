@@ -251,7 +251,7 @@ void proto_send_init_server(int type, client_t *client, client_t *client2)
 	getSettingCountRound(&count);
 #endif
 
-	check_id = getNewID();
+	check_id = getNewIDcount(0);
 	
 	sprintf(msg, "init %d %d %d %d %s %d\n",
 		client2->tux->id, client2->tux->x, client2->tux->y,
@@ -519,7 +519,7 @@ void proto_send_del_server(int type, client_t *client, int id)
 	char msg[STR_PROTO_SIZE];
 	int check_id;
 
-	check_id = getNewID();
+	check_id = getNewIDcount(0);
 
 	sprintf(msg, "del %d %d\n",
 		id, check_id);
@@ -590,7 +590,7 @@ void proto_send_additem_server(int type, client_t *client, item_t *p)
 
 	assert( p != NULL );
 
-	check_id = getNewID();
+	check_id = getNewIDcount(0);
 
 	sprintf(msg, "additem %d %d %d %d %d %d %d %d\n",
 		p->id, p->type, p->x, p->y, p->count, p->frame, p->author_id, check_id);

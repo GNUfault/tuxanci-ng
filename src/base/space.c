@@ -9,6 +9,24 @@
 #include "space.h"
 #include "index.h"
 
+zone_t* newZone()
+{
+	zone_t *new;
+
+	new = malloc( sizeof(zone_t) );
+	new->list = newList();
+
+	return new;
+}
+
+void destroyZone(zone_t *p)
+{
+	assert( p != NULL );
+
+	destroyList(p->list);
+	free(p);
+}
+
 static int my_conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
 {
 	return (x1<x2+w2 && x2<x1+w1 && y1<y2+h2 && y2<y1+h1);
@@ -33,18 +51,18 @@ space_t *newSpace(int w, int h, int segW, int segH,
 	new->list = newList();
 	new->listIndex = newIndex();
 
-	new->area = malloc( new->w * sizeof(list_t **) );
+	new->zone = malloc( new->w * sizeof(list_t **) );
 
 	for( i = 0 ; i < new->w ; i++ )
 	{
-		new->area[i] = malloc( new->h * sizeof(list_t *) );
+		new->zone[i] = malloc( new->h * sizeof(list_t *) );
 	}
 
 	for( i = 0 ; i < new->h ; i++ )
 	{
 		for( j = 0 ; j < new->w ; j++ )
 		{
-			new->area[j][i] = newList();
+			new->zone[j][i] = newZone();
 		}
 	}
 
@@ -79,7 +97,7 @@ void addObjectToSpace(space_t *p, void *item)
 				continue;
 			}
 
-			addList(p->area[j][i], item);
+			addList(p->zone[j][i]->list, item);
 		}
 	}
 
@@ -101,14 +119,14 @@ void getObjectFromSpace(space_t *p, int x, int y, int w, int h, list_t *list)
 		{
 			void *this;
 
-			for( k = 0 ; k < p->area[j][i]->count ; k++ )
+			if( j < 0 || j >= p->w || i < 0 || i >= p->h )
 			{
-				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
-				{
-					continue;
-				}
+				continue;
+			}
 
-				this = p->area[j][i]->list[k];
+			for( k = 0 ; k < p->zone[j][i]->list->count ; k++ )
+			{
+				this = p->zone[j][i]->list->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
 				if( my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h) &&
@@ -144,14 +162,14 @@ int isConflictWithObjectFromSpace(space_t *p, int x, int y, int w, int h)
 		{
 			void *this;
 
-			for( k = 0 ; k < p->area[j][i]->count ; k++ )
+			if( j < 0 || j >= p->w || i < 0 || i >= p->h )
 			{
-				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
-				{
-					continue;
-				}
+				continue;
+			}
 
-				this = p->area[j][i]->list[k];
+			for( k = 0 ; k < p->zone[j][i]->list->count ; k++ )
+			{
+				this = p->zone[j][i]->list->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
 				if( my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h) )
@@ -179,14 +197,14 @@ int isConflictWithObjectFromSpaceBut(space_t *p, int x, int y, int w, int h, voi
 		{
 			void *this;
 
-			for( k = 0 ; k < p->area[j][i]->count ; k++ )
+			if( j < 0 || j >= p->w || i < 0 || i >= p->h )
 			{
-				if( j < 0 || j >= p->w || i < 0 || i >= p->h )
-				{
-					continue;
-				}
+				continue;
+			}
 
-				this = p->area[j][i]->list[k];
+			for( k = 0 ; k < p->zone[j][i]->list->count ; k++ )
+			{
+				this = p->zone[j][i]->list->list[k];
 
 				if( this == but )
 				{
@@ -225,9 +243,9 @@ void delObjectFromSpace(space_t *p, void *item)
 				continue;
 			}
 
-			index = searchListItem(p->area[j][i], item);
+			index = searchListItem(p->zone[j][i]->list, item);
 			assert( index != -1 );
-			delList(p->area[j][i], index);
+			delList(p->zone[j][i]->list, index);
 		}
 	}
 
@@ -285,11 +303,15 @@ void printSpace(space_t *p)
 	{
 		for( j = 0 ; j < p->w ; j++ )
 		{
-			printf("%3d ", p->area[j][i]->count);
+			printf("%3d ", p->zone[j][i]->list->count);
 		}
 
 		putchar('\n');
 	}
+}
+
+void actionSpace(space_t *space)
+{
 }
 
 void destroySpace(space_t *p)
@@ -303,16 +325,16 @@ void destroySpace(space_t *p)
 	{
 		for( j = 0 ; j < p->w ; j++ )
 		{
-			destroyList(p->area[j][i]);
+			destroyZone(p->zone[j][i]);
 		}
 	}
 
 	for( i = 0 ; i < p->w ; i++ )
 	{
-		free(p->area[i]);
+		free(p->zone[i]);
 	}
 
-	free(p->area);
+	free(p->zone);
 	free(p);
 }
 

@@ -10,8 +10,10 @@
 #include "list.h"
 
 extern void initListID();
-extern int getNewID();
 extern int isRegisterID(int id);
+extern int getNewIDcount(int count);
+extern int getNewID();
+extern void incID(int id);
 extern void delID(int id);
 extern void replaceID(int old_id, int new_id);
 extern void quitListID();
