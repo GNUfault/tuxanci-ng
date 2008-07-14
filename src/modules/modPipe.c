@@ -458,7 +458,7 @@ static void proto_pipe(char *msg)
 
 	if( shot->gun == GUN_LASSER )
 	{
-		transformOnlyLasser(shot);
+		export_fce->fce_transformOnlyLasser(shot);
 	}
 }
 

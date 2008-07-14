@@ -113,15 +113,24 @@ int tryExistFile (const char *s)
 	else
 		return 0;
 }
-
+#ifdef __WIN32__
+int WINAPI WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow
+)
+#else
 int main(int argc, char *argv[])
+#endif
 {
 	listHelp = newList();
 
 	srand( (unsigned) time(NULL) );
-
+#ifndef __WIN32__
 	my_argc = argc;
 	my_argv = argv;
+#endif
 /*
 	test_space();
 	exit(0);
