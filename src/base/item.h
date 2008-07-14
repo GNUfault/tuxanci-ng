@@ -11,6 +11,10 @@
 #include "interface.h"
 #endif
 
+#ifdef __WIN32__
+#define random rand
+#endif
+
 #include "list.h"
 #include "tux.h"
 #include "myTimer.h"

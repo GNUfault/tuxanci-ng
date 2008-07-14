@@ -8,6 +8,10 @@
 #include "tux.h"
 #include "arena.h"
 
+#ifdef __WIN32__
+#define random rand
+#endif
+
 #ifndef PUBLIC_SERVER	
 #include "interface.h"
 #endif	

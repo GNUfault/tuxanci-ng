@@ -90,7 +90,7 @@ static module_t* newModule(char *name)
 	assert( name != NULL );
 
 	ret = malloc( sizeof(module_t) );
-	#ifndef __WIN32__
+#ifndef __WIN32__
 	ret->image = dlopen (name, RTLD_LAZY);
 
 	if(!ret->image)
@@ -99,7 +99,7 @@ static module_t* newModule(char *name)
 		free(ret);
 		return NULL;
 	}
-	#else
+#else
 	HINSTANCE image;
 	image = LoadLibrary((LPCSTR) name);
 	if (!image)
@@ -124,8 +124,7 @@ static module_t* newModule(char *name)
 	}
 	ret->image = image;
 	free(image);
-	free(image);
-	#endif
+#endif
 	ret->file = strdup(name);
 
 	ret->fce_init = getFce(ret, "init");
@@ -143,8 +142,11 @@ static module_t* newModule(char *name)
 	if( ret->fce_init(&export_fce) != 0 )
 	{
 		fprintf(stderr, "init module failed !\n");
-
+#ifndef __WIN32__
 		dlclose(ret->image);
+#else
+		free(ret->image);
+#endif
 		free(ret->file);
 		free(ret);
 		return NULL;
@@ -160,7 +162,11 @@ static int destroyModule(module_t *p)
 	p->fce_destroy();
 
 	free(p->file);
+#ifndef __WIN32__
 	dlclose(p->image);
+#else
+	free(p->image);
+#endif
 	free(p);
 
 	printf("destroy module..\n");

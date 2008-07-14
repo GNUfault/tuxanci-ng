@@ -5,6 +5,10 @@
 
 #include "list.h"
 
+#ifdef __WIN32__
+#define lstat stat
+#endif
+
 typedef struct str_textFile_t
 {
 	char *file;
