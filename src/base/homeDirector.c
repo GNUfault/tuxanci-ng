@@ -13,9 +13,11 @@ static char homeDirector[STR_PATH_SIZE];
 void createHomeDirector()
 {
 	char *envHome;
-
+#ifndef __WIN32__
 	envHome = getenv("HOME");
-
+#else
+	envHome = getenv("USERPROFILE");
+#endif
 	if( envHome == NULL )
 	{
 		fprintf(stderr, "Environment HOME not found !\n");

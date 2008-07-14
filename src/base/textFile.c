@@ -13,10 +13,12 @@ textFile_t* newTextFile(char *s)
 {
 	textFile_t *new;
 	char path[STR_PATH_SIZE];
-
 	assert( s != NULL );
-
+#ifndef __WIN32__
 	if( s[0] == '/' )
+#else
+	if( s[1] == ':' )
+#endif
 	{
 		strcpy(path, s);
 	}
@@ -26,7 +28,6 @@ textFile_t* newTextFile(char *s)
 		strcat(path, "/");
 		strcat(path, s);
 	}
-
 	new = malloc(sizeof(textFile_t));
 	new->file = strdup(path);
 	new->text = newList();
@@ -86,7 +87,7 @@ textFile_t* loadTextFile(char *s)
 	}
 
 	file_length = buf.st_size;
-	if( (file = fopen(s, "rt")) == NULL )
+	if( (file = fopen(s, "rb")) == NULL )
 	{
 		fprintf(stderr, "ERROR: unable to open file %s for reading\n", s);
 		return NULL;
@@ -133,14 +134,16 @@ void saveTextFile(textFile_t *p)
 {
 	int i;
 	FILE *file;
-
 	assert( p != NULL );
-
+	
 	file = fopen(p->file, "wt");
-
 	for(i = 0; i < p->text->count; i++)
 	{
+#ifndef __WIN32__
 		fprintf(file, "%s\n", (char *)p->text->list[i]);
+#else
+		fprintf(file, "%s\r\n", (char *)p->text->list[i]);
+#endif
 	}
 
 	fclose(file);

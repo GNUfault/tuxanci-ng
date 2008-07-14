@@ -341,11 +341,12 @@ void quitPublicServer()
 
 int startPublicServer()
 {
+#ifndef __WIN32__
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, my_handler_quit);
 	signal(SIGTERM, my_handler_quit);
 	signal(SIGQUIT, my_handler_quit);
-
+#endif
 	if( initPublicServer() < 0 )
 	{
 		quitPublicServer();

@@ -70,8 +70,11 @@ int initLanguage()
 
 	lang = ((char *)languageTypeFile->text->list[0]);
 	printf("select lang %s\n", lang);
-
+	
+	printf("PATH_LANG = %s\n", PATH_LANG);
+	printf("lang = %s\n", lang);
 	sprintf(path, PATH_LANG "%s.lang", lang);
+	printf("path = %s\n", path);
 
 	destroyTextFile(languageTypeFile);
 	

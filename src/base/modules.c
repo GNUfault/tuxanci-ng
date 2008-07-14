@@ -4,8 +4,6 @@
 #include <string.h>
 #ifndef __WIN32__
 #include <dlfcn.h>
-#else
-#include <windows.h>
 #endif
 #include <assert.h>
 
