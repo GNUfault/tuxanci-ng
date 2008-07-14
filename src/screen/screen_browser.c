@@ -19,15 +19,15 @@
 #ifndef __WIN32__
 #include <sys/socket.h>
 #include <sys/select.h>
-#else
-#include <windows.h>
-#include <winsock2.h>
-#endif
-
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#else
+#include <windows.h>
+#include <wininet.h>
+#endif
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -211,11 +211,20 @@ int server_getinfo (server_t *server)
 	    return -1;
 	}
 
+#ifndef __WIN32__
 	// Lets make socket non-blocking
 	int oldFlag = fcntl (mySocket, F_GETFL, 0);
 	if (fcntl (mySocket, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
 		return -1;
 	}
+#else
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if (ioctlsocket (mySocket, FIONBIO, &arg) == SOCKET_ERROR) {
+		WSACleanup();
+		return -1;
+	}
+#endif
 
 	struct timeval tv;
 
@@ -231,8 +240,15 @@ int server_getinfo (server_t *server)
 	srv.sin_addr.s_addr = server->ip;
 
 	if (connect (mySocket, (struct sockaddr *) &srv, sizeof (srv)) == -1) {
+#ifndef __WIN32__
 		if (errno != EINPROGRESS)
 		    return -1;
+#else
+		if (WSAGetLastError() != WSAEWOULDBLOCK) {
+			WSACleanup();
+			return -1;
+		}
+#endif
 	}
 
 	int ret = select (mySocket+1, NULL, &myset, NULL, &tv);
@@ -266,19 +282,31 @@ int server_getinfo (server_t *server)
 
 		if (sel == 0) {
 			free (str);
+#ifndef __WIN32__
 			close (mySocket);
+#else
+			closesocket (mySocket);
+#endif
 			return -2;
 		}
 
 		if (sel == -1) {
 			free (str);
+#ifndef __WIN32__
 			close (mySocket);
+#else
+			closesocket (mySocket);
+#endif
 			return -2;
 		}
   
 		if ((ret = recv(mySocket, str, 256, 0)) == -1) {
 			free (str);
+#ifndef __WIN32__
 			close (mySocket);
+#else
+			closesocket (mySocket);
+#endif
 			return -1;
 		}
     
@@ -286,7 +314,11 @@ int server_getinfo (server_t *server)
 			break;
 	}
 
+#ifndef __WIN32__
 	close (mySocket);
+#else
+	closesocket (mySocket);
+#endif
 
 	server->ping = 1000 - (tv.tv_usec/1000);
 #else
@@ -389,7 +421,12 @@ int server_getinfo (server_t *server)
 static int LoadServers ()
 // Get server list
 {
+#ifndef __WIN32__
 	int s;
+#else
+	SOCKET s;
+#endif
+
 	char buf[1025];
 
 	/* TODO: dodelat TCP makro */
@@ -397,7 +434,7 @@ static int LoadServers ()
 	struct sockaddr_in server;
 	char *master_server_ip;
 
-	master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
+	master_server_ip = getIPFormDNS (NET_MASTER_SERVER_DOMAIN);
 
 	//printf("master_server_ip = %s\n", master_server_ip);
 
@@ -412,19 +449,34 @@ static int LoadServers ()
 	
 	free(master_server_ip);
 
-	if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
-		close (s);
+	if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0)
 		return 0;
-	}
 
+#ifndef __WIN32__
+	// Lets make socket non-blocking
 	int oldFlag = fcntl (s, F_GETFL, 0);
 	if (fcntl (s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
 		return -1;
 	}
+#else
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if (ioctlsocket (s, FIONBIO, &arg) == SOCKET_ERROR) {
+		WSACleanup();
+		return -1;
+	}
+#endif
 
 	if (connect (s, (struct sockaddr *) &server, sizeof (server)) == -1) {
+#ifndef __WIN32__
 		if (errno != EINPROGRESS)
 		    return -1;
+#else
+		if (WSAGetLastError() != WSAEWOULDBLOCK) {
+			WSACleanup();
+			return -1;
+		}
+#endif
 	}
 
 	struct timeval tv;
@@ -461,7 +513,12 @@ static int LoadServers ()
 
 	int len = recv (s, buf, 1024, 0);
 
+#ifndef __WIN32__
 	close (s);
+#else
+	closesocket (s);
+#endif
+
 #else
 	return -1;
 #endif
