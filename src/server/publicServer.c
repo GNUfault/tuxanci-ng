@@ -7,9 +7,15 @@
 #include <time.h>
 
 #ifdef SUPPORT_NET_UNIX_UDP
+#ifndef __WIN32
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <arpa/inet.h>
+#else
+# include <windows.h>
+# include <wininet.h>
+#endif
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -55,7 +61,11 @@ static char *getSetting(char *env, char *param, char *default_val)
 
 static int registerPublicServer()
 {
+#ifndef __WIN32
 	int s;
+#else
+	SOCKET s;
+#endif
 
 	/* TODO: dodelat TCP makro */
 #ifdef SUPPORT_NET_UNIX_UDP
@@ -78,18 +88,39 @@ static int registerPublicServer()
 	free(master_server_ip);
 
 	if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
-		close (s);
 		return 0;
 	}
 
-	int oldFlag = fcntl (s, F_GETFL, 0);
-	if (fcntl (s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
+	/* Set to nonblocking socket mode */
+#ifndef __WIN32__
+	int oldFlag;
+
+	oldFlag = fcntl (s, F_GETFL, 0);
+
+	if( fcntl(s, F_SETFL, oldFlag | O_NONBLOCK) == -1 )
+	{
 		return -1;
 	}
+#else
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if( ioctlsocket(s, FIONBIO, &arg) == SOCKET_ERROR )
+	{
+		WSACleanup();
+		return -1;
+	}	
+#endif
 
-	if (connect (s, (struct sockaddr *) &server, sizeof (server)) == -1) {
+	if( connect (s, (struct sockaddr *) &server, sizeof (server)) == -1 ) {
+#ifndef __WIN32__
 		if (errno != EINPROGRESS)
 		    return -1;
+#else
+		if (WSAGetLastError() != WSAEWOULDBLOCK) {
+			WSACleanup();
+			return -1;
+		}
+#endif
 	}
 
 	struct timeval tv;
@@ -145,11 +176,20 @@ static int registerPublicServer()
 	free (str);
 
 	if (r == -1) {
+#ifndef __WIN32
 		close(s);
+#else
+		closesocket(s);
+#endif
 		return -1;
 	}
 
-	close(s);
+#ifndef __WIN32
+		close(s);
+#else
+		closesocket(s);
+#endif
+
 #else
 	return -1;
 #endif
