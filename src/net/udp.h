@@ -1,15 +1,26 @@
 
 #ifndef MY_UDP
 
-#include <netinet/in.h>
+#ifndef __WIN32__
+# include <netinet/in.h>
+#else
+# include <windows.h>
+# include <wininet.h>
+#endif
 
 #define MY_UDP
 
+#ifdef __WIN32__
 #define SUPPORT_IPv6
+#endif
 
 typedef struct struct_sock_udp_t
 {
+#ifndef __WIN32__
 	int sock;
+#else
+	SOCKET sock;
+#endif
 	int proto;
 
 #ifdef SUPPORT_IPv6

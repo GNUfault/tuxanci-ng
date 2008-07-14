@@ -8,6 +8,11 @@
 #include <assert.h>
 #include <sys/stat.h>
 
+#ifdef __WIN32__
+# include <windows.h>
+# include <wininet.h>
+#endif
+
 #include "main.h"
 #include "tux.h"
 
@@ -121,6 +126,18 @@ int main(int argc, char *argv[])
 	test_space();
 	exit(0);
 */
+
+#ifdef __WIN32__
+	WORD wVersionRequested = MAKEWORD(1,1); 	// WinSock version
+	WSADATA data;                        		// WinSock information structure
+
+	/* Let's initialize WinSock */
+	if( WSAStartup(wVersionRequested, &data) != 0 )
+	{
+		fprintf(stderr, "WinSock initialization failed !\nProgram shutdown !\n");
+		exit(-1);
+	}  
+#endif
 
 #ifndef PUBLIC_SERVER
 	startGame();

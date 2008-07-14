@@ -1,8 +1,13 @@
-#include <sys/socket.h> 
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#ifndef __WIN32__
+# include <sys/socket.h> 
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+#else
+# include <windows.h>
+# include <wininet.h>
+#endif
 
-#include <netdb.h>
 #include <string.h>
 
 #include "main.h"

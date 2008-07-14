@@ -1,18 +1,23 @@
 
 
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#ifndef __WIN32__
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+#else
+# include <windows.h>
+# include <wininet.h>
+#endif
+
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
-#include <netdb.h>
 #include <string.h>
 #include <assert.h>
 #include <fcntl.h>
+
 
 #define BUFSIZE 1000
 
@@ -20,6 +25,58 @@
 #include "net_multiplayer.h"
 
 #include "udp.h"
+
+#ifdef __WIN32__
+const char *inet_ntop(int af, const void *src, char *dst, socklen_t cnt)
+{
+        if ( af == AF_INET )
+        {
+                struct sockaddr_in in;
+                memset(&in, 0, sizeof(in));
+                in.sin_family = AF_INET;
+                memcpy(&in.sin_addr, src, sizeof(struct in_addr));
+                getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in), dst, cnt, NULL, 0, NI_NUMERICHOST);
+
+                return dst;
+        }
+        else if ( af == AF_INET6 )
+        {
+                struct sockaddr_in6 in;
+                memset(&in, 0, sizeof(in));
+                in.sin6_family = AF_INET6;
+                memcpy(&in.sin6_addr, src, sizeof(struct in_addr6));
+                getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in6), dst, cnt, NULL, 0, NI_NUMERICHOST);
+
+                return dst;
+        }
+
+        return NULL;
+}
+
+int inet_pton(int af, const char *src, void *dst)
+{
+        struct addrinfo hints, *res, *ressave;
+
+        memset(&hints, 0, sizeof(struct addrinfo));
+        hints.ai_family = af;
+
+        if ( getaddrinfo(src, NULL, &hints, &res) != 0 )
+        {
+                return -1;
+        }
+
+        ressave = res;
+
+        while ( res )
+        {
+                memcpy(dst, res->ai_addr, res->ai_addrlen);
+                res = res->ai_next;
+        }
+
+        freeaddrinfo(ressave);
+        return 0;
+}
+#endif
 
 sock_udp_t* newSockUdp(int proto)
 {
@@ -65,6 +122,9 @@ sock_udp_t* bindUdpSocket(char *address, int port, int proto)
 	{
 		fprintf(stderr, "nemozem vytvorit socket !\n");
 		destroySockUdp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -94,6 +154,9 @@ sock_udp_t* bindUdpSocket(char *address, int port, int proto)
 	{
 		fprintf(stderr, "nemozem nastavit sokcet %s %d !\n", address, port);
 		destroySockUdp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -127,6 +190,9 @@ sock_udp_t* connectUdpSocket(char *address, int port, int proto)
 	{
 		fprintf(stderr, "nemozem vytvorit socket !\n");
 		destroySockUdp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -152,15 +218,25 @@ sock_udp_t* connectUdpSocket(char *address, int port, int proto)
 
 int setUdpSockNonBlock(sock_udp_t *p)
 {
+	/* Set to nonblocking socket mode */
+#ifndef __WIN32__
 	int oldFlag;
 
 	oldFlag = fcntl (p->sock, F_GETFL, 0);
 
-	if( fcntl(p->sock, F_SETFL, oldFlag|O_NONBLOCK ) == -1 )
+	if( fcntl(p->sock, F_SETFL, oldFlag | O_NONBLOCK) == -1 )
 	{
 		return -1;
 	}
-
+#else
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if( ioctlsocket(p->sock, FIONBIO, &arg) == SOCKET_ERROR )
+	{
+		WSACleanup();
+		return -1;
+	}	
+#endif
 	return 0;
 }
 
@@ -177,8 +253,11 @@ int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	{
 	        addrlen = sizeof(src->sockAddr);
 
-		size = recvfrom(src->sock, address, len, 0,
-			(struct sockaddr *)&dst->sockAddr, (socklen_t *)&addrlen);
+#ifndef __WIN32
+		size = recvfrom(src->sock, address, len, 0, (struct sockaddr *)&dst->sockAddr, (socklen_t *)&addrlen);
+#else
+		size = recvfrom(src->sock, address, len, 0, (struct sockaddr *)&dst->sockAddr, (int *)&addrlen);
+#endif
 	}
 
 #ifdef SUPPORT_IPv6
@@ -198,6 +277,9 @@ int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
 
 		fprintf(stderr, "nemozem zapisat zo socketu %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return -1;
         }
 
@@ -217,8 +299,7 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	{
 		addrlen = sizeof(src->sockAddr);
 
-		size = sendto(src->sock, address, len, 0,
-			(struct sockaddr *)&dst->sockAddr, (socklen_t)addrlen);
+		size = sendto(src->sock, address, len, 0, (struct sockaddr *)&dst->sockAddr, addrlen);
 	}
 
 #ifdef SUPPORT_IPv6
@@ -226,8 +307,7 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	{
 		addrlen = sizeof(src->sockAddr6);
 
-		size = sendto(src->sock, address, len, 0,
-			(struct sockaddr *)&dst->sockAddr6, (socklen_t)addrlen);
+		size = sendto(src->sock, address, len, 0, (struct sockaddr *)&dst->sockAddr6, addrlen);
 	}
 #endif
 
@@ -238,6 +318,9 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
 
 		fprintf(stderr, "nemozem zapisat na socket %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return -1;
        }
 
@@ -291,7 +374,12 @@ void closeUdpSocket(sock_udp_t *p)
 {
 	assert( p != NULL  );
 
+#ifndef __WIN32__
 	close(p->sock);
+#else
+	closesocket(p->sock);
+	WSACleanup(); 
+#endif
 	destroySockUdp(p);
 }
 
