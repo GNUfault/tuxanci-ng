@@ -117,11 +117,11 @@ static module_t* newModule(char *name)
 		fputs(msg, stderr);
 		free(msg);
 		free(ret);
-		free(image);
+		FreeLibrary(image);
 		return NULL;
 	}
 	ret->image = image;
-	free(image);
+	FreeLibrary(image);
 #endif
 	ret->file = strdup(name);
 
@@ -143,7 +143,7 @@ static module_t* newModule(char *name)
 #ifndef __WIN32__
 		dlclose(ret->image);
 #else
-		free(ret->image);
+		FreeLibrary(ret->image);
 #endif
 		free(ret->file);
 		free(ret);
@@ -163,7 +163,7 @@ static int destroyModule(module_t *p)
 #ifndef __WIN32__
 	dlclose(p->image);
 #else
-	free(p->image);
+	FreeLibrary(p->image);
 #endif
 	free(p);
 
