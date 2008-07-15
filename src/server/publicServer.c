@@ -262,7 +262,7 @@ int initPublicServer()
 
 	if( ret < 0 )
 	{
-		printf("Nemozem inicalizovat sietovy socket !\n");
+		printf("Unable to initialize network socket!\n");
 		return -1;
 	}
 
@@ -270,7 +270,7 @@ int initPublicServer()
 
 	if (registerPublicServer() < 0)
 	{
-		printf("Nemuzu kontaktovat master server !\n");
+		printf("Unable to contact MasterServer!\n");
 	}
 
 	return 0;

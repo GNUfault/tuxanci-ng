@@ -1,11 +1,10 @@
 # Created by Tomas Chvatal
 # volani se vsema externima moznostma:
 
-# cmake . -DServer=1 -DNO_Audio=1 -DDebug=1 -DCMAKE_C_FLAGS=-Wall -DDist=1"
+# cmake . -DServer=1 -DNO_Audio=1 -DDebug=1 -DCMAKE_C_FLAGS=-Wall -DWin=1"
 # make
 # make install
 
-# DDist=1 vyrobi binarku do adresare dist/ -> vhodne pro distribuci binarniho baliku...
 # !! pri zmene zdrojovych souboru se podivejte co je treba delat do souboru !!
 # !! CMakeLists.txt v adresari src !!
 SET ( APPNAME "tuxanci-ng")
@@ -70,20 +69,13 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # nazev projektu
 PROJECT ( tuxanci )
-# verbose nastaveni vypnout pred release
-IF ( Dist )
-	SET ( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/dist )
-	SET ( PREFIX \\"../\\" ) # tohle by melo vytvorit binarku s relativni path
-ENDIF ( Dist )
 IF ( Debug )
 	SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -Wall -pipe")
 	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall -pipe")
-#	SET ( CMAKE_VERBOSE_MAKEFILE on )
+	SET ( CMAKE_VERBOSE_MAKEFILE on )
 ENDIF ( Debug)
 MESSAGE ( "EXTRA Cflags:${CMAKE_C_FLAGS}" )
 MESSAGE ( "EXTRA CXXflags:${CMAKE_CXX_FLAGS}" )
-# pouzite podadresare
-# nestarame se o adresare s daty
 MESSAGE ( STATUS "<Compiling SRC>" )
 MESSAGE ( STATUS "<******************************>" )
 ADD_SUBDIRECTORY ( src )
@@ -91,11 +83,6 @@ ADD_SUBDIRECTORY ( src )
 #MESSAGE(STATUS "<Compiling Lang>")
 #MESSAGE(STATUS "<******************************>")
 #ADD_SUBDIRECTORY ( lang )
-
-# instalace
-# data !TODO
-#MESSAGE ( STATUS "<Installing datafiles>" )
-#MESSAGE ( STATUS "<******************************>" )
 
 SET ( CMAKE_INSTALL_DATADIR share/ )
 IF ( NOT Win )

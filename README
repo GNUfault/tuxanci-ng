@@ -73,6 +73,12 @@ HOWTO COMPILE
 		# make uninstall
 	Notes
 	-----
+		Compilation on windows is little bit tricky. You need MinGW
+		<http://www.mingw.org/> and CMake <http://www.cmake.org/>. Then follow
+		those steps above. Only add cmake option -G "MinGW Makefiles". If cmd
+		say that no make.exe command found you need to use absolute path. Do
+		not specify PREFIX!!
+		
 		Option -DNO_AUDIO=1 says we want no audio support for client so change
 		if you want so.
 		
