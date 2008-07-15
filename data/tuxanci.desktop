@@ -4,6 +4,6 @@ Comment=game tuxanci next generation
 Exec=/usr/bin/tuxanci-ng
 Terminal=false
 Type=Application
-Icon=/usr/share/tuxanci-ng/image/tuxanci.png
+Icon=/usr/share/tuxanci-ng/image/tuxanci.ico
 Encoding=UTF-8
 Categories=Game

@@ -1,6 +1,6 @@
 # Created by Tomas Chvatal
-# volani se vsema externima moznostma:
 
+# volani se vsema externima moznostma:
 # cmake . -DServer=1 -DNO_Audio=1 -DDebug=1 -DCMAKE_C_FLAGS=-Wall -DWin=1"
 # make
 # make install
