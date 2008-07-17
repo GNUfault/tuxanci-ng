@@ -86,11 +86,6 @@ item_t* newItem(int x, int y, int type, int author_id)
 #endif	
 	new->author_id = author_id;
 
-	if( author_id != ID_UNKNOWN )
-	{
-		incID(author_id);
-	}
-
 	switch( type )
 	{
 		case GUN_DUAL_SIMPLE :
@@ -268,72 +263,66 @@ void drawListItem(list_t *listItem)
 
 #endif
 
-void eventListItem(space_t *spaceItem)
+static void action_itemevent(space_t *space, item_t *item, void *p)
 {
 	my_time_t currentTime;
-	item_t *thisItem;
-	int i;
 
 	currentTime = getMyTime();
 
-	assert( spaceItem != NULL );
-
-	for( i = 0 ; i < spaceItem->list->count ; i++ )
-	{
-		thisItem  = (item_t *)spaceItem->list->list[i];
-		assert( thisItem != NULL );
-
-		thisItem->count++;
+	item->count++;
 	
-		if( thisItem->count == ITEM_MAX_COUNT )
-		{
-			thisItem->count = 0;
-			thisItem->frame++;
-		}
-
-		switch( thisItem->type )
-		{
-			case GUN_TOMMY :
-			case GUN_DUAL_SIMPLE :
-			case GUN_SCATTER  :
-			case GUN_LASSER :
-			case GUN_MINE :
-			case GUN_BOMBBALL :
-				if( thisItem->frame == ITEM_GUN_MAX_FRAME )
-				{
-					thisItem->frame = 0;
-				}
-			break;
-
-			case ITEM_MINE :
-				if( thisItem->frame == ITEM_MINE_MAX_FRAME )
-				{
-					thisItem->frame = 0;
-				}
-			break;
-
-			case ITEM_EXPLOSION :
-			case ITEM_BIG_EXPLOSION :
-				if( thisItem->frame == ITEM_EXPLOSION_MAX_FRAME )
-				{
-					delObjectFromSpaceWithObject(spaceItem, thisItem, destroyItem);
-					i--;
-				}
-			break;
-
-			case BONUS_SPEED :
-			case BONUS_SHOT :
-			case BONUS_TELEPORT :
-			case BONUS_GHOST :
-			case BONUS_4X :
-			case BONUS_HIDDEN :
-				if( thisItem->frame == ITEM_GUN_MAX_FRAME )
-				{
-					thisItem->frame = 0;
-				}
-			break;
-		}
+	if( item->count == ITEM_MAX_COUNT )
+	{
+		item->count = 0;
+		item->frame++;
 	}
+
+	switch( item->type )
+	{
+		case GUN_TOMMY :
+		case GUN_DUAL_SIMPLE :
+		case GUN_SCATTER  :
+		case GUN_LASSER :
+		case GUN_MINE :
+		case GUN_BOMBBALL :
+			if( item->frame == ITEM_GUN_MAX_FRAME )
+			{
+				item->frame = 0;
+			}
+		break;
+
+		case ITEM_MINE :
+			if( item->frame == ITEM_MINE_MAX_FRAME )
+			{
+				item->frame = 0;
+			}
+		break;
+
+		case ITEM_EXPLOSION :
+		case ITEM_BIG_EXPLOSION :
+			if( item->frame == ITEM_EXPLOSION_MAX_FRAME )
+			{
+				delObjectFromSpaceWithObject(space, item, destroyItem);
+			}
+		break;
+
+		case BONUS_SPEED :
+		case BONUS_SHOT :
+		case BONUS_TELEPORT :
+		case BONUS_GHOST :
+		case BONUS_4X :
+		case BONUS_HIDDEN :
+			if( item->frame == ITEM_GUN_MAX_FRAME )
+			{
+				item->frame = 0;
+			}
+		break;
+	}
+}
+
+void eventListItem(space_t *spaceItem)
+{
+	actionSpace(spaceItem, action_itemevent, NULL);
 }
 
 static void mineExplosion(space_t *spaceItem, item_t *item)
@@ -548,6 +537,8 @@ static void action_giveitem(space_t *space, item_t *item, tux_t *tux)
  			delObjectFromSpaceWithObject(space, item, destroyItem);
 		break;
 	}
+
+	addNewItem(space, ID_UNKNOWN);
 }
 
 void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
@@ -577,12 +568,6 @@ void destroyItem(item_t *p)
 	assert( p != NULL );
 	
 	delID(p->id);
-
-	if( p->author_id != ID_UNKNOWN )
-	{
-		delID(p->author_id);
-	}
-
 	free(p);
 }
 

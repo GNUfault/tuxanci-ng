@@ -46,7 +46,7 @@ arena_t* newArena(int w, int h)
 
 	new->listTimer = newList();
 
-	if( w > 800 || h > 600)
+	if( w > 800 || h > 600 )
 	{
 		zone_w = 320;
 		zone_h = 240;

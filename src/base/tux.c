@@ -474,22 +474,10 @@ void moveTux(tux_t *tux, int n)
 		return;
 	}
 
-	if( n == TUX_LEFT && tux->x-TUX_STEP <= 0 )
-	{
-		return;
-	}
-
-	if( n == TUX_RIGHT && tux->x+TUX_STEP >= arena->w )
-	{
-		return;
-	}
-
-	if( n == TUX_UP && tux->y-TUX_STEP <= 0 )
-	{
-		return;
-	}
-
-	if( n == TUX_DOWN && tux->y+TUX_STEP >= arena->h )
+	if( ( n == TUX_LEFT && tux->x-TUX_STEP <= 0 ) ||
+	    ( n == TUX_RIGHT && tux->x+TUX_STEP >= arena->w ) ||
+	    ( n == TUX_UP && tux->y-TUX_STEP <= 0 ) ||
+	    ( n == TUX_DOWN && tux->y+TUX_STEP >= arena->h ) )
 	{
 		return;
 	}
@@ -769,10 +757,26 @@ void setStatusTux(void *p, int x, int y, int w, int h)
 	setTuxProportion(tux, x, y);
 }
 
+static void action_checkMine(space_t *space, item_t *item, tux_t *tux)
+{
+	if( item->type == ITEM_MINE && item->author_id == tux->id )
+	{
+		item->author_id = ID_UNKNOWN; 
+	}
+}
+
 void destroyTux(tux_t *tux)
 {
+	arena_t *arena;
+
+	arena = getCurrentArena();
+
 	assert( tux != NULL );
+
 	delID(tux->id);
+
+	actionSpace(arena->spaceItem, action_checkMine, tux);
+	
 	free(tux);
 }
 

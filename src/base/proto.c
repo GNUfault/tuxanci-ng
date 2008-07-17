@@ -618,6 +618,14 @@ void proto_recv_additem_client(char *msg)
 	sscanf(msg, "%s %d %d %d %d %d %d %d %d",
 		cmd, &id, &type, &x, &y, &count, &frame, &author_id, &check_id);
 
+#if FUCKED_PATCH
+	if( author_id != ID_UNKNOWN &&
+	    getObjectFromSpaceWithID(getCurrentArena()->spaceTux, author_id) == NULL )
+	{
+		return;
+	}
+#endif
+
 	proto_send_check_client(check_id);
 
 	if( ( item = getObjectFromSpaceWithID(getCurrentArena()->spaceItem, id) ) != NULL )
