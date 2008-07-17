@@ -14,7 +14,7 @@
 #endif
 
 #define MODULE_TYPE_UNIX	".so"
-#define MODULE_TYPE_APPLE		".dylib"
+#define MODULE_TYPE_APPLE	".dylib"
 #define MODULE_TYPE_WIN		".dll"
 
 typedef struct export_fce_s

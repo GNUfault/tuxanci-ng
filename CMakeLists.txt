@@ -26,8 +26,8 @@ IF ( Apple )
 	SET (
 		CMAKE_OSX_ARCHITECTURES "ppc;i386"
 		CACHE_INTERNAL "OSX Architectures" FORCE
-		ADD_DEFINITIONS ( -DAPPLE )
 	)
+	ADD_DEFINITIONS ( -DAPPLE )
 ENDIF ( Apple )
 IF ( Win AND NOT Server )
 	# budeme pocitat s tim ze uzivatel ma vse v C:\MinGW\lib ...
