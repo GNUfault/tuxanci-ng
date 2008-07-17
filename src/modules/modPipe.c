@@ -36,7 +36,7 @@ typedef struct pipe_struct
 	int layer; // vrstva
 
 #ifndef PUBLIC_SERVER	
-	SDL_Surface *img; //obrazok
+	image_t *img; //obrazok
 #endif
 } pipe_t;
 
@@ -46,7 +46,7 @@ static list_t *listPipe;
 static space_t *spacePipe;
 
 #ifndef PUBLIC_SERVER	
-static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out, int position, SDL_Surface *img)
+static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out, int position, image_t *img)
 #endif
 
 #ifdef PUBLIC_SERVER	

@@ -21,7 +21,7 @@ widget_check_t* newWidgetCheck(int x, int y, bool_t status, void (*fce_event)(vo
 
 void drawWidgetCheck(widget_check_t *p)
 {
-	static SDL_Surface *g_check = NULL;
+	static image_t *g_check = NULL;
 	int x, y;
 	int offset;
 

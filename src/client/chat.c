@@ -14,7 +14,7 @@
 #include "chat.h"
 #include "font.h"
 
-static SDL_Surface *g_chat;
+static image_t *g_chat;
 
 static list_t *listText;
 

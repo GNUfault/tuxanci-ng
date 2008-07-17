@@ -23,13 +23,20 @@ typedef struct image_struct
 } image_data_t;
 */
 
+typedef struct image_struct
+{
+	int w;
+	int h;
+	SDL_Surface *image;
+} image_t;
+
 extern bool_t isImageInicialized();
 extern void initImageData();
-extern SDL_Surface* addImageData(char *file, int alpha, char *name, char *group);
-extern SDL_Surface* getImage(char *group, char *name);
+extern image_t* addImageData(char *file, int alpha, char *name, char *group);
+extern image_t* getImage(char *group, char *name);
 extern void delImage(char *group, char *name);
 extern void delAllImageInGroup(char *group);
-extern void drawImage(SDL_Surface *p, int x,int y, int px, int py, int w, int h);
+extern void drawImage(image_t *p, int x,int y, int px, int py, int w, int h);
 extern void quitImageData();
 
 #endif

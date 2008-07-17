@@ -18,6 +18,7 @@
 #include "idManager.h"
 
 #ifndef PUBLIC_SERVER
+#include "font.h"
 #include "image.h"
 #include "layer.h"
 #include "term.h"
@@ -36,11 +37,11 @@
 
 #ifndef PUBLIC_SERVER
 
-static SDL_Surface *g_tux_up;
-static SDL_Surface *g_tux_right;
-static SDL_Surface *g_tux_left;
-static SDL_Surface *g_tux_down;
-static SDL_Surface *g_cross;
+static image_t *g_tux_up;
+static image_t *g_tux_right;
+static image_t *g_tux_left;
+static image_t *g_tux_down;
+static image_t *g_cross;
 
 #endif
 
@@ -104,6 +105,12 @@ tux_t* newTux()
 	return new;
 }
 
+void tuxSetName(tux_t *tux, char *name)
+{
+	strcpy(tux->name, name);
+	//tux->g_name = getFontImage(name, COLOR_WHITE);
+}
+
 bool_t isTuxAnyGun(tux_t *tux)
 {
 	int i;
@@ -156,7 +163,7 @@ void getCourse(int n, int *x, int *y)
 
 void drawTux(tux_t *tux)
 {
-	SDL_Surface *g_image = NULL;
+	image_t *g_image = NULL;
 
 	assert( tux != NULL );
 
@@ -202,7 +209,16 @@ void drawTux(tux_t *tux)
 
 		return;
 	}
-
+/*
+	if( tux->g_name != NULL )
+	{
+		addLayer(tux->g_name,
+			tux->x - TUX_IMG_WIDTH / 2,
+			( tux->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,
+			0, 0,
+			tux->g_name->w, tux->g_name->h, TUX_LAYER);
+	}
+*/
 	addLayer(g_image,
 		tux->x - TUX_IMG_WIDTH / 2,
 		( tux->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,

@@ -8,7 +8,7 @@
 #include "font.h"
 #include "widget_image.h"
 
-widget_image_t* newWidgetImage(int x, int y, SDL_Surface *image)
+widget_image_t* newWidgetImage(int x, int y, image_t *image)
 {
 	widget_image_t *new;
 

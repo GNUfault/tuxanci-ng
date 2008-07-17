@@ -6,7 +6,7 @@
 #include "image.h"
 #include "widget_buttonimage.h"
 
-widget_buttonimage_t* newWidgetButtonimage(SDL_Surface *image, int x, int y, void (*fce_event)(void *))
+widget_buttonimage_t* newWidgetButtonimage(image_t *image, int x, int y, void (*fce_event)(void *))
 {
 	widget_buttonimage_t *new;
 

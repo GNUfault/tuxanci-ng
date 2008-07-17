@@ -115,7 +115,7 @@ void proto_recv_hello_server(client_t *client, char *msg)
 		name[STR_NAME_SIZE-1] = '\0';
 	}
 
-	strcpy(client->tux->name, name);
+	tuxSetName(client->tux, name);
 	sendInfoCreateClient(client);
 }
 

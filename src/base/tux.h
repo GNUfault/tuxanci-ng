@@ -112,6 +112,7 @@ typedef struct tux_struct
 extern bool_t isTuxInicialized();
 extern void initTux();
 extern tux_t* newTux();
+extern void tuxSetName(tux_t *tux, char *name);
 extern bool_t isTuxAnyGun(tux_t *tux);
 extern void getCourse(int n, int *x, int *y);
 extern void drawTux(tux_t *tux);

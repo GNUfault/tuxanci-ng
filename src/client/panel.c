@@ -12,10 +12,10 @@
 #include "font.h"
 #include "chat.h"
 
-static SDL_Surface *g_panel;
-static SDL_Surface *g_shot;
-static SDL_Surface *g_icon[ITEM_COUNT];
-static SDL_Surface *g_bonus;
+static image_t *g_panel;
+static image_t *g_shot;
+static image_t *g_icon[ITEM_COUNT];
+static image_t *g_bonus;
 
 static bool_t isPanelInit = FALSE;
 

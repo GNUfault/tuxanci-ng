@@ -96,7 +96,7 @@ static void eventWidget(void *p)
 
 void initScreenCredits()
 {
-	SDL_Surface *image;
+	image_t *image;
 	int i;
 
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");

@@ -6,7 +6,7 @@
 #include "main.h"
 
 #ifndef PUBLIC_SERVER
-#include "interface.h"
+#include "image.h"
 #endif
 
 #ifdef __WIN32__
@@ -21,7 +21,7 @@ typedef struct arena_struct
 #ifndef PUBLIC_SERVER
 	char music[STR_SIZE];
 
-	SDL_Surface *background;
+	image_t *background;
 #endif
 	int w, h;
 	list_t *listTimer;

@@ -21,9 +21,9 @@ typedef struct export_fce_s
 	int (*fce_getValue)(char *line, char *env, char *val, int len);
 
 #ifndef PUBLIC_SERVER
-	SDL_Surface* (*fce_getImage)(char *group, char *name);
+	image_t* (*fce_getImage)(char *group, char *name);
 
-	void (*fce_addLayer)(SDL_Surface *img,
+	void (*fce_addLayer)(image_t *img,
 		int x,int y, int px,int py,
 		int w,int h, int player);
 #endif

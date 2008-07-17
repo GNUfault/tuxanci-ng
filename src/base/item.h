@@ -8,7 +8,7 @@
 #define ITEM_SYNC_TIMEOUT	5000
 
 #ifndef PUBLIC_SERVER
-#include "interface.h"
+#include "image.h"
 #endif
 
 #ifdef __WIN32__
@@ -35,7 +35,7 @@ typedef struct item_struct
 
 	int author_id;
 #ifndef PUBLIC_SERVER	
-	SDL_Surface *img; //obrazok
+	image_t *img; //obrazok
 #endif	
 } item_t;
 

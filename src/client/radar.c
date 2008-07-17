@@ -12,7 +12,7 @@
 #include "image.h"
 #include "radar.h"
 
-static SDL_Surface *g_radar;
+static image_t *g_radar;
 static list_t *listRadar;
 
 typedef struct radar_item_struct

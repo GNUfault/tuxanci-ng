@@ -60,10 +60,25 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 	return ret;
 }
 
-static void destroySDLSurface(void *p)
+image_t* newImage(SDL_Surface *surface)
+{
+	image_t *new;
+
+	assert( surface != NULL );
+
+	new = malloc( sizeof(image_t) );
+	new->image = surface;
+	new->w = surface->w;
+	new->h = surface->h;
+
+	return new;
+}
+
+static void destroyImage(image_t *p)
 {
 	assert( p != NULL );
-	SDL_FreeSurface((SDL_Surface *)p);
+	SDL_FreeSurface((SDL_Surface *)p->image);
+	free(p);
 }
 
 /*
@@ -72,15 +87,17 @@ static void destroySDLSurface(void *p)
  * *name - nazov obrazku ( pouzije sa ako vyhadavaci retazec v zazanem )
  * alpha - 0 - nema alpha kanal | 1 - ma alpha kanal
  */
-SDL_Surface* addImageData(char *file, int alpha, char *name, char *group)
+image_t* addImageData(char *file, int alpha, char *name, char *group)
 {
-	SDL_Surface *new;
+	SDL_Surface *surface;
+	image_t *new;
 
 	assert( file != NULL );
 	assert( name != NULL );
 	assert( group != NULL );
 
-	new = loadImage(file, alpha);
+	surface = loadImage(file, alpha);
+	new = newImage(surface);
 
 	addItemToStorage(listStorage, group, name, new );
 
@@ -93,7 +110,7 @@ SDL_Surface* addImageData(char *file, int alpha, char *name, char *group)
  * Vrati odkaz na image_data v globalnom zozname obrazkov
  * a nazvom *s
  */
-SDL_Surface* getImage(char *group, char *name)
+image_t* getImage(char *group, char *name)
 {
 	assert( group != NULL );
 	assert( name != NULL );
@@ -106,17 +123,17 @@ void delImage(char *group, char *name)
 	assert( group != NULL );
 	assert( name != NULL );
 	
-	delItemFromStorage(listStorage, group, name, destroySDLSurface);
+	delItemFromStorage(listStorage, group, name, destroyImage);
 }
 
 void delAllImageInGroup(char *group)
 {
 	assert( group != NULL );
 
-	delAllItemFromStorage(listStorage, group, destroySDLSurface);
+	delAllItemFromStorage(listStorage, group, destroyImage);
 }
 
-void drawImage(SDL_Surface *p, int x,int y, int px, int py, int w, int h)
+void drawImage(image_t *p, int x,int y, int px, int py, int w, int h)
 {
 	static SDL_Surface *screen = NULL;
 	SDL_Rect dst_rect, src_rect;
@@ -134,7 +151,7 @@ void drawImage(SDL_Surface *p, int x,int y, int px, int py, int w, int h)
 	src_rect.w = w;
 	src_rect.h = h;
 
-	SDL_BlitSurface(p, &src_rect, screen, &dst_rect);
+	SDL_BlitSurface(p->image, &src_rect, screen, &dst_rect);
 }
 
 /*
@@ -143,7 +160,7 @@ void drawImage(SDL_Surface *p, int x,int y, int px, int py, int w, int h)
 void quitImageData()
 {
 	printf("quit image database..\n");
-	destroyStorage(listStorage, destroySDLSurface);
+	destroyStorage(listStorage, destroyImage);
 	isImageDataInit = FALSE;
 }
  

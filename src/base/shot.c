@@ -22,10 +22,10 @@
 
 #ifndef PUBLIC_SERVER
 
-static SDL_Surface *g_shot_simple;
-static SDL_Surface *g_shot_lasserX;
-static SDL_Surface *g_shot_lasserY;
-static SDL_Surface *g_shot_bombball;
+static image_t *g_shot_simple;
+static image_t *g_shot_lasserX;
+static image_t *g_shot_lasserY;
+static image_t *g_shot_bombball;
 
 #endif
 

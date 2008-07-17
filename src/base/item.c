@@ -33,7 +33,7 @@
 #endif
 
 #ifndef PUBLIC_SERVER	
-static SDL_Surface *g_item[ITEM_COUNT];
+static image_t *g_item[ITEM_COUNT];
 #endif
 
 static bool_t isItemInit = FALSE;
@@ -512,6 +512,8 @@ static void action_giveitem(space_t *space, item_t *item, tux_t *tux)
 			}
 
 			delObjectFromSpaceWithObject(space, item, destroyItem);
+
+			addNewItem(space, ID_UNKNOWN);
 		break;
 
 		case ITEM_MINE :
@@ -543,10 +545,10 @@ static void action_giveitem(space_t *space, item_t *item, tux_t *tux)
 			}
 			
  			delObjectFromSpaceWithObject(space, item, destroyItem);
+
+			addNewItem(space, ID_UNKNOWN);
 		break;
 	}
-
-	addNewItem(space, ID_UNKNOWN);
 }
 
 void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
@@ -558,7 +560,7 @@ void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
 
 	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
 	{
-		return; 
+		return;
 	}
 
 	if( tux->status == TUX_STATUS_DEAD )

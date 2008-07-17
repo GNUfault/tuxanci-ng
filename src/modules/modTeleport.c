@@ -34,7 +34,7 @@ typedef struct teleport_struct
 	int layer; // vrstva
 
 #ifndef PUBLIC_SERVER	
-	SDL_Surface *img; //obrazok
+	image_t *img; //obrazok
 #endif
 } teleport_t;
 
@@ -44,7 +44,7 @@ static space_t *spaceTeleport;
 static list_t *listTeleport;
 
 #ifndef PUBLIC_SERVER	
-teleport_t* newTeleport(int x, int y, int w, int h, int layer, SDL_Surface *img)
+teleport_t* newTeleport(int x, int y, int w, int h, int layer, image_t *img)
 #endif
 
 #ifdef PUBLIC_SERVER	

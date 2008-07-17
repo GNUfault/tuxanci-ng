@@ -36,7 +36,7 @@ typedef struct wall_struct
 	int layer; // vrstva
 
 #ifndef PUBLIC_SERVER	
-	SDL_Surface *img; //obrazok
+	image_t *img; //obrazok
 #endif
 } wall_t;
 
@@ -52,7 +52,7 @@ static list_t *listWall;
 
 #ifndef PUBLIC_SERVER	
 wall_t* newWall(int x, int y, int w, int h,
-	int img_x, int img_y, int layer, SDL_Surface *img)
+	int img_x, int img_y, int layer, image_t *img)
 #endif
 
 #ifdef PUBLIC_SERVER	

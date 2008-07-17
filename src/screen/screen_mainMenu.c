@@ -96,7 +96,7 @@ static void eventWidget(void *p)
 
 void initScreenMainMenu()
 {
-	SDL_Surface *image;
+	image_t *image;
 
 	image = addImageData("screen_main.png", IMAGE_NO_ALPHA, "screen_main", IMAGE_GROUP_BASE);
 	image_backgorund  = newWidgetImage(0, 0, image);

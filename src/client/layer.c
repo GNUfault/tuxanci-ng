@@ -37,7 +37,7 @@ void initLayer()
  * px py pw ph - suradnica casti obrazka *img ktora sa ma zobrazit
  * layer - vrstva na ktorej sa zobrazi obrazok
  */
-void addLayer(SDL_Surface *img,
+void addLayer(image_t *img,
 		int x,int y, int px,int py,
 		int w,int h, int player)
 {

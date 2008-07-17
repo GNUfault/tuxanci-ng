@@ -119,6 +119,7 @@ void countRoundInc()
 void prepareArena()
 {
 	tux_t *tux;
+	char name[STR_NAME_SIZE];
 
 	//printf("getSettingAI = %s\n", getSettingAI());
 	setCurrentArena(NULL);
@@ -133,13 +134,15 @@ void prepareArena()
 			tux = newTux();
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			tuxWithControlRightKeyboard = tux;
-			getSettingNameRight(tux->name);
+			getSettingNameRight(name);
+			tuxSetName(tux, name);
 			addObjectToSpace(arena->spaceTux, tux);
 		
 			tux = newTux();
 			tux->control = TUX_CONTROL_KEYBOARD_LEFT;
 			tuxWithControlLeftKeyboard = tux;
-			getSettingNameLeft(tux->name);
+			getSettingNameLeft(name);
+			tuxSetName(tux, name);
 			addObjectToSpace(arena->spaceTux, tux);
 
 			if( isSettingAI() )
@@ -159,7 +162,8 @@ void prepareArena()
 			tux = newTux();
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			tuxWithControlRightKeyboard = tux;
-			getSettingNameRight(tux->name);
+			getSettingNameRight(name);
+			tuxSetName(tux, name);
 			addObjectToSpace(arena->spaceTux, tux);
 		break;
 

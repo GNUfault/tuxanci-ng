@@ -123,7 +123,7 @@ static void eventWidget(void *p)
 
 void initScreenChoiceArena()
 {
-	SDL_Surface *image;
+	image_t *image;
 	int i;
 
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
@@ -137,7 +137,6 @@ void initScreenChoiceArena()
 
 	for( i = 0 ; i < getArenaCount() ; i++ )
 	{
-		SDL_Surface *image;
 		widget_buttonimage_t *widget_buttonimage;
 		int x, y;
 

@@ -203,8 +203,7 @@ int addPlayerInHighScore(char *name, int score)
 
 void initScreenTable()
 {
-	SDL_Surface *image;
-
+	image_t *image;
 
 	image = addImageData("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
 	image_backgorund  = newWidgetImage(0, 0, image);

@@ -12,11 +12,11 @@ typedef struct widget_buttonimageimage
 	int x, y;
 	int w, h;
 	int active;
-	SDL_Surface *image;
+	image_t *image;
 	void (*fce_event)(void *);
 } widget_buttonimage_t;
 
-extern widget_buttonimage_t* newWidgetButtonimage(SDL_Surface *image, int x, int y,
+extern widget_buttonimage_t* newWidgetButtonimage(image_t *image, int x, int y,
 		void (*fce_event)(void *));
 
 extern void drawWidgetButtonimage(widget_buttonimage_t *p);

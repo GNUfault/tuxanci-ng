@@ -25,8 +25,8 @@ widget_button_t* newWidgetButton(char *text, int x, int y, void (*fce_event)(voi
 
 void drawWidgetButton(widget_button_t *p)
 {
-	static SDL_Surface *g_button0 = NULL;
-	static SDL_Surface *g_button1 = NULL;
+	static image_t *g_button0 = NULL;
+	static image_t *g_button1 = NULL;
 	int x, y;
 
 	getMousePosition(&x, &y);

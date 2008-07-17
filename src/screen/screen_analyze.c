@@ -147,7 +147,7 @@ void endAnalyze()
 
 void initScreenAnalyze()
 {
-	SDL_Surface *image;
+	image_t *image;
 
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);

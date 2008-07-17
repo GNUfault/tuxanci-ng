@@ -30,8 +30,8 @@ widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y)
 
 static void drawBackground(widget_textfield_t *p)
 {
-	static SDL_Surface *g_textfield0 = NULL;
-	static SDL_Surface *g_textfield1 = NULL;
+	static image_t *g_textfield0 = NULL;
+	static image_t *g_textfield1 = NULL;
 	int x, y;
 
 	getMousePosition(&x, &y);

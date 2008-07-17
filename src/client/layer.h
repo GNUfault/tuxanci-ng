@@ -4,6 +4,7 @@
 #define MY_LAYER_H
 
 #include "main.h"
+#include "image.h"
 
 typedef struct layer_str
 {
@@ -21,7 +22,7 @@ typedef struct layer_str
 
 	int layer;
 
-	SDL_Surface *image; //dane surfrace
+	image_t *image; //dane surfrace
 } layer_t;
 
 extern bool_t isLayerInicialized();
@@ -38,7 +39,7 @@ extern void initLayer();
  *          (0 - pod tuxancami | 1 - na tej istej ako tuxanci | 2 - nad tuxancami)
  */
 
-extern void addLayer(SDL_Surface *img,
+extern void addLayer(image_t *img,
 	int x,int y, int px,int py,
 	int w,int h, int player);
 

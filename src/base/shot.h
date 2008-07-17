@@ -13,7 +13,7 @@
 #endif
 
 #ifndef PUBLIC_SERVER	
-#include "interface.h"
+#include "image.h"
 #endif	
 
 typedef struct shot_struct
@@ -36,7 +36,7 @@ typedef struct shot_struct
 	bool_t isCanKillAuthor;
 
 #ifndef PUBLIC_SERVER	
-	SDL_Surface *img;
+	image_t *img;
 #endif	
 } shot_t; 
 
