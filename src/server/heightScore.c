@@ -67,7 +67,7 @@ int addPlayerInHighScore(char *name, int score)
 			sprintf(new, "%s %d", name, score);
 			insList(textFile->text, i, strdup(new) );
 			delListItem(textFile->text, HEIGHTSCORE_MAX_PLAYERS, free);
-			printTextFile(textFile);
+			//printTextFile(textFile);
 			saveTextFile(textFile);
 
 			return 0;

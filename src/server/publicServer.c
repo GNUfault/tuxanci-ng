@@ -54,7 +54,7 @@ void countRoundInc()
 {
 }
 
-static char *getSetting(char *env, char *param, char *default_val)
+char *getSetting(char *env, char *param, char *default_val)
 {
 	return getParamElse(param, getServerConfigFileValue(env, default_val) );
 }

@@ -4,7 +4,7 @@
 
 #define ID_MANAGER_H
 
-#define MAX_ID		1000
+#define MAX_ID		1000000
 #define ID_UNKNOWN	-1
 
 #ifdef __WIN32__

@@ -676,7 +676,6 @@ void proto_recv_shot_client(char *msg)
 	sscanf(msg, "%s %d %d %d %d %d %d %d %d %d",
 		cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id, &isCanKillAuthor);
 
-
 	if( ( shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, shot_id) )  != NULL )
 	{
 		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);

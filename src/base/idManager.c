@@ -68,6 +68,11 @@ static int findNewID()
 
 	assert( listID != NULL );
 
+	if( listID->count >= MAX_ID-1 )
+	{
+		assert( ! "ziaden ID uz nie je volny !" );
+	}
+
 	do{
 		ret  = random() % MAX_ID;
 
@@ -138,6 +143,7 @@ void delID(int id)
 	if( this->count <= 0 )
 	{
 		delListItem(listID, index, free);
+		//printf("listID->count = %d\n", listID->count);
 	}
 	
 	return;

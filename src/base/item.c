@@ -29,6 +29,7 @@
 
 #ifdef PUBLIC_SERVER
 #include "publicServer.h"
+#include "publicServer.h"
 #endif
 
 #ifndef PUBLIC_SERVER	
@@ -172,6 +173,13 @@ void addNewItem(space_t *spaceItem, int author_id)
 	item_t *item;
 	int new_x, new_y;
 	int type;
+
+#ifdef PUBLIC_SERVER	
+	if( spaceItem->list->count >= atoi( getSetting("MAX_ITEM", "--max-item", "100") ) )
+	{
+		return;
+	}
+#endif
 
 #ifndef PUBLIC_SERVER	
 	if( isSettingAnyItem() == FALSE ||

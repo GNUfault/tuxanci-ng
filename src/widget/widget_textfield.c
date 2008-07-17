@@ -128,7 +128,7 @@ static void checkText(widget_textfield_t *p)
 				if( ( c >= '0' && c <= '9' ) ||
 				    ( c >= 'a' && c <= 'z' ) ||
 				    ( c >= 'A' && c <= 'Z' ) ||
-				    c == '-' )
+				    ( c == '_' ||  c == '-' ) )
 				{
 					isDel = FALSE;
 				}
@@ -302,6 +302,22 @@ static void readKey(widget_textfield_t *p)
 	int len;
 	int i;
 
+	const int len_shift_map = 20;
+
+	char shift_map[] =
+	{
+		'-', '_',
+		'=', '+',
+		'[', '{',
+		']', '}',
+		';', ':',
+		'/', '\"',
+		'\\', '|',
+		',', '<',
+		'.', '>',
+		'/', '?'
+	};
+
 	if( p->active == FALSE )
 	{
 		return;
@@ -321,7 +337,7 @@ static void readKey(widget_textfield_t *p)
 			char c = '\0';
 
 			if( name == NULL )continue;
-			printf("name %s\n", name);
+			//printf("name %s\n", name);
 
 			if( strlen(name) == 1 )c = name[0];
 			if( strlen(name) == 3 )c = name[1];
@@ -361,6 +377,23 @@ static void readKey(widget_textfield_t *p)
 			p->atime = 0;
 
 			p->text[len] = c;
+
+			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
+			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
+			{
+				int i;
+
+				for( i = 0 ; i < len_shift_map ; i+= 2 )
+				{
+					if( c == shift_map[i] )
+					{
+						p->text[len] = shift_map[i+1];
+					}
+				}
+
+				checkText(p);
+				return;
+			}
 
 			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
 			    mapa[SDLK_RSHIFT] == SDL_PRESSED)

@@ -91,6 +91,22 @@ static void readKey()
 	int len;
 	int i;
 
+	const int len_shift_map = 20;
+
+	char shift_map[] =
+	{
+		'-', '_',
+		'=', '+',
+		'[', '{',
+		']', '}',
+		';', ':',
+		'/', '\"',
+		'\\', '|',
+		',', '<',
+		'.', '>',
+		'/', '?'
+	};
+
 	if (line_atime < 100)
 		line_atime ++;
 
@@ -145,6 +161,22 @@ static void readKey()
 			line_atime = 0;
 
 			line[len] = c;
+
+			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
+			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
+			{
+				int i;
+
+				for( i = 0 ; i < len_shift_map ; i+= 2 )
+				{
+					if( c == shift_map[i] )
+					{
+						line[len] = shift_map[i+1];
+					}
+				}
+
+				return;
+			}
 
 			if( mapa[SDLK_LSHIFT] == SDL_PRESSED ||
 			    mapa[SDLK_RSHIFT] == SDL_PRESSED)
