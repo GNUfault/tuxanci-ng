@@ -260,7 +260,7 @@ void initArenaFile()
 		}
 	}
 
-	printf("pocet aren: %d\n", listArenaFile->count);
+	//printf("No. of Arens: %d\n", listArenaFile->count);
 
 	destroyDirector(p);
 }

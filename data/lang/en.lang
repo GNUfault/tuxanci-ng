@@ -22,7 +22,7 @@ SERVER Server
 VERSION Version
 ADDRESS Address
 ARENA Arena
-CLIENTS Players
+CLIENTS Client
 PING Ping
 
 # error message

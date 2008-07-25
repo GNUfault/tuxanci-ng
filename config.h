@@ -1,1 +1,1 @@
-#define TUXANCI_NG_VERSION "svn170"
+#define TUXANCI_NG_VERSION "svn171"
