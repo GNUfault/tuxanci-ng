@@ -106,7 +106,7 @@ void accessExistFile(const char *s)
 
 int tryExistFile (const char *s)
 {
-	if (access(s, F_OK) !=0)
+	if (access(s, F_OK) != 0)
 		return 1;
 	else
 		return 0;

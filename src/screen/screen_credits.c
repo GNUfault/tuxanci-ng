@@ -108,7 +108,7 @@ void initScreenCredits()
 
 	if( tryExistFile(PATH_DATA SCREEN_CREDITS_FILE) == 0 )
 	{
-		creditExists=1;
+		creditExists = 1;
 		textFile = loadTextFile(PATH_DATA SCREEN_CREDITS_FILE);
     	for( i = 0 ; i < textFile->text->count ; i++ )
 		{
@@ -125,7 +125,7 @@ void initScreenCredits()
 	{
 		for( i = 0 ; i < 5 ; i++ )
 		{
-			creditExists=0;
+			creditExists = 0;
 			widget_label_t *label;
 			char *line;
 			line = "Credit file not found...";
