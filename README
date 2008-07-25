@@ -78,8 +78,8 @@ HOWTO COMPILE
 		those steps above. Only add cmake option -G "MinGW Makefiles". If cmd
 		say that no make.exe command found you need to use absolute path. Do
 		not specify PREFIX!! There is also known bug when in path to game dir
-		is separator compilation will die with error file not found, you have
-		to place source to some directory with no space in its path.
+		is space separator -> Compilation will die with error file not found,
+		you have to place source to some directory with no space in its path.
 		
 		Option -DNO_AUDIO=1 says we want no audio support for client so change
 		if you want so.
@@ -123,7 +123,7 @@ GAME USAGE
 		Common
 		~~~~~~
 			Fullscreen/window mode: F1 (dangerous with multiple monitors)
-			Pause: P
+			Pause: P # not working yet
 			Quit: Esc
 HAVE PROBLEM/FOUND BUG/ETC...
 =============================
