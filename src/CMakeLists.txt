@@ -9,8 +9,6 @@ ${WORKDIR}/net/udp ${WORKDIR}/net/dns
 )
 
 SET ( SRC_client
-
-#${WORKDIR}/client/language ${WORKDIR}/client/radar ${WORKDIR}/client/interface ${WORKDIR}/client/game #${WORKDIR}/client/image ${WORKDIR}/client/term ${WORKDIR}/client/layer ${WORKDIR}/client/screen ${WORKDIR}/client/panel #${WORKDIR}/client/client ${WORKDIR}/client/configFile ${WORKDIR}/client/font ${WORKDIR}/client/keytable
 ${WORKDIR}/client/layer ${WORKDIR}/client/term ${WORKDIR}/client/screen ${WORKDIR}/client/interface ${WORKDIR}/client/client ${WORKDIR}/client/chat ${WORKDIR}/client/configFile ${WORKDIR}/client/language ${WORKDIR}/client/keytable ${WORKDIR}/client/font ${WORKDIR}/client/game ${WORKDIR}/client/radar ${WORKDIR}/client/panel ${WORKDIR}/client/image
 
 ${WORKDIR}/screen/screen_choiceArena ${WORKDIR}/screen/screen_table ${WORKDIR}/screen/screen_setting ${WORKDIR}/screen/screen_credits ${WORKDIR}/screen/screen_world ${WORKDIR}/screen/screen_analyze ${WORKDIR}/screen/screen_mainMenu ${WORKDIR}/screen/screen_browser ${WORKDIR}/screen/screen_gameType
@@ -23,9 +21,8 @@ SET ( SRC_audio ${WORKDIR}/audio/audio ${WORKDIR}/audio/music ${WORKDIR}/audio/s
 SET ( SRC_server
 ${WORKDIR}/server/logFile ${WORKDIR}/server/serverConfigFile ${WORKDIR}/server/heightScore ${WORKDIR}/server/publicServer
 )
-# nechcem sdl
 ADD_DEFINITIONS ( -DSUPPORT_NET_UNIX_UDP )
-ADD_DEFINITIONS ( -DZZEEXX86_READKEY )
+#ADD_DEFINITIONS ( -DZZEEXX86_READKEY )
 # server nebo klient
 IF ( Server )
 	ADD_DEFINITIONS ( -DPUBLIC_SERVER )
@@ -34,9 +31,6 @@ ENDIF ( Server )
 IF ( PREFIX )
 	ADD_DEFINITIONS ( -DPREFIX="${PREFIX}" )
 ENDIF ( PREFIX )
-#IF ( Win AND NOT Server )
-#	ADD_DEFINITIONS ( -mwindows )
-#ENDIF ( Win AND NOT Server )
 IF ( Win )
 	SET ( SRC_base ${SRC_base} ${WORKDIR}/tuxanci.rc )
 ENDIF ( Win )
@@ -90,7 +84,6 @@ IF ( NOT Server ) # server nebo klient
 		MESSAGE ( STATUS "<******************************>" )
 	ENDIF ( NOT NO_Audio )
 	ADD_EXECUTABLE ( tuxanci-ng ${SRC_compile} )
-	#TARGET_LINK_LIBRARIES (tuxanci-ng modWall modPipe modTeleport modAI)
 	SET (TUX_BIN "tuxanci-ng")
 ELSE ( NOT Server )
 	# kontrola libdl
@@ -104,11 +97,7 @@ ELSE ( NOT Server )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/server )
 	SET ( SRC_compile ${SRC_base} ${SRC_server} )
 	ADD_EXECUTABLE ( tuxanci-ng-server ${SRC_compile} )
-	#TARGET_LINK_LIBRARIES (tuxanci-ng-server modWall modPipe modTeleport modAI)
 	SET (TUX_BIN "tuxanci-ng-server")
 ENDIF ( NOT Server )
 ADD_SUBDIRECTORY ( modules )
-# binarky a knihovny instalace
-#MESSAGE ( STATUS "<Installing binaries and libraries>" )
-#MESSAGE ( STATUS "<******************************>" )
 INSTALL ( TARGETS ${TUX_BIN} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME} )

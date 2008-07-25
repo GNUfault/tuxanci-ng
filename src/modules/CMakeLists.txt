@@ -1,18 +1,13 @@
-#SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
-#INCLUDE_DIRECTORIES ( ${WORKDIR}/base )
 IF ( NOT Win )
-
 	LINK_LIBRARIES ( ${CMAKE_DL_LIBS} )
 ELSE ( NOT Win )
 	LINK_LIBRARIES ( ${CMAKE_DL_LIBS} wsock32 )
 ENDIF ( NOT Win )
 IF ( NOT Server )
-	#INCLUDE_DIRECTORIES ( ${WORKDIR}/client )
 	SET ( SRC_base_modules
 		${WORKDIR}/client/interface.h ${WORKDIR}/client/image.h
 	)
 ELSE ( NOT Server )
-	#INCLUDE_DIRECTORIES ( ${WORKDIR}/server )
 	SET ( SRC_base_modules
 		${WORKDIR}/server/publicServer.h
 	)
@@ -23,20 +18,17 @@ SET ( SRC_base_modules
 )
 SET ( SRC_modWall
 	${SRC_base_modules}
-	${WORKDIR}/base/index
-	${WORKDIR}/base/space.c
+	${WORKDIR}/base/index ${WORKDIR}/base/space.c
 	modWall.c
 )
 SET ( SRC_modPipe
 	${SRC_base_modules}
-	${WORKDIR}/base/index
-	${WORKDIR}/base/space.c
+	${WORKDIR}/base/index ${WORKDIR}/base/space.c
 	modPipe.c
 )
 SET ( SRC_modTeleport
 	${SRC_base_modules}
-	${WORKDIR}/base/index
-	${WORKDIR}/base/space.c
+	${WORKDIR}/base/index ${WORKDIR}/base/space.c
 	modTeleport.c
 )
 SET ( SRC_modAI
