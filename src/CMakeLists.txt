@@ -13,7 +13,7 @@ ${WORKDIR}/client/layer ${WORKDIR}/client/term ${WORKDIR}/client/screen ${WORKDI
 
 ${WORKDIR}/screen/screen_choiceArena ${WORKDIR}/screen/screen_table ${WORKDIR}/screen/screen_setting ${WORKDIR}/screen/screen_credits ${WORKDIR}/screen/screen_world ${WORKDIR}/screen/screen_analyze ${WORKDIR}/screen/screen_mainMenu ${WORKDIR}/screen/screen_browser ${WORKDIR}/screen/screen_gameType
 
-${WORKDIR}/widget/widget_check ${WORKDIR}/widget/widget_button ${WORKDIR}/widget/widget_textfield ${WORKDIR}/widget/widget_label ${WORKDIR}/widget/widget_buttonimage ${WORKDIR}/widget/widget_image ${WORKDIR}/widget/widget_select
+${WORKDIR}/widget/widget_check ${WORKDIR}/widget/widget_button ${WORKDIR}/widget/widget_textfield ${WORKDIR}/widget/widget_label ${WORKDIR}/widget/widget_buttonimage ${WORKDIR}/widget/widget_image ${WORKDIR}/widget/widget_select ${WORKDIR}/widget/widget_catchkey
 )
 
 SET ( SRC_audio ${WORKDIR}/audio/audio ${WORKDIR}/audio/music ${WORKDIR}/audio/sound)
