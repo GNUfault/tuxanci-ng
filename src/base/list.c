@@ -80,7 +80,7 @@ void addList(list_t *p, void *item)
 		void **new;
 
 #ifdef DEBUG_LIST
-		printf("realokujem z %d na %d (count=%d)\n",
+		printf("realocating from %d to %d (count=%d)\n",
 		p->alloc, p->alloc+LIST_ALLOC_LIMIT, p->count);
 #endif
 
@@ -143,7 +143,7 @@ void delList(list_t *p, int n)
 		void **new;
 
 #ifdef DEBUG_LIST
-		printf("realokujem z %d na %d (count=%d)\n",
+		printf("realocating from %d to %d (count=%d)\n",
 		p->alloc, p->alloc-LIST_ALLOC_LIMIT, p->count);
 #endif
 

@@ -20,7 +20,7 @@
 #include "interface.h"
 #include "screen.h"
 #include "font.h"
-#include "keytable.h"
+#include "screen_settingKeys.h"
 #include "language.h"
 #include "panel.h"
 #include "radar.h"
@@ -35,6 +35,7 @@
 #include "screen_mainMenu.h"
 #include "screen_analyze.h"
 #include "screen_setting.h"
+#include "screen_settingKeys.h"
 #include "screen_gameType.h"
 #include "screen_choiceArena.h"
 #include "screen_table.h"
@@ -72,6 +73,7 @@ static void initGame()
 	initScreenMainMenu();
 	initScreenAnalyze();
 	initScreenSetting();
+	initScreenSettingKeys();
 	initScreenGameType();
 	initScreenChoiceArena();
 	initScreenCredits();
@@ -102,6 +104,7 @@ void quitGame()
 	quitScreenMainMenu();
 	quitScreenAnalyze();
 	quitScreenSetting();
+	quitScreenSettingKeys();
 	quitScreenGameType();
 	quitScreenChoiceArena();
 	quitScreenCredits();

@@ -23,6 +23,7 @@
 
 #include "screen_mainMenu.h"
 #include "screen_setting.h"
+#include "screen_settingKeys.h"
 
 #include "widget_label.h"
 #include "widget_button.h"
@@ -34,6 +35,7 @@
 static widget_image_t *image_backgorund;
 
 static widget_button_t *button_back;
+static widget_button_t *button_keys; // setting of keycontrols
 
 static widget_label_t *label_count_round;
 static widget_label_t *label_name_player1;
@@ -136,6 +138,7 @@ void drawScreenSetting()
 	drawWidgetCheck(check_ai);
 
 	drawWidgetButton(button_back);
+	drawWidgetButton(button_keys);
 }
 
 void eventScreenSetting()
@@ -168,6 +171,7 @@ void eventScreenSetting()
 	eventWidgetCheck(check_ai);
 
 	eventWidgetButton(button_back);
+	eventWidgetButton(button_keys);
 }
 
 void stopScreenSetting()
@@ -185,6 +189,10 @@ static void eventWidget(void *p)
 	if( button == button_back )
 	{
 		setScreen("mainMenu");
+	}
+	if( button == button_keys )
+	{
+		setScreen("settingKeys");
 	}
 
 #ifndef NO_SOUND
@@ -319,7 +327,8 @@ void initScreenSetting()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
+	button_keys = newWidgetButton(getMyText("CONTROLS"), WINDOW_SIZE_X - 200, button_back->y - WIDGET_BUTTON_HEIGHT - 10, eventWidget);
 
 #ifndef NO_SOUND
 	label_music = newWidgetLabel(getMyText("MUSIC"), 100, WINDOW_SIZE_Y-85, WIDGET_LABEL_LEFT);
@@ -349,13 +358,13 @@ void initScreenSetting()
 	textfield_name_player1 = newWidgetTextfield(
 		getParamElse("--name1", NAME_PLAYER_RIGHT),
 		WIDGET_TEXTFIELD_FILTER_ALPHANUM,
-		110+label_name_player1->w,
+		110+label_count_round->w,
 		WINDOW_SIZE_Y-160);
 
 	textfield_name_player2 = newWidgetTextfield(
 		getParamElse("--name2", NAME_PLAYER_LEFT),
 		WIDGET_TEXTFIELD_FILTER_ALPHANUM,
-		110+label_name_player2->w,
+		110+label_count_round->w,
 		WINDOW_SIZE_Y-120);
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
@@ -532,5 +541,5 @@ void quitScreenSetting()
 	}
 
 	destroyWidgetButton(button_back);
+	destroyWidgetButton(button_keys);
 }
-

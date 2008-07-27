@@ -117,8 +117,8 @@ GAME USAGE
 		Player one
 		~~~~~~~~~~
 			movement: cursor arows
-			fire: zero or rctrl
-			change weapon: one or rshift
+			fire: zero [ 0 ] NumPad
+			change weapon: one [ 1 ] NumPad
 		Player two
 		~~~~~~~~~~
 			movement: W(u) S(d) A(l) D(r)

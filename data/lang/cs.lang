@@ -42,6 +42,18 @@ NAME_PLAYER1 Hráč 1:
 NAME_PLAYER2 Hráč 2:
 MUSIC Hudba:
 SOUND Zvuky:
+CONTROLS Ovládání
+
+#setting keys - menu
+TUXLEFT Hráč 2
+TUXRIGHT Hráč 1
+KEY_UP Nahoru:
+KEY_DOWN Dolu:
+KEY_LEFT Doleva:
+KEY_RIGHT Doprava:
+KEY_FIRE Střelba:
+KEY_SWITCH Přepnutí zb.:
+#setting keys - menu
 
 # settings - game type
 NONE Lokální hra

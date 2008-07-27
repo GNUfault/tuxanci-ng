@@ -19,6 +19,4 @@ extern bool_t isSettingAI();
 extern bool_t isSettingAnyItem();
 extern bool_t isSettingItem(int item);
 extern void quitScreenSetting();
-
 #endif
-

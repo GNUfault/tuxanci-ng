@@ -42,6 +42,17 @@ NAME_PLAYER1 Player 1:
 NAME_PLAYER2 Player 2:
 MUSIC Music:
 SOUND Sound:
+CONTROLS Controls
+
+#setting keys - menu
+TUXLEFT Player 2
+TUXRIGHT Player 1
+KEY_UP Up:
+KEY_DOWN Down:
+KEY_LEFT Left:
+KEY_RIGHT Right:
+KEY_FIRE Fire weapon:
+KEY_SWITCH Switch weapon:
 
 # settings - game type
 NONE Local game

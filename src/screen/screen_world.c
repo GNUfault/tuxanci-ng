@@ -17,7 +17,7 @@
 #include "idManager.h"
 
 #include "interface.h"
-#include "keytable.h"
+#include "screen_settingKeys.h"
 #include "layer.h"
 #include "image.h"
 #include "font.h"
