@@ -33,8 +33,8 @@ ERROR_SERVER_DONT_ALIVE Serveur ne correspond pas.
 # main menu
 PLAY    Jouer
 SETTING Mise au point
-TABLE   Top Score
-CREDITS Credits
+TABLE   Le meilleur score
+CREDITS Auteurs
 END     Fin
 
 # settings - menu
@@ -45,9 +45,9 @@ MUSIC        La musique
 SOUND        Le son
 
 # settings - game type
-NONE     Local game
+NONE     Jeu
 SERVER   Création de serveur
-CLIENT   Network game
+CLIENT   Jeu sur le réseau
 IP_ADDR  IP adresse de serveur:
-NET_PORT Network port:
+NET_PORT Port de réseau:
 BROWSER  Moteur de recherche
