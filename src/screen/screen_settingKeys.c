@@ -62,6 +62,8 @@ static widget_label_t *tux_left_keyleft_val;
 static widget_label_t *tux_left_keyright_val;
 static widget_label_t *tux_left_keyswitch_val;
 static widget_label_t *tux_left_keyfire_val;
+
+static widget_catcgkey_t *catcher;
 // todo add key images 
 // possible variant will be reusing widget_image for current widget_label so there wont 
 // be key names but only images
@@ -219,6 +221,11 @@ void drawScreenSettingKeys()
 	drawWidgetLabel(tux_left_keyswitch_val);
 	drawWidgetLabel(tux_left_keyfire_val);
 }
+void createNewKey() {
+	// create catchkey
+	// redraw keyval
+	// update config file
+}
 static void eventWidget(void *p)
 {
 	widget_button_t *button;
@@ -230,10 +237,138 @@ static void eventWidget(void *p)
 	if(button == button_back) {
 		setScreen("setting");
 	}
+	//events on picture/text
+	if(label == tux_left_keyup) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keydown) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyleft) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyright) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyfire) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyswitch) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyup) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keydown) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyleft) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyright) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyswitch) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyfire) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	//events on value
+	if(label == tux_left_keyup_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keydown_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyleft_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyright_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyfire_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_left_keyswitch_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyup_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keydown_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyleft_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyright_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyswitch_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
+	if(label == tux_right_keyfire_val) {
+		//call load of new value
+		//call change to config + redraw of value
+	}
 }
 void eventScreenSettingKeys()
 {
 	eventWidgetButton(button_back);
+	// text/image
+	eventWidgetLabel(tux_right);
+	eventWidgetLabel(tux_left);
+	eventWidgetLabel(tux_right_keyup);
+	eventWidgetLabel(tux_right_keydown);
+	eventWidgetLabel(tux_right_keyleft);
+	eventWidgetLabel(tux_right_keyright);
+	eventWidgetLabel(tux_right_keyswitch);
+	eventWidgetLabel(tux_right_keyfire);
+	eventWidgetLabel(tux_left_keyup);
+	eventWidgetLabel(tux_left_keydown);
+	eventWidgetLabel(tux_left_keyleft);
+	eventWidgetLabel(tux_left_keyright);
+	eventWidgetLabel(tux_left_keyswitch);
+	eventWidgetLabel(tux_left_keyfire);
+	// value
+	eventWidgetLabel(tux_right_val);
+	eventWidgetLabel(tux_left_val);
+	eventWidgetLabel(tux_right_keyup_val);
+	eventWidgetLabel(tux_right_keydown_val);
+	eventWidgetLabel(tux_right_keyleft_val);
+	eventWidgetLabel(tux_right_keyright_val);
+	eventWidgetLabel(tux_right_keyswitch_val);
+	eventWidgetLabel(tux_right_keyfire_val);
+	eventWidgetLabel(tux_left_keyup_val);
+	eventWidgetLabel(tux_left_keydown_val);
+	eventWidgetLabel(tux_left_keyleft_val);
+	eventWidgetLabel(tux_left_keyright_val);
+	eventWidgetLabel(tux_left_keyswitch_val);
+	eventWidgetLabel(tux_left_keyfire_val);
 }
 void stopScreenSettingKeys()
 {
@@ -280,7 +415,8 @@ void initScreenSettingKeys()
 	registerScreen( newScreen("settingKeys", startScreenSettingKeys, eventScreenSettingKeys,
 		drawScreenSettingKeys, stopScreenSettingKeys) );	
 }
-void quitKeyTable() {
+void quitKeyTable()
+{
 	destroyTextFile(keycontrolFile);
 	destroyTextFile(keytableFile);
 }
@@ -314,8 +450,6 @@ void quitScreenSettingKeys()
 	destroyWidgetLabel(tux_left_keyright_val);
 	destroyWidgetLabel(tux_left_keyswitch_val);
 	destroyWidgetLabel(tux_left_keyfire_val);
-	
-	quitKeyTable();
 	
 	destroyWidgetButton(button_back);
 }
