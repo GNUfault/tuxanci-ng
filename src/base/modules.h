@@ -30,7 +30,7 @@ typedef struct export_fce_s
 #endif
 
 	int (*fce_getNetTypeGame)();
-	int (*fce_loadDepModule)(void *name);
+	int (*fce_loadDepModule)(char *name);
 #ifndef __WIN32__
 	void (*fce_addToExportFce)(char *name, void *function);
 #else

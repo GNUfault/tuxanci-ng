@@ -6,7 +6,7 @@
 #include "font.h"
 #include "widget_catchkey.h"
 
-widget_catchkey_t* newWidgetCatchkey(int key, int x, int y)
+widget_catchkey_t* newWidgetCatchkey(int key, int x, int y, void *event)
 {
 	widget_catchkey_t *new;
 
@@ -15,6 +15,7 @@ widget_catchkey_t* newWidgetCatchkey(int key, int x, int y)
 	new->x = x;
 	new->y = y;
 	new->key = key;
+	new->fce_event = event;
 
 	return new;
 }
@@ -94,6 +95,7 @@ void eventWidgetCatchkey(widget_catchkey_t *p)
 		if( key != WIDGET_CATCHKEY_NOKEY )
 		{
 			p->key = key;
+			p->fce_event(p);
 		}
 	}
 }
