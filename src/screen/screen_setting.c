@@ -213,7 +213,7 @@ static void initSettingFile()
 	char path[STR_PATH_SIZE];
 	char val[STR_SIZE];
 
-	sprintf(path, "%s/tuxanci-ng.conf", getHomeDirector());
+	sprintf(path, "%s/tuxanci.conf", getHomeDirector());
 
 	configFile = loadTextFile(path);
 

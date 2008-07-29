@@ -33,7 +33,7 @@ src_unpack() {
 		-e "s:PATH_DIR\tPREFIX:PATH_DIR:" src/base/path.h \
 		|| die "sed config.h failed!"
 	sed -i \
-		-e "s:share/tuxanci-ng:${GAMES_DATADIR}/tuxanci-ng:" src/base/path.h \
+		-e "s:share/tuxanci:${GAMES_DATADIR}/tuxanci-ng:" src/base/path.h \
 		|| die "sed config.h failed!"
 	sed -i \
 		-e "s:CMAKE_INSTALL_DATADIR share/:CMAKE_INSTALL_DATADIR /usr/share/games/:" CMakeLists.txt \

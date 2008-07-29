@@ -33,7 +33,7 @@ echo "* Fetching files from SVN"
 svn export $SVN $BUILD_DIR >> pkgs/"${log}" || ( echo $error; exit 1 )
 
 echo "* Configuring"
-echo "#define TUXANCI_NG_VERSION \"${VERSION}\"" > $BUILD_DIR/config.h || ( echo $error; exit 1 )
+echo "#define TUXANCI_VERSION \"${VERSION}\"" > $BUILD_DIR/config.h || ( echo $error; exit 1 )
 
 echo "* Compiling"
 prevdir=`pwd`

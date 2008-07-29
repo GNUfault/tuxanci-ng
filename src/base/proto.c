@@ -77,7 +77,7 @@ void proto_send_hello_client(char *name)
 {
 	char msg[STR_PROTO_SIZE];
 	
-	sprintf(msg, "hello %s %s\n", TUXANCI_NG_VERSION, name);
+	sprintf(msg, "hello %s %s\n", TUXANCI_VERSION, name);
 	sendServer(msg);
 }
 
@@ -96,7 +96,7 @@ void proto_recv_hello_server(client_t *client, char *msg)
 	
 	sscanf(msg, "%s %s %s", cmd, version, name);
 	
-	if( strncmp(version, TUXANCI_NG_VERSION, strlen(TUXANCI_NG_VERSION)) != 0 )
+	if( strncmp(version, TUXANCI_VERSION, strlen(TUXANCI_VERSION)) != 0 )
 	{
 		proto_send_error_server(PROTO_SEND_ONE, client, PROTO_ERROR_CODE_BAD_VERSION);
 		eventMsgInCheckFront(client);
@@ -137,7 +137,7 @@ void proto_send_status_server(int type, client_t *client)
 	name = getServerConfigFileValue("NAME", "noname");
 #endif
 
-	version = TUXANCI_NG_VERSION;
+	version = TUXANCI_VERSION;
 	clients = getCurrentArena()->spaceTux->list->count;
 	maxclients = getServerMaxClients();
 	uptime = (unsigned int)getUpdateServer();

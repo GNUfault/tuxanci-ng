@@ -22,7 +22,7 @@ echo "* Fetching files from SVN"
 svn export $SVN pkgs/tuxanci-0.20.0-src >> pkgs/src.log || `echo $error; exit 1`
 
 echo "* Configuring"
-echo "#define TUXANCI_NG_VERSION \"${VERSION}\"" > $INSTALL_DIR/config.h || `echo $error; exit 1`
+echo "#define TUXANCI_VERSION \"${VERSION}\"" > $INSTALL_DIR/config.h || `echo $error; exit 1`
 
 rm -fv $INSTALL_DIR/ci >> pkgs/src.log || `echo $error; exit 1`
 

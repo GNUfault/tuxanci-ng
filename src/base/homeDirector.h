@@ -5,7 +5,7 @@
 
 #include "main.h"
 
-#define HOMEDIRECTOR_NAME ".tuxanci-ng"
+#define HOMEDIRECTOR_NAME ".tuxanci"
 
 extern void createHomeDirector();
 extern char *getHomeDirector();

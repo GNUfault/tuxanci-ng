@@ -7,9 +7,9 @@
 
 # !! pri zmene zdrojovych souboru se podivejte co je treba delat do souboru !!
 # !! CMakeLists.txt v adresari src !!
-SET ( APPNAME "tuxanci-ng")
+SET ( APPNAME "tuxanci")
 IF ( Server )
-	SET ( APPNAME "tuxanci-ng-server" )
+	SET ( APPNAME "tuxanci-server" )
 ENDIF ( Server )
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )

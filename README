@@ -107,7 +107,7 @@ GAME USAGE
 	(eg.: "$ cd tuxanci/bin && ./tuxanci").
 
 	For client we create some configuration files in $HOME. There is created
-	".tuxanci-ng" directory and in there are pretty explaining .conf files.
+	".tuxanci" directory and in there are pretty explaining .conf files.
 
 	For server we create directory /etc/tuxanci/server.conf where you could
 	do some changes for it (again pretty selfexplaining).
