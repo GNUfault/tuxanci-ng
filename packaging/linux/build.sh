@@ -19,8 +19,8 @@ do
 done
 
 INSTALL_DIR="pkgs/tuxanci-${SRV_NAM}${VERSION}-linux"
-BUILD_DIR="pkgs/build/"
-SVN='https://opensvn.csie.org/tuxanci_ng/'
+BUILD_DIR="../../"
+#SVN='https://opensvn.csie.org/tuxanci_ng/'
 log='linux.log'
 error="Error! See pkgs/${log} for more iformation"
 mkdir -p pkgs/tuxanci-${SRV_NAM}${VERSION}-linux || ( echo $error; exit 1 )
@@ -29,8 +29,8 @@ echo "" > pkgs/${log} || ( echo $error; exit 1 )
 
 rm -rfv $INSTALL_DIR $BUILD_DIR > pkgs/"${log}" || ( echo $error; exit 1 )
 
-echo "* Fetching files from SVN"
-svn export $SVN $BUILD_DIR >> pkgs/"${log}" || ( echo $error; exit 1 )
+#echo "* Fetching files from SVN"
+#svn export $SVN $BUILD_DIR >> pkgs/"${log}" || ( echo $error; exit 1 )
 
 echo "* Configuring"
 echo "#define TUXANCI_VERSION \"${VERSION}\"" > $BUILD_DIR/config.h || ( echo $error; exit 1 )
@@ -38,7 +38,7 @@ echo "#define TUXANCI_VERSION \"${VERSION}\"" > $BUILD_DIR/config.h || ( echo $e
 echo "* Compiling"
 prevdir=`pwd`
 cd $BUILD_DIR
-cmake . -DPREFIX=\\\"..\\\" -DCMAKE_INSTALL_PREFIX:PATH="${prevdir}/${INSTALL_DIR}" ${SRV} -DLIBDIR=\\\"../lib/\\\" >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
+cmake . -DDebug=1 -DPREFIX=\\\"..\\\" -DCMAKE_INSTALL_PREFIX:PATH="${prevdir}/${INSTALL_DIR}" ${SRV} -DLIBDIR=\\\"../lib/\\\" >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
 make >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
 sudo make install >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
 cd $prevdir
