@@ -228,7 +228,9 @@ static int initPublicServerNetwork()
 	port4 = atoi( getSetting("PORTv4", "--port", "2200") );
 	port6 = atoi( getSetting("PORTv6", "--port", "2200") );
 
-	ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+	//ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+	
+	ret = initNetMuliplayer(NET_GAME_TYPE_SERVER, p_ip4, port4, PROTO_TCPv4);
 
 	return ret;
 }

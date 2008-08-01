@@ -175,10 +175,10 @@ void drawArena(arena_t *arena)
 	getCenterScreen(&screen_x, &screen_y, tux->x, tux->y);
 
 	for( i = screen_y/arena->background->h ;
-	     i <= screen_y/arena->background->h + WINDOW_SIZE_Y/arena->background->h ; i++ )
+	     i <= screen_y/arena->background->h + WINDOW_SIZE_Y/arena->background->h+1 ; i++ )
 	{
 		for( j = screen_x/arena->background->w ;
-		     j <= screen_x/arena->background->w + WINDOW_SIZE_X/arena->background->w ; j++ )
+		     j <= screen_x/arena->background->w + WINDOW_SIZE_X/arena->background->w+1 ; j++ )
 		{
 			addLayer(arena->background,
 				j * arena->background->w,

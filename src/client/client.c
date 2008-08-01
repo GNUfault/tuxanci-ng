@@ -28,12 +28,16 @@
 #include "screen_world.h"
 
 #include "udp.h"
+#include "tcp.h"
+#include "buffer.h"
 
-static int protocolType;
+#define SUPPORT_UDP
 
 static sock_udp_t *sock_server_udp;
+static sock_tcp_t *sock_server_tcp;
 
-static list_t *clientBuffer;
+static list_t *listRecvMsg;
+static buffer_t *clientBuffer;
 static my_time_t lastPing;
 static my_time_t lastPingServerAlive;
 
@@ -83,19 +87,7 @@ static proto_cmd_client_t* findCmdProto(char *msg)
 	return NULL;
 }
 
-static void initClient()
-{
-	char name[STR_NAME_SIZE];
-
-	clientBuffer = newList();
-	lastPing = getMyTime();
-	lastPingServerAlive = getMyTime();
-
-	getSettingNameRight(name);
-	proto_send_hello_client(name);
-}
-
-int initUdpClient(char *ip, int port, int proto)
+static int initUdpClient(char *ip, int port, int proto)
 {
 	sock_server_udp = connectUdpSocket(ip, port, proto);
 
@@ -106,8 +98,50 @@ int initUdpClient(char *ip, int port, int proto)
 
 	printf("connect UDP %s %d\n", ip, port);
 
-	protocolType = NET_PROTOCOL_TYPE_UDP;
-	initClient();
+	return 0;
+}
+
+static int initTcpClient(char *ip, int port, int proto)
+{
+	sock_server_tcp = connectTcpSocket(ip, port, proto);
+
+	if( sock_server_tcp == NULL )
+	{
+		return -1;
+	}
+
+	disableNagle(sock_server_tcp);
+
+	printf("connect TCP %s %d\n", ip, port);
+
+	return 0;
+}
+
+int initClient(char *ip, int port, int proto)
+{
+	char name[STR_NAME_SIZE];
+	int ret;
+
+	listRecvMsg = newList();
+	lastPing = getMyTime();
+	lastPingServerAlive = getMyTime();
+	clientBuffer = newBuffer(4096);
+
+#ifdef SUPPORT_UDP
+	ret = initUdpClient(ip, port, proto);
+#endif
+
+#ifdef SUPPORT_TCP
+	ret = initTcpClient(ip, port, proto);
+#endif
+
+	if( ret < 0 )
+	{
+		return -1;
+	}
+
+	getSettingNameRight(name);
+	proto_send_hello_client(name);
 
 	return 0;
 }
@@ -125,7 +159,13 @@ void sendServer(char *msg)
 	}
 #endif
 
+#ifdef SUPPORT_UDP
 	ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
+#endif
+
+#ifdef SUPPORT_TCP
+	ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
+#endif
 }
 
 static int eventServerSelect()
@@ -135,14 +175,28 @@ static int eventServerSelect()
 
 	memset(buffer, 0, STR_PROTO_SIZE);
 
+#ifdef SUPPORT_UDP
 	ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE-1);
+#endif
 
-	if( ret < 0 )
+#ifdef SUPPORT_TCP
+	ret = readTcpSocket(sock_server_tcp, buffer, STR_PROTO_SIZE-1);
+#endif
+
+	if( ret <= 0 )
 	{
 		return ret;
 	}
 
-	addList(clientBuffer, strdup(buffer) );
+	addBuffer(clientBuffer, buffer, ret);
+
+	while( getBufferLine(clientBuffer, buffer, STR_PROTO_SIZE) >= 0 )
+	{
+		if( strlen(buffer) > 0)
+		{
+			addList(listRecvMsg, strdup(buffer) );
+		}
+	}
 	
 	return ret;
 }
@@ -155,11 +209,11 @@ static void eventServerBuffer()
 
 	/* obsluha udalosti od servera */
 	
-	assert( clientBuffer != NULL );
+	assert( listRecvMsg != NULL );
 
-	for( i = 0 ; i < clientBuffer->count ; i++ )
+	for( i = 0 ; i < listRecvMsg->count ; i++ )
 	{
-		line = (char *)clientBuffer->list[i];
+		line = (char *)listRecvMsg->list[i];
 		protoCmd = findCmdProto(line);
 
 #ifndef PUBLIC_SERVER
@@ -175,8 +229,8 @@ static void eventServerBuffer()
 		}
 	}
 
-	destroyListItem(clientBuffer, free);
-	clientBuffer = newList();
+	destroyListItem(listRecvMsg, free);
+	listRecvMsg = newList();
 }
 
 static void eventPingServer()
@@ -206,11 +260,12 @@ static bool_t isServerAlive()
 	return TRUE;
 }
 
-static void selectClientUdpSocket()
+static void selectClientSocket()
 {
 	fd_set readfds;
 	struct timeval tv;
 	int max_fd;
+	int sock;
 	bool_t isNext;
 
 	if( isServerAlive() == FALSE )
@@ -228,15 +283,25 @@ static void selectClientUdpSocket()
 		tv.tv_usec = 0;
 		
 		FD_ZERO(&readfds);
-		FD_SET(sock_server_udp->sock, &readfds);
-		max_fd = sock_server_udp->sock;
-	
+
+#ifdef SUPPORT_UDP
+		sock = sock_server_udp->sock;
+#endif	
+
+#ifdef SUPPORT_TCP
+		sock = sock_server_tcp->sock;
+#endif
+
+		FD_SET(sock, &readfds);
+		max_fd = sock;
 		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
 	
-		if( FD_ISSET(sock_server_udp->sock, &readfds) )
+		if( FD_ISSET(sock, &readfds) )
 		{
-			eventServerSelect();
-			isNext = TRUE;
+			if( eventServerSelect() > 0 )
+			{
+				isNext = TRUE;
+			}
 		}
 
 	}while( isNext == TRUE );
@@ -245,23 +310,39 @@ static void selectClientUdpSocket()
 void eventClient()
 {
 	eventPingServer();
-	selectClientUdpSocket();
+	selectClientSocket();
 	eventServerBuffer();
 }
 
-static void quitClient()
+static void quitUdpClient()
 {
-	proto_send_end_client();
-	assert( clientBuffer != NULL );
-	destroyListItem(clientBuffer, free);
-}
-
-void quitUdpClient()
-{
-	quitClient();
-
 	assert( sock_server_udp != NULL );
 	closeUdpSocket(sock_server_udp);
 
 	printf("quit UDP conenct\n");
 }
+
+static void quitTcpClient()
+{
+	assert( sock_server_tcp != NULL );
+	closeTcpSocket(sock_server_tcp);
+
+	printf("quit TCP conenct\n");
+}
+
+void quitClient()
+{
+	proto_send_end_client();
+	assert( listRecvMsg != NULL );
+	destroyListItem(listRecvMsg, free);
+	destroyBuffer(clientBuffer);
+
+#ifdef SUPPORT_UDP
+	quitUdpClient();
+#endif
+
+#ifdef SUPPORT_TCP
+	quitTcpClient();
+#endif
+}
+

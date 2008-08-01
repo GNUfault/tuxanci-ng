@@ -218,6 +218,8 @@ int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 	}
 #endif
 
+	dst->sock = src->sock;
+
         if( size < 0 )
         {
 		char str_ip[STR_IP_SIZE];

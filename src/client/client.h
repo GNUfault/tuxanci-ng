@@ -9,10 +9,10 @@
 #define CLIENT_TIMEOUT		1000
 #define SERVER_TIMEOUT_ALIVE	5000
 
-extern int initUdpClient(char *ip, int port, int proto);
+extern int initClient(char *ip, int port, int proto);
 extern void sendServer(char *msg);
 extern void eventClient();
-extern void quitUdpClient();
+extern void quitClient();
 
 #endif
 

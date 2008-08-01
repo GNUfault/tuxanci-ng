@@ -10,6 +10,8 @@
 #include "myTimer.h"
 #include "protect.h"
 #include "udp.h"
+#include "tcp.h"
+#include "buffer.h"
 
 #ifndef PUBLIC_SERVER
 #include "interface.h"
@@ -23,10 +25,15 @@
 
 #define SERVER_INDEX_ROOT_TUX	0
 
+#define CLIENT_TYPE_UDP		1
+#define CLIENT_TYPE_TCP		2
+
 typedef struct client_struct
 {
-	sock_udp_t *socket_udp_server;
+	int type;
 	sock_udp_t *socket_udp;
+	sock_tcp_t *socket_tcp;
+	buffer_t *buffer;
 
 	int status;
 
@@ -40,17 +47,18 @@ typedef struct client_struct
 	list_t *listSeesShot;
 } client_t;
 
-
+extern int initServer(char *ip, int port, int proto);
 extern time_t getUpdateServer();
-extern int initUdpServer(char *ip, int port, int proto);
-extern int initUdpPublicServer(char *ip4, int port4, char *ip6, int port6);
+extern client_t* newAnyClient();
+extern void destroyAnyClient(client_t *p);
 extern list_t* getListServerClient();
 extern int getServerMaxClients();
+extern void setServerTimer();
 extern void setServerMaxClients(int n);
+extern void sendInfoCreateClient(client_t *client);
 extern void sendClient(client_t *p, char *msg);
 extern void protoSendClient(int type, client_t *client, char *msg, int type2, int id);
-extern void sendInfoCreateClient(client_t *client);
 extern void eventServer();
-extern void quitUdpServer();
+extern void quitServer();
 
 #endif

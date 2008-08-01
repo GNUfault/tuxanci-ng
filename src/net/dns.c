@@ -18,7 +18,7 @@ char* getIPFormDNS(char *domain)
 
 	host = gethostbyname(domain);
 
-	if( host == NULL ||  host->h_addr_list[0] == NULL )
+	if( host == NULL || host->h_addr_list[0] == NULL )
 	{
 		return NULL;
 	}

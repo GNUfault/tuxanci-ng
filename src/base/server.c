@@ -1,28 +1,29 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <sys/types.h>
+#ifndef __WIN32__
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+#else
+# include <windows.h>
+# include <wininet.h>
+#endif
 
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
 #include <fcntl.h>
-#include <sys/time.h>
-
-#ifndef __WIN32__
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/select.h>
-#else
-#include <io.h>
-#include <winsock2.h>
-#endif
 
 #include "main.h"
 #include "list.h"
 #include "tux.h"
 #include "proto.h"
 #include "server.h"
+#include "udp_server.h"
+#include "tcp_server.h"
 #include "myTimer.h"
 #include "arena.h"
 #include "net_multiplayer.h"
@@ -39,13 +40,9 @@
 #include "heightScore.h"
 #endif
 
-#include "udp.h"
-
-static sock_udp_t *sock_server_udp;
-static sock_udp_t *sock_server_udp_second;
+#define SUPPORT_UDP
 
 static list_t *listClient;
-static list_t *listClientIndex;
 
 static list_t *listServerTimer;
 static time_t timeUpdate;
@@ -112,43 +109,27 @@ time_t getUpdateServer()
 	return time(NULL) - timeUpdate;
 }
 
-static client_t* newUdpClient(sock_udp_t *sock_udp, sock_udp_t *socket_udp_server)
+client_t* newAnyClient()
 {
 	client_t *new;
-	char str_ip[STR_IP_SIZE];
 
-	assert( sock_udp != NULL );
-
-	getSockUdpIp(sock_udp, str_ip, STR_IP_SIZE);
-	printf("new client from %s %d\n", str_ip, getSockUdpPort(sock_udp));
-	
 	new = malloc( sizeof(client_t) );
 	memset(new, 0, sizeof(client_t));
-	
+
 	new->status = NET_STATUS_OK;
 	new->listRecvMsg = newList();
 	new->listSendMsg = newCheckFront();
 	new->listSeesShot = newList();
 	new->protect = newProtect();
-	new->socket_udp = sock_udp;
-	new->socket_udp_server = socket_udp_server;
 
 	return new;
 }
 
-static void destroyClient(client_t *p)
+void destroyAnyClient(client_t *p)
 {
-	char str_ip[STR_IP_SIZE];
-
 	assert( p != NULL );
 
-	eventMsgInCheckFront(p);
-
-	getSockUdpIp(p->socket_udp, str_ip, STR_IP_SIZE);
-	printf("close connect %s %d\n", str_ip, getSockUdpPort(p->socket_udp) );
-
-	closeUdpSocket(p->socket_udp);
-
+	//eventMsgInCheckFront(p);
 	destroyListItem(p->listRecvMsg, free);
 	destroyListItem(p->listSeesShot, free);
 	destroyCheckFront(p->listSendMsg);
@@ -170,12 +151,22 @@ static void eventDelClient(client_t *client)
 {
 	int offset;
 
-	offset =  getFormIndex(listClientIndex, getSockUdpPort(client->socket_udp));
+	offset =  searchListItem(listClient, client);
 
 	assert( offset != -1 );
 
-	delFromIndex(listClientIndex, getSockUdpPort(client->socket_udp));
-	delListItem(listClient, offset, destroyClient);
+	switch( client->type )
+	{
+		case CLIENT_TYPE_UDP :
+			delListItem(listClient, offset, destroyUdpClient);
+		break;
+		case CLIENT_TYPE_TCP :
+			delListItem(listClient, offset, destroyTcpClient);
+		break;
+		default :
+			assert( ! "zly typ !");
+		break;
+	}
 }
 
 static void delZombieCLient(void *p_nothink)
@@ -208,7 +199,6 @@ static void delZombieCLient(void *p_nothink)
 			i--;
 		}
 	}
-
 }
 
 static void eventPeriodicSyncClient(void *p_nothink)
@@ -241,7 +231,7 @@ static void eventSendPingClients(void *p_nothink)
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
 
-static void setServerTimer()
+void setServerTimer()
 {
 	if( listServerTimer != NULL )
 	{
@@ -256,73 +246,27 @@ static void setServerTimer()
 	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
 }
 
-
-static void initServer()
+int initServer(char *ip, int port, int proto)
 {
+	int ret;
+
 	startUpdateServer();
 	listServerTimer = NULL;
 
 	listClient = newList();
-	listClientIndex = newIndex();
 
 	setServerMaxClients(SERVER_MAX_CLIENTS);
 	setServerTimer();
-}
 
-int initUdpServer(char *ip, int port, int proto)
-{
-	sock_server_udp = bindUdpSocket(ip, port, proto);
-	sock_server_udp_second = NULL;
-
-	if( sock_server_udp == NULL )
-	{
-		return -1;
-	}
-
-	initServer();
-
-	printf("server listen UDP port %s %d\n", ip, port);
-
-	return 0;
-}
-
-#ifdef PUBLIC_SERVER
-
-int initUdpPublicServer(char *ip4, int port4, char *ip6, int port6)
-{
-	sock_server_udp = NULL;
-	sock_server_udp_second = NULL;
-
-	if( ip4 != NULL )
-	{
-		sock_server_udp = bindUdpSocket(ip4, port4, PROTO_UDPv4);
-	
-		if( sock_server_udp == NULL )
-		{
-			return -1;
-		}
-	
-		printf("server listen UDP port %s %d\n", ip4, port4);
-	}
-
-	if( ip6 != NULL )
-	{
-		sock_server_udp_second = bindUdpSocket(ip6, port6, PROTO_UDPv6);
-	
-		if( sock_server_udp_second == NULL )
-		{
-			return -1;
-		}
-	
-		printf("server listen UDP port %s %d\n", ip6, port6);
-	}
-
-	initServer();
-
-	return 0;
-}
-
+#ifdef SUPPORT_UDP
+	ret = initUdpServer(ip, port, proto);
 #endif
+
+#ifdef SUPPORT_TCP
+	ret = initTcpServer(ip, port, proto);
+#endif
+	return ret;
+}
 
 list_t* getListServerClient()
 {
@@ -355,7 +299,23 @@ void sendClient(client_t *p, char *msg)
 		}
 #endif
 
-		ret = writeUdpSocket(p->socket_udp_server, p->socket_udp, msg, strlen(msg));
+		switch( p->type )
+		{
+			case CLIENT_TYPE_UDP :
+				ret = writeUdpSocket(p->socket_udp, p->socket_udp, msg, strlen(msg));
+			break;
+			case CLIENT_TYPE_TCP :
+				ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));
+			break;
+			default :
+				assert( ! "zly typ !");
+			break;
+		}
+	
+		if( ret <= 0 )
+		{
+			p->status = NET_STATUS_ZOMBIE;
+		}
 	}
 }
 
@@ -520,25 +480,6 @@ void sendInfoCreateClient(client_t *client)
 	}
 }
 
-static void eventCreateNewUdpClient(sock_udp_t *socket_udp, sock_udp_t *socket_udp_server)
-{
-	client_t *client;
-	int offset;
-
-	assert( socket_udp != NULL );
-
-	client = newUdpClient( socket_udp, socket_udp_server );
-
-	offset = addToIndex(listClientIndex, getSockUdpPort(client->socket_udp) );
-
-	if( offset == -1 )
-	{
-		return;
-	}
-
-	insList(listClient, offset, client);
-}
-
 static void eventClientBuffer(client_t *client)
 {
 	proto_cmd_server_t* protoCmd;
@@ -589,220 +530,41 @@ static void eventClientListBuffer()
 	}
 }
 
-static client_t* findUdpClient(sock_udp_t *sock_udp)
-{
-	int offset;
-
-	offset =  getFormIndex(listClientIndex, getSockUdpPort(sock_udp));
-
-	if( offset == -1 )
-	{
-		return NULL;
-	}
-
-	return (client_t *) listClient->list[offset];
-
-}
-
-static void eventClientUdpSelect(sock_udp_t *sock_server)
-{
-	sock_udp_t *sock_client;
-	client_t *client;
-	char listRecvMsg[STR_SIZE];
-	bool_t isCreateNewClient;
-	int ret;
-
-	assert( sock_server != NULL );
-
-	sock_client = newSockUdp(sock_server->proto);
-	isCreateNewClient = FALSE;
-
-	memset(listRecvMsg, 0, STR_SIZE);
-
-	ret = readUdpSocket(sock_server, sock_client, listRecvMsg, STR_SIZE-1);
-
-	client = findUdpClient(sock_client);
-
-	if( client == NULL )
-	{
-		if( getCurrentArena()->spaceTux->list->count+1 > maxClients )
-		{
-			destroySockUdp(sock_client);
-			return;
-		}
-
-		eventCreateNewUdpClient(sock_client, sock_server);
-		client = findUdpClient(sock_client);
-		isCreateNewClient = TRUE;
-	}
-
-	if( client == NULL )
-	{
-		fprintf(stderr, "Client total not found !\n");
-		return;
-	}
-	
-	if( isCreateNewClient == FALSE )
-	{
-		destroySockUdp(sock_client);
-	}
-
-	if( ret <= 0 )
-	{
-		client->status = NET_STATUS_ZOMBIE;
-		return;
-	}
-
-	//printf("add packet >>%s<<\n", listRecvMsg);
-	addList(client->listRecvMsg, strdup(listRecvMsg) );
-}
-
-static int selectServerUdpSocket()
-{
-	struct timeval tv;
-	fd_set readfds;
-	fd_set errorfds;
-	int max_fd;
-	int ret;
-	int count;
-
-#ifndef PUBLIC_SERVER
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-#endif	
-
-#ifdef PUBLIC_SERVER
-	tv.tv_sec = 0;
-	tv.tv_usec = 1000;
-#endif	
-
-	FD_ZERO(&readfds);
-	FD_ZERO(&errorfds);
-
-	max_fd = 0;
-	count = 0;
-
-	if( sock_server_udp != NULL )
-	{
-		FD_SET(sock_server_udp->sock, &errorfds);
-		FD_SET(sock_server_udp->sock, &readfds);
-
-		if( sock_server_udp->sock > max_fd )
-		{
-			max_fd = sock_server_udp->sock;
-		}
-	}
-
-	if( sock_server_udp_second != NULL )
-	{
-		FD_SET(sock_server_udp_second->sock, &readfds);
-		FD_SET(sock_server_udp_second->sock, &errorfds);
-
-		if( sock_server_udp_second->sock > max_fd )
-		{
-			max_fd = sock_server_udp_second->sock;
-		}
-	}
-
-	//printf("select..\n");
-
-#ifdef PUBLIC_SERVER
-	if( listClient->count == 0 )
-	{
-		ret = select(max_fd+1, &readfds, (fd_set *)NULL, &errorfds,  NULL);
-		setServerTimer();
-	}
-	else
-	{
-		ret = select(max_fd+1, &readfds, (fd_set *)NULL,&errorfds, &tv);
-	}
-#endif
-
-#ifndef PUBLIC_SERVER
-	ret = select(max_fd+1, &readfds, (fd_set *)NULL,&errorfds, &tv);
-#endif
-
-	if( ret < 0 )
-	{
-		//printf("select ret = %d\n", ret);
-		return 0;
-	}
-	
-	if( sock_server_udp != NULL )
-	{
-		if( FD_ISSET(sock_server_udp->sock, &readfds) )
-		{
-			eventClientUdpSelect(sock_server_udp);
-			count = 1;
-		}
-	
-		if( FD_ISSET(sock_server_udp->sock, &errorfds) )
-		{
-			printf("error\n");
-		}
-	}
-
-	if( sock_server_udp_second != NULL )
-	{
-		if( FD_ISSET(sock_server_udp_second->sock, &readfds) )
-		{
-			eventClientUdpSelect(sock_server_udp_second);
-			count = 1;
-		}
-	
-		if( FD_ISSET(sock_server_udp_second->sock, &errorfds) )
-		{
-			printf("error\n");
-		}
-	}
-
-	return count;
-}
-
 void eventServer()
 {
-#ifndef PUBLIC_SERVER
-
-	int count;
-
-#ifdef SUPPORT_NET_UNIX_UDP
-	do{
-		count = selectServerUdpSocket();
-	}while( count > 0 );
+#ifdef SUPPORT_UDP
+	eventUdpServer();
 #endif
 
-#endif
-
-#ifdef PUBLIC_SERVER
-	selectServerUdpSocket();
+#ifdef SUPPORT_TCP
+	eventTcpServer();
 #endif
 
 	eventClientListBuffer();
 	eventTimer(listServerTimer);
 }
 
-void quitUdpServer()
+void quitServer()
 {
 	proto_send_end_server(PROTO_SEND_ALL, NULL);
 
 	assert( listClient != NULL );
 
-	destroyListItem(listClient, destroyClient);
-	destroyIndex(listClientIndex);
+#ifdef SUPPORT_UDP
+	destroyListItem(listClient, destroyUdpClient);
+#endif
+
+#ifdef SUPPORT_TCP
+	destroyListItem(listClient, destroyTcpClient);
+#endif
 
 	destroyTimer(listServerTimer);
 
-	if( sock_server_udp != NULL )
-	{
-		printf("close port %d\n", getSockUdpPort(sock_server_udp));
-		closeUdpSocket(sock_server_udp);
-	}
+#ifdef SUPPORT_UDP
+	quitUdpServer();
+#endif
 
-	if( sock_server_udp_second != NULL )
-	{
-		printf("close port %d\n", getSockUdpPort(sock_server_udp_second));
-		closeUdpSocket(sock_server_udp_second);
-	}
-
-	printf("quit UDP port\n");
+#ifdef SUPPORT_TCP
+	quitTcpServer();
+#endif
 }
