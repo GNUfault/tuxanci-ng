@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h> 
+#include <fcntl.h>
 
 #include "tcp.h"
 
@@ -272,6 +273,33 @@ int disableNagle(sock_tcp_t *p)
 #endif
 
 	return result;
+}
+
+int setTcpSockNonBlock(sock_tcp_t *p)
+{
+	/* Set to nonblocking socket mode */
+#ifndef __WIN32__
+	int oldFlag;
+
+	oldFlag = fcntl (p->sock, F_GETFL, 0);
+
+	if( fcntl(p->sock, F_SETFL, oldFlag | O_NONBLOCK) == -1 )
+	{
+		//printf("error setTcpSockNonBlock\n");
+		return -1;
+	}
+
+	//printf("setTcpSockNonBlock OK\n");
+#else
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if( ioctlsocket(p->sock, FIONBIO, &arg) == SOCKET_ERROR )
+	{
+		WSACleanup();
+		return -1;
+	}	
+#endif
+	return 0;
 }
 
 int readTcpSocket(sock_tcp_t *p, void *address, int len)

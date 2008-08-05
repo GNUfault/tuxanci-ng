@@ -52,10 +52,11 @@ client_t* newTcpClient(sock_tcp_t *sock_tcp)
 
 	assert( sock_tcp != NULL );
 
-		new = newAnyClient();
+	new = newAnyClient();
 	new->type = CLIENT_TYPE_TCP;
 	new->socket_tcp = sock_tcp;
-	new->buffer = newBuffer(4096);
+	new->recvBuffer = newBuffer(SERVER_TCP_BUFFER_LIMIT);
+	new->sendBuffer = newBuffer(SERVER_TCP_BUFFER_LIMIT);
 
 #ifdef PUBLIC_SERVER
 	char str_log[STR_LOG_SIZE];
@@ -69,23 +70,51 @@ client_t* newTcpClient(sock_tcp_t *sock_tcp)
 	return new;
 }
 
-void destroyTcpClient(client_t *p)
+void sendTcpClientBuffer(client_t *client)
 {
-	eventMsgInCheckFront(p);
+	void *data;
+	int len;
+	int res;
+
+	len = getBufferSize(client->sendBuffer);
+
+	if( len == 0 )
+	{
+		return;
+	}
+
+	data = getBufferData(client->sendBuffer);
+
+	res = writeTcpSocket(client->socket_tcp, data, len);
+
+	if( res < 0 )
+	{
+		client->status = NET_STATUS_ZOMBIE;
+		return;
+	}
+
+	cutBuffer(client->sendBuffer, res);
+}
+
+void destroyTcpClient(client_t *client)
+{
+	eventMsgInCheckFront(client);
+	sendTcpClientBuffer(client);
 
 #ifdef PUBLIC_SERVER
 	char str_log[STR_LOG_SIZE];
 	char str_ip[STR_IP_SIZE];
 
-	getSockTcpIp(p->socket_tcp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, "close TCP connect %s %d", str_ip, getSockTcpPort(p->socket_tcp));
+	getSockTcpIp(client->socket_tcp, str_ip, STR_IP_SIZE);
+	sprintf(str_log, "close TCP connect %s %d", str_ip, getSockTcpPort(client->socket_tcp));
 	addToLog(LOG_INF, str_log);
 #endif
 
-	closeTcpSocket(p->socket_tcp);
-	destroyBuffer(p->buffer);
+	closeTcpSocket(client->socket_tcp);
+	destroyBuffer(client->recvBuffer);
+	destroyBuffer(client->sendBuffer);
 
-	destroyAnyClient(p);
+	destroyAnyClient(client);
 }
 
 int initTcpServer(char *ip4, int port4, char *ip6, int port6)
@@ -136,8 +165,11 @@ static void eventNewClient(sock_tcp_t *server_sock)
 	client_t *client;
 
 	listClient = getListServerClient();
+
 	sock = getTcpNewClient(server_sock);
 	disableNagle(sock);
+	setTcpSockNonBlock(sock);
+
 	client = newTcpClient(sock);
 	addList(listClient, client);
 }
@@ -157,9 +189,9 @@ static void eventTcpClient(client_t *client)
 		return;
 	}
 
-	addBuffer(client->buffer, buffer, ret);
+	addBuffer(client->recvBuffer, buffer, ret);
 
-	while( getBufferLine(client->buffer, buffer, STR_PROTO_SIZE) >= 0 )
+	while( getBufferLine(client->recvBuffer, buffer, STR_PROTO_SIZE) >= 0 )
 	{
 		addList(client->listRecvMsg, strdup(buffer) );
 	}
@@ -242,6 +274,8 @@ int selectServerTcpSocket()
 			eventTcpClient(client);
 			count++;
 		}
+
+		sendTcpClientBuffer(client);
 	}
 
 	return count;

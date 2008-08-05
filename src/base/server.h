@@ -33,7 +33,9 @@ typedef struct client_struct
 	int type;
 	sock_udp_t *socket_udp;
 	sock_tcp_t *socket_tcp;
-	buffer_t *buffer;
+
+	buffer_t *recvBuffer;
+	buffer_t *sendBuffer;
 
 	int status;
 

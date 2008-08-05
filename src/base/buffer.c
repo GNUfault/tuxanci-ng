@@ -19,6 +19,16 @@ buffer_t * newBuffer(int n)
 	return new;
 }
 
+void* getBufferData(buffer_t *p)
+{
+	return p->data;
+}
+
+int getBufferSize(buffer_t *p)
+{
+	return p->size;
+}
+
 int addBuffer(buffer_t *p, char *data, int len)
 {
 	assert( p != NULL );
@@ -101,7 +111,7 @@ int getBufferLine(buffer_t *p, char *line, int len)
 	return ret_len;
 }
 
-int getBufferData(buffer_t *p, char *line, int len)
+int getBufferDataLen(buffer_t *p, char *line, int len)
 {
 	assert( p != NULL );
 	assert( line != NULL );

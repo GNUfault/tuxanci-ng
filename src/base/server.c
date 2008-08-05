@@ -317,7 +317,9 @@ void sendClient(client_t *p, char *msg)
 				ret = writeUdpSocket(p->socket_udp, p->socket_udp, msg, strlen(msg));
 			break;
 			case CLIENT_TYPE_TCP :
-				ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));
+				//ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));
+				addBuffer(p->sendBuffer, msg, strlen(msg));
+				ret = 1;
 			break;
 			default :
 				assert( ! "zly typ !");
@@ -331,7 +333,7 @@ void sendClient(client_t *p, char *msg)
 	}
 }
 
-static void eventClientBuffer(client_t *client)
+static void eventClientWorkRecvList(client_t *client)
 {
 	proto_cmd_server_t* protoCmd;
 	char *line;
@@ -368,7 +370,7 @@ static void eventClientBuffer(client_t *client)
 	client->listRecvMsg = newList();
 }
 
-static void eventClientListBuffer()
+static void porcesListClients()
 {
 	int i;
 	client_t *thisClient;
@@ -376,8 +378,14 @@ static void eventClientListBuffer()
 	for( i = 0 ; i < listClient->count; i++)
 	{
 		thisClient = (client_t *) listClient->list[i];
-		eventClientBuffer(thisClient);
+
+		eventClientWorkRecvList(thisClient);
 		eventMsgInCheckFront(thisClient);
+		
+		if( thisClient->type == CLIENT_TYPE_TCP )
+		{
+			sendTcpClientBuffer(thisClient);
+		}
 	}
 }
 
@@ -418,7 +426,7 @@ void eventServer()
 	}
 #endif
 
-	eventClientListBuffer();
+	porcesListClients();
 	eventTimer(listServerTimer);
 }
 

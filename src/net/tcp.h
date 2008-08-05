@@ -29,6 +29,7 @@ extern void getSockTcpIp(sock_tcp_t *p, char *str_ip, int len);
 extern int getSockTcpPort(sock_tcp_t *p);
 extern sock_tcp_t* connectTcpSocket(char *ip, int port, int proto);
 extern int disableNagle(sock_tcp_t *p);
+extern int setTcpSockNonBlock(sock_tcp_t *p);
 extern int readTcpSocket(sock_tcp_t *p, void *address, int len);
 extern int writeTcpSocket(sock_tcp_t *p, void *address, int len);
 extern void closeTcpSocket(sock_tcp_t *p);

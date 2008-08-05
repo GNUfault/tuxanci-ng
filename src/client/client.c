@@ -35,7 +35,10 @@ static sock_udp_t *sock_server_udp;
 static sock_tcp_t *sock_server_tcp;
 
 static list_t *listRecvMsg;
-static buffer_t *clientBuffer;
+
+static buffer_t *clientRecvBuffer;
+static buffer_t *clientSendBuffer;
+
 static my_time_t lastPing;
 static my_time_t lastPingServerAlive;
 
@@ -115,6 +118,7 @@ static int initTcpClient(char *ip, int port, int proto)
 	}
 
 	disableNagle(sock_server_tcp);
+	setTcpSockNonBlock(sock_server_tcp);
 
 	printf("connect TCP %s %d\n", ip, port);
 
@@ -136,7 +140,8 @@ int initClient(char *ip, int port, int proto)
 	traffic_up = 0;
 #endif
 
-	clientBuffer = newBuffer(4096);
+	clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
+	clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 
 	if( ! isParamFlag("--udp") && ! isParamFlag("--tcp") )
 	{
@@ -174,6 +179,31 @@ int initClient(char *ip, int port, int proto)
 	return 0;
 }
 
+static void sendBuffer()
+{
+	void *data;
+	int len;
+	int res;
+
+	len = getBufferSize(clientSendBuffer);
+
+	if( len == 0 )
+	{
+		return;
+	}
+
+	data = getBufferData(clientSendBuffer);
+
+	res = writeTcpSocket(sock_server_tcp, data, len);
+
+	if( res <= 0 )
+	{
+		return;
+	}
+
+	cutBuffer(clientSendBuffer, res);
+}
+
 void sendServer(char *msg)
 {
 	int ret;
@@ -199,7 +229,9 @@ void sendServer(char *msg)
 
 	if( sock_server_tcp != NULL )
 	{
-		ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
+		//ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
+		addBuffer(clientSendBuffer, msg, strlen(msg));
+		ret = 1;
 	}
 }
 
@@ -229,9 +261,9 @@ static int eventServerSelect()
 	traffic_down += ret;
 #endif
 
-	addBuffer(clientBuffer, buffer, ret);
+	addBuffer(clientRecvBuffer, buffer, ret);
 
-	while( getBufferLine(clientBuffer, buffer, STR_PROTO_SIZE) >= 0 )
+	while( getBufferLine(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0 )
 	{
 		if( strlen(buffer) > 0)
 		{
@@ -242,7 +274,7 @@ static int eventServerSelect()
 	return ret;
 }
 
-static void eventServerBuffer()
+static void eventClientWorkRecvList()
 {
 	proto_cmd_client_t *protoCmd;
 	char *line;
@@ -384,7 +416,8 @@ void eventClient()
 
 	eventPingServer();
 	selectClientSocket();
-	eventServerBuffer();
+	eventClientWorkRecvList();
+	sendBuffer();
 }
 
 static void quitUdpClient()
@@ -406,9 +439,12 @@ static void quitTcpClient()
 void quitClient()
 {
 	proto_send_end_client();
+
 	assert( listRecvMsg != NULL );
+
 	destroyListItem(listRecvMsg, free);
-	destroyBuffer(clientBuffer);
+	destroyBuffer(clientRecvBuffer);
+	destroyBuffer(clientSendBuffer);
 
 	if( sock_server_udp != NULL )
 	{
