@@ -38,6 +38,7 @@ void restartSelect()
 #endif	
 
 	FD_ZERO(&readfds);
+	FD_ZERO(&writefds);
 	max_fd = 0;
 }
 
@@ -47,7 +48,7 @@ void addSockToSelectRead(int sock)
 
 	FD_SET(sock, &readfds);
 
-	if(sock > max_fd )
+	if( sock > max_fd )
 	{
 		max_fd = sock;
 	}

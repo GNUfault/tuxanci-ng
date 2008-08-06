@@ -91,6 +91,9 @@ extern void proto_recv_ping_server(client_t *client, char *msg);
 extern void proto_send_ping_server(int type, client_t *client);
 extern void proto_recv_ping_client(char *msg);
 
+extern void proto_recv_echo_server(client_t *client, char *msg);
+extern void proto_send_echo_server(int type, client_t *client, char *s);
+
 extern void proto_send_end_server(int type, client_t *client);
 extern void proto_recv_end_client(char *msg);
 extern void proto_send_end_client();

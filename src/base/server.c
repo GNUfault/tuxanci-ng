@@ -68,6 +68,7 @@ static proto_cmd_server_t proto_cmd_list[] =
 	{ .name = "module",	.len = 6,	.tux = 1,	.fce_proto = proto_recv_module_server },
 	{ .name = "chat",	.len = 4,	.tux = 1,	.fce_proto = proto_recv_chat_server },
 	{ .name = "ping",	.len = 4,	.tux = 1,	.fce_proto = proto_recv_ping_server },
+	{ .name = "echo",	.len = 4,	.tux = 0,	.fce_proto = proto_recv_echo_server },
 	{ .name = "end",	.len = 3,	.tux = 1,	.fce_proto = proto_recv_end_server },
 	{ .name = "",		.len = 0,	.tux = 0,	.fce_proto = NULL },
 };
@@ -317,7 +318,6 @@ void sendClient(client_t *p, char *msg)
 				ret = writeUdpSocket(p->socket_udp, p->socket_udp, msg, strlen(msg));
 			break;
 			case CLIENT_TYPE_TCP :
-				//ret = writeTcpSocket(p->socket_tcp, msg, strlen(msg));
 				ret = addBuffer(p->sendBuffer, msg, strlen(msg));
 			break;
 			default :
