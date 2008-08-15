@@ -23,7 +23,6 @@ static share_fce_item_t* newShareFceItem(char *name, void *function)
 	new = malloc( sizeof(share_fce_item_t) );
 	new->name = strdup(name);
 	new->function = function;
-
 	return new;
 }
 
@@ -39,8 +38,9 @@ void initShareFunction()
 }
 void addToShareFce(char *name, void *function)
 {
-	printf("add to share function %s\n", name);
-
+#ifdef DEBUG
+	printf(_("Adding  \"%s\" to share function.\n"), name);
+#endif
 	addList(listShareFce, newShareFceItem(name, function) );
 }
 
@@ -48,18 +48,13 @@ void* getShareFce(char *name)
 {
 	int i;
 
-	for( i = 0 ; i < listShareFce->count ; i++ )
-	{
+	for (i = 0; i < listShareFce->count; i++) {
 		share_fce_item_t *this;
 
 		this = (share_fce_item_t *)listShareFce->list[i];
-
 		if( strcmp(this->name, name) == 0 )
-		{
 			return this->function;
-		}
 	}
-
 	return NULL;
 }
 
@@ -68,5 +63,3 @@ void quitShareFunction()
 	destroyListItem(listShareFce, destroyShareFce);
 }
 
-
- 
