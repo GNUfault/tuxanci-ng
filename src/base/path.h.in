@@ -5,7 +5,7 @@
 	#define PATH_H
 	#ifndef __WIN32__
 		#define PREFIX					"@CMAKE_INSTALL_PREFIX@"
-		#define PATH_DIR	"@CMAKE_DATA_PATH@"	APPNAME	"/"
+		#define PATH_DIR	"@CMAKE_DATA_PATH@" "/"	APPNAME	"/"
 	#else
 		#define PREFIX 					".."
 		#define PATH_DIR	PREFIX	"/share/"	APPNAME	"/"

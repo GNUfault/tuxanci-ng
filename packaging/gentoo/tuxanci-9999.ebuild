@@ -26,26 +26,11 @@ DEPEND="!dedicated? (
 
 S="${WORKDIR}"/"${PN}"
 
-src_unpack() {
-	subversion_src_unpack
-	cd "${S}"
-	# setting proper prefix
-	sed -i \
-		-e "s:PATH_DIR\tPREFIX:PATH_DIR:" src/base/path.h \
-		|| die "sed config.h failed!"
-	sed -i \
-		-e "s:share/tuxanci:"${GAMES_DATADIR}"/"${PN}":" src/base/path.h \
-		|| die "sed config.h failed!"
-	sed -i \
-		-e "s:CMAKE_INSTALL_DATADIR share/:CMAKE_INSTALL_DATADIR /usr/share/games/:" CMakeLists.txt \
-		|| die "sed CMakeLists.txt failed!"
-}
-
 src_compile() {
 	local mycmakeargs
 	use alsa || mycmakeargs="${mycmakeargs} -DNO_Audio=1"
 	use dedicated && mycmakeargs="${mycmakeargs} -DServer=1"
-	mycmakeargs="${mycmakeargs} -DPREFIX=\\\"/usr/games\\\"	-DCMAKE_INSTALL_PREFIX:PATH=/usr/games"
+	mycmakeargs="${mycmakeargs} -DCMAKE_INSTALL_PREFIX=/usr/games -DCMAKE_DATA_PATH=/usr/share/games/"
 	cmake-utils_src_compile
 }
 
