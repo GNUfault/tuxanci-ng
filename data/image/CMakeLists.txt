@@ -9,5 +9,5 @@
 ###############################################################################
 FILE ( GLOB files "*.png" )
 INSTALL ( FILES ${files}
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/images/ )
+	DESTINATION ${CMAKE_DATA_PATH}/${APPNAME}/images/ )
 ###############################################################################

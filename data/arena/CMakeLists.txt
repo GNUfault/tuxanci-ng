@@ -9,5 +9,5 @@
 ###############################################################################
 FILE ( GLOB files "*.map" )
 INSTALL ( FILES ${files}
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/arena/ )
+	DESTINATION ${CMAKE_DATA_PATH}/${APPNAME}/arena/ )
 ###############################################################################

@@ -18,7 +18,7 @@ IF ( NOT Server )
 		DESTINATION doc/${APPNAME}-${TUXANCI_VERSION}/)
 	IF ( NOT Win )
 		INSTALL ( FILES tuxanci.ico
-			DESTINATION share/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+			DESTINATION doc/${APPNAME}-${TUXANCI_VERSION}/ )
 	ENDIF ( NOT Win )
 ENDIF ( NOT Server )
 ###############################################################################

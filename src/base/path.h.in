@@ -5,15 +5,16 @@
 	#define PATH_H
 	#ifndef __WIN32__
 		#define PREFIX					"@CMAKE_INSTALL_PREFIX@"
+		#define PATH_DIR	"@CMAKE_DATA_PATH@"	APPNAME	"/"
 	#else
 		#define PREFIX 					".."
+		#define PATH_DIR	PREFIX	"/share/"	APPNAME	"/"
 	#endif
 	#ifdef PUBLIC_SERVER
 		#define APPNAME					"tuxanci-server"
 	#else
 		#define APPNAME					"tuxanci"
 	#endif
-	#define PATH_DIR	PREFIX			"/share/"	APPNAME	"/"
 	#ifndef __WIN32__
 		#define PATH_MODULES 	PREFIX	"/lib/"	APPNAME	"/"
 		#define SERVER_CONFIG	"/etc/tuxanci-server/server.conf"

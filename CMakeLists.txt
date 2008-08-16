@@ -11,6 +11,8 @@
 # -DWin=1			# build windows port
 # -DNLS=1			# enable Gettext NLS
 # -DApple=1			# build apple port
+# -CMAKE_INSTALL_PREFIX=/bla/	# install prefix
+# -CMAKE_DATA_PATH=/other/bla/	# install path for data
 ###############################################################################
 # OUR OWN CODE HACKS (WHEN CODE CLEANUP IS FINISHED REMOVE THIS)
 # ALSO CONTAINS IMPORTANT DEFINITIONS [PREFIX,...]
@@ -18,6 +20,8 @@
 ADD_DEFINITIONS ( -DSUPPORT_NET_UNIX_UDP )
 SET ( TUXANCI_VERSION "9999" )
 SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
+# data because some distributions want different data placement
+SET ( CMAKE_DATA_PATH "/usr/local/share/" CACHE PATH "Install path prefix" )
 SET ( CMAKE_INSTALL_PREFIX "/usr/local/" CACHE PATH "Install path prefix" )
 CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
 ###############################################################################
@@ -47,7 +51,6 @@ SET ( CMAKE_CXX_FLAGS $ENV{CXXFLAGS} )
 # this specify location of additional cmake sources
 SET ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 #various variables
-SET ( CMAKE_INSTALL_DATADIR share/ )
 SET ( CMAKE_INSTALL_ETCDIR /etc )
 SET ( CMAKE_INSTALL_BINDIR bin )
 SET ( CMAKE_INSTALL_LIBDIR lib )
@@ -150,7 +153,7 @@ IF ( NOT Win )
 ENDIF ( NOT Win )
 INCLUDE_DIRECTORIES (
 	${SDL_INCLUDE_DIR}
-	${SDLIMAGE_INCLUDE_DIR}
+	${SDLTTF_INCLUDE_DIR}
 	${SDL_INCLUDE_DIR}
 	${SDLIMAGE_INCLUDE_DIR}
 )
@@ -180,11 +183,11 @@ ADD_SUBDIRECTORY ( src )
 # path which user send us
 ADD_SUBDIRECTORY ( data )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/LICENCE
-	DESTINATION share/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION doc/${APPNAME}-${TUXANCI_VERSION}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
-	DESTINATION share/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION doc/${APPNAME}-${TUXANCI_VERSION}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
-	DESTINATION share/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION doc/${APPNAME}-${TUXANCI_VERSION}/ )
 # windows quirk
 IF ( NOT Server )
 	IF ( Win )
