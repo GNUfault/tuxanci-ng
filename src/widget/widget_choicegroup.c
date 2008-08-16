@@ -5,35 +5,44 @@
 #include "main.h"
 #include "interface.h"
 #include "image.h"
+
+#include "widget.h"
 #include "widget_choicegroup.h"
 
-widget_choicegroup_t* newWidgetChoicegroup(int x, int y, bool_t status, list_t *list, void (*fce_event)(void *))
+widget_t* newWidgetChoicegroup(int x, int y, bool_t status, list_t *list, void (*fce_event)(void *))
 {
 	widget_choicegroup_t *new;
+	widget_t *widget;
 
 	new = malloc( sizeof(widget_choicegroup_t) );
-	new->x = x;
-	new->y = y;
 	new->time = 0;
 	new->status = status;
 	new->fce_event = fce_event;
 	new->list = list;
-	addList(new->list, new);
 
-	return new;
+	widget = newWidget(WIDGET_TYPE_CHOICE, x, y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, new);
+	addList(new->list, widget);
+
+	return widget;
 }
 
-void drawWidgetChoicegroup(widget_choicegroup_t *p)
+void drawWidgetChoicegroup(widget_t *widget)
 {
+	widget_choicegroup_t *p;
 	static image_t *g_choicegroup = NULL;
 	int x, y;
 	int offset;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
 
 	getMousePosition(&x, &y);
 
 	if( g_choicegroup == NULL )
 	{
-		g_choicegroup = addImageData("check.png", IMAGE_ALPHA, "choicegroup", IMAGE_GROUP_BASE);
+		g_choicegroup = addImageData("choice.png", IMAGE_ALPHA, "choicegroup", IMAGE_GROUP_BASE);
 	}
 
 	if( p->status == TRUE )
@@ -45,35 +54,72 @@ void drawWidgetChoicegroup(widget_choicegroup_t *p)
 		offset = WIDGET_CHOICEGROUP_WIDTH;
 	}
 
-	drawImage(g_choicegroup, p->x, p->y, offset, 0, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT);
+	drawImage(g_choicegroup, widget->x, widget->y, offset, 0, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT);
 }
 
-static void setActive(widget_choicegroup_t *p)
+void setWidgetChoiceActive(widget_t *widget)
 {
+	widget_choicegroup_t *p;
 	int i;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
 
 	for( i = 0 ; i < p->list->count ; i++ )
 	{
-		widget_choicegroup_t *this;
+		widget_t *this;
+		widget_choicegroup_t *thisChoice;
 
-		this = (widget_choicegroup_t *) p->list->list[i];
+		this = (widget_t *) p->list->list[i];
+		thisChoice = (widget_choicegroup_t *) this->private_data;
 
-		if( this == p )
+		if( widget == this )
 		{
-			this->status = TRUE;
-			this->time = WIDGET_CHOICEGROUP_TIME_SWITCH_STATUS;
-			this->fce_event(p);
+			thisChoice->status = TRUE;
+			thisChoice->time = WIDGET_CHOICEGROUP_TIME_SWITCH_STATUS;
+			thisChoice->fce_event(p);
 		}
 		else
 		{
-			this->status = FALSE;
+			thisChoice->status = FALSE;
 		}
 	}
 }
 
-void eventWidgetChoicegroup(widget_choicegroup_t *p)
+bool_t getWidgetChoiceStatus(widget_t *widget)
 {
+	widget_choicegroup_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
+
+	return p->status;
+}
+
+void setWidgetChoiceStatus(widget_t *widget, bool_t status)
+{
+	widget_choicegroup_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
+	p->status = status;
+}
+
+void eventWidgetChoicegroup(widget_t *widget)
+{
+	widget_choicegroup_t *p;
 	int x, y;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
 
 	if( p->time > 0 )
 	{
@@ -83,21 +129,27 @@ void eventWidgetChoicegroup(widget_choicegroup_t *p)
 
 	getMousePosition(&x, &y);
 
-	if( x >= p->x && x <= p->x+WIDGET_CHOICEGROUP_WIDTH && 
-	    y >= p->y && y <= p->y+WIDGET_CHOICEGROUP_HEIGHT &&
+	if( x >= widget->x && x <= widget->x+WIDGET_CHOICEGROUP_WIDTH && 
+	    y >= widget->y && y <= widget->y+WIDGET_CHOICEGROUP_HEIGHT &&
 	    isMouseClicked() )
 	{
-		setActive(p);
+		setWidgetChoiceActive(widget);
 	}
 }
 
-void destroyWidgetChoicegroup(widget_choicegroup_t *p)
+void destroyWidgetChoicegroup(widget_t *widget)
 {
+	widget_choicegroup_t *p;
 	int index;
 
-	index = searchListItem(p->list, p);
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHOICE );
+
+	p = (widget_choicegroup_t *) widget->private_data;
+	index = searchListItem(p->list, widget);
 	assert( index != -1 );
 	delList(p->list, index);
 
 	free(p);
+	destroyWidget(widget);
 }

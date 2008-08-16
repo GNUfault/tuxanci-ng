@@ -28,6 +28,7 @@
 #include "screen_settingKeys.h"
 #include "screen_choiceArena.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_image.h"
@@ -35,46 +36,46 @@
 #include "widget_check.h"
 #include "widget_select.h"
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
-static widget_button_t *button_back;
-static widget_button_t *button_keys; // setting of keycontrols
+static widget_t *button_back;
+static widget_t *button_keys; // setting of keycontrols
 
-static widget_label_t *label_count_round;
-static widget_label_t *label_name_player1;
-static widget_label_t *label_name_player2;
-static widget_label_t *label_ai;
+static widget_t *label_count_round;
+static widget_t *label_name_player1;
+static widget_t *label_name_player2;
+static widget_t *label_ai;
 
 #ifndef NO_SOUND
-static widget_label_t *label_music;
-static widget_label_t *label_sound;
+static widget_t *label_music;
+static widget_t *label_sound;
 #endif
 
-static widget_check_t *check[ITEM_COUNT];
+static widget_t *check[ITEM_COUNT];
 #ifndef NO_SOUND
-static widget_check_t *check_music;
-static widget_check_t *check_sound;
+static widget_t *check_music;
+static widget_t *check_sound;
 #endif
 
-static widget_image_t *image_gun_dual_revolver;
-static widget_image_t *image_gun_scatter;
-static widget_image_t *image_gun_tommy;
-static widget_image_t *image_gun_lasser;
-static widget_image_t *image_gun_mine;
-static widget_image_t *image_gun_bombball;
+static widget_t *image_gun_dual_revolver;
+static widget_t *image_gun_scatter;
+static widget_t *image_gun_tommy;
+static widget_t *image_gun_lasser;
+static widget_t *image_gun_mine;
+static widget_t *image_gun_bombball;
 
-static widget_image_t *image_bonus_speed;
-static widget_image_t *image_bonus_shot;
-static widget_image_t *image_bonus_teleport;
-static widget_image_t *image_bonus_ghost;
-static widget_image_t *image_bonus_4x;
-static widget_image_t *image_bonus_hidden;
+static widget_t *image_bonus_speed;
+static widget_t *image_bonus_shot;
+static widget_t *image_bonus_teleport;
+static widget_t *image_bonus_ghost;
+static widget_t *image_bonus_4x;
+static widget_t *image_bonus_hidden;
 
-static widget_textfield_t *textfield_count_cound;
-static widget_textfield_t *textfield_name_player1;
-static widget_textfield_t *textfield_name_player2;
+static widget_t *textfield_count_cound;
+static widget_t *textfield_name_player1;
+static widget_t *textfield_name_player2;
 
-static widget_check_t *check_ai;
+static widget_t *check_ai;
 
 static textFile_t *configFile;
 
@@ -103,7 +104,7 @@ void drawScreenSetting()
 	drawWidgetTextfield(textfield_count_cound);
 	drawWidgetTextfield(textfield_name_player1);
 
-	if ( check_ai->status == 0 )
+	if ( getWidgetCheckStatus(check_ai) == FALSE )
 	{
 		drawWidgetLabel(label_name_player2);
 		drawWidgetTextfield(textfield_name_player2);
@@ -151,7 +152,7 @@ void eventScreenSetting()
 	eventWidgetTextfield(textfield_count_cound);
 	eventWidgetTextfield(textfield_name_player1);
 
-	if ( check_ai->status == 0 )
+	if ( getWidgetCheckStatus(check_ai) == FALSE )
 	{
 		eventWidgetTextfield(textfield_name_player2);
 	}
@@ -183,11 +184,11 @@ void stopScreenSetting()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
-	widget_check_t *check;
+	widget_t *button;
+	widget_t *check;
 	
-	button = (widget_button_t *)(p);
-	check = (widget_check_t *)(p);
+	button = (widget_t *)(p);
+	check = (widget_t *)(p);
 
 	if( button == button_back )
 	{
@@ -201,12 +202,12 @@ static void eventWidget(void *p)
 #ifndef NO_SOUND
 	if( check == check_music )
 	{
-		setMusicActive( check_music->status );
+		setMusicActive( getWidgetCheckStatus(check_music) );
 	}
 
 	if( check == check_sound )
 	{
-		setSoundActive( check_sound->status );
+		setSoundActive( getWidgetCheckStatus(check_sound) );
 	}
 #endif
 }
@@ -244,40 +245,40 @@ static void initSettingFile()
 	setWidgetTextFiledText(textfield_name_player2, val);
 
 	loadValueFromConfigFile(configFile, "GUN_DUAL_SIMPLE", val, STR_SIZE, "YES");
-	check[GUN_DUAL_SIMPLE]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_DUAL_SIMPLE], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "GUN_SCATTER", val, STR_SIZE, "YES");
-	check[GUN_SCATTER]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_SCATTER], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "GUN_TOMMY", val, STR_SIZE, "YES");
-	check[GUN_TOMMY]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_TOMMY], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "GUN_LASSER", val, STR_SIZE, "YES");
-	check[GUN_LASSER]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_LASSER], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "GUN_MINE", val, STR_SIZE, "YES");
-	check[GUN_MINE]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_MINE], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "GUN_BOMBBALL", val, STR_SIZE, "YES");
-	check[GUN_BOMBBALL]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[GUN_BOMBBALL], isYesOrNO(val));
 
 	loadValueFromConfigFile(configFile, "BONUS_SPEED", val, STR_SIZE, "YES");
-	check[BONUS_SPEED]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_SPEED], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "BONUS_SHOT", val, STR_SIZE, "YES");
-	check[BONUS_SHOT]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_SHOT], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "BONUS_TELEPORT", val, STR_SIZE, "YES");
-	check[BONUS_TELEPORT]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_TELEPORT], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "BONUS_GHOST", val, STR_SIZE, "YES");
-	check[BONUS_GHOST]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_GHOST], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "BONUS_4X", val, STR_SIZE, "YES");
-	check[BONUS_4X]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_4X], isYesOrNO(val));
 	loadValueFromConfigFile(configFile, "BONUS_HIDDEN", val, STR_SIZE, "YES");
-	check[BONUS_HIDDEN]->status = isYesOrNO(val);
+	setWidgetCheckStatus(check[BONUS_HIDDEN], isYesOrNO(val));
 
 	loadValueFromConfigFile(configFile, "AI", val, STR_SIZE, "NO");
-	check_ai->status = isYesOrNO(val);
+	setWidgetCheckStatus(check_ai, isYesOrNO(val));
 
 #ifndef NO_SOUND
 	loadValueFromConfigFile(configFile, "MUSIC", val, STR_SIZE, "YES");
-	check_music->status = isYesOrNO(val);
+	setWidgetCheckStatus(check_music, isYesOrNO(val));
 
 	loadValueFromConfigFile(configFile, "SOUND", val, STR_SIZE, "YES");
-	check_sound->status = isYesOrNO(val);
+	setWidgetCheckStatus(check_sound, isYesOrNO(val));
 #endif
 
 	loadValueFromConfigFile(configFile, "ARENA", val, STR_SIZE, "FAGN");
@@ -296,32 +297,32 @@ static void saveAndDestroyConfigFile()
 		return;
 	}
 
-	setValueInConfigFile(configFile, "COUNT_ROUND", textfield_count_cound->text );
-	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", textfield_name_player1->text );
-	setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", textfield_name_player2->text );
+	setValueInConfigFile(configFile, "COUNT_ROUND", getTextFromWidgetTextfield(textfield_count_cound));
+	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", getTextFromWidgetTextfield(textfield_name_player1));
+	setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", getTextFromWidgetTextfield(textfield_name_player2));
 
-	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(check[GUN_DUAL_SIMPLE]->status) );
-	setValueInConfigFile(configFile, "GUN_SCATTER", getYesOrNo(check[GUN_SCATTER]->status) );
-	setValueInConfigFile(configFile, "GUN_TOMMY", getYesOrNo(check[GUN_TOMMY]->status) );
-	setValueInConfigFile(configFile, "GUN_LASSER", getYesOrNo(check[GUN_LASSER]->status) );
-	setValueInConfigFile(configFile, "GUN_MINE", getYesOrNo(check[GUN_MINE]->status) );
-	setValueInConfigFile(configFile, "GUN_BOMBBALL", getYesOrNo(check[GUN_BOMBBALL]->status) );
+	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(getWidgetCheckStatus(check[GUN_DUAL_SIMPLE])));
+	setValueInConfigFile(configFile, "GUN_SCATTER", getYesOrNo(getWidgetCheckStatus(check[GUN_SCATTER])));
+	setValueInConfigFile(configFile, "GUN_TOMMY", getYesOrNo(getWidgetCheckStatus(check[GUN_TOMMY])));
+	setValueInConfigFile(configFile, "GUN_LASSER", getYesOrNo(getWidgetCheckStatus(check[GUN_LASSER])));
+	setValueInConfigFile(configFile, "GUN_MINE", getYesOrNo(getWidgetCheckStatus(check[GUN_MINE])));
+	setValueInConfigFile(configFile, "GUN_BOMBBALL", getYesOrNo(getWidgetCheckStatus(check[GUN_BOMBBALL])));
 
-	setValueInConfigFile(configFile, "BONUS_SPEED", getYesOrNo(check[BONUS_SPEED]->status) );
-	setValueInConfigFile(configFile, "BONUS_SHOT", getYesOrNo(check[BONUS_SHOT]->status) );
-	setValueInConfigFile(configFile, "BONUS_TELEPORT", getYesOrNo(check[BONUS_TELEPORT]->status) );
-	setValueInConfigFile(configFile, "BONUS_GHOST", getYesOrNo(check[BONUS_GHOST]->status) );
-	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(check[BONUS_4X]->status) );
-	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(check[BONUS_HIDDEN]->status) );
+	setValueInConfigFile(configFile, "BONUS_SPEED", getYesOrNo(getWidgetCheckStatus(check[BONUS_SPEED])));
+	setValueInConfigFile(configFile, "BONUS_SHOT", getYesOrNo(getWidgetCheckStatus(check[BONUS_SHOT])));
+	setValueInConfigFile(configFile, "BONUS_TELEPORT", getYesOrNo(getWidgetCheckStatus(check[BONUS_TELEPORT])));
+	setValueInConfigFile(configFile, "BONUS_GHOST", getYesOrNo(getWidgetCheckStatus(check[BONUS_GHOST])));
+	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(getWidgetCheckStatus(check[BONUS_4X])));
+	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(getWidgetCheckStatus(check[BONUS_HIDDEN])));
 
-	setValueInConfigFile(configFile, "AI", getYesOrNo(check_ai->status) );
+	setValueInConfigFile(configFile, "AI", getYesOrNo(getWidgetCheckStatus(check_ai)));
 
 #ifndef NO_SOUND
-	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(check_music->status) );
-	setValueInConfigFile(configFile, "SOUND", getYesOrNo(check_sound->status) );
+	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(getWidgetCheckStatus(check_music)));
+	setValueInConfigFile(configFile, "SOUND", getYesOrNo(getWidgetCheckStatus(check_sound)));
 #endif
 
-	setValueInConfigFile(configFile, "ARENA", getArenaNetName(getChoiceArenaId()) );
+	setValueInConfigFile(configFile, "ARENA", getArenaNetName(getChoiceArenaId()));
 
 	saveTextFile(configFile);
 	destroyTextFile(configFile);
@@ -442,29 +443,29 @@ void initScreenSetting()
 
 void getSettingNameRight(char *s)
 {
-	strcpy(s, textfield_name_player1->text);
+	strcpy(s, getTextFromWidgetTextfield(textfield_name_player1));
 }
 
 void getSettingNameLeft(char *s)
 {
-	if( check_ai->status )
+	if( getWidgetCheckStatus(check_ai) )
 	{
 		strcpy(s, NAME_AI);
 	}
 	else
 	{
-		strcpy(s, textfield_name_player2->text);
+		strcpy(s, getTextFromWidgetTextfield(textfield_name_player2));
 	}
 }
 
 void getSettingCountRound(int *n)
 {
-	*n = atoi( textfield_count_cound->text );
+	*n = atoi( getTextFromWidgetTextfield(textfield_count_cound) );
 }
 
 bool_t isSettingAI()
 {
-	return check_ai->status;
+	return getWidgetCheckStatus(check_ai);
 }
 
 bool_t isSettingAnyItem()
@@ -473,7 +474,7 @@ bool_t isSettingAnyItem()
 
 	for( i = GUN_DUAL_SIMPLE ; i <= GUN_BOMBBALL ; i++ )
 	{
-		if( check[i]->status == TRUE )
+		if( getWidgetCheckStatus(check[i]) == TRUE )
 		{
 			return TRUE;
 		}
@@ -481,7 +482,7 @@ bool_t isSettingAnyItem()
 
 	for( i = BONUS_SPEED ; i < BONUS_HIDDEN ; i++ )
 	{
-		if( check[i]->status == TRUE )
+		if( getWidgetCheckStatus(check[i]) == TRUE )
 		{
 			return TRUE;
 		}
@@ -492,7 +493,7 @@ bool_t isSettingAnyItem()
 
 bool_t isSettingItem(int item)
 {
-	return check[item]->status;
+	return getWidgetCheckStatus(check[item]);
 }
 
 void quitScreenSetting()

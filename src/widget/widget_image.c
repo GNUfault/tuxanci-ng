@@ -1,35 +1,52 @@
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include <stdlib.h>
 #include "main.h"
 #include "image.h"
 #include "interface.h"
 #include "font.h"
+
+#include "widget.h"
 #include "widget_image.h"
 
-widget_image_t* newWidgetImage(int x, int y, image_t *image)
+widget_t* newWidgetImage(int x, int y, image_t *image)
 {
 	widget_image_t *new;
 
 	new = malloc( sizeof(widget_image_t) );
-	new->x = x;
-	new->y = y;
 	new->image = image;
 
-	return new;
+	return newWidget(WIDGET_TYPE_IMAGE, x, y, image->w, image->h, new);
 }
 
-void drawWidgetImage(widget_image_t *p)
+void drawWidgetImage(widget_t *widget)
 {
-	drawImage(p->image, p->x, p->y, 0, 0, p->image->w, p->image->h);
+	widget_image_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_IMAGE );
+
+	p = (widget_image_t *) widget->private_data;
+	drawImage(p->image, widget->x, widget->y, 0, 0, p->image->w, p->image->h);
 }
 
-void eventWidgetImage(widget_image_t *p)
+void eventWidgetImage(widget_t *widget)
 {
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_IMAGE );
 }
 
-void destroyWidgetImage(widget_image_t *p)
+void destroyWidgetImage(widget_t *widget)
 {
+	widget_image_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_IMAGE );
+
+	p = (widget_image_t *) widget->private_data;
+
 	free(p);
+	destroyWidget(widget);
 }

@@ -1,40 +1,59 @@
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include "main.h"
 #include "interface.h"
 #include "font.h"
+
+#include "widget.h"
 #include "widget_catchkey.h"
 
-widget_catchkey_t* newWidgetCatchkey(int key, int x, int y, void *event)
+widget_t* newWidgetCatchkey(int key, int x, int y, void *event)
 {
 	widget_catchkey_t *new;
 
 	new = malloc( sizeof(widget_catchkey_t) );
-
-	new->x = x;
-	new->y = y;
 	new->key = key;
 	new->fce_event = event;
 	new->active = FALSE;
 
-	return new;
+	return newWidget(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, new);
 }
 
-int getWidgetCatchKey(widget_catchkey_t *p)
+int getWidgetCatchKey(widget_t *widget)
 {
+	widget_catchkey_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CATCHKEY );
+
+	p = (widget_catchkey_t *) widget->private_data;
+
 	return p->key;
 }
 
-void setWidgetCatchKey(widget_catchkey_t *p, int key)
+void setWidgetCatchKey(widget_t *widget, int key)
 {
+	widget_catchkey_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CATCHKEY );
+
+	p = (widget_catchkey_t *) widget->private_data;
+
 	p->key = key;
 }
 
-void drawWidgetCatchkey(widget_catchkey_t *p)
+void drawWidgetCatchkey(widget_t *widget)
 {
+	widget_catchkey_t *p;
 	char *name;
 
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CATCHKEY );
+
+	p = (widget_catchkey_t *) widget->private_data;
 	name = NULL;
 
 	if( p->key != WIDGET_CATCHKEY_NOKEY )
@@ -49,11 +68,11 @@ void drawWidgetCatchkey(widget_catchkey_t *p)
 
 	if( p->active )
 	{
-		drawFont(name, p->x, p->y, COLOR_RED);
+		drawFont(name, widget->x, widget->y, COLOR_RED);
 	}
 	else
 	{
-		drawFont(name, p->x, p->y, COLOR_WHITE);
+		drawFont(name, widget->x, widget->y, COLOR_WHITE);
 	}
 }
 
@@ -82,16 +101,22 @@ static int getPessAnyKey()
 	return WIDGET_CATCHKEY_NOKEY;
 }
 
-void eventWidgetCatchkey(widget_catchkey_t *p)
+void eventWidgetCatchkey(widget_t *widget)
 {
+	widget_catchkey_t *p;
 	int x, y;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CATCHKEY );
+
+	p = (widget_catchkey_t *) widget->private_data;
 	
 	getMousePosition(&x, &y);
 
 	if( isMouseClicked() )
 	{
-		if( x >= p->x && x <= p->x+WIDGET_CATCHKEY_WIDTH && 
-		    y >= p->y && y <= p->y+WIDGET_CATCHKEY_HEIGHT )
+		if( x >= widget->x && x <= widget->x+WIDGET_CATCHKEY_WIDTH && 
+		    y >= widget->y && y <= widget->y+WIDGET_CATCHKEY_HEIGHT )
 		{
 			p->active = TRUE;
 		}
@@ -115,7 +140,15 @@ void eventWidgetCatchkey(widget_catchkey_t *p)
 	}
 }
 
-void destroyWidgetCatchkey(widget_catchkey_t *p)
+void destroyWidgetCatchkey(widget_t *widget)
 {
+	widget_catchkey_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CATCHKEY );
+
+	p = (widget_catchkey_t *) widget->private_data;
+
 	free(p);
+	destroyWidget(widget);
 }

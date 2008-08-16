@@ -4,6 +4,7 @@
 #define WIDGET_CHECK_H
 
 #include "main.h"
+#include "widget.h"
 
 #define WIDGET_CHECK_TIME_SWITCH_STATUS	5
 
@@ -12,16 +13,17 @@
 
 typedef struct widget_check
 {
-	int x, y;
 	bool_t status;
 	int time;
 	void (*fce_event)(void *);
 } widget_check_t;
 
-extern widget_check_t* newWidgetCheck(int x, int y, bool_t status, void (*fce_event)(void *));
-extern void drawWidgetCheck(widget_check_t *p);
-extern void eventWidgetCheck(widget_check_t *p);
-extern void destroyWidgetCheck(widget_check_t *p);
+extern widget_t* newWidgetCheck(int x, int y, bool_t status, void (*fce_event)(void *));
+extern void drawWidgetCheck(widget_t *widget);
+extern void eventWidgetCheck(widget_t *widget);
+extern bool_t getWidgetCheckStatus(widget_t *widget);
+extern void setWidgetCheckStatus(widget_t *widget, bool_t status);
+extern void destroyWidgetCheck(widget_t *widget);
 
 #endif
 

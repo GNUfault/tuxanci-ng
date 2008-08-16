@@ -78,16 +78,6 @@ void setWorldArena(int id)
 #endif
 }
 
-void setMaxCountRound(int n)
-{
-	arena->max_countRound = n;
-}
-
-int getMaxCountRound()
-{
-	return arena->max_countRound;
-}
-
 void setWorldEnd()
 {
 	isEndWorld = TRUE;

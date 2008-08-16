@@ -1,36 +1,35 @@
 
 #include <stdlib.h>
+#include <assert.h>
+
 #include "main.h"
 #include "interface.h"
 #include "font.h"
+
+#include "widget.h"
 #include "widget_select.h"
 
-/*
-typedef struct widget_select
-{
-	int x, y;
-	int w, h;
-	list_t *list;
-	void (*fce_event)(void *);
-} widget_select_t;
-*/
-
-widget_select_t* newWidgetSelect(int x, int y, void (*fce_event)(void *))
+widget_t* newWidgetSelect(int x, int y, void (*fce_event)(void *))
 {
 	widget_select_t *new;
 
 	new = malloc( sizeof(widget_select_t) );
-	new->x = x;
-	new->y = y;
 	new->select = -1;
 	new->fce_event = fce_event;
 	new->list = newList();
 
-	return new;
+	return newWidget(WIDGET_TYPE_SELECT, x, y, 0, 0, new);
 }
 
-char* getWidgetSelectItem(widget_select_t *p)
+char* getWidgetSelectItem(widget_t *widget)
 {
+	widget_select_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
+
 	if( p->select == -1 )
 	{
 		return NULL;
@@ -39,25 +38,56 @@ char* getWidgetSelectItem(widget_select_t *p)
 	return (char *)p->list->list[p->select];
 }
 
-void addToWidgetSelect(widget_select_t *p, char *s)
+int getWidgetSelectIndex(widget_t *widget)
 {
+	widget_select_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
+
+	return p->select;
+}
+
+void addToWidgetSelect(widget_t *widget, char *s)
+{
+	widget_select_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
+
 	addList(p->list, strdup(s) );
 }
 
-void removeAllFromWidgetSelect(widget_select_t *p)
+void removeAllFromWidgetSelect(widget_t *widget)
 {
+	widget_select_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
+
 	while( p->list->count > 0 )
 	{
 		delListItem(p->list, 0, free);
 	}
 }
 
-void drawWidgetSelect(widget_select_t *p)
+void drawWidgetSelect(widget_t *widget)
 {
+	widget_select_t *p;
 	int x, y, w, h;
 	int i;
 
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
 	getMousePosition(&x, &y);
+	p = (widget_select_t *)widget->private_data;
 
 	for( i = 0 ; i < p->list->count ; i++ )
 	{
@@ -67,29 +97,34 @@ void drawWidgetSelect(widget_select_t *p)
 
 		getTextSize(line, &w, &h);
 
-		if( x > p->x && y > p->y + i*20 && x < p->x+w && y < p->y + i*20 + h )
+		if( x > widget->x && y > widget->y + i*20 && x < widget->x+w && y < widget->y + i*20 + h )
 		{
-			drawFont(line, p->x, p->y + i*20, COLOR_YELLOW);
+			drawFont(line, widget->x, widget->y + i*20, COLOR_YELLOW);
 		}
 		else
 		{
 			if( p->select == i )
 			{
-				drawFont(line, p->x, p->y + i*20, COLOR_RED);
+				drawFont(line, widget->x, widget->y + i*20, COLOR_RED);
 			}
 			else
 			{
-				drawFont(line, p->x, p->y + i*20, COLOR_WHITE);
+				drawFont(line, widget->x, widget->y + i*20, COLOR_WHITE);
 			}
 		}
 	}
 }
 
-void eventWidgetSelect(widget_select_t *p)
+void eventWidgetSelect(widget_t *widget)
 {
+	widget_select_t *p;
 	int x, y, w, h;
 	int i;
 
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
 	getMousePosition(&x, &y);
 
 	for( i = 0 ; i < p->list->count ; i++ )
@@ -100,7 +135,9 @@ void eventWidgetSelect(widget_select_t *p)
 
 		getTextSize(line, &w, &h);
 
-		if( x > p->x && y > p->y + i*20 && x < p->x+w && y < p->y + i*20 + h && isMouseClicked() )
+		if( x > widget->x && y > widget->y + i*20 &&
+		    x < widget->x+w && y < widget->y + i*20 + h &&
+		    isMouseClicked() )
 		{
 			p->select = i;
 			p->fce_event(p);
@@ -108,8 +145,16 @@ void eventWidgetSelect(widget_select_t *p)
 	}
 }
 
-void destroyWidgetSelect(widget_select_t *p)
+void destroyWidgetSelect(widget_t *widget)
 {
+	widget_select_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_SELECT );
+
+	p = (widget_select_t *)widget->private_data;
+
 	destroyListItem(p->list, free);
 	free(p);
+	destroyWidget(widget);
 }

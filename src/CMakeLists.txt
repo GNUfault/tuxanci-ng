@@ -64,7 +64,7 @@ SET ( SRC_client
 	${WORKDIR}/widget/widget_textfield	${WORKDIR}/widget/widget_label
 	${WORKDIR}/widget/widget_buttonimage	${WORKDIR}/widget/widget_image
 	${WORKDIR}/widget/widget_select	${WORKDIR}/widget/widget_catchkey
-	${WORKDIR}/widget/widget_choicegroup
+	${WORKDIR}/widget/widget_choicegroup ${WORKDIR}/widget/widget
 )
 
 SET ( SRC_audio

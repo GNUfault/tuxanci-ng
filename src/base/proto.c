@@ -351,6 +351,7 @@ void proto_recv_init_client(char *msg)
 	int x, y, n;
 	int check_id;
 	int recv_count;
+	arena_t *arena;
 
 	assert( msg != NULL );
 
@@ -370,7 +371,9 @@ void proto_recv_init_client(char *msg)
 	}
 
 	setWorldArena( getArenaIdFormNetName(arena_name) );
-	setMaxCountRound(n);
+	arena = getCurrentArena();
+
+	arena->max_countRound = n;
 
 	tux = newTux();
 	replaceTuxID(tux, id);
@@ -381,7 +384,7 @@ void proto_recv_init_client(char *msg)
 
 	getSettingNameRight(tux->name);
 
-	addObjectToSpace(getCurrentArena()->spaceTux, tux);
+	addObjectToSpace(arena->spaceTux, tux);
 }
 
 #endif

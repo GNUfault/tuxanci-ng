@@ -160,7 +160,7 @@ static module_t* newModule(char *name)
 	ret->fce_cmd = getFce(ret, "cmdArena");
 	ret->fce_recvMsg = getFce(ret, "recvMsg");
 #ifdef DEBUG
-	printf(_("Loading module: \"%s\""), name);
+	printf(_("Loading module: \"%s\"\n"), name);
 #endif
 	if (ret->fce_init(&export_fce) != 0) {
 		fprintf(stderr, _("Failed initialization of module \"%s\""), name);

@@ -17,19 +17,20 @@
 #include "screen_mainMenu.h"
 #include "screen_setting.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_textfield.h"
 #include "widget_check.h"
 #include "widget_image.h"
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
-static widget_button_t *button_play;
-static widget_button_t *button_setting;
-static widget_button_t *button_table;
-static widget_button_t *button_credits;
-static widget_button_t *button_end;
+static widget_t *button_play;
+static widget_t *button_setting;
+static widget_t *button_table;
+static widget_t *button_credits;
+static widget_t *button_end;
 
 void startScreenMainMenu()
 {
@@ -64,9 +65,9 @@ void stopScreenMainMenu()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_play )
 	{

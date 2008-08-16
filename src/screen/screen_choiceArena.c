@@ -18,15 +18,16 @@
 #include "screen_mainMenu.h"
 #include "screen_choiceArena.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_image.h"
 #include "widget_buttonimage.h"
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
-static widget_button_t *button_play;
-static widget_button_t *button_back;
+static widget_t *button_play;
+static widget_t *button_back;
 
 static list_t *listWidgetButtonimage;
 static int choiceArenaId;
@@ -49,8 +50,8 @@ void drawScreenChoiceArena()
 
 	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
 	{
-		widget_buttonimage_t *this;
-		this = (widget_buttonimage_t *) listWidgetButtonimage->list[i];
+		widget_t *this;
+		this = (widget_t *) listWidgetButtonimage->list[i];
 		drawWidgetButtonimage(this);
 	}
 }
@@ -64,8 +65,8 @@ void eventScreenChoiceArena()
 
 	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
 	{
-		widget_buttonimage_t *this;
-		this = (widget_buttonimage_t *) listWidgetButtonimage->list[i];
+		widget_t *this;
+		this = (widget_t *) listWidgetButtonimage->list[i];
 		eventWidgetButtonimage(this);
 	}
 }
@@ -76,25 +77,25 @@ void stopScreenChoiceArena()
 
 static void eventWidgetButtonImage(void *p)
 {
-	widget_buttonimage_t *buttonimage;
+	widget_t *buttonimage;
 	int i;
 
-	buttonimage = (widget_buttonimage_t *)(p);
+	buttonimage = (widget_t *)(p);
 
 	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
 	{
-		widget_buttonimage_t *this;
+		widget_t *this;
 
-		this = (widget_buttonimage_t *)(listWidgetButtonimage->list[i]);
+		this = (widget_t *)(listWidgetButtonimage->list[i]);
 		
 		if( buttonimage == this )
 		{
-			this->active = 1;
+			setWidgetButtonimageActive(this, TRUE);
 			choiceArenaId = i;
 		}
 		else
 		{
-			this->active = 0;
+			setWidgetButtonimageActive(this, FALSE);
 		}
 	}
 }
@@ -106,19 +107,19 @@ int getChoiceArenaId()
 
 void setChoiceArenaId(int n)
 {
-	widget_buttonimage_t *widget_buttonimage;
+	widget_t *widget_buttonimage;
 
 	choiceArenaId = n;
 
-	widget_buttonimage = (widget_buttonimage_t *)listWidgetButtonimage->list[choiceArenaId];
-	widget_buttonimage->active = TRUE;
+	widget_buttonimage = (widget_t *)listWidgetButtonimage->list[choiceArenaId];
+	setWidgetButtonimageActive(widget_buttonimage, TRUE);
 }
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_play )
 	{
@@ -147,7 +148,7 @@ void initScreenChoiceArena()
 
 	for( i = 0 ; i < getArenaCount() ; i++ )
 	{
-		widget_buttonimage_t *widget_buttonimage;
+		widget_t *widget_buttonimage;
 		int x, y;
 
 		image = addImageData(getArenaImage(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);

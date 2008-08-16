@@ -60,7 +60,7 @@ void eventMsgInCheckFront(client_t *client)
 	int i;
 
 	currentTime = getMyTime();
-	for(i = 0; i < client->listSendMsg->count; i++) {
+	for (i = 0; i < client->listSendMsg->count; i++) {
 		checkfront_t *this;
 
 		this = (checkfront_t *)client->listSendMsg->list[i];
@@ -93,7 +93,7 @@ void delMsgInCheckFront(list_t *listCheckFront, int id)
 {
 	int i;
 
-	for( i = 0 ; i < listCheckFront->count ; i++ ) {
+	for (i = 0 ; i < listCheckFront->count ; i++ ) {
 		checkfront_t *this;
 
 		this = (checkfront_t *)listCheckFront->list[i];

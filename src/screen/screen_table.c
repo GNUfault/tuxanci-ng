@@ -23,8 +23,8 @@
 #include "widget_label.h"
 #include "widget_button.h"
 
-static widget_image_t *image_backgorund;
-static widget_button_t *button_back;
+static widget_t *image_backgorund;
+static widget_t *button_back;
 
 static list_t *listWidgetLabelNumer;
 static list_t *listWidgetLabelName;
@@ -49,22 +49,22 @@ void drawScreenTable()
 
 	for( i = 0 ; i < listWidgetLabelNumer->count ; i++ )
 	{
-		widget_label_t *this;
-		this = (widget_label_t *)listWidgetLabelNumer->list[i];
+		widget_t *this;
+		this = (widget_t *)listWidgetLabelNumer->list[i];
 		drawWidgetLabel(this);
 	}
 
 	for( i = 0 ; i < listWidgetLabelName->count ; i++ )
 	{
-		widget_label_t *this;
-		this = (widget_label_t *)listWidgetLabelName->list[i];
+		widget_t *this;
+		this = (widget_t *)listWidgetLabelName->list[i];
 		drawWidgetLabel(this);
 	}
 
 	for( i = 0 ; i < listWidgetLabelScore->count ; i++ )
 	{
-		widget_label_t *this;
-		this = (widget_label_t *)listWidgetLabelScore->list[i];
+		widget_t *this;
+		this = (widget_t *)listWidgetLabelScore->list[i];
 		drawWidgetLabel(this);
 	}
 }
@@ -80,9 +80,9 @@ void stopScreenTable()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_back )
 	{
@@ -117,7 +117,7 @@ static void setWidgetLabel()
 
 	for( i = 0 ; i < SCREEN_TABLE_MAX_PLAYERS ; i++ )
 	{
-		widget_label_t *label;
+		widget_t *label;
 		char name[STR_NAME_SIZE];
 		char score[STR_NUM_SIZE];
 		char num[STR_NUM_SIZE];

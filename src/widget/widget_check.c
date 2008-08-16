@@ -1,29 +1,37 @@
 
 #include <stdlib.h>
+#include <assert.h>
+
 #include "main.h"
 #include "interface.h"
 #include "image.h"
+
+#include "widget.h"
 #include "widget_check.h"
 
-widget_check_t* newWidgetCheck(int x, int y, bool_t status, void (*fce_event)(void *))
+widget_t* newWidgetCheck(int x, int y, bool_t status, void (*fce_event)(void *))
 {
 	widget_check_t *new;
 
 	new = malloc( sizeof(widget_check_t) );
-	new->x = x;
-	new->y = y;
 	new->time = 0;
 	new->status = status;
 	new->fce_event = fce_event;
 
-	return new;
+	return newWidget(WIDGET_TYPE_CHECK, x, y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, new);
 }
 
-void drawWidgetCheck(widget_check_t *p)
+void drawWidgetCheck(widget_t *widget)
 {
+	widget_check_t *p;
 	static image_t *g_check = NULL;
 	int x, y;
 	int offset;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHECK );
+
+	p = (widget_check_t *) widget->private_data;
 
 	getMousePosition(&x, &y);
 
@@ -41,12 +49,18 @@ void drawWidgetCheck(widget_check_t *p)
 		offset = WIDGET_CHECK_WIDTH;
 	}
 
-	drawImage(g_check, p->x, p->y, offset, 0, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT);
+	drawImage(g_check, widget->x, widget->y, offset, 0, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT);
 }
 
-void eventWidgetCheck(widget_check_t *p)
+void eventWidgetCheck(widget_t *widget)
 {
+	widget_check_t *p;
 	int x, y;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHECK );
+
+	p = (widget_check_t *) widget->private_data;
 
 	if( p->time > 0 )
 	{
@@ -56,8 +70,8 @@ void eventWidgetCheck(widget_check_t *p)
 
 	getMousePosition(&x, &y);
 
-	if( x >= p->x && x <= p->x+WIDGET_CHECK_WIDTH && 
-	    y >= p->y && y <= p->y+WIDGET_CHECK_HEIGHT &&
+	if( x >= widget->x && x <= widget->x+WIDGET_CHECK_WIDTH && 
+	    y >= widget->y && y <= widget->y+WIDGET_CHECK_HEIGHT &&
 	    isMouseClicked() )
 	{
 		if( p->status == TRUE )
@@ -78,7 +92,37 @@ void eventWidgetCheck(widget_check_t *p)
 	}
 }
 
-void destroyWidgetCheck(widget_check_t *p)
+bool_t getWidgetCheckStatus(widget_t *widget)
 {
+	widget_check_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHECK );
+
+	p = (widget_check_t *) widget->private_data;
+
+	return p->status;
+}
+
+void setWidgetCheckStatus(widget_t *widget, bool_t status)
+{
+	widget_check_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHECK );
+
+	p = (widget_check_t *) widget->private_data;
+	p->status = status;
+}
+
+void destroyWidgetCheck(widget_t *widget)
+{
+	widget_check_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_CHECK );
+
+	p = (widget_check_t *) widget->private_data;
 	free(p);
+	destroyWidget(widget);
 }

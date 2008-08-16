@@ -21,7 +21,7 @@ static SDL_keysym emptyKey;
 /*
  * Inicializuje klavesovy buffer. Parametr udava pocet klaves.
  */
-void initKeyboardBuffer(uint32_t size){
+void initKeyboardBuffer(int size){
 	assert(size>0);
 	assert(keyboardBuffer==NULL);
 
@@ -103,7 +103,7 @@ SDL_keysym popKeyFromKeyboardBuffer(){
 /*
  * Velikost bufferu.
  */
-uint32_t getKeyboardBufferSize(){
+int getKeyboardBufferSize(){
 	assert(keyboardBuffer!=NULL);
 	return keyboardBuffer->size;
 }
@@ -111,7 +111,7 @@ uint32_t getKeyboardBufferSize(){
 /*
  * Pocet klaves v bufferu.
  */
-uint32_t KeyboardBufferCount(){
+int KeyboardBufferCount(){
 	assert(keyboardBuffer!=NULL);
 	return keyboardBuffer->count;
 }

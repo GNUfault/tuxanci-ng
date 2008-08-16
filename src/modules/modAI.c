@@ -209,10 +209,6 @@ static void eventTuxAI(tux_t *tux)
 	int countLimit = 0;
 	int countDo = 0;
 
-	listAlternative = newList();
-	listDst = newList();
-	listFork = newList();
-
 	export_fce->fce_getTuxProportion(tux, &x, &y, &w, &h);
 	//printf("tux AI %d %d\n", x, y);
 
@@ -224,6 +220,10 @@ static void eventTuxAI(tux_t *tux)
 	{
 		return;
 	}
+
+	listAlternative = newList();
+	listDst = newList();
+	listFork = newList();
 
 	shotTux(arena, tux, rivalTux);
 
@@ -330,6 +330,7 @@ static void eventTuxAI(tux_t *tux)
 		export_fce->fce_actionTux(tux, recRoute);
 	}
 
+	destroyListItem(listFork, destroyAlternative);
 	destroyListItem(listAlternative, destroyAlternative);
 	destroyListItem(listDst, destroyAlternative);
 /*

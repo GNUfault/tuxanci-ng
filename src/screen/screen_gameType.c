@@ -22,38 +22,69 @@
 #include "screen_gameType.h"
 #include "screen_setting.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_image.h"
 #include "widget_textfield.h"
 #include "widget_choicegroup.h"
+#include "widget_check.h"
 #include "widget_select.h"
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
-static widget_button_t *button_back;
-static widget_button_t *button_play;
-static widget_button_t *button_browser;
+static widget_t *button_back;
+static widget_t *button_play;
+static widget_t *button_browser;
 
-static widget_label_t *label_none;
-static widget_label_t *label_server;
-static widget_label_t *label_client;
-static widget_label_t *label_load_session;
+static widget_t *label_none;
+static widget_t *label_server;
+static widget_t *label_client;
+static widget_t *label_load_session;
 
-static widget_label_t *label_ip;
-static widget_label_t *label_port;
-static widget_label_t *label_session;
+static widget_t *label_ip;
+static widget_t *label_port;
+static widget_t *label_session;
 
 static list_t *listChoiceGroup;
-static widget_choicegroup_t *check_none;
-static widget_choicegroup_t *check_server;
-static widget_choicegroup_t *check_client;
-static widget_choicegroup_t *check_load_session;
+static widget_t *check_none;
+static widget_t *check_server;
+static widget_t *check_client;
+static widget_t *check_load_session;
 
-static widget_textfield_t *textfield_ip;
-static widget_textfield_t *textfield_port;
+static widget_t *textfield_ip;
+static widget_t *textfield_port;
 
-static widget_select_t *selectSession;
+static widget_t *selectSession;
+
+static void loadSession(widget_t *p)
+{
+	director_t *director;
+	int i;
+
+	director = loadDirector(getHomeDirector());
+
+	removeAllFromWidgetSelect(p);
+
+	if( director == NULL )
+	{
+		return;
+	}
+
+	for( i = 0 ; i < director->list->count ; i++ )
+	{
+		char *line;
+
+		line = director->list->list[i];
+
+		if( strstr(line, ".sav") != NULL )
+		{
+			addToWidgetSelect(p, line);
+		}
+	}
+
+	destroyDirector(director);
+}
 
 void startScreenGameType()
 {
@@ -61,9 +92,12 @@ void startScreenGameType()
 	playMusic("menu", MUSIC_GROUP_BASE);
 #endif
 
-	check_none->status = TRUE;
-	check_server->status = FALSE;
-	check_client->status = FALSE;
+	setWidgetChoiceStatus(check_none, TRUE);
+	setWidgetChoiceStatus(check_server, FALSE);
+	setWidgetChoiceStatus(check_client, FALSE);
+	setWidgetChoiceStatus(check_load_session, FALSE);
+
+	loadSession(selectSession);
 }
 
 void drawScreenGameType()
@@ -74,9 +108,9 @@ void drawScreenGameType()
 	
 	for( i = 0 ; i < listChoiceGroup->count ; i++ )
 	{
-		widget_choicegroup_t *this;
+		widget_t *this;
 
-		this = (widget_choicegroup_t *)listChoiceGroup->list[i];
+		this = (widget_t *)listChoiceGroup->list[i];
 		drawWidgetChoicegroup(this);
 	}
 
@@ -85,7 +119,7 @@ void drawScreenGameType()
 	drawWidgetLabel(label_client);
 	drawWidgetLabel(label_load_session);
 
-	if( check_server->status == TRUE || check_client->status == TRUE )
+	if( getWidgetChoiceStatus(check_server) == TRUE || getWidgetChoiceStatus(check_client) == TRUE )
 	{
 		drawWidgetLabel(label_port);
 		drawWidgetTextfield(textfield_port);
@@ -93,7 +127,7 @@ void drawScreenGameType()
 		drawWidgetTextfield(textfield_ip);
 	}
 
-	if( check_load_session->status == TRUE )
+	if( getWidgetChoiceStatus(check_load_session) == TRUE )
 	{
 		drawWidgetLabel(label_session);
 		drawWidgetSelect(selectSession);
@@ -107,7 +141,7 @@ void drawScreenGameType()
 	}
 #endif
 
-	if( check_client->status == TRUE )
+	if( getWidgetChoiceStatus(check_client) == TRUE )
 		drawWidgetButton(button_browser);
 	
 	drawWidgetButton(button_back);
@@ -121,19 +155,19 @@ void eventScreenGameType()
 
 	for( i = 0 ; i < listChoiceGroup->count ; i++ )
 	{
-		widget_choicegroup_t *this;
+		widget_t *this;
 
-		this = (widget_choicegroup_t *)listChoiceGroup->list[i];
+		this = (widget_t *)listChoiceGroup->list[i];
 		eventWidgetChoicegroup(this);
 	}
 
-	if( check_server->status == TRUE || check_client->status == TRUE )
+	if( getWidgetChoiceStatus(check_server) == TRUE || getWidgetChoiceStatus(check_client) == TRUE )
 	{
 		eventWidgetTextfield(textfield_ip);
 		eventWidgetTextfield(textfield_port);
 	}
 
-	if( check_load_session->status == TRUE )
+	if( getWidgetChoiceStatus(check_load_session) == TRUE )
 	{
 		eventWidgetSelect(selectSession);
 	}
@@ -141,7 +175,7 @@ void eventScreenGameType()
 	eventWidgetButton(button_back);
 	eventWidgetButton(button_play);
 
-	if( check_client->status == TRUE )
+	if( getWidgetChoiceStatus(check_client) == TRUE )
 		eventWidgetButton(button_browser);
 }
 
@@ -151,9 +185,9 @@ void stopScreenGameType()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_back )
 	{
@@ -188,33 +222,6 @@ static void eventWidget(void *p)
 	}
 }
 
-static void loadSession(widget_select_t *p)
-{
-	director_t *director;
-	int i;
-
-	director = loadDirector(getHomeDirector());
-
-	if( director == NULL )
-	{
-		return;
-	}
-
-	for( i = 0 ; i < director->list->count ; i++ )
-	{
-		char *line;
-
-		line = director->list->list[i];
-
-		if( strstr(line, ".sav") != NULL )
-		{
-			addToWidgetSelect(p, strdup(line));
-		}
-	}
-
-	destroyDirector(director);
-}
-
 void initScreenGameType()
 {
 	image_t *image;
@@ -234,15 +241,15 @@ void initScreenGameType()
 
 	if( isParamFlag("--server") )
 	{
-		check_server->status = TRUE;
+		setWidgetChoiceStatus(check_server, TRUE);
 	}
 	else if( isParamFlag("--client") )
 	{
-		check_client->status = TRUE;
+		setWidgetChoiceStatus(check_client, TRUE);
 	}
 	else
 	{
-		check_none->status = TRUE;
+		setWidgetChoiceStatus(check_none, TRUE);
 	}
 
 	label_none = newWidgetLabel(getMyText("NONE"), 130, 145, WIDGET_LABEL_LEFT);
@@ -264,8 +271,7 @@ void initScreenGameType()
 		WIDGET_TEXTFIELD_FILTER_NUM,
 		300, 280);
 
-	selectSession = newWidgetSelect(300, 175, eventWidget);
-	loadSession(selectSession);
+	selectSession = newWidgetSelect(300, 185, eventWidget);
 
 	registerScreen( newScreen("gameType", startScreenGameType, eventScreenGameType,
 		drawScreenGameType, stopScreenGameType) );
@@ -273,25 +279,41 @@ void initScreenGameType()
 
 int setSettingGameType(int status)
 {
-	check_none->status = status;
+	if( status == NET_GAME_TYPE_NONE )
+	{
+		setWidgetChoiceStatus(check_none, TRUE);
+		return 0;
+	}
 
-	return 0;
+	if( status == NET_GAME_TYPE_SERVER )
+	{
+		setWidgetChoiceStatus(check_server, TRUE);
+		return 0;
+	}
+
+	if( status == NET_GAME_TYPE_CLIENT )
+	{
+		setWidgetChoiceStatus(check_client, TRUE);
+		return 0;
+	}
+
+	return -1;
 }
 
 int getSettingGameType()
 {
-	if( check_none->status == TRUE  ||
-	    check_load_session->status == TRUE )
+	if( getWidgetChoiceStatus(check_none) == TRUE  ||
+	    getWidgetChoiceStatus(check_load_session) == TRUE )
 	{
 		return NET_GAME_TYPE_NONE;
 	}
 
-	if( check_server->status == TRUE )
+	if( getWidgetChoiceStatus(check_server) == TRUE )
 	{
 		return NET_GAME_TYPE_SERVER;
 	}
 
-	if( check_client->status == TRUE )
+	if( getWidgetChoiceStatus(check_client) == TRUE )
 	{
 		return NET_GAME_TYPE_CLIENT;
 	}
@@ -303,7 +325,7 @@ int getSettingGameType()
 
 char* getGemeTypeLoadSession()
 {
-	if( check_load_session->status == TRUE )
+	if( getWidgetChoiceStatus(check_load_session) == TRUE )
 	{
 		return getWidgetSelectItem(selectSession);
 	}
@@ -313,36 +335,42 @@ char* getGemeTypeLoadSession()
 
 int setSettingIP(char *address)
 {
-	strcpy (textfield_ip->text, address);
+	char str[STR_SIZE];
+
+	strcpy (str, address);
+	setWidgetTextFiledText(textfield_ip, str);
 
 	return 1;
 }
 
 char* getSettingIP()
 {
-	return textfield_ip->text;
+	return getTextFromWidgetTextfield(textfield_ip);
 }
 
 int setSettingPort(int port)
 {
-	sprintf (textfield_port->text, "%d", port);
+	char str[STR_SIZE];
+
+	sprintf (str, "%d", port);
+	setWidgetTextFiledText(textfield_port, str);
 
 	return 0;
 }
 
 int getSettingPort()
 {
-	return atoi( textfield_port->text );
+	return atoi( getTextFromWidgetTextfield(textfield_port) );
 }
 
 int getSettingProto()
 {
-	if( strstr(textfield_ip->text, ".") != NULL )
+	if( strstr(getTextFromWidgetTextfield(textfield_ip), ".") != NULL )
 	{
 		return PROTO_UDPv4;
 	}
 
-	if( strstr(textfield_ip->text, ":") != NULL )
+	if( strstr(getTextFromWidgetTextfield(textfield_ip), ":") != NULL )
 	{
 		return PROTO_UDPv6;
 	}

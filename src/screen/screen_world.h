@@ -15,10 +15,8 @@
 extern bool_t isScreenWorldInicialized();
 extern void initWorld();
 extern void setWorldArena(int id);
-extern void setLagServer(my_time_t lag);
-extern void countRoundInc();
 extern void setWorldEnd();
-extern void setMaxCountRound(int n);
+extern void countRoundInc();
 extern tux_t* getControlTux(int control_type);
 extern void setControlTux(tux_t *tux, int control_type);
 extern void tuxControl(tux_t *p);

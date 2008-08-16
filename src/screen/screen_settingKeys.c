@@ -21,6 +21,8 @@
 #include "screen_mainMenu.h"
 #include "screen_setting.h"
 #include "screen_settingKeys.h"
+
+#include "widget.h"
 #include "widget_button.h"
 #include "widget_image.h"
 #include "widget_catchkey.h"
@@ -28,38 +30,38 @@
 
 static int keytable[KEY_LENGTH];
 static textFile_t *keycontrolFile;
-static widget_image_t *image_backgorund;
-static widget_button_t *button_back;
+static widget_t *image_backgorund;
+static widget_t *button_back;
 // key names
-static widget_label_t *tux_right;
-static widget_label_t *tux_right_keyup;
-static widget_label_t *tux_right_keydown;
-static widget_label_t *tux_right_keyleft;
-static widget_label_t *tux_right_keyright;
-static widget_label_t *tux_right_keyswitch;
-static widget_label_t *tux_right_keyfire;
-static widget_label_t *tux_left;
-static widget_label_t *tux_left_keyup;
-static widget_label_t *tux_left_keydown;
-static widget_label_t *tux_left_keyleft;
-static widget_label_t *tux_left_keyright;
-static widget_label_t *tux_left_keyswitch;
-static widget_label_t *tux_left_keyfire;
+static widget_t *tux_right;
+static widget_t *tux_right_keyup;
+static widget_t *tux_right_keydown;
+static widget_t *tux_right_keyleft;
+static widget_t *tux_right_keyright;
+static widget_t *tux_right_keyswitch;
+static widget_t *tux_right_keyfire;
+static widget_t *tux_left;
+static widget_t *tux_left_keyup;
+static widget_t *tux_left_keydown;
+static widget_t *tux_left_keyleft;
+static widget_t *tux_left_keyright;
+static widget_t *tux_left_keyswitch;
+static widget_t *tux_left_keyfire;
 // key values
-static widget_catchkey_t *tux_right_keyup_val;
-static widget_catchkey_t *tux_right_keydown_val;
-static widget_catchkey_t *tux_right_keyleft_val;
-static widget_catchkey_t *tux_right_keyright_val;
-static widget_catchkey_t *tux_right_keyswitch_val;
-static widget_catchkey_t *tux_right_keyfire_val;
-static widget_catchkey_t *tux_left_keyup_val;
-static widget_catchkey_t *tux_left_keydown_val;
-static widget_catchkey_t *tux_left_keyleft_val;
-static widget_catchkey_t *tux_left_keyright_val;
-static widget_catchkey_t *tux_left_keyswitch_val;
-static widget_catchkey_t *tux_left_keyfire_val;
+static widget_t *tux_right_keyup_val;
+static widget_t *tux_right_keydown_val;
+static widget_t *tux_right_keyleft_val;
+static widget_t *tux_right_keyright_val;
+static widget_t *tux_right_keyswitch_val;
+static widget_t *tux_right_keyfire_val;
+static widget_t *tux_left_keyup_val;
+static widget_t *tux_left_keydown_val;
+static widget_t *tux_left_keyleft_val;
+static widget_t *tux_left_keyright_val;
+static widget_t *tux_left_keyswitch_val;
+static widget_t *tux_left_keyfire_val;
 
-//static widget_catchkey_t *catcher;
+//static widget_t *catcher;
 // todo add key images 
 // possible variant will be reusing widget_image for current widget_label so there wont 
 // be key names but only images
@@ -179,11 +181,11 @@ static void refreshKeytable()
 }
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
-	widget_catchkey_t *catcher;
+	widget_t *button;
+	widget_t *catcher;
 	
-	button = (widget_button_t *)(p);
-	catcher = (widget_catchkey_t *)(p);
+	button = (widget_t *)(p);
+	catcher = (widget_t *)(p);
 	if (button == button_back)
 		setScreen("setting");
 	//events on value
@@ -268,29 +270,29 @@ void quitKeyTable()
 void saveKeyTable(textFile_t *configFile) {
 	char str[STR_SIZE];
 
-	sprintf(str,"%d",tux_left_keyup_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keyup_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_MOVE_UP", str);
-	sprintf(str,"%d",tux_left_keydown_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keydown_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_MOVE_DOWN", str);
-	sprintf(str,"%d",tux_left_keyleft_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keyleft_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_MOVE_LEFT", str);
-	sprintf(str,"%d",tux_left_keyright_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keyright_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_MOVE_RIGHT", str);
-	sprintf(str,"%d",tux_left_keyfire_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keyfire_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_SHOOT", str);
-	sprintf(str,"%d",tux_left_keyswitch_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_left_keyswitch_val));
 	setValueInConfigFile(configFile, "TUX_LEFT_SWITCH_WEAPON", str);
-	sprintf(str,"%d",tux_right_keyup_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keyup_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_MOVE_UP", str);
-	sprintf(str,"%d",tux_right_keydown_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keydown_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_MOVE_DOWN", str);
-	sprintf(str,"%d",tux_right_keyleft_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keyleft_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_MOVE_LEFT", str);
-	sprintf(str,"%d",tux_right_keyright_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keyright_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_MOVE_RIGHT", str);
-	sprintf(str,"%d",tux_right_keyfire_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keyfire_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_SHOOT", str);
-	sprintf(str,"%d",tux_right_keyswitch_val->key);
+	sprintf(str,"%d", getWidgetCatchKey(tux_right_keyswitch_val));
 	setValueInConfigFile(configFile, "TUX_RIGHT_SWITCH_WEAPON", str);
 	saveTextFile(configFile);
 }
@@ -311,6 +313,7 @@ void quitScreenSettingKeys()
 	destroyWidgetLabel(tux_left_keyup);
 	destroyWidgetLabel(tux_left_keydown);
 	destroyWidgetLabel(tux_left_keyright);
+	destroyWidgetLabel(tux_left_keyleft);
 	destroyWidgetLabel(tux_left_keyswitch);
 	destroyWidgetLabel(tux_left_keyfire);
 	// key values

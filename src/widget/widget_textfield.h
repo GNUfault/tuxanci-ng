@@ -4,6 +4,7 @@
 #define WIDGET_TEXTFIELD_H
 
 #include "main.h"
+#include "widget.h"
 
 #define WIDGET_TEXTFIELD_WIDTH		175
 #define WIDGET_TEXTFIELD_HEIGHT		36
@@ -21,7 +22,6 @@
 
 typedef struct widget_textfield
 {
-	int x, y;
 	int w, h;
 	int canWrite;
 	int timeBlick;
@@ -32,11 +32,12 @@ typedef struct widget_textfield
 	bool_t active;
 } widget_textfield_t;
 
-extern widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y);
-extern void setWidgetTextFiledText(widget_textfield_t *p, char *text);
-extern void drawWidgetTextfield(widget_textfield_t *p);
-extern void eventWidgetTextfield(widget_textfield_t *p);
-extern void destroyWidgetTextfield(widget_textfield_t *p);
+extern widget_t* newWidgetTextfield(char *text, int filter, int x, int y);
+extern void setWidgetTextFiledText(widget_t *widget, char *text);
+extern char* getTextFromWidgetTextfield(widget_t *widget);
+extern void drawWidgetTextfield(widget_t *widget);
+extern void eventWidgetTextfield(widget_t *widget);
+extern void destroyWidgetTextfield(widget_t *widget);
 
 #endif
 

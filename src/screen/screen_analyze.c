@@ -17,18 +17,19 @@
 #include "screen_mainMenu.h"
 #include "screen_analyze.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_image.h"
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
 static list_t *listWidgetLabelName;
 static list_t *listWidgetLabelScore;
 static list_t *listAnalyze;
-static widget_label_t *widgetLabelMsg;
+static widget_t *widgetLabelMsg;
 
-static widget_button_t *button_ok;
+static widget_t *button_ok;
 
 static analyze_t* newAnalyze(char *name, int score)
 {
@@ -56,20 +57,20 @@ void startScreenAnalyze()
 
 void drawScreenAnalyze()
 {
-	widget_label_t *this;
+	widget_t *this;
 	int i;
 
 	drawWidgetImage(image_backgorund);
 
 	for( i = 0 ; i < listWidgetLabelName->count ; i++ )
 	{
-		this = (widget_label_t *)(listWidgetLabelName->list[i]);
+		this = (widget_t *)(listWidgetLabelName->list[i]);
 		drawWidgetLabel(this);
 	}
 
 	for( i = 0 ; i < listWidgetLabelScore->count ; i++ )
 	{
-		this = (widget_label_t *)(listWidgetLabelScore->list[i]);
+		this = (widget_t *)(listWidgetLabelScore->list[i]);
 		drawWidgetLabel(this);
 	}
 
@@ -90,9 +91,9 @@ void stopScreenAnalyze()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_ok )
 	{

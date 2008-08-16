@@ -45,6 +45,7 @@ extern int errno;
 #include "screen_gameType.h"
 #include "screen_browser.h"
 
+#include "widget.h"
 #include "widget_image.h"
 #include "widget_label.h"
 #include "widget_button.h"
@@ -52,20 +53,20 @@ extern int errno;
 
 #define SERVER_TIMEOUT	200
 
-static widget_image_t *image_backgorund;
+static widget_t *image_backgorund;
 
-static widget_button_t *button_play;
-static widget_button_t *button_back;
-static widget_button_t *button_refresh;
+static widget_t *button_play;
+static widget_t *button_back;
+static widget_t *button_refresh;
 
-static widget_label_t *label_server;
-static widget_label_t *label_version;
-static widget_label_t *label_address;
-static widget_label_t *label_arena;
-static widget_label_t *label_players;
-static widget_label_t *label_ping;
+static widget_t *label_server;
+static widget_t *label_version;
+static widget_t *label_address;
+static widget_t *label_arena;
+static widget_t *label_players;
+static widget_t *label_ping;
 
-static widget_select_t *select_server;
+static widget_t *select_server;
 
 static server_t server_list;
 
@@ -148,9 +149,9 @@ void stopScreenBrowser()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 	
-	button = (widget_button_t *)(p);
+	button = (widget_t *)(p);
 
 	if( button == button_play )
 	{
@@ -192,7 +193,7 @@ server_t *server_getcurr ()
 	server_t *server;
 
 	for (server = server_list.next; server != &server_list; server = server->next) {
-		if (i == select_server->select)
+		if (i == getWidgetSelectIndex(select_server))
 			return server;
 
 		i ++;
@@ -613,8 +614,11 @@ static int LoadServers ()
 
 static int RefreshServers ()
 {
+/*
 	destroyListItem(select_server->list, free);
 	select_server->list = newList();
+*/
+	removeAllFromWidgetSelect(select_server);
 
 	struct in_addr srv;
 

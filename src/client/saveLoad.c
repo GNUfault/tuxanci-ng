@@ -12,6 +12,7 @@
 #include "tux.h"
 #include "shot.h"
 #include "item.h"
+#include "modules.h"
 
 #include "saveLoad.h"
 
@@ -104,8 +105,9 @@ static arena_t* loadArenaFromLine(char *line)
 	sscanf(line, "%s %s %d %d", cmd, name, &countRound, &max_countRound);
 
 	setWorldArena( getArenaIdFormNetName(name) );
-	setMaxCountRound(max_countRound);
+
 	arena = getCurrentArena();
+	arena->max_countRound = max_countRound;
 	arena->countRound = countRound;
 
 	return arena;
@@ -138,6 +140,12 @@ static void loadTuxFromLine(char *line, arena_t *arena)
 
 	if( tux->control == TUX_CONTROL_KEYBOARD_LEFT )
 	{
+		setControlTux(tux, TUX_CONTROL_KEYBOARD_LEFT);
+	}
+
+	if( tux->control == TUX_CONTROL_AI )
+	{
+		loadModule("libmodAI");
 		setControlTux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 	}
 

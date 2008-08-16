@@ -1,14 +1,18 @@
 
 #include <stdlib.h>
+#include <assert.h>
+
 #include "main.h"
 #include "interface.h"
 #include "font.h"
 #include "image.h"
+
+#include "widget.h"
 #include "widget_textfield.h"
 
 //#define ZZEEXX86_READKEY
 
-widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y)
+widget_t* newWidgetTextfield(char *text, int filter, int x, int y)
 {
 	widget_textfield_t *new;
 
@@ -16,8 +20,6 @@ widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y)
 	memset(new, 0, sizeof(widget_textfield_t));
 
 	strcpy(new->text, text);
-	new->x = x;
-	new->y = y;
 	new->time = 0;
 	new->timeBlick = 0;
 	new->atime = 0;
@@ -25,16 +27,19 @@ widget_textfield_t* newWidgetTextfield(char *text, int filter, int x, int y)
 	new->filter = filter;
 	getTextSize(text, &new->w, &new->h);
 
-	return new;
+	return newWidget(WIDGET_TYPE_TEXTFILED, x, y, WIDGET_TEXTFIELD_WIDTH, WIDGET_TEXTFIELD_HEIGHT, new);
 }
 
-static void drawBackground(widget_textfield_t *p)
+static void drawBackground(widget_t *widget)
 {
 	static image_t *g_textfield0 = NULL;
 	static image_t *g_textfield1 = NULL;
-	//int x, y;
+	widget_textfield_t *p;
 
-	//getMousePosition(&x, &y);
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
 
 	if( g_textfield0 == NULL )
 	{
@@ -48,17 +53,23 @@ static void drawBackground(widget_textfield_t *p)
 
 	if( p->active )
 	{
-		drawImage(g_textfield1, p->x, p->y, 0, 0, g_textfield1->w, g_textfield1->h);
+		drawImage(g_textfield1, widget->x, widget->y, 0, 0, g_textfield1->w, g_textfield1->h);
 	}
 	else
 	{
-		drawImage(g_textfield0, p->x, p->y, 0, 0, g_textfield0->w, g_textfield0->h);
+		drawImage(g_textfield0, widget->x, widget->y, 0, 0, g_textfield0->w, g_textfield0->h);
 	}
 }
 
-static void drawText(widget_textfield_t *p)
+static void drawText(widget_t *widget)
 {
 	char str[STR_SIZE];
+	widget_textfield_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
 
 	strcpy(str, p->text);
 
@@ -77,21 +88,46 @@ static void drawText(widget_textfield_t *p)
 	}
 
 	//drawFont(str, p->x+WIDGET_TEXTFIELD_TEXT_OFFSET_X, p->y+p->h/2, COLOR_WHITE);
-	drawFont(str, p->x+WIDGET_TEXTFIELD_TEXT_OFFSET_X, p->y+WIDGET_TEXTFIELD_HEIGHT/2-p->h/2, COLOR_WHITE);
 	//printf("p->y: %d\nheight: %d\n p->h: %d\n", p->y, WIDGET_TEXTFIELD_HEIGHT, p->h);
+
+	drawFont(str,
+		widget->x+WIDGET_TEXTFIELD_TEXT_OFFSET_X,
+		widget->y+WIDGET_TEXTFIELD_HEIGHT/2-p->h/2,
+		COLOR_WHITE);
 }
 
-void drawWidgetTextfield(widget_textfield_t *p)
+void drawWidgetTextfield(widget_t *widget)
 {
-	drawBackground(p);
-	drawText(p);
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	drawBackground(widget);
+	drawText(widget);
 }
 
-void setWidgetTextFiledText(widget_textfield_t *p, char *text)
+void setWidgetTextFiledText(widget_t *widget, char *text)
 {
+	widget_textfield_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
+
 	memset(p->text, 0, STR_SIZE);
 	strcpy(p->text, text);
 	getTextSize(text, &p->w, &p->h);
+}
+
+char* getTextFromWidgetTextfield(widget_t *widget)
+{
+	widget_textfield_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
+	return p->text;
 }
 
 static void checkText(widget_textfield_t *p)
@@ -408,16 +444,22 @@ static void readKey(widget_textfield_t *p)
 }
 #endif
 
-void eventWidgetTextfield(widget_textfield_t *p)
+void eventWidgetTextfield(widget_t *widget)
 {
+	widget_textfield_t *p;
 	int x, y;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
 
 	getMousePosition(&x, &y);
 
 	if( isMouseClicked() )
 	{
-		if( x >= p->x && x <= p->x+WIDGET_TEXTFIELD_WIDTH && 
-		    y >= p->y && y <= p->y+WIDGET_TEXTFIELD_HEIGHT )
+		if( x >= widget->x && x <= widget->x+WIDGET_TEXTFIELD_WIDTH && 
+		    y >= widget->y && y <= widget->y+WIDGET_TEXTFIELD_HEIGHT )
 		{
 			p->active = TRUE;
 		}
@@ -430,8 +472,16 @@ void eventWidgetTextfield(widget_textfield_t *p)
 	readKey(p);
 }
 
-void destroyWidgetTextfield(widget_textfield_t *p)
+void destroyWidgetTextfield(widget_t *widget)
 {
+	widget_textfield_t *p;
+
+	assert( widget != NULL );
+	assert( widget->type == WIDGET_TYPE_TEXTFILED );
+
+	p = (widget_textfield_t *) widget->private_data;
+
 	free(p);
+	destroyWidget(widget);
 }
  

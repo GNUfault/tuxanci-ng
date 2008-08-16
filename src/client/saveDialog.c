@@ -16,6 +16,7 @@
 #include "font.h"
 #include "saveLoad.h"
 
+#include "widget.h"
 #include "widget_label.h"
 #include "widget_button.h"
 #include "widget_textfield.h"
@@ -24,11 +25,11 @@ static image_t *g_background;
 static bool_t activeSaveDialog;
 static my_time_t lastActive;
 
-static widget_label_t *widgetLabelMsg;
-static widget_textfield_t *widgetTextFieldName;
+static widget_t *widgetLabelMsg;
+static widget_t *widgetTextFieldName;
 
-static widget_button_t *widgetButtonSave;
-static widget_button_t *widgetButtonBack;
+static widget_t *widgetButtonSave;
+static widget_t *widgetButtonBack;
 
 static void switchTerm()
 {
@@ -44,13 +45,13 @@ static void switchTerm()
 
 static void eventWidget(void *p)
 {
-	widget_button_t *button;
+	widget_t *button;
 
-	button = (widget_button_t *)p;
+	button = (widget_t *)p;
 
 	if( button == widgetButtonSave )
 	{
-		saveArena(widgetTextFieldName->text, getCurrentArena());
+		saveArena(getTextFromWidgetTextfield(widgetTextFieldName), getCurrentArena());
 		switchTerm();
 	}
 

@@ -4,10 +4,10 @@
 #define WIDGET_LABEL_H
 
 #include "main.h"
+#include "widget.h"
 
 typedef struct widget_label
 {
-	int x, y;
 	int w, h;
 	char *text;
 	int bind;
@@ -17,10 +17,9 @@ typedef struct widget_label
 #define WIDGET_LABEL_LEFT	2
 #define WIDGET_LABEL_CENTER	3
 
-extern widget_label_t* newWidgetLabel(char *text, int x, int y, int bind);
-extern void drawWidgetLabel(widget_label_t *p);
-extern void eventWidgetLabel(widget_label_t *p);
-extern void destroyWidgetLabel(widget_label_t *p);
+extern widget_t* newWidgetLabel(char *text, int x, int y, int bind);
+extern void drawWidgetLabel(widget_t *widget);
+extern void eventWidgetLabel(widget_t *widget);
+extern void destroyWidgetLabel(widget_t *widget);
 
 #endif
-
