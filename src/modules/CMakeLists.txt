@@ -23,7 +23,7 @@ ENDIF ( NOT Server )
 SET ( SRC_base_modules
 	${SRC_base_modules}
 	${WORKDIR}/base/main.h	${WORKDIR}/base/modules.h
-	${WORKDIR}/base/shot.h	${WORKDIR}/base/tux.h
+	${WORKDIR}/base/shot	${WORKDIR}/base/tux.h
 	${WORKDIR}/base/list	${WORKDIR}/base/gun.h
 	${WORKDIR}/base/space.h
 )

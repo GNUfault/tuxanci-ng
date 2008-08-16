@@ -81,7 +81,7 @@ IF ( Debug )
 	SET( CMAKE_C_FLAGS "-g -O0 -Wall -pipe")
 	SET( CMAKE_CXX_FLAGS "-g -O0 -Wall -pipe")
 	ADD_DEFINITIONS ( -DDEBUG )
-	SET ( CMAKE_VERBOSE_MAKEFILE on )
+	# SET ( CMAKE_VERBOSE_MAKEFILE on )
 ENDIF ( Debug )
 ###############################################################################
 # BASIC DIRECTORIES FOR INCLUSION
