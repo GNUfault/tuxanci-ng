@@ -27,6 +27,10 @@ SET ( SRC_base_modules
 	${WORKDIR}/base/list	${WORKDIR}/base/gun.h
 	${WORKDIR}/base/space	${WORKDIR}/base/index
 )
+SET ( SRC_modBasic
+	${SRC_base_modules}
+	modBasic.c
+)
 SET ( SRC_modWall
 	${SRC_base_modules}
 	modWall.c
@@ -50,11 +54,15 @@ SET ( SRC_modAI
 ###############################################################################
 # COMPILATION AND INSTALLATION ITSELF
 ###############################################################################
+ADD_LIBRARY ( modBasic SHARED ${SRC_modBasic} )
 ADD_LIBRARY ( modWall SHARED ${SRC_modWall} )
 ADD_LIBRARY ( modPipe SHARED ${SRC_modPipe} )
 ADD_LIBRARY ( modMove SHARED ${SRC_modMove} )
 ADD_LIBRARY ( modTeleport SHARED ${SRC_modTeleport} )
 ADD_LIBRARY ( modAI SHARED ${SRC_modAI} )
+INSTALL ( TARGETS modBasic
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 INSTALL ( TARGETS modWall
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
