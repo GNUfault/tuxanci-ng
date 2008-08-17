@@ -1,50 +1,120 @@
 #!/bin/sh
-
-echo "*** GNU/Linux Binary Packager ***"
-
-if [ ! $1 ]; then
-	echo "usage: $0 -v version -s"
-	echo "eg.: \"$0 -v 0.4.0 -s\" will compile server without -s compile client"
+# Created by Tomas Chvatal (Scarabeus_IV)
+###############################################################################
+echo "<******************************>"
+echo "<GNU/Linux TUXANCI Binary Packager>"
+echo "<******************************>"
+# This tool is only for tuxanci game developers, don't use it for yourself
+###############################################################################
+# HELP
+###############################################################################
+if [ $1 == "help" ]; then
+	echo "usage: $0 -v version"
+	echo "-v 0.2.5 \"compile version 0.2.5\""
+	echo "!if no version is specified svn version is created!"
+	echo "!This build tool is for 64b version (creates 32b and 64b thought)!"
 	exit 1
 fi
-SRV=""
-SRV_NAM=""
+###############################################################################
+# ARGUMENT PASSING
+###############################################################################
 while getopts v:s arg
 do
 	case $arg in
 		v) VERSION=${OPTARG};;
-		s) SRV="-DServer=1"; SRV_NAM="server-";;
-		*) echo "no arguments!"; exit 1;;
+		*) VERSION="9999";;
 	esac
 done
-
-INSTALL_DIR="pkgs/tuxanci-${SRV_NAM}${VERSION}-linux"
-BUILD_DIR="../../"
-#SVN='https://opensvn.csie.org/tuxanci_ng/'
-log='linux.log'
-error="Error! See pkgs/${log} for more iformation"
-mkdir -p pkgs/tuxanci-${SRV_NAM}${VERSION}-linux || ( echo $error; exit 1 )
-touch pkgs/${log} || ( echo $error; exit 1 )
-echo "" > pkgs/${log} || ( echo $error; exit 1 )
-
-rm -rfv $INSTALL_DIR $BUILD_DIR > pkgs/"${log}" || ( echo $error; exit 1 )
-
-#echo "* Fetching files from SVN"
-#svn export $SVN $BUILD_DIR >> pkgs/"${log}" || ( echo $error; exit 1 )
-
-echo "* Configuring"
-echo "#define TUXANCI_VERSION \"${VERSION}\"" > $BUILD_DIR/config.h || ( echo $error; exit 1 )
-
-echo "* Compiling"
-prevdir=`pwd`
-cd $BUILD_DIR
-cmake . -DDebug=1 -DPREFIX=\\\"..\\\" -DCMAKE_INSTALL_PREFIX:PATH="${prevdir}/${INSTALL_DIR}" ${SRV} -DLIBDIR=\\\"../lib/\\\" >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
-make >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
-sudo make install >> "${prevdir}"/pkgs/"${log}" || ( echo $error; exit 1 )
-cd $prevdir
-
-echo "* Packaging"
-tar cjf "${INSTALL_DIR}".tar.bz2 $INSTALL_DIR || ( echo $error; exit 1 )
-
-echo "** GNU/Linux binary package is ready!"
-
+###############################################################################
+# VARIABLES
+###############################################################################
+APPNAME="tuxanci"
+SVN="https://opensvn.csie.org/tuxanci_ng/"
+BUNDLE_PREFIX="${HOME}/tuxanci-bundle"
+LOG="${BUNDLE_PREFIX}/linux.log"
+SOURCE="${BUNDLE_PREFIX}/source"
+D="${BUNDLE_PREFIX}/${APPNAME}"
+ARCHS="32b 64b"
+ERROR_MESSAGE="Check ${LOG}, cause i was unable to finish my stuff correctly!"
+CMAKE_PARAMS="-DCMAKE_INSTALL_PREFIX=\"..\""
+###############################################################################
+# PREPARING ENVIROMENT
+###############################################################################
+mkdir -p ${BUNDLE_PREFIX} || ( echo "I was unable to create working directory"; exit 1 )
+touch ${LOG} || ( echo "I was unable to create log file"; exit 1 )
+echo "" > ${LOG}	# LOG CLEANUP
+echo "<******************************>"
+echo "<Downloading files from SVN repository>"
+echo "<******************************>"
+svn export $SVN ${SOURCE} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+for X in ${ARCHS}; do
+if [ ${X} == "32b" ]; then
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_C_FLAGS=-m32"
+fi
+###############################################################################
+# BUILDING CLIENT
+###############################################################################
+echo "<******************************>"
+echo "<Building Client ${X}>"
+echo "<******************************>"
+cd ${SOURCE}
+cmake . ${CMAKE_PARAMS} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make install DESTDIR="${D}_client-${X}/" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+###############################################################################
+# SRC CLEANUP
+###############################################################################
+rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
+make clean
+###############################################################################
+# BUILDING SERVER
+###############################################################################
+echo "<******************************>"
+echo "<Building Server ${X}>"
+echo "<******************************>"
+cd ${SOURCE}
+cmake . ${CMAKE_PARAMS} -DServer=ON >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make install DESTDIR="${D}_server-${X}/" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+###############################################################################
+# SRC CLEANUP
+###############################################################################
+rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
+make clean
+###############################################################################
+done
+# DESTRUCTION OF SRC
+###############################################################################
+cd ${BUNDLE_PREFIX}
+rm -rf ${SOURCE}
+###############################################################################
+# BUILDING TARS
+###############################################################################
+echo "<******************************>"
+echo "<Creating tar.bz2 archives>"
+echo "<******************************>"
+for X in ${ARCHS}; do
+	for Y in "client server"; do
+		tar cjf "${APPNAME}_${Y}-${X}.tar.bz2" "${APPNAME}_${Y}-${X}/"
+	done
+done
+###############################################################################
+# DESTRUCTION OF UNPACKED BINARIES
+###############################################################################
+for X in ${ARCHS}; do
+	for Y in "client server"; do
+		rm -rf "${APPNAME}_${Y}-${X}/"
+	done
+done
+###############################################################################
+# SHOW WHAT HAVE WE DONE
+###############################################################################
+echo "<******************************>"
+echo "<What have i created :>"
+echo "<******************************>"
+find type -f ./ -maxdepth 1 -print
+echo "<******************************>"
+echo "<******************************>"
+echo "<GNU/Linux binary packages are ready>"
+echo "<******************************>"
+echo "<******************************>"

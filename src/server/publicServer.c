@@ -6,7 +6,6 @@
 #include <signal.h>
 #include <time.h>
 
-#ifdef SUPPORT_NET_UNIX_UDP
 #ifndef __WIN32
 #include <sys/socket.h>
 #include <sys/select.h>
@@ -19,7 +18,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#endif
 
 #include "main.h"
 #include "list.h"
@@ -45,11 +43,9 @@ static int arenaId;
 static arena_t *arena;
 static bool_t isSignalEnd;
 
-#ifdef SUPPORT_NET_UNIX_UDP
 extern int errno;
 
 #define	__PACKED__ __attribute__ ((__packed__))
-#endif
 
 void countRoundInc()
 {
@@ -69,7 +65,6 @@ static int registerPublicServer()
 #endif
 
 	/* TODO: dodelat TCP makro */
-#ifdef SUPPORT_NET_UNIX_UDP
 	struct sockaddr_in server;
 	char *master_server_ip;
 
@@ -189,10 +184,6 @@ static int registerPublicServer()
 		close(s);
 #else
 		closesocket(s);
-#endif
-
-#else
-	return -1;
 #endif
 
 	return 0;

@@ -11,19 +11,20 @@
 # -DWin=1			# build windows port
 # -DNLS=1			# enable Gettext NLS
 # -DApple=1			# build apple port
-# -CMAKE_INSTALL_PREFIX=/bla/	# install prefix
-# -CMAKE_DATA_PATH=/other/bla/	# install path for data
+# -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
+# -DCMAKE_DATA_PATH=/other/bla/	# install path for data
+# -DCMAKE_CONF_PATH=/etc	# install path for data
+# -DLIB_INSTALL_DIR=/other/bla	# install path for data
 ###############################################################################
-# OUR OWN CODE HACKS (WHEN CODE CLEANUP IS FINISHED REMOVE THIS)
-# ALSO CONTAINS IMPORTANT DEFINITIONS [PREFIX,...]
+# IMPORTANT DEFINITIONS [PREFIX,...]
 ###############################################################################
-ADD_DEFINITIONS ( -DSUPPORT_NET_UNIX_UDP )
 SET ( TUXANCI_VERSION "9999" )
 SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
 # data because some distributions want different data placement
-SET ( CMAKE_DATA_PATH "/usr/local/share/" CACHE PATH "Install path prefix" )
+SET ( CMAKE_CONF_PATH "/etc" CACHE PATH "Config path prefix" )
+SET ( CMAKE_DATA_PATH "/usr/local/share/" CACHE PATH "Data path prefix" )
+SET ( LIB_INSTALL_DIR "/usr/local/share/lib/" CACHE PATH "Library path prefix" )
 SET ( CMAKE_INSTALL_PREFIX "/usr/local/" CACHE PATH "Install path prefix" )
-CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
 ###############################################################################
 # BASIC PROJECT VALUES
 ###############################################################################
@@ -133,6 +134,9 @@ IF ( WIN )
 		SET ( SDLTTF_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include/" )
 	ENDIF ( NOT Server )
 	# override basic directory placement
+	SET ( CMAKE_CONF_PATH "../${APPNAME}/etc" CACHE PATH "Config path prefix" )
+	SET ( CMAKE_DATA_PATH "../${APPNAME}/share/" CACHE PATH "Data path prefix" )
+	SET ( CMAKE_INSTALL_PREFIX ".." CACHE PATH "Install path prefix" )
 	SET ( CMAKE_INSTALL_BINDIR ${APPNAME}/bin )
 	SET ( CMAKE_INSTALL_LIBDIR ${APPNAME}/lib )
 	SET ( CMAKE_INSTALL_DATADIR ${APPNAME}/share/ )
@@ -175,6 +179,7 @@ MESSAGE ( "Cflags:${CMAKE_C_FLAGS}" )
 MESSAGE ( "CXXflags:${CMAKE_CXX_FLAGS}" )
 MESSAGE ( STATUS "<Compiling SRC>" )
 MESSAGE ( STATUS "<******************************>" )
+CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
 ADD_SUBDIRECTORY ( src )
 ###############################################################################
 # DATA INSTALLATION

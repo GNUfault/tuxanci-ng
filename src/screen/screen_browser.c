@@ -14,7 +14,6 @@
 #include "screen.h"
 #include "image.h"
 
-#ifdef SUPPORT_NET_UNIX_UDP
 
 #ifndef __WIN32__
 #include <sys/socket.h>
@@ -36,7 +35,6 @@
 #include "dns.h"
 
 extern int errno;
-#endif
 
 #ifndef NO_SOUND
 #include "music.h"
@@ -204,7 +202,6 @@ server_t *server_getcurr ()
 
 int server_getinfo (server_t *server)
 {
-#ifdef SUPPORT_NET_UNIX_UDP
 	struct sockaddr_in srv;
 	int mySocket;
 
@@ -326,10 +323,6 @@ int server_getinfo (server_t *server)
 #endif
 
 	server->ping = 1000 - (tv.tv_usec/1000);
-#else
-	return 0;
-#endif
-
 	/*
 		["name: F\n"] >= svn82
 		"version: svnX\n"
@@ -435,7 +428,6 @@ static int LoadServers ()
 	char buf[1025];
 
 	/* TODO: dodelat TCP makro */
-#ifdef SUPPORT_NET_UNIX_UDP
 	struct sockaddr_in server;
 	char *master_server_ip;
 
@@ -523,10 +515,6 @@ static int LoadServers ()
 #else
 	closesocket (s);
 	WSACleanup();
-#endif
-
-#else
-	return -1;
 #endif
 
 	if (len <= 0)

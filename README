@@ -59,12 +59,12 @@ HOWTO COMPILE
 	(all commands are supposed to be written in tuxanci sources directory)
 	Building Client
 	---------------
-		$ cmake . -DNO_Audio=1 -DCMAKE_INSTALL_PREFIX=/usr/local/
+		$ cmake .
 		$ make
 		# make install
 	Building Server
 	--------------
-		$ cmake . -DServer=1 -DCMAKE_INSTALL_PREFIX=/usr/local/
+		$ cmake .
 		$ make
 		# make install
 	Removing current install
@@ -80,19 +80,20 @@ HOWTO COMPILE
 		not specify PREFIX!! There is also known bug when in path to game dir
 		is space separator -> Compilation will die with error file not found,
 		you have to place source to some directory with no space in its path.
-		
-		Option -DNO_AUDIO=1 says we want no audio support for client so change
-		if you want so.
-		
-		Server and client can be both on same computer they use different
-		folders.
-		
-		Cleaning data from previous compilation "$ make clean".
 
-		On Apple use please -DApple=1 variable for cmake.
-		
-		If you want another prefix than /usr/local/, you can achieve this by
-		adding "-DCMAKE_INSTALL_PREFIX=/what/ever/you/want" as cmake argument.
+		# ADDITIONAL OPTIONS FOR CMAKE
+		# -DServer=1			# build server
+		# -DNO_Audio=1 			# disable audio
+		# -DDebug=1			# enable debug
+		# -DCMAKE_C_FLAGS=-Wall		# modification for CFLAGS
+		# -DWin=1			# build windows port
+		# -DNLS=1			# enable Gettext NLS
+		# -DApple=1			# build apple port
+		# -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
+		# -DCMAKE_DATA_PATH=/other/bla/	# install path for data
+		# -DCMAKE_CONF_PATH=/etc	# install path for data
+		# -DLIB_INSTALL_DIR=/other/bla	# install path for data
+
 
 GAME USAGE
 ==========

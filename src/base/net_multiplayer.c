@@ -12,9 +12,7 @@
 #include "net_multiplayer.h"
 #include "server.h"
 
-#ifdef SUPPORT_NET_UNIX_UDP
 #include "udp.h"
-#endif
 
 #ifndef PUBLIC_SERVER
 #include "screen_setting.h"
