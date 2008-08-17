@@ -104,6 +104,7 @@ ENDIF ( NOT Server )
 IF ( Server )
 	ADD_DEFINITIONS ( -DPUBLIC_SERVER )
 	ADD_DEFINITIONS ( -DNO_SOUND )
+	SET ( NO_Audio "ON" )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/server )
 ENDIF ( Server )
 ###############################################################################

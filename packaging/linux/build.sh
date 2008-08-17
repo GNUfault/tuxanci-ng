@@ -24,8 +24,7 @@ fi
 VERSION="9999"
 ARCH="64b"
 SVN_REV=""
-while getopts v:a:r: arg
-do
+while getopts v:a:r: arg ; do
 	case $arg in
 		v) VERSION=${OPTARG};;
 		a) ARCH=${OPTARG};;
@@ -71,13 +70,13 @@ if [[ ${Y} == "server" ]]; then
 	CMAKE_PARAMS="${CMAKE_PARAMS} -DServer=1"
 fi
 cd "${SOURCE}"
+rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
+make clean >> "${LOG}"
 cmake . ${CMAKE_PARAMS}  >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make install DESTDIR="${D}_${Y}_${VERSION}-${ARCH}/" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 cd "${D}"_"${Y}"_"${VERSION}"-"${ARCH}"/
-`which strip` --strip-unneeded lib/tuxanci/* bin/*
-rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
-make clean
+`which strip` --strip-unneeded lib/tuxanci/* bin/* >> "${LOG}"
 done
 ###############################################################################
 # DESTRUCTION OF SRC
@@ -89,13 +88,13 @@ rm -rf "${SOURCE}"
 ###############################################################################
 echo "<Creating tar.bz2 archives>"
 echo "<******************************>"
-for Y in ${OPTIONS}; do
+for Y in ${OPTIONS} ; do
 	tar cjf "${APPNAME}"_"${Y}"_"${VERSION}"-"${ARCH}".tar.bz2 "${APPNAME}"_"${Y}"_${VERSION}-"${ARCH}"/*
 done
 ###############################################################################
 # DESTRUCTION OF UNPACKED BINARIES
 ###############################################################################
-for Y in ${OPTIONS}; do
+for Y in ${OPTIONS} ; do
 	rm -rf "${APPNAME}"_"${Y}"_${VERSION}-"${ARCH}"/
 done
 ###############################################################################
@@ -103,7 +102,13 @@ done
 ###############################################################################
 echo "<What have i created :>"
 echo "<******************************>"
-find ./ -maxdepth 1 -type f -print
+find ./ -maxdepth 1 -type f -name \*.tar.bz2 -print | while read FILE ; do
+	echo "FILE: ${FILE}"
+	echo "      SIZE: $(`which du` -h ${FILE} |`which awk` -F' ' '{print $1}')"
+	echo "    MD5SUM: $(`which md5sum` ${FILE} |`which awk` -F' ' '{print $1}')"
+	echo "   SHA1SUM: $(`which sha1sum` ${FILE} |`which awk` -F' ' '{print $1}')"
+	echo
+done
 echo
 echo
 echo "<GNU/Linux binary packages are ready>"

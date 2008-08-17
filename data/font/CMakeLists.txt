@@ -7,7 +7,9 @@
 ###############################################################################
 # CURRENT DIRECTORY FILES
 ###############################################################################
-FILE ( GLOB files "*.ttf" )
-INSTALL ( FILES ${files}
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/font/ )
+IF ( NOT Server )
+	FILE ( GLOB files "*.ttf" )
+	INSTALL ( FILES ${files}
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/font/ )
+ENDIF ( NOT Server )
 ###############################################################################

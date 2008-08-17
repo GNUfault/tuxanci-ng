@@ -7,7 +7,9 @@
 ###############################################################################
 # CURRENT DIRECTORY FILES
 ###############################################################################
-FILE ( GLOB files "*.png" )
-INSTALL ( FILES ${files}
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/images/ )
+IF ( NOT Server )
+	FILE ( GLOB files "*.png" )
+	INSTALL ( FILES ${files}
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/images/ )
+ENDIF ( NOT Server )
 ###############################################################################
