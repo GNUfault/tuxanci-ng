@@ -10,6 +10,6 @@
 IF ( NOT NO_Audio )
 	FILE ( GLOB files "*.ogg" )
 	INSTALL ( FILES ${files}
-		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}-${TUXANCI_VERSION}/music/ )
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/music/ )
 ENDIF ( NOT NO_Audio )
 ###############################################################################

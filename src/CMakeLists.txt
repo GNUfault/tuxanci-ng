@@ -101,7 +101,7 @@ IF ( Server )
 	MESSAGE ( STATUS "<Building server as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	SET ( SRC_compile ${SRC_base} ${SRC_server} )
-	ADD_EXECUTABLE ( tuxanci-server ${SRC_compile} )
+	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
 ENDIF ( Server )
 ###############################################################################
 # CLIENT COMPILATION
@@ -109,8 +109,7 @@ ENDIF ( Server )
 IF ( NOT Server )
 	MESSAGE ( STATUS "<Building client as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
-	ADD_EXECUTABLE ( tuxanci ${SRC_compile} )
-	SET (TUX_BIN "tuxanci")
+	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
 ENDIF ( NOT Server )
 ################################################################################
 # INSTALLATION OF BINARY

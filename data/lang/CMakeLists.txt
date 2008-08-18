@@ -10,6 +10,6 @@
 IF ( NOT NO_Audio )
 	FILE ( GLOB files "*.lang" )
 	INSTALL ( FILES ${files}
-		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}-${TUXANCI_VERSION}/lang/ )
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/lang/ )
 ENDIF ( NOT NO_Audio )
 ###############################################################################

@@ -10,6 +10,6 @@
 IF ( NOT Server )
 	FILE ( GLOB files "*.ttf" )
 	INSTALL ( FILES ${files}
-		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}-${TUXANCI_VERSION}/font/ )
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/font/ )
 ENDIF ( NOT Server )
 ###############################################################################

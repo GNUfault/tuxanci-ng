@@ -19,7 +19,7 @@
 ###############################################################################
 # IMPORTANT DEFINITIONS [PREFIX,...]
 ###############################################################################
-SET ( TUXANCI_VERSION "9999" CACHE STRING "Version" )
+SET ( TUXANCI_VERSION "svn" CACHE STRING "Version" )
 SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
 # data because some distributions want different data placement
 SET ( CMAKE_CONF_PATH "/etc" CACHE PATH "Config path prefix" )
@@ -35,11 +35,11 @@ PROJECT ( tuxanci )
 IF ( COMMAND cmake_policy )
 	cmake_policy( SET CMP0003 NEW )
 ENDIF ( COMMAND cmake_policy )
-
-SET ( APPNAME "tuxanci")
-IF ( Server )
-	SET ( APPNAME "tuxanci-server" )
-ENDIF ( Server )
+IF ( NOT Server )
+	SET ( APPNAME "tuxanci-${TUXANCI_VERSION}")
+ELSE ( NOT Server )
+	SET ( APPNAME "tuxanci-server-${TUXANCI_VERSION}" )
+ENDIF ( NOT Server )
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )
 MESSAGE ( "<******************************>" )
@@ -215,11 +215,11 @@ ADD_SUBDIRECTORY ( src )
 # path which user send us
 ADD_SUBDIRECTORY ( data )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/LICENCE
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}-${TUXANCI_VERSION}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
 # windows quirk
 IF ( NOT Server )
 	IF ( Win )

@@ -10,6 +10,6 @@
 IF ( NOT Server )
 	FILE ( GLOB files "*.png" )
 	INSTALL ( FILES ${files}
-		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}-${TUXANCI_VERSION}/images/ )
+		DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/images/ )
 ENDIF ( NOT Server )
 ###############################################################################

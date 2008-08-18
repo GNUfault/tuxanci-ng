@@ -9,5 +9,5 @@
 ###############################################################################
 FILE ( GLOB files "*.map" )
 INSTALL ( FILES ${files}
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}-${TUXANCI_VERSION}/arena/ )
+	DESTINATION ${CMAKE_INSTALL_DATADIR}/${APPNAME}/arena/ )
 ###############################################################################
