@@ -38,7 +38,9 @@ void initListID()
 {
 	listID = newList();
 	lastID = 0;
-	printf("init ID manger..\n");
+#ifdef DEBUG
+	printf(_("Starting ID manger\n"));
+#endif
 }
 
 int isRegisterID(int id)
@@ -70,7 +72,7 @@ static int findNewID()
 
 	if( listID->count >= MAX_ID-1 )
 	{
-		assert( ! "ziaden ID uz nie je volny !" );
+		assert( ! _("No free ID left!") );
 	}
 
 	do{
@@ -110,7 +112,7 @@ void incID(int id)
 
 	if( index == -1 )
 	{
-		assert( ! "takyto ID nebol nikdy registrovany !" );
+		assert( ! _("This kind of ID was never registered!") );
 		return; // ha ha ha
 	}
 
@@ -133,7 +135,7 @@ void delID(int id)
 
 	if( index == -1 )
 	{
-		assert( ! "takyto ID nebol nikdy registrovany !" );
+		assert( ! _("This kind of ID was never registered!") );
 		return; // ha ha ha
 	}
 
@@ -183,21 +185,24 @@ void infoID(int id)
 
 	if( index == -1 )
 	{
-		printf("ID %d not exists\n", id);
+#ifdef DEBUG
+		printf(_("ID %d does not exist\n"), id);
+#endif
 		return;
 	}
 
 	this = listID->list[index];
-
-	printf("ID %d ( count %d )\n", this->id, this->count);
-
+#ifdef DEBUG
+	printf(_("ID %d (count %d)\n"), this->id, this->count);
+#endif
 	return;
 }
 
 void quitListID()
 {
-	printf("quit ID manger..\n");
-
+#ifdef DEBUG
+	printf(_("Quitting ID manger\n"));
+#endif
 	assert( listID != NULL );
 	destroyListItem(listID, destroyIdItem);
 }

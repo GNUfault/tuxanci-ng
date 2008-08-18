@@ -68,7 +68,7 @@ sock_udp_t* bindUdpSocket(char *address, int port, int proto)
 
 	if( new->sock < 0 )
 	{
-		fprintf(stderr, "Unable to create socket when binding!\n");
+		fprintf(stderr, _("Unable to create socket when binding!\n"));
 		destroySockUdp(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -100,7 +100,7 @@ sock_udp_t* bindUdpSocket(char *address, int port, int proto)
 
 	if(  res < 0 )
 	{
-		fprintf(stderr, "Unable to set socket %s %d!\n", address, port);
+		fprintf(stderr, _("Unable to set socket %s %d!\n"), address, port);
 		destroySockUdp(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -136,7 +136,7 @@ sock_udp_t* connectUdpSocket(char *address, int port, int proto)
 
 	if( new->sock < 0 )
 	{
-		fprintf(stderr, "Unable to create socket when connecting!\n");
+		fprintf(stderr, _("Unable to create socket when connecting!\n"));
 		destroySockUdp(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -226,7 +226,7 @@ int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 
 		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
 
-		fprintf(stderr, "Unable to read form socket %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
+		fprintf(stderr, _("Unable to read form socket %d %s %d!\n"), size, str_ip, getSockUdpPort(dst));
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -267,7 +267,7 @@ int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 
 		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
 
-		fprintf(stderr, "Unable to write on socket %d %s %d!\n", size, str_ip, getSockUdpPort(dst));
+		fprintf(stderr, _("Unable to write on socket %d %s %d!\n"), size, str_ip, getSockUdpPort(dst));
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -317,7 +317,7 @@ int getSockUdpPort(sock_udp_t *p)
 	}
 #endif
 
-	assert( ! "bad proto !" );
+	assert( ! _("Bad IP proto!") );
 
 	return -1;
 }

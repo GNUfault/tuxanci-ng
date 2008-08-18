@@ -64,7 +64,7 @@ void setGameType()
 
 	if( ret != 0 )
 	{
-		fprintf(stderr, "Chyba inicalizacie sieti !\n");
+		fprintf(stderr, _("Network initialization error!\n"));
 		setWorldEnd();
 	}
 }
@@ -432,7 +432,7 @@ void tuxControl(tux_t *p)
 	switch( p->control )
 	{
 		case TUX_CONTROL_NONE :
-			assert( ! "Tux nema definovane ovladanie !" );
+			assert( ! _("Tux has not defined controls!") );
 		break;
 
 		case TUX_CONTROL_KEYBOARD_LEFT :
@@ -616,6 +616,8 @@ void initWorld()
 
 void quitWorld()
 {
-	printf("quit world\n");
+#ifdef DEBUG
+	printf(_("Quitting screen world\n"));
+#endif
 	isScreenWorldInit = FALSE;
 }

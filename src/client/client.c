@@ -102,9 +102,9 @@ static int initUdpClient(char *ip, int port, int proto)
 	{
 		return -1;
 	}
-
-	printf("connect UDP %s %d\n", ip, port);
-
+#ifdef DEBUG
+	printf(_("Connected to: %s on port: %d via UDP\n"), ip, port);
+#endif
 	return 0;
 }
 
@@ -120,8 +120,9 @@ static int initTcpClient(char *ip, int port, int proto)
 	disableNagle(sock_server_tcp);
 	setTcpSockNonBlock(sock_server_tcp);
 
-	printf("connect TCP %s %d\n", ip, port);
-
+#ifdef DEBUG
+	printf(_("Connected to: %s on port: %d via TCP\n"), ip, port);
+#endif
 	return 0;
 }
 
@@ -181,8 +182,8 @@ int initClient(char *ip, int port, int proto)
 
 static void errorWithServer()
 {
-	fprintf(stderr, "Server does not respond!\n");
-	setMsgToAnalyze(getMyText("ERROR_SERVER_DONT_ALIVE"));
+	fprintf(stderr, _("Server did not respond!\n"));
+	setMsgToAnalyze(_("Server is not running or being blocked. I was unable to connect."));
 	setWorldEnd();
 }
 
@@ -221,7 +222,7 @@ void sendServer(char *msg)
 #ifndef PUBLIC_SERVER
 	if( isParamFlag("--send") )
 	{
-		printf("send -> %s", msg);
+		printf(_("Sending: \"%s\""), msg);
 	}
 
 #endif
@@ -310,7 +311,7 @@ static void eventClientWorkRecvList()
 #ifndef PUBLIC_SERVER
 		if( isParamFlag("--recv") )
 		{
-			printf("recv -> %s", line);
+			printf(_("Recieved: \"%s\""), line);
 		}
 #endif
 		if( protoCmd != NULL )
@@ -412,11 +413,11 @@ static void eventTraffic()
 	if( currentTime - lastTraffic > 5000 )
 	{
 		lastTraffic = currentTime;
-
-		printf("down: %d\n"
-		       "up  : %d\n",
+#ifdef DEBUG
+		printf(_("down: %d\n")
+		       _("up  : %d\n"),
 		traffic_down, traffic_up);
-
+#endif
 		traffic_down = 0;
 		traffic_up = 0;
 	}
@@ -440,16 +441,18 @@ static void quitUdpClient()
 {
 	assert( sock_server_udp != NULL );
 	closeUdpSocket(sock_server_udp);
-
-	printf("quit UDP conenct\n");
+#ifdef DEBUG
+	printf(_("Closing UDP connection.\n"));
+#endif
 }
 
 static void quitTcpClient()
 {
 	assert( sock_server_tcp != NULL );
 	closeTcpSocket(sock_server_tcp);
-
-	printf("quit TCP conenct\n");
+#ifdef DEBUG
+	printf(_("Closing TCP connection.\n"));
+#endif
 }
 
 void quitClient()

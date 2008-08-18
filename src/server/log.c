@@ -17,12 +17,12 @@ int initLog(char *name)
 
 	if( logFile == NULL )
 	{
-		printf("open file %s as log file failed !!!\n", name);
+		fprintf(stderr, _("Opening logfile \"%s\" failed!\n"), name);
 		return -1;
 	}
-
-	printf("I use %s as log file\n", name);
-
+#ifdef DEBUG
+	printf(_("I use logfile: \"%s\")\n", name);
+#endif
 	addToLog(LOG_INF, "open log file");
 
 	return 0;
@@ -45,7 +45,7 @@ void addToLog(int type, char *msg)
 		case LOG_WRN : str_type = "WRN"; break;
 		case LOG_ERR : str_type = "ERR"; break;
 		default :
-			assert( ! "Bad log type !" );
+			assert( ! _("Really bad log value!") );
 		break;
 	}
 

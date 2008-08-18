@@ -179,7 +179,7 @@ static void checkText(widget_textfield_t *p)
 			break;
 
 			default :
-				assert( ! "bad filter" );
+				assert( ! _("Bad filter!") );
 			break;
 		}
 

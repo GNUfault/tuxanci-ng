@@ -2,7 +2,7 @@
 #ifndef MY_TCP_H
 
 #define MY_TCP_H
-
+#include "main.h"
 #include <netinet/in.h>
 
 #define SUPPORT_IPv6

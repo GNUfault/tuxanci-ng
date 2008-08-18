@@ -244,7 +244,7 @@ int initPublicServer()
 	
 	if( ret < 0 )
 	{
-		fprintf(stderr, "I down open log file !\n");
+		fprintf(stderr, _("I was unable to open config file!\n"));
 		return -1;
 	}
 
@@ -265,7 +265,7 @@ int initPublicServer()
 
 	if( ret < 0 )
 	{
-		printf("Unable to initialize network socket!\n");
+		printf(_("Unable to initialize network socket!\n"));
 		return -1;
 	}
 
@@ -273,7 +273,7 @@ int initPublicServer()
 
 	if (registerPublicServer() < 0)
 	{
-		printf("Unable to contact MasterServer!\n");
+		printf(_("Unable to contact MasterServer!)\n");
 	}
 
 	return 0;
@@ -317,14 +317,17 @@ void eventPublicServer()
 
 void my_handler_quit(int n)
 {
+#ifdef DEBUG
 	printf("my_handler_quit\n");
+#endif
 	isSignalEnd = TRUE;
 }
 
 void quitPublicServer()
 {
-	printf("quit public server\n");
-	
+#ifdef DEBUG
+	printf(_("Quitting public server\n"));
+#endif
 	quitNetMultiplayer();
 	destroyArena(arena);
 	

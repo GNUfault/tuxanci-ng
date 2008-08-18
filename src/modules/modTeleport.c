@@ -187,7 +187,7 @@ static int getRandomPosition()
 		return TUX_DOWN;
 	}
 
-	assert( ! "Stupid error ! " );
+	assert( ! _("When generating random value in range 0 to 3 i got some other value?!") );
 
 	return -1; // no warnning
 }

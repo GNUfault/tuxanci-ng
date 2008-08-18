@@ -78,8 +78,9 @@ void saveArena(char *filename, arena_t *arena)
 	char path[STR_PATH_SIZE];
 
 	sprintf(path, "%s/%s.sav", getHomeDirector(), filename);
-	printf("path = %s\n", path);
-
+#ifdef DEBUG
+	printf(_("Saving game to: \"%s\"\n"), path);
+#endif
 	textFile = newTextFile(path);
 
 	if( textFile != NULL )
@@ -90,7 +91,7 @@ void saveArena(char *filename, arena_t *arena)
 	}
 	else
 	{
-		fprintf(stderr, "Do not save %s\n", path);
+		fprintf(stderr, _("I was unable to save: \"%s\"\n"), path);
 	}
 }
 
@@ -250,8 +251,9 @@ void loadArena(char *filename)
 	char path[STR_PATH_SIZE];
 
 	sprintf(path, "%s/%s", getHomeDirector(), filename);
-	printf("path = %s\n", path);
-
+#ifdef DEBUG
+	printf(_("Loadig game from file: \"%s\"\n"), path);
+#endif
 	textFile = loadTextFile(path);
 
 	if( textFile != NULL )
@@ -261,6 +263,6 @@ void loadArena(char *filename)
 	}
 	else
 	{
-		fprintf(stderr, "Do not load %s\n", path);
+		fprintf(stderr, _("Unable to load save: \"%s\"\n"), path);
 	}
 }

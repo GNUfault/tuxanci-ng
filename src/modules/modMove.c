@@ -59,7 +59,7 @@ static void move_tux(tux_t *tux, int x,  int y, int w, int h)
 		break;
 	
 		default :
-			assert( ! "premenna p->control ma zlu hodnotu !" );
+			assert( ! _("Variable p->control has a really wierd value!") );
 		break;
 	}
 	

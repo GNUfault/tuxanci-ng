@@ -63,7 +63,7 @@ client_t* newTcpClient(sock_tcp_t *sock_tcp)
 	char str_ip[STR_IP_SIZE];
 
 	getSockTcpIp(sock_tcp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, "new client TCP from %s %d", str_ip, getSockTcpPort(sock_tcp));
+	sprintf(str_log, _("New client \"%s\" on port \"%d\" connected"), str_ip, getSockTCPPort(sock_tcp));
 	addToLog(LOG_INF, str_log);
 #endif
 
@@ -107,7 +107,7 @@ void destroyTcpClient(client_t *client)
 	char str_ip[STR_IP_SIZE];
 
 	getSockTcpIp(client->socket_tcp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, "close TCP connect %s %d", str_ip, getSockTcpPort(client->socket_tcp));
+	sprintf(str_log, _("Client \"%s\" on port \"%d\" disconnected"), str_ip, getSockTcpPort(client->socket_tcp));
 	addToLog(LOG_INF, str_log);
 #endif
 
@@ -132,11 +132,15 @@ int initTcpServer(char *ip4, int port4, char *ip6, int port6)
 		{
 			ret++;
 			disableNagle(sock_server_tcp);
-			printf("server listen TCP port %s %d\n", ip4, port4);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
+#endif
 		}
 		else
 		{
-			printf("server listen TCP port %s %d -- failed !!!\n", ip4, port4);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
+#endif
 		}
 	}
 
@@ -148,11 +152,15 @@ int initTcpServer(char *ip4, int port4, char *ip6, int port6)
 		{
 			ret++;
 			disableNagle(sock_server_tcp_second);
-			printf("server listen TCP port %s %d\n", ip6, port6);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
+#endif
 		}
 		else
 		{
-			printf("server listen TCP port %s %d -- failed !!!\n", ip6, port6);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
+#endif
 		}
 	}
 
@@ -297,15 +305,20 @@ void quitTcpServer()
 {
 	if( sock_server_tcp != NULL )
 	{
-		printf("close port %d\n", getSockTcpPort(sock_server_tcp));
+#ifdef DEBUG
+		printf(_("Closing port: \"%d\"\n"), getSockTcpPort(sock_server_tcp));
+#endif
 		closeTcpSocket(sock_server_tcp);
 	}
 
 	if( sock_server_tcp_second != NULL )
 	{
-		printf("close port %d\n", getSockTcpPort(sock_server_tcp_second));
+#ifdef DEBUG
+		printf(_("Closing port: \"%d\"\n"), getSockTcpPort(sock_server_tcp_second));
+#endif
 		closeTcpSocket(sock_server_tcp_second);
 	}
-
-	printf("quit TCP port\n");
+#ifdef DEBUG
+	printf("Quitting TCP\n");
+#endif
 }

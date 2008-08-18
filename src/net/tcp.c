@@ -14,12 +14,12 @@
 #include <unistd.h>
 #include <assert.h>
 #include <netdb.h>
-
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h> 
 #include <fcntl.h>
 
+#include "main.h"
 #include "tcp.h"
 
 sock_tcp_t* newSockTcp(int proto)
@@ -66,7 +66,7 @@ sock_tcp_t* bindTcpSocket(char *address, int port, int proto)
 
 	if( new->sock < 0 )
 	{
-		fprintf(stderr, "Nemozem vytvorit sietovy socket\n");
+		fprintf(stderr, _("Unable to create socket when connecting!\n"));
 		destroySockTcp(new);
 		return NULL;
 	}
@@ -96,7 +96,7 @@ sock_tcp_t* bindTcpSocket(char *address, int port, int proto)
 
 	if( ret < 0 )
 	{
-		fprintf(stderr, "Nemozem obsadit sietovy port %d\n", port);
+		fprintf(stderr, _("Unable to bint to port: %d\n"), port);
 		destroySockTcp(new);
 		return NULL;
 	}
@@ -181,7 +181,7 @@ int getSockTcpPort(sock_tcp_t *p)
 	}
 #endif
 
-	assert( ! "bad proto !" );
+	assert( ! _("Bad IP proto!") );
 
 	return -1;
 }
@@ -211,7 +211,7 @@ sock_tcp_t* connectTcpSocket(char *ip, int port, int proto)
 
 	if( new->sock < 0 )
 	{
-		fprintf(stderr, "Nemozem vytvorit sietovy socket\n");
+		fprintf(stderr, _("Unable to create TCP socket!\n"));
 		destroySockTcp(new);
 		return NULL;
 	}
@@ -240,7 +240,7 @@ sock_tcp_t* connectTcpSocket(char *ip, int port, int proto)
 
 	if( ret < 0 )
 	{
-		fprintf(stderr, "Nemozem sa pripojit na %s %d\n", ip, port);
+		fprintf(stderr, "Unable to connect on: \"%s\" port: \"%d\"\n", ip, port);
 		destroySockTcp(new);
 		return NULL;
 	}

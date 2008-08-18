@@ -50,7 +50,7 @@ static Mix_Chunk* loadMixSound(char *file)
 	char str[STR_PATH_SIZE];
 
 #ifdef DEBUG
-	printf("Loading sound file: %s\n", file);
+	printf(_("Loading sound file: %s\n"), file);
 #endif
 	sprintf(str, PATH_SOUND "%s", file);
 	accessExistFile(str);

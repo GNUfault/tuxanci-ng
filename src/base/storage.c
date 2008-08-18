@@ -68,7 +68,7 @@ void* getItemFromStorage(list_t *list, char *group, char *name)
 			return this->data;
 	}
 #ifdef DEBUG
-	printf("%s %s was not found in storage!\n", group, name);
+	printf(_("%s %s was not found in storage!\n"), group, name);
 #endif
 	return NULL;
 }

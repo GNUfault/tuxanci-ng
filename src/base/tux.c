@@ -154,7 +154,7 @@ void getCourse(int n, int *x, int *y)
 		break;
 
 		default :
-			assert( ! "premenna n ma zlu hodnotu !" );
+			assert( !  _("Type variable has a really wierd value!") );
 		break;
 	}	
 }
@@ -193,7 +193,7 @@ void drawTux(tux_t *tux)
 		break;
 
 		default :
-			assert( ! "premenna p->control ma zlu hodnotu !" );
+			assert( !  _("p->control has a really wierd value!") );
 		break;
 	}
 

@@ -229,9 +229,9 @@ void initScreenGameType()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
-	button_browser = newWidgetButton(getMyText("BROWSER"), 300, 345, eventWidget);
+	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y-100, eventWidget);
+	button_play = newWidgetButton(_("play"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_browser = newWidgetButton(_("browser"), 300, 345, eventWidget);
 
 	listChoiceGroup = newList();
 	check_none = newWidgetChoicegroup(100, 150, FALSE, listChoiceGroup, eventWidget);
@@ -252,13 +252,13 @@ void initScreenGameType()
 		setWidgetChoiceStatus(check_none, TRUE);
 	}
 
-	label_none = newWidgetLabel(getMyText("NONE"), 130, 145, WIDGET_LABEL_LEFT);
-	label_server = newWidgetLabel(getMyText("SERVER"), 130, 195, WIDGET_LABEL_LEFT);
-	label_client = newWidgetLabel(getMyText("CLIENT"), 130, 245, WIDGET_LABEL_LEFT);
+	label_none = newWidgetLabel(_("Local game"), 130, 145, WIDGET_LABEL_LEFT);
+	label_server = newWidgetLabel(_("Set up a server"), 130, 195, WIDGET_LABEL_LEFT);
+	label_client = newWidgetLabel(_("Network game"), 130, 245, WIDGET_LABEL_LEFT);
 	label_load_session = newWidgetLabel("load session", 130, 295, WIDGET_LABEL_LEFT);
 
-	label_ip = newWidgetLabel(getMyText("IP_ADDR"), 300, 145, WIDGET_LABEL_LEFT);
-	label_port = newWidgetLabel(getMyText("NET_PORT"), 300, 245, WIDGET_LABEL_LEFT);
+	label_ip = newWidgetLabel(_("IP"), 300, 145, WIDGET_LABEL_LEFT);
+	label_port = newWidgetLabel(_("port"), 300, 245, WIDGET_LABEL_LEFT);
 	label_session = newWidgetLabel("load session :", 300, 145, WIDGET_LABEL_LEFT);
 
 	textfield_ip = newWidgetTextfield(
@@ -318,7 +318,7 @@ int getSettingGameType()
 		return NET_GAME_TYPE_CLIENT;
 	}
 
-	assert( ! "Chyba pri zistvani type  hry !" );
+	assert( ! _("Unknown game type!") );
 
 	return -1;
 }
@@ -374,8 +374,9 @@ int getSettingProto()
 	{
 		return PROTO_UDPv6;
 	}
-
-	printf("IP protokol unknown !\n");
+#ifdef DEBUG
+	printf(_("Unknown IP protocol!\n"));
+#endif
 	return -1;
 }
 

@@ -39,13 +39,13 @@ void initServerConfigFile()
 	char *configFile;
 
 	configFile = getParamElse("--config-file", SERVER_CONFIG);
-	printf("load configuration from %s\n", getParamElse("--config-file", SERVER_CONFIG) );
+	printf(_("Loading configuration from: \"%s\"\n"), getParamElse("--config-file", SERVER_CONFIG) );
 
 	serverTextFile = loadTextFile(configFile);
 
 	if( serverTextFile == NULL )
 	{
-		fprintf(stderr, "I dont load config file, I used default values\n");
+		fprintf(stderr, _("I was unable to load config file. Falling back to defaults!\n"));
 		return;
 	}
 	

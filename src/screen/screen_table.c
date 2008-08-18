@@ -96,7 +96,7 @@ static void setWidgetLabel()
 
 	if( textFile == NULL )
 	{
-		fprintf(stderr, "File %s not loaded !",
+		fprintf(stderr, _("Highscore file: \"%s\" was not loaded!"),
 			SCREEN_TABLE_FILE_HIGHSCORE_NAME);
 		
 		return;
@@ -149,8 +149,8 @@ static void loadHighscoreFile()
 
 	if( textFile == NULL )
 	{
-		fprintf(stderr, "I can't load %s !\n", path);
-		fprintf(stderr, "I create %s\n", path);
+		fprintf(stderr, _("I am unable to load: \"%s\" !\n"), path);
+		fprintf(stderr, _("Creating: \"%s\"\n"), path);
 		textFile = newTextFile(path);
 	}
 	else
@@ -160,7 +160,7 @@ static void loadHighscoreFile()
 
 	if( textFile == NULL )
 	{
-		fprintf(stderr, "I can't create %s !\n", path);
+		fprintf(stderr, _("I was unable to create: \"%s\" !\n"), path);
 		return;
 	}
 
@@ -208,7 +208,7 @@ void initScreenTable()
 	image = addImageData("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton(getMyText("BACK"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
+	button_back = newWidgetButton(_("back"), WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
 		WINDOW_SIZE_Y-100, eventWidget);
 
 	loadHighscoreFile();

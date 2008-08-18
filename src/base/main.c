@@ -99,7 +99,7 @@ void accessExistFile(const char *s)
 {
 	if( access(s, F_OK) != 0 )
 	{
-		fprintf(stderr, "File %s not found !\nProgram shutdown !\n", s);
+		fprintf(stderr, _("File %s not found !\nProgram shutdown !\n"), s);
 		exit(-1);
 	}
 }
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 	/* Let's initialize WinSock */
 	if( WSAStartup(wVersionRequested, &data) != 0 )
 	{
-		fprintf(stderr, "WinSock initialization failed !\nProgram shutdown !\n");
+		fprintf(stderr, _("WinSock initialization failed !\nProgram shutdown !\n"));
 		exit(-1);
 	}  
 #endif

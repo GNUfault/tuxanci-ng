@@ -82,14 +82,14 @@ textFile_t* loadTextFile(char *s)
 
 	if( lstat(s, &buf) < 0 )
 	{
-		fprintf(stderr, "ERROR: unable to get file status for %s!\n", s);
+		fprintf(stderr, _("ERROR: unable to get file status for %s!\n"), s);
 		return NULL;
 	}
 
 	file_length = buf.st_size;
 	if( (file = fopen(s, "rb")) == NULL )
 	{
-		fprintf(stderr, "ERROR: unable to open file %s for reading\n", s);
+		fprintf(stderr, _("ERROR: unable to open file %s for reading\n"), s);
 		return NULL;
 	}
 
@@ -97,7 +97,7 @@ textFile_t* loadTextFile(char *s)
 
 	if( fread(p, file_length * sizeof(char), 1, file) != 1 )
 	{
-		fprintf(stderr, "ERROR: unable to read data from file %s\n",s);
+		fprintf(stderr, _("ERROR: unable to read data from file %s\n"),s);
 		fclose(file);
 		return NULL;
 	}
@@ -122,7 +122,7 @@ void printTextFile(textFile_t *p)
 
 	assert( p != NULL );
 
-	printf("file : %s\n\n", p->file);
+	printf(_("Printing file: \"%s\"\n\n"), p->file);
 
 	for(i = 0; i < p->text->count; i++)
 	{

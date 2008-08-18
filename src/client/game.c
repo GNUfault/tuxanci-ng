@@ -48,7 +48,9 @@ static void initGame()
 
 	if( initLanguage() == -1 )
 	{
-		printf("fatal error !\n");
+#ifdef DEBUG
+		printf(_("I was unable to initialize old nls system (if you see this something wierd is happening)!\n"));
+#endif
 		exit(-1);
 	}
 
@@ -111,9 +113,9 @@ void quitGame()
 	quitMusic();
 	quitAudio();
 #endif
-
-	printf("quit..\n");
-
+#ifdef DEBUG
+	printf(_("Quitting TUXANCI...\n"));
+#endif
 	exit(0);
 }
 

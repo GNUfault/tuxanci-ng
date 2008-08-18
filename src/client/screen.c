@@ -57,8 +57,9 @@ void destroyScreen(screen_t *p)
 void registerScreen(screen_t *p)
 {
 	assert( p != NULL );
-
-	printf("register screen %s..\n", p->name);
+#ifdef DEBUG
+	printf(_("Registering screen: \"%s\"\n"), p->name);
+#endif
 	addList(listScreen, p);
 }
 
@@ -108,7 +109,9 @@ void switchScreen()
 
 	if( currentScreen != NULL )
 	{
-		printf("stop screen %s..\n", currentScreen->name);
+#ifdef DEBUG
+		printf(_("Stopping screen:\" %s\"\n"), currentScreen->name);
+#endif
 		currentScreen->fce_stop();
 	}
 
@@ -116,8 +119,9 @@ void switchScreen()
 	futureScreen  = NULL;
 
 	//printf("switch screen %s..\n", currentScreen->name);
-
-	printf("start screen %s..\n", currentScreen->name);
+#ifdef DEBUG
+	printf(_("Starting screen: \"%s\"\n"), currentScreen->name);
+#endif
 	currentScreen->fce_start();
 }
 

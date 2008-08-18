@@ -678,16 +678,16 @@ void initScreenBrowser()
 	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund  = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton(getMyText("BACK"), 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton(getMyText("PLAY"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
-	button_refresh = newWidgetButton(getMyText("REFRESH"), WINDOW_SIZE_X/2-50, WINDOW_SIZE_Y-100, eventWidget);
+	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y-100, eventWidget);
+	button_play = newWidgetButton(_("Play"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
+	button_refresh = newWidgetButton(_("Refresh"), WINDOW_SIZE_X/2-50, WINDOW_SIZE_Y-100, eventWidget);
 
-	label_server = newWidgetLabel(getMyText("SERVER"), 120, 145, WIDGET_LABEL_LEFT);
-	label_version = newWidgetLabel(getMyText("VERSION"), 290, 145, WIDGET_LABEL_LEFT);
-	label_address = newWidgetLabel(getMyText("ADDRESS"), 400, 145, WIDGET_LABEL_LEFT);
-	label_arena = newWidgetLabel(getMyText("ARENA"), 550, 145, WIDGET_LABEL_LEFT);
-	label_players = newWidgetLabel(getMyText("CLIENTS"), 645, 145, WIDGET_LABEL_LEFT);
-	label_ping = newWidgetLabel(getMyText("PING"), 720, 145, WIDGET_LABEL_LEFT);
+	label_server = newWidgetLabel(_("server"), 120, 145, WIDGET_LABEL_LEFT);
+	label_version = newWidgetLabel(_("version"), 290, 145, WIDGET_LABEL_LEFT);
+	label_address = newWidgetLabel(_("IP"), 400, 145, WIDGET_LABEL_LEFT);
+	label_arena = newWidgetLabel(_("arena"), 550, 145, WIDGET_LABEL_LEFT);
+	label_players = newWidgetLabel(_("clients"), 645, 145, WIDGET_LABEL_LEFT);
+	label_ping = newWidgetLabel(_("ping"), 720, 145, WIDGET_LABEL_LEFT);
 
 	select_server = newWidgetSelect(50, label_server->y+40, eventWidget);
 

@@ -61,7 +61,7 @@ client_t* newUdpClient(sock_udp_t *sock_udp)
 	char str_ip[STR_IP_SIZE];
 
 	getSockUdpIp(sock_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, "new client UDP from %s %d", str_ip, getSockUdpPort(sock_udp));
+	sprintf(str_log, _("New client \"%s\" on port \"%d\" connected"), str_ip, getSockUdpPort(sock_udp));
 	addToLog(LOG_INF, str_log);
 #endif
 
@@ -77,7 +77,7 @@ void destroyUdpClient(client_t *p)
 	char str_ip[STR_IP_SIZE];
 
 	getSockUdpIp(p->socket_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, "close UDP connect %s %d", str_ip, getSockUdpPort(p->socket_udp));
+	sprintf(str_log, _("Client \"%s\" on port \"%d\" disconnected"), str_ip, getSockUdpPort(p->socket_udp));
 	addToLog(LOG_INF, str_log);
 #endif
 
@@ -99,11 +99,15 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 		if( sock_server_udp != NULL )
 		{
 			ret++;
-			printf("server listen UDP port %s %d\n", ip4, port4);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
+#endif
 		}
 		else
 		{
-			printf("server listen UDP port %s %d -- failed !!!\n", ip4, port4);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
+#endif
 		}
 	}
 
@@ -114,11 +118,15 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 		if( sock_server_udp_second != NULL )
 		{
 			ret++;
-			printf("server listen UDP port %s %d\n", ip6, port6);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
+#endif
 		}
 		else
 		{
-			printf("server listen UDP port %s %d -- failed !!!\n", ip6, port6);
+#ifdef DEBUG
+			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
+#endif
 		}
 	}
 
@@ -197,7 +205,7 @@ static void eventClientUdpSelect(sock_udp_t *sock_server)
 
 	if( client == NULL )
 	{
-		fprintf(stderr, "Client total not found !\n");
+		fprintf(stderr, _("Client was not FOUND!\n"));
 		return;
 	}
 	
@@ -260,15 +268,20 @@ void quitUdpServer()
 {
 	if( sock_server_udp != NULL )
 	{
-		printf("close port %d\n", getSockUdpPort(sock_server_udp));
+#ifdef DEBUG
+		printf(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp));
+#endif
 		closeUdpSocket(sock_server_udp);
 	}
 
 	if( sock_server_udp_second != NULL )
 	{
-		printf("close port %d\n", getSockUdpPort(sock_server_udp_second));
+#ifdef DEBUG
+		printf(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp_second));
+#endif
 		closeUdpSocket(sock_server_udp_second);
 	}
-
-	printf("quit UDP port\n");
+#ifdef DEBUG
+	printf(_("Quitting UDP\n"));
+#endif
 }

@@ -64,13 +64,13 @@ void proto_recv_error_client(char *msg)
 	{
 		return;
 	}
-
-	printf("proto error code %d\n", errorcode);
-
+#ifdef DEBUG
+	printf(_("Proto error code: \"%d\"\n"), errorcode);
+#endif
 	switch(errorcode)
 	{
 		case PROTO_ERROR_CODE_BAD_VERSION :
-			setMsgToAnalyze(getMyText("ERROR_BAD_VERSION"));
+			setMsgToAnalyze(_("Version of your client isn't supported by the server."));
 			setWorldEnd();
 		break;
 	}

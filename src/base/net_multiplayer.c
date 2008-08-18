@@ -58,7 +58,7 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 				case PROTO_UDPv4 :
 					if( initServer(ip, port, NULL, 0) != 1 )
 					{
-						fprintf(stderr, "Unable to inicialize network game as server!\n");
+						fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 						netGameType = NET_GAME_TYPE_NONE; 
 						return -1;
 					}
@@ -66,7 +66,7 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 				case PROTO_UDPv6 :
 					if( initServer(NULL, 0, ip, port) != 1 )
 					{
-						fprintf(stderr, "Unable to inicialize network game as server!\n");
+						fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 						netGameType = NET_GAME_TYPE_NONE; 
 						return -1;
 					}
@@ -78,14 +78,14 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 		case NET_GAME_TYPE_CLIENT :
 			if( initClient(ip, port, proto) != 0 )
 			{
-				fprintf(stderr, "Unable to inicialize network game as client!\n");
+				fprintf(stderr, _("Unable to inicialize network game as client!\n"));
 				netGameType = NET_GAME_TYPE_NONE;
 				return -1;
 			}
 		break;
 #endif
 		default :
-			assert( ! "Premenna netGameType ma zlu hodnotu !" );
+			assert( ! _("Variable netGameType has a really wierd value!") );
 		break;
 	}
 
@@ -109,7 +109,7 @@ void eventNetMultiplayer()
 		break;
 #endif
 		default :
-			assert( ! "Premenna netGameType ma zlu hodnotu !" );
+			assert( ! _("Variable netGameType has a really wierd value!") );
 		break;
 	}
 }
@@ -131,7 +131,7 @@ void quitNetMultiplayer()
 		break;
 #endif
 		default :
-			assert( ! "Premenna netGameType ma zlu hodnotu !" );
+			assert( ! _("Variable netGameType has a really wierd value!") );
 		break;
 	}
 

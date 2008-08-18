@@ -176,7 +176,7 @@ static void moveShotFromPipe(shot_t *shot, pipe_t *pipe)
 
 	if( distPipe == NULL )
 	{
-		fprintf(stderr, "Pipe %d ID not found\n", pipe->id);
+		fprintf(stderr, _("Pipe ID for pipe \"%d\" was not found\n"), pipe->id);
 		return;
 	}
 
@@ -241,7 +241,7 @@ static int negPosition(int n)
 		return TUX_UP;
 
 		default :
-			assert( ! "premenna n ma zlu hodnotu !" );
+			assert( ! _("Tux is moving in another dimension maybe!") );
 		break;
 	}
 

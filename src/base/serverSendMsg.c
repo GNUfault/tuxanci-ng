@@ -139,7 +139,7 @@ void protoSendClient(int type, client_t *client, char *msg, int type2, int id)
 #endif
 		break;
 		default :
-			assert( ! "Premenna type ma zlu hodnotu !" );
+			assert( ! _("Type variable has a really wierd value!") );
 		break;
 	}
 }

@@ -61,7 +61,7 @@ bool_t pushKeyToKeyboardBuffer(SDL_keysym key){
 	assert(keyboardBuffer!=NULL);
 
 	if (keyboardBuffer->count >= keyboardBuffer->size){
-		fprintf(stderr, "Preteceni klavesoveho bufferu! Zahazuji klavesu: %02x\n", key.sym);
+		fprintf(stderr, _("Keyboard Buffer overrun! Dropping key: %02x\n"), key.sym);
 		return FALSE;
 	}
 
@@ -84,7 +84,7 @@ SDL_keysym popKeyFromKeyboardBuffer(){
 	assert(keyboardBuffer!=NULL);
 
 	if (keyboardBuffer->count <= 0){
-		fprintf(stderr, "Podteceni klavesoveho bufferu!\n");
+		fprintf(stderr, _("Keyboard Buffer underrun!\n"));
 		return emptyKey;
 	}
 
@@ -129,7 +129,7 @@ void quitKeyboardBuffer(){
 	assert(keyboardBuffer!=NULL);
 
 	if (keyboardBuffer->count>0){
-		fprintf(stderr, "Klavesovy buffer neni prazdny!\n");
+		fprintf(stderr, _("Keyboard buffer is not empty!\n"));
 	}
 
 	free(keyboardBuffer->buff);

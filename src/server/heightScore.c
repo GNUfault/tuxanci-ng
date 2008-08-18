@@ -19,19 +19,21 @@ void initHeightScore(char *file)
 
 	if( textFile == NULL )
 	{
-		fprintf(stderr, "I can't load %s !\n", file);
-		fprintf(stderr, "I create %s\n", file);
+		fprintf(stderr, _("I am unable to load: \"%s\" !\n"), file);
+		fprintf(stderr, _("Creating: \"%s\"\n"), file);
 		textFile = newTextFile(file);
 	}
 	else
 	{
-		printf("I use %s as scorefile\n", file);
+#ifdef DEBUG
+		printf(_("Scorefile: \"%s\"\n"), file);
+#endif
 		return;
 	}
 
 	if( textFile == NULL )
 	{
-		fprintf(stderr, "I can't create %s!\n", file);
+		fprintf(stderr, _("I was unable to create: \"%s\" !\n"), file);
 		return;
 	}
 

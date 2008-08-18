@@ -86,7 +86,9 @@ void eventWidgetButton(widget_t *widget)
 	    isMouseClicked() )
 	{
 		time = WIDGET_BUTTON_TIME;
-		printf("event\n");
+#ifdef DEBUG
+		printf(_("Event caught\n"));
+#endif
 		p->fce_event(widget);
 	}
 }

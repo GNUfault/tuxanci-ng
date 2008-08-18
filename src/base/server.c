@@ -159,7 +159,7 @@ static void destroyUdpOrTcpClient(client_t *client)
 			destroyTcpClient(client);
 		break;
 		default :
-			assert( ! "zly typ !");
+			assert( ! _("Bad client type (TCP/UDP)!"));
 		break;
 	}
 }
@@ -308,7 +308,7 @@ void sendClient(client_t *p, char *msg)
 #ifndef PUBLIC_SERVER
 		if( isParamFlag("--send") )
 		{
-			printf("send -> %s", msg);
+			printf(_("Sending: \"%s\""), msg);
 		}
 #endif
 
@@ -321,7 +321,7 @@ void sendClient(client_t *p, char *msg)
 				ret = addBuffer(p->sendBuffer, msg, strlen(msg));
 			break;
 			default :
-				assert( ! "zly typ !");
+				assert( ! _("Bad client type (TCP/UDP)!"));
 			break;
 		}
 	
@@ -350,7 +350,7 @@ static void eventClientWorkRecvList(client_t *client)
 #ifndef PUBLIC_SERVER
 		if( isParamFlag("--recv") )
 		{
-			printf("recv -> %s", line);
+			printf(_("Recieved: \"%s\""), line);
 		}
 #endif
 

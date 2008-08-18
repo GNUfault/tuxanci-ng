@@ -51,8 +51,9 @@ void disableKeyboardBuffer(){
 
 int initSDL()
 {
-	printf("init SDL..\n");
-
+#ifdef DEBUG
+	printf(_("Initializing SDL system\n"));
+#endif
 	// initialization of SDL
 	if( SDL_Init(SDL_SUBSYSTEMS) == -1 )
 	{
@@ -118,14 +119,14 @@ int toggleFullscreen()
 
 	if( SDL_WM_ToggleFullScreen(screen) == 0 )
 	{
-		fprintf(stderr, "Nemozem prepnut do fullscreenu!\n");
+		fprintf(stderr, _("Unable to switch to FULLSCREEN mode!\n"));
 
 		SDL_FreeSurface(screen);
 		screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WIN_BPP, g_win_flags);
 
 		if(screen == NULL)
 		{
-			fprintf(stderr, "Nemozem premnut do okna:%s\n", SDL_GetError());
+			fprintf(stderr, _("Unable to switch to WINDOW mode! Error: %s\n"), SDL_GetError());
 			return 0;
 		}
 	}
@@ -143,7 +144,7 @@ int isMouseClicked()
 	return SDL_GetMouseState(NULL,NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 }
 
-int isPessAnyKey()
+int isPressAnyKey()
 {
 	Uint8 *mapa;
 	int i;
@@ -159,7 +160,7 @@ int isPessAnyKey()
 	return 0;
 }
 
-void printPessAnyKey()
+void printPressAnyKey()
 {
 	Uint8 *mapa;
 	int i;
@@ -169,7 +170,7 @@ void printPessAnyKey()
 	for( i = SDLK_BACKSPACE ; i < SDLK_KP9 ; i++ )
 		if( mapa[i] == SDL_PRESSED )
 		{
-			printf("press key with code : %d\n", i);
+			printf(_("Pressed key with SDL value: %d\n"), i);
 		}
 
 }
@@ -241,7 +242,7 @@ int eventAction()
 
 			if(screen == NULL)
 			{
-				fprintf(stderr, "Nemozem zmenit rozlisene okna: %s\n",SDL_GetError());
+				fprintf(stderr, _("Unable to change WINDOW resolution! Error: %s\n"),SDL_GetError());
 				return 0;
 			}
 		break;
@@ -269,7 +270,9 @@ void eventSDL()
 
 void quitSDL()
 {
-	printf("quit SDL..\n");
+#ifdef DEBUG
+	printf(_("Quitting SDL\n"));
+#endif
 	quitKeyboardBuffer();
 
 	SDL_Quit();

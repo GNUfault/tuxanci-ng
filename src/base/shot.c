@@ -125,7 +125,7 @@ shot_t* newShot(int x,int y, int px, int py, int gun, int author_id)
 		break;
 
 		default :
-			assert( ! "Premenna weapon ma zlu hodnotu !" );
+			assert( ! _("Type variable has a really wierd value!") );
 		break;
 	}
 
@@ -313,7 +313,9 @@ static void action_check(space_t *space, shot_t *shot, client_t *client)
 	if( isValueInList(client->listSeesShot, shot->id) == 0 )
 	{
 		addList(client->listSeesShot, newInt(shot->id) );
+#ifdef DEBUG
 		printf("proto_send_shot_server(PROTO_SEND_ONE, client, shot);\n");
+#endif
 		proto_send_shot_server(PROTO_SEND_ONE, client, shot);
 	}
 }
