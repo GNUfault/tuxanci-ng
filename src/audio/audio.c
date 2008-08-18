@@ -20,6 +20,11 @@ bool_t isAudioInicialized()
  */
 void initAudio()
 {
+	if( isParamFlag("--noaudio") )
+	{
+		return;
+	}
+
 	if (SDL_Init(SDL_INIT_AUDIO) == -1) {
 		fprintf(stderr, _("Unable to initialize audio: %s\n"), SDL_GetError());
 		return;

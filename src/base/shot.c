@@ -313,6 +313,7 @@ static void action_check(space_t *space, shot_t *shot, client_t *client)
 	if( isValueInList(client->listSeesShot, shot->id) == 0 )
 	{
 		addList(client->listSeesShot, newInt(shot->id) );
+		printf("proto_send_shot_server(PROTO_SEND_ONE, client, shot);\n");
 		proto_send_shot_server(PROTO_SEND_ONE, client, shot);
 	}
 }
@@ -336,6 +337,7 @@ void checkShotIsInTuxScreen(arena_t *arena)
 	{
 		thisClient = (client_t *)listClient->list[i];
 		thisTux = (tux_t *)thisClient->tux;
+		int del = 0;
 
 		if( thisTux == NULL || thisTux->control != TUX_CONTROL_NET )
 		{
@@ -350,7 +352,10 @@ void checkShotIsInTuxScreen(arena_t *arena)
 		while( thisClient->listSeesShot->count > 100 )
 		{
 			delListItem(thisClient->listSeesShot, 0, free);
+			del++;
 		}
+
+		//if( del > 0 )printf("del = %d\n", del);
 	}
 }
 
