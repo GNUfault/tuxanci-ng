@@ -22,7 +22,6 @@
 #include "proto.h"
 
 #include "client.h"
-#include "language.h"
 
 #include "screen_analyze.h"
 #include "screen_world.h"

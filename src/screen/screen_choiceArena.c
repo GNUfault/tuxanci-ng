@@ -6,7 +6,6 @@
 #include "list.h"
 #include "arenaFile.h"
 
-#include "language.h"
 #include "interface.h"
 #include "screen.h"
 #include "image.h"

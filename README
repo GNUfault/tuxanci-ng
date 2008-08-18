@@ -94,7 +94,7 @@ HOWTO COMPILE
 		# -DCMAKE_CONF_PATH=/etc	# install path for conf. files
 		# -DLIB_INSTALL_DIR=/other/bla	# install path for libraries
 		# -DCMAKE_DOC_PATH=/other/bla	# install path for doc
-
+		# -DCMAKE_LOCALE_PATH=/bla	# install path for locale
 GAME USAGE
 ==========
 	Starting game is simple tuxanci-VERSION or tuxanci-server-V. based on what we

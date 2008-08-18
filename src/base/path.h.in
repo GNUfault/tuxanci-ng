@@ -22,9 +22,8 @@
 	#define PATH_ARENA	PATH_DIR	"arena/"
 	#define PATH_SOUND	PATH_DIR	"sound/"
 	#define PATH_MUSIC	PATH_DIR	"music/"
-	#define PATH_CONFIG	PATH_DIR	"conf/"
-	#define PATH_LANG	PATH_DIR	"lang/"
-	#define PATH_DOC	"@CMAKE_DOC_PATH@"	"doc/"	APPNAME	"-" "@TUXANCI_VERSION@" "/"
-	#define PATH_LOCALE	PREFIX		"share/locale/"
+	#define PATH_LOCALE	"@CMAKE_LOCALE_PATH@"	"/"
+	#define PATH_DOC	"@CMAKE_DOC_PATH@"	"/"		APPNAME	"-" "@TUXANCI_VERSION@" "/"
+	#define GETTEXT_PACKAGE	"@GETTEXT_PACKAGE@"
 	#include "main.h"
 #endif

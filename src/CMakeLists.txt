@@ -48,12 +48,11 @@ SET ( SRC_client
 	${WORKDIR}/client/layer	${WORKDIR}/client/term
 	${WORKDIR}/client/screen	${WORKDIR}/client/interface
 	${WORKDIR}/client/client	${WORKDIR}/client/chat
-	${WORKDIR}/client/configFile	${WORKDIR}/client/language
+	${WORKDIR}/client/configFile	${WORKDIR}/client/saveLoad
 	${WORKDIR}/client/font	${WORKDIR}/client/game
 	${WORKDIR}/client/radar	${WORKDIR}/client/panel
 	${WORKDIR}/client/image	${WORKDIR}/client/keyboardBuffer
 	${WORKDIR}/client/pauza	${WORKDIR}/client/saveDialog
-	${WORKDIR}/client/saveLoad
 
 	${WORKDIR}/screen/screen_choiceArena
 	${WORKDIR}/screen/screen_settingKeys	${WORKDIR}/screen/screen_table

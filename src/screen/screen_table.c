@@ -8,7 +8,6 @@
 #include "textFile.h"
 #include "homeDirector.h"
 
-#include "language.h"
 #include "interface.h"
 #include "screen.h"
 #include "image.h"

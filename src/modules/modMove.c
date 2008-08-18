@@ -22,7 +22,6 @@
 #include "publicServer.h"
 #endif
 
-
 static export_fce_t *export_fce;
 
 static void move_tux(tux_t *tux, int x,  int y, int w, int h)
@@ -59,7 +58,7 @@ static void move_tux(tux_t *tux, int x,  int y, int w, int h)
 		break;
 	
 		default :
-			assert( ! _("Variable p->control has a really wierd value!") );
+			assert( ! "Variable p->control has a really wierd value!" );
 		break;
 	}
 	

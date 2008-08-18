@@ -9,7 +9,6 @@
 #include "homeDirector.h"
 #include "net_multiplayer.h"
 
-#include "language.h"
 #include "interface.h"
 #include "screen.h"
 #include "image.h"

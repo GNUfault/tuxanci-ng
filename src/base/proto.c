@@ -21,7 +21,6 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#include "language.h"
 #include "screen_world.h"
 #include "screen_setting.h"
 #include "screen_choiceArena.h"

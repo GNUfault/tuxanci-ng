@@ -19,7 +19,6 @@
 #include <netinet/tcp.h> 
 #include <fcntl.h>
 
-#include "main.h"
 #include "tcp.h"
 
 sock_tcp_t* newSockTcp(int proto)

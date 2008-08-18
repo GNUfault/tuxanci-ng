@@ -6,7 +6,6 @@
 
 #include "game.h"
 #include "interface.h"
-#include "language.h"
 #include "screen.h"
 #include "image.h"
 

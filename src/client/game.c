@@ -21,7 +21,6 @@
 #include "screen.h"
 #include "font.h"
 #include "screen_settingKeys.h"
-#include "language.h"
 #include "panel.h"
 #include "radar.h"
 
@@ -46,18 +45,9 @@ static void initGame()
 {
 	createHomeDirector();
 
-	if( initLanguage() == -1 )
-	{
-#ifdef DEBUG
-		printf(_("I was unable to initialize old nls system (if you see this something wierd is happening)!\n"));
-#endif
-		exit(-1);
-	}
-
 	initSDL();
 
 	initLayer();
-	initFont(getLanguageFont(), getLanguageSize());
 	initImageData();
 #ifndef NO_SOUND
 	initAudio();
@@ -99,7 +89,6 @@ void quitGame()
 
 	quitLayer();
 	quitFont();
-	quitLanguage();
 	quitScreen();
 	quitArenaFile();
 	quitItem();

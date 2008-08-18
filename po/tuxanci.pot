@@ -1,0 +1,815 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-19 00:37+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/client/client.c:106
+#, c-format
+msgid "Connected to: %s on port: %d via UDP\n"
+msgstr ""
+
+#: src/client/client.c:124
+#, c-format
+msgid "Connected to: %s on port: %d via TCP\n"
+msgstr ""
+
+#: src/client/client.c:185
+#, c-format
+msgid "Server did not respond!\n"
+msgstr ""
+
+#: src/client/client.c:186
+msgid "Server is not running or being blocked. I was unable to connect."
+msgstr ""
+
+#: src/client/client.c:225 src/base/server.c:311
+#, c-format
+msgid "Sending: \"%s\""
+msgstr ""
+
+#: src/client/client.c:314 src/base/server.c:353
+#, c-format
+msgid "Recieved: \"%s\""
+msgstr ""
+
+#: src/client/client.c:417
+#, c-format
+msgid "down: %d\n"
+msgstr ""
+
+#: src/client/client.c:418
+#, c-format
+msgid "up  : %d\n"
+msgstr ""
+
+#: src/client/client.c:445
+#, c-format
+msgid "Closing UDP connection.\n"
+msgstr ""
+
+#: src/client/client.c:454
+#, c-format
+msgid "Closing TCP connection.\n"
+msgstr ""
+
+#: src/client/interface.c:55
+#, c-format
+msgid "Initializing SDL system\n"
+msgstr ""
+
+#: src/client/interface.c:122
+#, c-format
+msgid "Unable to switch to FULLSCREEN mode!\n"
+msgstr ""
+
+#: src/client/interface.c:129
+#, c-format
+msgid "Unable to switch to WINDOW mode! Error: %s\n"
+msgstr ""
+
+#: src/client/interface.c:173
+#, c-format
+msgid "Pressed key with SDL value: %d\n"
+msgstr ""
+
+#: src/client/interface.c:245
+#, c-format
+msgid "Unable to change WINDOW resolution! Error: %s\n"
+msgstr ""
+
+#: src/client/interface.c:274
+#, c-format
+msgid "Quitting SDL\n"
+msgstr ""
+
+#: src/client/configFile.c:135
+#, c-format
+msgid "ADDING: \"%s\" into config file.\n"
+msgstr ""
+
+#: src/client/image.c:29
+#, c-format
+msgid "Initializing image database\n"
+msgstr ""
+
+#: src/client/image.c:105
+#, c-format
+msgid "Loading image %s\n"
+msgstr ""
+
+#: src/client/image.c:164
+#, c-format
+msgid "Quitting image database\n"
+msgstr ""
+
+#: src/client/font.c:138
+#, c-format
+msgid "Unloading font\n"
+msgstr ""
+
+#: src/client/keyboardBuffer.c:64
+#, c-format
+msgid "Keyboard Buffer overrun! Dropping key: %02x\n"
+msgstr ""
+
+#: src/client/keyboardBuffer.c:87
+#, c-format
+msgid "Keyboard Buffer underrun!\n"
+msgstr ""
+
+#: src/client/keyboardBuffer.c:132
+#, c-format
+msgid "Keyboard buffer is not empty!\n"
+msgstr ""
+
+#: src/client/screen.c:61
+#, c-format
+msgid "Registering screen: \"%s\"\n"
+msgstr ""
+
+#: src/client/screen.c:113
+#, c-format
+msgid "Stopping screen:\" %s\"\n"
+msgstr ""
+
+#: src/client/screen.c:123
+#, c-format
+msgid "Starting screen: \"%s\"\n"
+msgstr ""
+
+#: src/client/saveLoad.c:82
+#, c-format
+msgid "Saving game to: \"%s\"\n"
+msgstr ""
+
+#: src/client/saveLoad.c:94
+#, c-format
+msgid "I was unable to save: \"%s\"\n"
+msgstr ""
+
+#: src/client/saveLoad.c:255
+#, c-format
+msgid "Loadig game from file: \"%s\"\n"
+msgstr ""
+
+#: src/client/saveLoad.c:266
+#, c-format
+msgid "Unable to load save: \"%s\"\n"
+msgstr ""
+
+#: src/client/game.c:52
+#, c-format
+msgid ""
+"I was unable to initialize old nls system (if you see this something wierd "
+"is happening)!\n"
+msgstr ""
+
+#: src/client/game.c:117
+#, c-format
+msgid "Quitting TUXANCI...\n"
+msgstr ""
+
+#: src/base/textFile.c:85
+#, c-format
+msgid "ERROR: unable to get file status for %s!\n"
+msgstr ""
+
+#: src/base/textFile.c:92
+#, c-format
+msgid "ERROR: unable to open file %s for reading\n"
+msgstr ""
+
+#: src/base/textFile.c:100
+#, c-format
+msgid "ERROR: unable to read data from file %s\n"
+msgstr ""
+
+#: src/base/textFile.c:125
+#, c-format
+msgid ""
+"Printing file: \"%s\"\n"
+"\n"
+msgstr ""
+
+#: src/base/checkFront.c:86
+msgid "Bad type of front!"
+msgstr ""
+
+#: src/base/serverSendMsg.c:142 src/base/shot.c:128 src/base/tux.c:157
+msgid "Type variable has a really wierd value!"
+msgstr ""
+
+#: src/base/tux.c:196
+msgid "p->control has a really wierd value!"
+msgstr ""
+
+#: src/base/storage.c:71
+#, c-format
+msgid "%s %s was not found in storage!\n"
+msgstr ""
+
+#: src/base/udp_server.c:64 src/base/tcp_server.c:66
+#, c-format
+msgid "New client \"%s\" on port \"%d\" connected"
+msgstr ""
+
+#: src/base/udp_server.c:80 src/base/tcp_server.c:110
+#, c-format
+msgid "Client \"%s\" on port \"%d\" disconnected"
+msgstr ""
+
+#: src/base/udp_server.c:103 src/base/udp_server.c:122
+#: src/base/tcp_server.c:136 src/base/tcp_server.c:156
+#, c-format
+msgid "Starting server: \"%s\" on port: \"%d\"\n"
+msgstr ""
+
+#: src/base/udp_server.c:109 src/base/udp_server.c:128
+#: src/base/tcp_server.c:142 src/base/tcp_server.c:162
+#, c-format
+msgid "Starting server: \"%s\" on port: \"%d\" FAILED!\n"
+msgstr ""
+
+#: src/base/udp_server.c:208
+#, c-format
+msgid "Client was not FOUND!\n"
+msgstr ""
+
+#: src/base/udp_server.c:272 src/base/udp_server.c:280
+#: src/base/tcp_server.c:309 src/base/tcp_server.c:317
+#, c-format
+msgid "Closing port: \"%d\"\n"
+msgstr ""
+
+#: src/base/udp_server.c:285
+#, c-format
+msgid "Quitting UDP\n"
+msgstr ""
+
+#: src/base/idManager.c:42
+#, c-format
+msgid "Starting ID manger\n"
+msgstr ""
+
+#: src/base/idManager.c:75
+msgid "No free ID left!"
+msgstr ""
+
+#: src/base/idManager.c:115 src/base/idManager.c:138
+msgid "This kind of ID was never registered!"
+msgstr ""
+
+#: src/base/idManager.c:189
+#, c-format
+msgid "ID %d does not exist\n"
+msgstr ""
+
+#: src/base/idManager.c:196
+#, c-format
+msgid "ID %d (count %d)\n"
+msgstr ""
+
+#: src/base/idManager.c:204
+#, c-format
+msgid "Quitting ID manger\n"
+msgstr ""
+
+#: src/base/server.c:162 src/base/server.c:324
+msgid "Bad client type (TCP/UDP)!"
+msgstr ""
+
+#: src/base/myTimer.c:113
+msgid "Timer is really wierdly set!"
+msgstr ""
+
+#: src/base/myTimer.c:132
+msgid "There is no such ID!"
+msgstr ""
+
+#: src/base/modules.c:70 src/base/modules.c:76
+#, c-format
+msgid "Error %s occured when using getFce function!\n"
+msgstr ""
+
+#: src/base/modules.c:147
+#, c-format
+msgid "Unable to map file %s!\n"
+msgstr ""
+
+#: src/base/modules.c:163
+#, c-format
+msgid "Loading module: \"%s\"\n"
+msgstr ""
+
+#: src/base/modules.c:166
+#, c-format
+msgid "Failed initialization of module \"%s\""
+msgstr ""
+
+#: src/base/modules.c:183
+#, c-format
+msgid "Destroing module...\n"
+msgstr ""
+
+#: src/base/modules.c:213
+#, c-format
+msgid "I've done this once, dont want to mess memory with module %s again!\n"
+msgstr ""
+
+#: src/base/modules.c:218
+#, c-format
+msgid "Loading module %s failed!\n"
+msgstr ""
+
+#: src/base/shareFunction.c:42
+#, c-format
+msgid "Adding  \"%s\" to share function.\n"
+msgstr ""
+
+#: src/base/net_multiplayer.c:61 src/base/net_multiplayer.c:69
+#, c-format
+msgid "Unable to inicialize network game as server!\n"
+msgstr ""
+
+#: src/base/net_multiplayer.c:81
+#, c-format
+msgid "Unable to inicialize network game as client!\n"
+msgstr ""
+
+#: src/base/net_multiplayer.c:88 src/base/net_multiplayer.c:112
+#: src/base/net_multiplayer.c:134
+msgid "Variable netGameType has a really wierd value!"
+msgstr ""
+
+#: src/base/main.c:102
+#, c-format
+msgid ""
+"File %s not found !\n"
+"Program shutdown !\n"
+msgstr ""
+
+#: src/base/main.c:155
+#, c-format
+msgid ""
+"WinSock initialization failed !\n"
+"Program shutdown !\n"
+msgstr ""
+
+#: src/base/arenaFile.c:83
+#, c-format
+msgid "Loaded new arena...\n"
+msgstr ""
+
+#: src/base/arenaFile.c:242
+#, c-format
+msgid "Loading map file: %s\n"
+msgstr ""
+
+#: src/base/homeDirector.c:22
+#, c-format
+msgid "Environment variable HOME not found!\n"
+msgstr ""
+
+#: src/base/homeDirector.c:30
+#, c-format
+msgid "Creating home directory %s.\n"
+msgstr ""
+
+#: src/base/homeDirector.c:37
+#, c-format
+msgid "Unable to create home directory!\n"
+msgstr ""
+
+#: src/base/gun.c:50
+msgid "There is wrong value in course variable!"
+msgstr ""
+
+#: src/base/proto.c:68
+#, c-format
+msgid "Proto error code: \"%d\"\n"
+msgstr ""
+
+#: src/base/proto.c:73
+msgid "Version of your client isn't supported by the server."
+msgstr ""
+
+#: src/screen/screen_table.c:99
+#, c-format
+msgid "Highscore file: \"%s\" was not loaded!"
+msgstr ""
+
+#: src/screen/screen_table.c:152 src/screen/screen_setting.c:226
+#: src/server/heightScore.c:22
+#, c-format
+msgid "I am unable to load: \"%s\" !\n"
+msgstr ""
+
+#: src/screen/screen_table.c:153 src/screen/screen_setting.c:227
+#: src/server/heightScore.c:23
+#, c-format
+msgid "Creating: \"%s\"\n"
+msgstr ""
+
+#: src/screen/screen_table.c:163 src/screen/screen_setting.c:234
+#: src/server/heightScore.c:36
+#, c-format
+msgid "I was unable to create: \"%s\" !\n"
+msgstr ""
+
+#: src/screen/screen_table.c:211 src/screen/screen_browser.c:681
+#: src/screen/screen_setting.c:338 src/screen/screen_choiceArena.c:143
+#: src/screen/screen_credits.c:106 src/screen/screen_gameType.c:232
+msgid "back"
+msgstr ""
+
+#: src/screen/screen_world.c:67
+#, c-format
+msgid "Network initialization error!\n"
+msgstr ""
+
+#: src/screen/screen_world.c:435
+msgid "Tux has not defined controls!"
+msgstr ""
+
+#: src/screen/screen_world.c:620
+#, c-format
+msgid "Quitting screen world\n"
+msgstr ""
+
+#: src/screen/screen_mainMenu.c:105
+msgid "Start game"
+msgstr ""
+
+#: src/screen/screen_mainMenu.c:106
+msgid "Settings"
+msgstr ""
+
+#: src/screen/screen_mainMenu.c:107
+msgid "Highscore"
+msgstr ""
+
+#: src/screen/screen_mainMenu.c:108
+msgid "Credits"
+msgstr ""
+
+#: src/screen/screen_mainMenu.c:109
+msgid "Quit game"
+msgstr ""
+
+#: src/screen/screen_browser.c:682
+msgid "Play"
+msgstr ""
+
+#: src/screen/screen_browser.c:683
+msgid "Refresh"
+msgstr ""
+
+#: src/screen/screen_browser.c:685
+msgid "server"
+msgstr ""
+
+#: src/screen/screen_browser.c:686
+msgid "version"
+msgstr ""
+
+#: src/screen/screen_browser.c:687 src/screen/screen_gameType.c:260
+msgid "IP"
+msgstr ""
+
+#: src/screen/screen_browser.c:688
+msgid "arena"
+msgstr ""
+
+#: src/screen/screen_browser.c:689
+msgid "clients"
+msgstr ""
+
+#: src/screen/screen_browser.c:690
+msgid "ping"
+msgstr ""
+
+#: src/screen/screen_setting.c:294
+#, c-format
+msgid ""
+"I am unable to save configure file, because config file was not "
+"initialised!\n"
+msgstr ""
+
+#: src/screen/screen_setting.c:339
+msgid "controls"
+msgstr ""
+
+#: src/screen/screen_setting.c:342
+msgid "Music:"
+msgstr ""
+
+#: src/screen/screen_setting.c:345
+msgid "Sound:"
+msgstr ""
+
+#: src/screen/screen_setting.c:356
+msgid "No. of rounds:"
+msgstr ""
+
+#: src/screen/screen_setting.c:357
+msgid "Player 1:"
+msgstr ""
+
+#: src/screen/screen_setting.c:358
+msgid "Player 2:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:113
+#, c-format
+msgid "I was unable to load file: %s\n"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:114
+#, c-format
+msgid "I try to create file: %s\n"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:118
+#, c-format
+msgid "I was unable to create file: %s\n"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:236
+msgid "Back"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:237
+msgid "Player 2"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:238
+msgid "Up"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:239 src/screen/screen_settingKeys.c:246
+msgid "Down:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:240 src/screen/screen_settingKeys.c:247
+msgid "Left:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:241 src/screen/screen_settingKeys.c:248
+msgid "Right:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:242 src/screen/screen_settingKeys.c:249
+msgid "Fire gun:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:243 src/screen/screen_settingKeys.c:250
+msgid "Switch gun:"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:244
+msgid "Player 1"
+msgstr ""
+
+#: src/screen/screen_settingKeys.c:245
+msgid "Up:"
+msgstr ""
+
+#: src/screen/screen_choiceArena.c:144 src/screen/screen_gameType.c:233
+msgid "play"
+msgstr ""
+
+#: src/screen/screen_credits.c:132
+#, c-format
+msgid "Credit file not found... %s/%s"
+msgstr ""
+
+#: src/screen/screen_gameType.c:234
+msgid "browser"
+msgstr ""
+
+#: src/screen/screen_gameType.c:255
+msgid "Local game"
+msgstr ""
+
+#: src/screen/screen_gameType.c:256
+msgid "Set up a server"
+msgstr ""
+
+#: src/screen/screen_gameType.c:257
+msgid "Network game"
+msgstr ""
+
+#: src/screen/screen_gameType.c:261
+msgid "port"
+msgstr ""
+
+#: src/screen/screen_gameType.c:321
+msgid "Unknown game type!"
+msgstr ""
+
+#: src/screen/screen_gameType.c:378
+#, c-format
+msgid "Unknown IP protocol!\n"
+msgstr ""
+
+#: src/widget/widget_button.c:90
+#, c-format
+msgid "Event caught\n"
+msgstr ""
+
+#: src/widget/widget_textfield.c:182
+msgid "Bad filter!"
+msgstr ""
+
+#: src/modules/modTeleport.c:195
+msgid "When generating random value in range 0 to 3 i got some other value?!"
+msgstr ""
+
+#: src/modules/modPipe.c:184
+#, c-format
+msgid "Pipe ID for pipe \"%d\" was not found\n"
+msgstr ""
+
+#: src/modules/modPipe.c:249
+msgid "Tux is moving in another dimension maybe!"
+msgstr ""
+
+#: src/modules/modMove.c:67
+msgid "Variable p->control has a really wierd value!"
+msgstr ""
+
+#: src/audio/sound.c:41
+#, c-format
+msgid "Initializing sound...\n"
+msgstr ""
+
+#: src/audio/sound.c:53
+#, c-format
+msgid "Loading sound file: %s\n"
+msgstr ""
+
+#: src/audio/sound.c:59
+#, c-format
+msgid "Unable to load sound file: %s with error: %s\n"
+msgstr ""
+
+#: src/audio/sound.c:71
+#, c-format
+msgid "Unable to playback sound with error: %s\n"
+msgstr ""
+
+#: src/audio/sound.c:131
+#, c-format
+msgid "Quitting sound...\n"
+msgstr ""
+
+#: src/audio/music.c:43
+#, c-format
+msgid "Initializing music...\n"
+msgstr ""
+
+#: src/audio/music.c:54
+#, c-format
+msgid "Loading music file: %s\n"
+msgstr ""
+
+#: src/audio/music.c:60
+#, c-format
+msgid "Unable to load music from file: %s\n"
+msgstr ""
+
+#: src/audio/music.c:108
+#, c-format
+msgid "Stopping music...\n"
+msgstr ""
+
+#: src/audio/music.c:148
+#, c-format
+msgid "Playing music file %s\n"
+msgstr ""
+
+#: src/audio/music.c:206
+#, c-format
+msgid "Quitting music...\n"
+msgstr ""
+
+#: src/audio/audio.c:29
+#, c-format
+msgid "Unable to initialize audio: %s\n"
+msgstr ""
+
+#: src/audio/audio.c:33
+#, c-format
+msgid "Unable to create proper audio settings: %s\n"
+msgstr ""
+
+#: src/audio/audio.c:39
+#, c-format
+msgid "Initializing audio system...\n"
+msgstr ""
+
+#: src/audio/audio.c:51
+#, c-format
+msgid "Quitting audio...\n"
+msgstr ""
+
+#: src/net/udp.c:71
+#, c-format
+msgid "Unable to create socket when binding!\n"
+msgstr ""
+
+#: src/net/udp.c:103
+#, c-format
+msgid "Unable to set socket %s %d!\n"
+msgstr ""
+
+#: src/net/udp.c:139 src/net/tcp.c:68
+#, c-format
+msgid "Unable to create socket when connecting!\n"
+msgstr ""
+
+#: src/net/udp.c:229
+#, c-format
+msgid "Unable to read form socket %d %s %d!\n"
+msgstr ""
+
+#: src/net/udp.c:270
+#, c-format
+msgid "Unable to write on socket %d %s %d!\n"
+msgstr ""
+
+#: src/net/udp.c:320 src/net/tcp.c:183
+msgid "Bad IP proto!"
+msgstr ""
+
+#: src/net/tcp.c:98
+#, c-format
+msgid "Unable to bint to port: %d\n"
+msgstr ""
+
+#: src/net/tcp.c:213
+#, c-format
+msgid "Unable to create TCP socket!\n"
+msgstr ""
+
+#: src/server/publicServer.c:247
+#, c-format
+msgid "I was unable to open config file!\n"
+msgstr ""
+
+#: src/server/publicServer.c:268
+#, c-format
+msgid "Unable to initialize network socket!\n"
+msgstr ""
+
+#: src/server/publicServer.c:276
+#, c-format
+msgid "Unable to contact MasterServer!)\n"
+msgstr ""
+
+#: src/server/publicServer.c:329
+#, c-format
+msgid "Quitting public server\n"
+msgstr ""
+
+#: src/server/serverConfigFile.c:42
+#, c-format
+msgid "Loading configuration from: \"%s\"\n"
+msgstr ""
+
+#: src/server/serverConfigFile.c:48
+#, c-format
+msgid "I was unable to load config file. Falling back to defaults!\n"
+msgstr ""
+
+#: src/server/log.c:20
+#, c-format
+msgid "Opening logfile \"%s\" failed!\n"
+msgstr ""
+
+#: src/server/log.c:24
+#, c-format
+msgid "I use logfile: \"%s\")\n"
+msgstr ""
+
+#: src/server/log.c:48
+msgid "Really bad log value!"
+msgstr ""
+
+#: src/server/heightScore.c:29
+#, c-format
+msgid "Scorefile: \"%s\"\n"
+msgstr ""

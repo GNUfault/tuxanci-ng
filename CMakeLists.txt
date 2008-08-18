@@ -16,6 +16,7 @@
 # -DCMAKE_CONF_PATH=/etc	# install path for conf
 # -DLIB_INSTALL_DIR=/other/bla	# install path for lib
 # -DCMAKE_DOC_PATH=/other/bla	# install path for doc
+# -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
 ###############################################################################
 # IMPORTANT DEFINITIONS [PREFIX,...]
 ###############################################################################
@@ -23,10 +24,11 @@ SET ( TUXANCI_VERSION "svn" CACHE STRING "Version" )
 SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
 # data because some distributions want different data placement
 SET ( CMAKE_CONF_PATH "/etc" CACHE PATH "Config path prefix" )
-SET ( CMAKE_DOC_PATH "/usr/local/" CACHE PATH "Data path prefix" )
-SET ( CMAKE_DATA_PATH "/usr/local/share/" CACHE PATH "Data path prefix" )
-SET ( LIB_INSTALL_DIR "/usr/local/lib/" CACHE PATH "Library path prefix" )
 SET ( CMAKE_INSTALL_PREFIX "/usr/local/" CACHE PATH "Install path prefix" )
+SET ( CMAKE_DOC_PATH "/usr/local/doc" CACHE PATH "Data path prefix" )
+SET ( CMAKE_LOCALE_PATH "${CMAKE_INSTALL_PREFIX}/share/locale" CACHE PATH "Locale path prefix" )
+SET ( CMAKE_DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/" CACHE PATH "Data path prefix" )
+SET ( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/" CACHE PATH "Library path prefix" )
 ###############################################################################
 # BASIC PROJECT VALUES
 ###############################################################################
@@ -56,6 +58,7 @@ SET ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 #various variables
 SET ( CMAKE_INSTALL_ETCDIR ${CMAKE_CONF_PATH} )
 SET ( CMAKE_INSTALL_BINDIR bin )
+SET ( CMAKE_INSTALL_LOCALEDIR ${CMAKE_LOCALE_PATH} )
 SET ( CMAKE_INSTALL_DATADIR ${CMAKE_DATA_PATH} )
 SET ( CMAKE_INSTALL_LIBDIR ${LIB_INSTALL_DIR} )
 SET ( CMAKE_INSTALL_DOCDIR ${CMAKE_DOC_PATH} )
@@ -143,11 +146,13 @@ IF ( WIN )
 	# override basic directory placement
 	SET ( CMAKE_CONF_PATH "${APPNAME}/etc/" )
 	SET ( CMAKE_DATA_PATH "${APPNAME}/share/" )
+	SET ( CMAKE_LOCALE_PATH "${APPNAME}/share/locale/")
 	SET ( CMAKE_DOC_PATH "${APPNAME}/doc/" )
 	SET ( LIB_INSTALL_DIR "${APPNAME}/bin/" )
 	SET ( CMAKE_INSTALL_PREFIX "./")
 	SET ( CMAKE_INSTALL_BINDIR ${APPNAME}/bin )
 	SET ( CMAKE_INSTALL_DOCDIR ${APPNAME}/doc )
+	SET ( CMAKE_INSTALL_LOCALEDIR ${APPNAME}/share/locale/ )
 	SET ( CMAKE_INSTALL_LIBDIR ${APPNAME}/bin )
 	SET ( CMAKE_INSTALL_DATADIR ${APPNAME}/share/ )
 	SET ( CMAKE_INSTALL_ETCDIR ${APPNAME}/etc )
@@ -179,12 +184,14 @@ ENDIF ( NOT NO_Audio )
 IF ( Bundle )
 	SET ( CMAKE_CONF_PATH "../etc")
 	SET ( CMAKE_DATA_PATH "../share")
+	SET ( CMAKE_LOCALE_PATH "../share/locale/")
 	SET ( CMAKE_DOC_PATH "../doc")
 	SET ( LIB_INSTALL_DIR "../lib")
 	SET ( CMAKE_INSTALL_PREFIX "/")
 	SET ( CMAKE_INSTALL_BINDIR bin )
 	SET ( CMAKE_INSTALL_LIBDIR lib )
 	SET ( CMAKE_INSTALL_DATADIR share )
+	SET ( CMAKE_INSTALL_LOCALEDIR share/locale/ )
 	SET ( CMAKE_INSTALL_ETCDIR etc )
 	SET ( CMAKE_INSTALL_DOCDIR doc )
 	CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
@@ -196,6 +203,7 @@ IF ( NLS )
 	MESSAGE ( STATUS "<Compiling LANGUAGES>" )
 	MESSAGE ( STATUS "<******************************>" )
 	ADD_DEFINITIONS ( -DNLS )
+	SET ( GETTEXT_PACKAGE "tuxanci" )
 	ADD_SUBDIRECTORY ( po )
 ENDIF ( NLS )
 ###############################################################################
@@ -215,11 +223,11 @@ ADD_SUBDIRECTORY ( src )
 # path which user send us
 ADD_SUBDIRECTORY ( data )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/LICENCE
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/doc/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
 # windows quirk
 IF ( NOT Server )
 	IF ( Win )
