@@ -124,7 +124,7 @@ ENDIF ( Apple )
 ###############################################################################
 # WINDOWS QUIRKS
 ###############################################################################
-IF ( WIN )
+IF ( Win )
 	# icon into exe, this is ugly hack cause there is bug in CMAKE
 	SET ( CMAKE_RC_COMPILER "C:/MinGW/bin/windres.exe" )
 	ENABLE_LANGUAGE ( RC )
@@ -156,7 +156,7 @@ IF ( WIN )
 	SET ( CMAKE_INSTALL_LIBDIR ${APPNAME}/bin )
 	SET ( CMAKE_INSTALL_DATADIR ${APPNAME}/share/ )
 	SET ( CMAKE_INSTALL_ETCDIR ${APPNAME}/etc )
-ENDIF ( WIN )
+ENDIF ( Win )
 ###############################################################################
 # SDL SEARCH
 ###############################################################################
