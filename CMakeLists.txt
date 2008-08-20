@@ -33,10 +33,6 @@ SET ( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/" CACHE PATH "Library path pr
 # BASIC PROJECT VALUES
 ###############################################################################
 PROJECT ( tuxanci )
-
-IF ( COMMAND cmake_policy )
-	cmake_policy( SET CMP0003 NEW )
-ENDIF ( COMMAND cmake_policy )
 IF ( NOT Server )
 	SET ( APPNAME "tuxanci-${TUXANCI_VERSION}")
 ELSE ( NOT Server )
@@ -48,6 +44,9 @@ MESSAGE ( "<******************************>" )
 
 CMAKE_MINIMUM_REQUIRED ( VERSION 2.4.6 )
 CMAKE_MINIMUM_REQUIRED ( VERSION 2.4.6 FATAL_ERROR )
+IF ( COMMAND cmake_policy )
+	cmake_policy( SET CMP0003 NEW )
+ENDIF ( COMMAND cmake_policy )
 
 SET ( CMAKE_COLOR_MAKEFILE ON )
 SET ( CMAKE_BUILD_TYPE_SHARED_LIBS ON )
