@@ -448,9 +448,8 @@ msgid "Quitting screen world\n"
 msgstr "Beende Welt\n"
 
 #: src/screen/screen_mainMenu.c:104
-#, fuzzy
 msgid "Start game"
-msgstr "Netzwerk Spiel"
+msgstr "Starte Spiel"
 
 #: src/screen/screen_mainMenu.c:105
 msgid "Settings"
@@ -589,7 +588,7 @@ msgstr "Hoch:"
 
 #: src/screen/screen_choiceArena.c:143 src/screen/screen_gameType.c:232
 msgid "play"
-msgstr ""
+msgstr "spielen"
 
 #: src/screen/screen_credits.c:131
 #, c-format
@@ -618,7 +617,7 @@ msgstr "Port"
 
 #: src/screen/screen_gameType.c:320
 msgid "Unknown game type!"
-msgstr ""
+msgstr "Unbekannter Spieletyp!"
 
 #: src/screen/screen_gameType.c:377
 #, c-format
