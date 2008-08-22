@@ -25,13 +25,23 @@
 
 #include "screen_analyze.h"
 #include "screen_world.h"
-
-#include "udp.h"
-#include "tcp.h"
 #include "buffer.h"
 
+#ifdef SUPPORT_UDP
+#include "udp.h"
+#endif
+
+#ifdef SUPPORT_TCP
+#include "tcp.h"
+#endif
+
+#ifdef SUPPORT_UDP
 static sock_udp_t *sock_server_udp;
+#endif
+
+#ifdef SUPPORT_TCP
 static sock_tcp_t *sock_server_tcp;
+#endif
 
 static list_t *listRecvMsg;
 
@@ -46,6 +56,7 @@ static my_time_t lastTraffic;
 static int traffic_down;
 static int traffic_up;
 #endif
+
 
 typedef struct proto_cmd_client_struct
 {
@@ -93,6 +104,8 @@ static proto_cmd_client_t* findCmdProto(char *msg)
 	return NULL;
 }
 
+#ifdef SUPPORT_UDP
+
 static int initUdpClient(char *ip, int port, int proto)
 {
 	sock_server_udp = connectUdpSocket(ip, port, proto);
@@ -106,6 +119,10 @@ static int initUdpClient(char *ip, int port, int proto)
 #endif
 	return 0;
 }
+
+#endif
+
+#ifdef SUPPORT_TCP
 
 static int initTcpClient(char *ip, int port, int proto)
 {
@@ -125,6 +142,8 @@ static int initTcpClient(char *ip, int port, int proto)
 	return 0;
 }
 
+#endif
+
 int initClient(char *ip, int port, int proto)
 {
 	char name[STR_NAME_SIZE];
@@ -143,35 +162,23 @@ int initClient(char *ip, int port, int proto)
 	clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 	clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 
-	if( ! isParamFlag("--udp") && ! isParamFlag("--tcp") )
+#ifdef SUPPORT_UDP
+	ret = initUdpClient(ip, port, proto);
+
+	if( ret < 0 )
 	{
-		ret = initUdpClient(ip, port, proto);
-
-		if( ret < 0 )
-		{
-			return -1;
-		}
+		return -1;
 	}
+#endif
 
-	if( isParamFlag("--udp") && ! isParamFlag("--tcp") )
+#ifdef SUPPORT_TCP
+	ret = initTcpClient(ip, port, proto);
+
+	if( ret < 0 )
 	{
-		ret = initUdpClient(ip, port, proto);
-
-		if( ret < 0 )
-		{
-			return -1;
-		}
+		return -1;
 	}
-
-	if( isParamFlag("--tcp") && ! isParamFlag("--udp") )
-	{
-		ret = initTcpClient(ip, port, proto);
-
-		if( ret < 0 )
-		{
-			return -1;
-		}
-	}
+#endif
 
 	getSettingNameRight(name);
 	proto_send_hello_client(name);
@@ -185,6 +192,8 @@ static void errorWithServer()
 	setMsgToAnalyze(_("Server is not running or being blocked. I was unable to connect."));
 	setWorldEnd();
 }
+
+#ifdef SUPPORT_TCP
 
 static void sendBuffer()
 {
@@ -212,6 +221,8 @@ static void sendBuffer()
 	cutBuffer(clientSendBuffer, res);
 }
 
+#endif
+
 void sendServer(char *msg)
 {
 	int ret;
@@ -230,16 +241,20 @@ void sendServer(char *msg)
 	traffic_up += strlen(msg);
 #endif
 
+#ifdef SUPPORT_UDP
 	if( sock_server_udp != NULL )
 	{
 		ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
 	}
+#endif
 
+#ifdef SUPPORT_TCP
 	if( sock_server_tcp != NULL )
 	{
 		//ret = writeTcpSocket(sock_server_tcp, msg, strlen(msg));
 		ret = addBuffer(clientSendBuffer, msg, strlen(msg));
 	}
+#endif
 
 	if( ret < 0 )
 	{
@@ -255,15 +270,19 @@ static int eventServerSelect()
 
 	memset(buffer, 0, STR_PROTO_SIZE);
 
+#ifdef SUPPORT_UDP
 	if( sock_server_udp != NULL )
 	{
 		ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE-1);
 	}
+#endif
 
+#ifdef SUPPORT_TCP
 	if( sock_server_tcp != NULL )
 	{
 		ret = readTcpSocket(sock_server_tcp, buffer, STR_PROTO_SIZE-1);
 	}
+#endif
 
 	if( ret < 0 )
 	{
@@ -337,6 +356,8 @@ static void eventPingServer()
 	}
 }
 
+#ifdef SUPPORT_UDP
+
 static bool_t isServerAlive()
 {
 	my_time_t currentTime;
@@ -351,6 +372,8 @@ static bool_t isServerAlive()
 	return TRUE;
 }
 
+#endif
+
 static void selectClientSocket()
 {
 	fd_set readfds;
@@ -359,6 +382,7 @@ static void selectClientSocket()
 	int sock;
 	bool_t isNext;
 
+#ifdef SUPPORT_UDP
 	if( sock_server_udp != NULL )
 	{
 		if( isServerAlive() == FALSE )
@@ -367,6 +391,7 @@ static void selectClientSocket()
 			return;
 		}
 	}
+#endif
 
 	do{
 		isNext = FALSE;
@@ -376,16 +401,19 @@ static void selectClientSocket()
 		
 		FD_ZERO(&readfds);
 
+#ifdef SUPPORT_UDP
 		if( sock_server_udp != NULL )
 		{
 			sock = sock_server_udp->sock;
 		}
+#endif
 	
+#ifdef SUPPORT_TCP
 		if( sock_server_tcp != NULL )
 		{
 			sock = sock_server_tcp->sock;
 		}
-
+#endif
 		FD_SET(sock, &readfds);
 		max_fd = sock;
 		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
@@ -433,8 +461,13 @@ void eventClient()
 	eventPingServer();
 	selectClientSocket();
 	eventClientWorkRecvList();
+
+#ifdef SUPPORT_TCP
 	sendBuffer();
+#endif
 }
+
+#ifdef SUPPORT_UDP
 
 static void quitUdpClient()
 {
@@ -445,6 +478,10 @@ static void quitUdpClient()
 #endif
 }
 
+#endif
+
+#ifdef SUPPORT_TCP
+
 static void quitTcpClient()
 {
 	assert( sock_server_tcp != NULL );
@@ -453,6 +490,8 @@ static void quitTcpClient()
 	printf(_("Closing TCP connection.\n"));
 #endif
 }
+
+#endif
 
 void quitClient()
 {
@@ -464,14 +503,18 @@ void quitClient()
 	destroyBuffer(clientRecvBuffer);
 	destroyBuffer(clientSendBuffer);
 
+#ifdef SUPPORT_UDP
 	if( sock_server_udp != NULL )
 	{
 		quitUdpClient();
 	}
+#endif
 
+#ifdef SUPPORT_TCP
 	if( sock_server_tcp != NULL )
 	{
 		quitTcpClient();
 	}
+#endif
 }
 

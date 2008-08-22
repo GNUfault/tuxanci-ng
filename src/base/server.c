@@ -22,8 +22,6 @@
 #include "tux.h"
 #include "proto.h"
 #include "server.h"
-#include "udp_server.h"
-#include "tcp_server.h"
 #include "myTimer.h"
 #include "arena.h"
 #include "net_multiplayer.h"
@@ -40,6 +38,14 @@
 #ifdef PUBLIC_SERVER
 #include "publicServer.h"
 #include "heightScore.h"
+#endif
+
+#ifdef SUPPORT_UDP
+#include "udp_server.h"
+#endif
+
+#ifdef SUPPORT_TCP
+#include "tcp_server.h"
 #endif
 
 static list_t *listClient;
@@ -152,12 +158,17 @@ static void destroyUdpOrTcpClient(client_t *client)
 {
 	switch( client->type )
 	{
+#ifdef SUPPORT_UDP
 		case CLIENT_TYPE_UDP :
 			destroyUdpClient(client);
 		break;
+#endif
+
+#ifdef SUPPORT_TCP
 		case CLIENT_TYPE_TCP :
 			destroyTcpClient(client);
 		break;
+#endif
 		default :
 			assert( ! _("Bad client type (TCP/UDP)!"));
 		break;
@@ -264,19 +275,23 @@ int initServer(char *ip4, int port4, char *ip6, int port6)
 	setServerMaxClients(SERVER_MAX_CLIENTS);
 	setServerTimer();
 
+#ifdef SUPPORT_UDP
 	ret = initUdpServer(ip4, port4, ip6, port6);
 
 	if( ret == 0 )
 	{
 		return -1;
 	}
+#endif
 
+#ifdef SUPPORT_TCP
 	ret = initTcpServer(ip4, port4, ip6, port6);
 
 	if( ret == 0 )
 	{
 		return -1;
 	}
+#endif
 
 	return ret;
 }
@@ -314,12 +329,18 @@ void sendClient(client_t *p, char *msg)
 
 		switch( p->type )
 		{
+#ifdef SUPPORT_UDP
 			case CLIENT_TYPE_UDP :
 				ret = writeUdpSocket(p->socket_udp, p->socket_udp, msg, strlen(msg));
 			break;
+#endif
+
+#ifdef SUPPORT_TCP
 			case CLIENT_TYPE_TCP :
 				ret = addBuffer(p->sendBuffer, msg, strlen(msg));
 			break;
+#endif
+
 			default :
 				assert( ! _("Bad client type (TCP/UDP)!"));
 			break;
@@ -381,10 +402,12 @@ static void porcesListClients()
 		eventClientWorkRecvList(thisClient);
 		eventMsgInCheckFront(thisClient);
 		
+#ifdef SUPPORT_TCP
 		if( thisClient->type == CLIENT_TYPE_TCP )
 		{
 			sendTcpClientBuffer(thisClient);
 		}
+#endif
 	}
 }
 
@@ -393,13 +416,16 @@ void eventServer()
 #ifndef PUBLIC_SERVER
 	int count;
 
+#ifdef SUPPORT_TCP
 	do{
 		restartSelect();
 		setServerTcpSelect();
 		actionSelect();
 		count = selectServerTcpSocket();
 	}while( count > 0 );
+#endif
 
+#ifdef SUPPORT_UDP
 	do{
 		restartSelect();
 		setServerUdpSelect();
@@ -408,20 +434,32 @@ void eventServer()
 	}while( count > 0 );
 #endif
 
+#endif
+
 #ifdef PUBLIC_SERVER
 	int ret;
 
 	restartSelect();
 
+#ifdef SUPPORT_TCP
 	setServerTcpSelect();
+#endif
+
+#ifdef SUPPORT_UDP
 	setServerUdpSelect();
+#endif
 
 	ret = actionSelect();
 
 	if( ret > 0 )
 	{
+#ifdef SUPPORT_TCP
 		selectServerTcpSocket();
+#endif
+
+#ifdef SUPPORT_UDP
 		selectServerUdpSocket();
+#endif
 	}
 #endif
 
@@ -439,6 +477,11 @@ void quitServer()
 
 	destroyTimer(listServerTimer);
 
+#ifdef SUPPORT_UDP
 	quitUdpServer();
+#endif
+
+#ifdef SUPPORT_TCP
 	quitTcpServer();
+#endif
 }
