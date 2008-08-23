@@ -10,17 +10,10 @@
 #include "interface.h"
 #include "image.h"
 #include "pauza.h"
+#include "hotKey.h"
 
 static image_t *g_pauza;
 static bool_t activePauza;
-static my_time_t lastActive;
-
-void initPauza()
-{
-	g_pauza = addImageData("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
-	activePauza = FALSE;
-	lastActive = getMyTime();
-}
 
 static void switchPauzed()
 {
@@ -32,6 +25,19 @@ static void switchPauzed()
 	{
 		activePauza = TRUE;
 	}
+}
+
+static void hotkey_pauze()
+{
+	switchPauzed();
+}
+
+void initPauza()
+{
+	g_pauza = addImageData("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
+	activePauza = FALSE;
+
+	registerHotKey(SDLK_p, hotkey_pauze);
 }
 
 void drawPauza()
@@ -48,21 +54,6 @@ void drawPauza()
 
 void eventPauza()
 {
-	Uint8 *mapa;
-	mapa = SDL_GetKeyState(NULL);
-
-	if( mapa[SDLK_p] == SDL_PRESSED )
-	{
-		my_time_t currentTime;
-
-		currentTime = getMyTime();
-
-		if( currentTime - lastActive > PAUZE_ACTIVE_TIME_INTERVAL )
-		{
-			lastActive = currentTime;
-			switchPauzed();
-		}
-	}
 }
 
 bool_t isPauzeActive()
@@ -72,5 +63,6 @@ bool_t isPauzeActive()
 
 void quitPauza()
 {
+	unregisterHotKey(SDLK_p);
 }
 

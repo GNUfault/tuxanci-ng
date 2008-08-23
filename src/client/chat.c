@@ -16,6 +16,7 @@
 #include "chat.h"
 #include "font.h"
 #include "keyboardBuffer.h"
+#include "hotKey.h"
 
 static image_t *g_chat;
 
@@ -29,7 +30,19 @@ static int timeBlick;
 static bool_t chat_active;
 static bool_t receivedNewMsg;
 
-static my_time_t lastActive;
+static void hotkey_chat();
+
+static void hotkey_chat()
+{
+	chat_active = TRUE;
+	receivedNewMsg = FALSE;
+
+	disableHotKey(SDLK_RETURN);
+	disableHotKey(SDLK_p);
+
+	enableKeyboardBuffer();
+	clearKeyboardBuffer();
+}
 
 void initChat()
 {
@@ -38,11 +51,12 @@ void initChat()
 	listText = newList();
 	strcpy(line, "");
 	chat_active = FALSE;
+	registerHotKey(SDLK_RETURN, hotkey_chat);
+
 	receivedNewMsg = FALSE;
 	line_time = 0;
 	line_atime = 0;
 	timeBlick = 0;
-	lastActive = 0;
 }
 
 void drawChat()
@@ -105,7 +119,7 @@ static void processMessageKey(SDL_keysym keysym)
 	}
 
 	/* zpracovani backspace */
-	if (keysym.sym == SDLK_BACKSPACE){
+	if (keysym.sym == SDLK_BACKSPACE && len > 0){
 		line[len-1]='\0';
 		return;
 	}
@@ -129,18 +143,6 @@ static void processMessageKey(SDL_keysym keysym)
 	return;
 }
 
-static void switchChatActive()
-{
-	if( chat_active == TRUE )
-	{
-		chat_active = FALSE;
-	}
-	else
-	{
-		chat_active = TRUE;
-	}
-}
-
 static void sendNewMessage()
 {
 	if( getNetTypeGame() == NET_GAME_TYPE_CLIENT )
@@ -161,18 +163,14 @@ static void sendNewMessage()
 
 static void eventChatDisable()
 { 
-	Uint8 *mapa;
-	mapa = SDL_GetKeyState(NULL);
+	chat_active = FALSE;
+	memset(line, '\0', STR_SIZE);
+	
+	enableHotKey(SDLK_RETURN);
+	enableHotKey(SDLK_p);
 
-	if( mapa[SDLK_RETURN] == SDL_PRESSED )
-	{ /* chat neni aktivni, tak jej aktivujeme */
-		receivedNewMsg = FALSE;
-		switchChatActive();
-		memset(line, '\0', STR_SIZE);
-		/* zapneme zachytavani klaves do bufferu a vycistime buffer */
-		enableKeyboardBuffer();
-		clearKeyboardBuffer();
-	}
+	disableKeyboardBuffer();
+	clearKeyboardBuffer();
 }
 
 static void eventChatEnable()
@@ -197,11 +195,10 @@ static void eventChatEnable()
 			}
 			else
 			{ /* radek je prazdny, je potreba vypnout okno chatu */
-				switchChatActive();
-				memset(line, '\0', STR_SIZE);
+				eventChatDisable();
 				/* vypneme zachytavani klaves do bufferu a vycistime buffer */
-				disableKeyboardBuffer();
-				clearKeyboardBuffer();
+				//disableKeyboardBuffer();
+				//clearKeyboardBuffer();
 			}
 		}
 
@@ -214,11 +211,7 @@ static void eventChatEnable()
  */
 void eventChat()
 {
-	if (isChatActive() == FALSE)
-	{ /* okno chatu neni aktivni */
-		eventChatDisable();
-	}
-	else
+	if( isChatActive() )
 	{
 		eventChatEnable();
 	}
@@ -252,5 +245,7 @@ void addToChat(char *s)
 void quitChat()
 {
 	assert( listText != NULL );
+
+	unregisterHotKey(SDLK_RETURN);
 	destroyListItem(listText, free);
 }

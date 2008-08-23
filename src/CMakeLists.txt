@@ -64,6 +64,7 @@ SET ( SRC_client
 	${WORKDIR}/client/radar	${WORKDIR}/client/panel
 	${WORKDIR}/client/image	${WORKDIR}/client/keyboardBuffer
 	${WORKDIR}/client/pauza	${WORKDIR}/client/saveDialog
+	${WORKDIR}/client/hotKey
 
 	${WORKDIR}/screen/screen_choiceArena
 	${WORKDIR}/screen/screen_settingKeys	${WORKDIR}/screen/screen_table

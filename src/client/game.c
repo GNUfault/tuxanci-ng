@@ -48,7 +48,6 @@ static void initGame()
 	initSDL();
 	initFont(FONT_FILE , FONT_SIZE);
 	initLayer();
-	initArena();
 	initImageData();
 #ifndef NO_SOUND
 	initAudio();

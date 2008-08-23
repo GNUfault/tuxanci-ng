@@ -42,6 +42,7 @@ typedef struct arena_struct
 extern void setCurrentArena(arena_t *p);
 extern arena_t* getCurrentArena();
 extern void initArena();
+extern void quitArena();
 extern arena_t* newArena(int w, int h);
 extern int conflictSpace(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2);
 extern int isFreeSpace(arena_t *arena, int x, int y, int w, int h);

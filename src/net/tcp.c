@@ -41,6 +41,7 @@ void destroySockTcp(sock_tcp_t *p)
 sock_tcp_t* bindTcpSocket(char *address, int port, int proto)
 {
 	sock_tcp_t *new;
+	unsigned long param_setsock = 1;
 	int len;
 	int ret;
 
@@ -70,6 +71,8 @@ sock_tcp_t* bindTcpSocket(char *address, int port, int proto)
 		return NULL;
 	}
 
+	setsockopt(new->sock, SOL_SOCKET, SO_REUSEADDR, (char *) &param_setsock, sizeof (param_setsock));
+	
 	if( new->proto == PROTO_TCPv4 )
 	{
 		new->sockAddr.sin_family = AF_INET;

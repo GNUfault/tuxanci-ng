@@ -4,7 +4,6 @@
 
 #include "main.h"
 #include "list.h"
-#include "myTimer.h"
 #include "tux.h"
 #include "space.h"
 #include "arena.h"
@@ -15,6 +14,7 @@
 #include "image.h"
 #include "font.h"
 #include "saveLoad.h"
+#include "hotKey.h"
 
 #include "widget.h"
 #include "widget_label.h"
@@ -23,7 +23,6 @@
 
 static image_t *g_background;
 static bool_t activeSaveDialog;
-static my_time_t lastActive;
 
 static widget_t *widgetLabelMsg;
 static widget_t *widgetTextFieldName;
@@ -61,10 +60,14 @@ static void eventWidget(void *p)
 	}
 }
 
+static void hotkey_saveDialog()
+{
+	switchTerm();
+}
+
 void initSaveDialog()
 {
 	activeSaveDialog = FALSE;
-	lastActive = getMyTime();
 
 	g_background = getImage(IMAGE_GROUP_BASE, "screen_main");
 
@@ -91,6 +94,8 @@ void initSaveDialog()
 		SAVE_DIALOG_LOCATIN_X+20+WIDGET_BUTTON_WIDTH+20,
 		SAVE_DIALOG_LOCATIN_Y+60,
 		eventWidget);
+
+	registerHotKey(SDLK_F2, hotkey_saveDialog);
 }
 
 bool_t isSaveDialogActive()
@@ -120,27 +125,6 @@ void drawSaveDialog()
 
 void eventSaveDialog()
 {
-	my_time_t currentTime;
-	Uint8 *mapa;
-
-	if( getNetTypeGame() != NET_GAME_TYPE_NONE )
-	{
-		return;
-	}
-
-	mapa = SDL_GetKeyState(NULL);
-
-	currentTime = getMyTime();
-
-	if( mapa[SDLK_F2] == SDL_PRESSED )
-	{
-		if( currentTime - lastActive > SAVEDIALOG_ACTIVE_TIME_INTERVAL )
-		{
-			lastActive = currentTime;
-			switchTerm();
-		}
-	}
-
 	if( activeSaveDialog == FALSE )
 	{
 		return;
@@ -154,6 +138,8 @@ void eventSaveDialog()
 
 void quitSaveDialog()
 {
+	unregisterHotKey(SDLK_F2);
+
 	destroyWidgetLabel(widgetLabelMsg);
 	destroyWidgetTextfield(widgetTextFieldName);
 	destroyWidgetButton(widgetButtonSave);

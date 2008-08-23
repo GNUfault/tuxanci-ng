@@ -11,6 +11,7 @@
 #include "item.h"
 #include "myTimer.h"
 #include "modules.h"
+#include "hotKey.h"
 
 #ifndef PUBLIC_SERVER
 #include "screen_world.h"
@@ -30,6 +31,18 @@ arena_t* getCurrentArena()
 	return currentArena;
 }
 
+void hotkey_splitArena()
+{
+	if( splitType == SCREEN_SPLIT_VERTICAL )
+	{
+		splitType = SCREEN_SPLIT_HORIZONTAL;
+	}
+	else
+	{
+		splitType = SCREEN_SPLIT_VERTICAL;
+	}
+}
+
 void initArena()
 {
 	splitType = SCREEN_SPLIT_VERTICAL;
@@ -45,6 +58,13 @@ void initArena()
 		splitType = SCREEN_SPLIT_HORIZONTAL;
 		printf("SCREEN_SPLIT_HORIZONTAL\n");
 	}
+
+	registerHotKey(SDLK_F3, hotkey_splitArena);
+}
+
+void quitArena()
+{
+	unregisterHotKey(SDLK_F3);
 }
 
 arena_t* newArena(int w, int h)

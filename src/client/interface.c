@@ -7,6 +7,7 @@
 #include "interface.h"
 #include "screen.h"
 #include "keyboardBuffer.h"
+#include "hotKey.h"
 
 // window surface
 static SDL_Surface *screen;
@@ -49,6 +50,28 @@ void disableKeyboardBuffer(){
 	keyboardBufferEnabled=FALSE;
 }
 
+void hotkey_screen()
+{
+	if(g_win_flags & SDL_FULLSCREEN)
+		g_win_flags &= ~SDL_FULLSCREEN;
+	else
+		g_win_flags |= SDL_FULLSCREEN;
+
+	if( SDL_WM_ToggleFullScreen(screen) == 0 )
+	{
+		fprintf(stderr, _("Unable to switch to FULLSCREEN mode!\n"));
+
+		SDL_FreeSurface(screen);
+		screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WIN_BPP, g_win_flags);
+
+		if(screen == NULL)
+		{
+			fprintf(stderr, _("Unable to switch to WINDOW mode! Error: %s\n"), SDL_GetError());
+			return;
+		}
+	}
+}
+
 int initSDL()
 {
 #ifdef DEBUG
@@ -87,7 +110,10 @@ int initSDL()
 	timer = SDL_AddTimer(INTERVAL, TimerCallback, NULL);
 
 	initKeyboardBuffer(KEYBOARD_BUFFER_SIZE);
-
+	
+	initHotKey();
+	registerHotKey(SDLK_F1, hotkey_screen);
+	
 	srand((unsigned)time(NULL));
 	isInterfaceInit = TRUE;
 
@@ -108,30 +134,6 @@ void interfaceRefresh()
 	//drawImage(my_surface, 200, 100, 0, 0, 200, 200);
 	SDL_Flip(screen);
 	//SDL_UpdateRect(screen, 400, 0, 400, 600);
-}
-
-int toggleFullscreen()
-{
-	if(g_win_flags & SDL_FULLSCREEN)
-		g_win_flags &= ~SDL_FULLSCREEN;
-	else
-		g_win_flags |= SDL_FULLSCREEN;
-
-	if( SDL_WM_ToggleFullScreen(screen) == 0 )
-	{
-		fprintf(stderr, _("Unable to switch to FULLSCREEN mode!\n"));
-
-		SDL_FreeSurface(screen);
-		screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WIN_BPP, g_win_flags);
-
-		if(screen == NULL)
-		{
-			fprintf(stderr, _("Unable to switch to WINDOW mode! Error: %s\n"), SDL_GetError());
-			return 0;
-		}
-	}
-
-	return 1;
 }
 
 void getMousePosition(int *x, int *y)
@@ -210,10 +212,11 @@ int eventAction()
 					return 0;
 				break;
 */
+/*
 				case SDLK_F1:
 					if(!toggleFullscreen())return 0;
 				break;
-
+*/
 				default:
 					//neni potreba vyuzivat frontu stale
 					if (keyboardBufferEnabled==TRUE)
@@ -228,6 +231,7 @@ int eventAction()
 				case USR_EVT_TIMER:
 					drawScreen();
 					eventScreen();
+					eventHotKey();
 					switchScreen();
 				break;
 
@@ -273,6 +277,7 @@ void quitSDL()
 #ifdef DEBUG
 	printf(_("Quitting SDL\n"));
 #endif
+	quitHotKey();
 	quitKeyboardBuffer();
 
 	SDL_Quit();

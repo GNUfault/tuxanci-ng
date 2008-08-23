@@ -22,6 +22,8 @@
 #include "layer.h"
 #include "image.h"
 #include "font.h"
+
+#include "hotKey.h"
 #include "panel.h"
 #include "radar.h"
 #include "chat.h"
@@ -371,18 +373,6 @@ static void control_keyboard_left(tux_t *tux)
 	}
 }
 
-static void eventEsc()
-{
-	Uint8 *mapa;
-	mapa = SDL_GetKeyState(NULL);
-
-	if( mapa[(SDLKey)SDLK_ESCAPE] == SDL_PRESSED )
-	{
-		setWorldEnd();
-		return;
-	}
-}
-
 static void eventEnd()
 {
 	if( isEndWorld == TRUE )
@@ -459,7 +449,6 @@ void eventWorld()
 	{
 		eventNetMultiplayer();
 		eventEnd();
-		eventEsc();
 		return;
 	}
 
@@ -494,7 +483,11 @@ void eventWorld()
 	eventTerm();
 	eventSaveDialog();
 
-	eventEsc();
+}
+
+static void hotkey_escape()
+{
+	setWorldEnd();
 }
 
 void startWorld()
@@ -502,6 +495,8 @@ void startWorld()
 	arena = NULL;
 	isEndWorld = FALSE;
 
+	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	initArena();
 	initListID();
 	initRadar();
 	initPauza();
@@ -559,6 +554,9 @@ void stoptWorld()
 		setTable();
 		setAnalyze();
 	}
+
+	unregisterHotKey(SDLK_ESCAPE);
+	quitArena();
 
 	quitNetMultiplayer();
 
