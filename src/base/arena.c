@@ -283,7 +283,7 @@ void drawSplitArena(arena_t *arena)
 	}
 }
 
-void drawCenterArena(arena_t *arena)
+void drawCenterArena(arena_t *arena, int x, int y)
 {
 	int screen_x, screen_y;
 	tux_t *tux = NULL;
@@ -295,11 +295,11 @@ void drawCenterArena(arena_t *arena)
 		return;
 	}
 
-	getCenterScreen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	getCenterScreen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
 	drawBackground(arena, screen_x, screen_y);
 	drawObjects(arena, screen_x, screen_y);
-	drawLayerCenter(tux->x, tux->y);
+	drawLayerCenter(x, y);
 }
 
 void drawSimpleArena(arena_t *arena)
@@ -335,19 +335,53 @@ static int isBigArena(arena_t *arena)
 	}
 }
 
+static int isTuxNear(tux_t *tux1, tux_t *tux2)
+{
+	if( abs(tux1->x - tux2->x) < WINDOW_SIZE_X &&
+	    abs(tux1->y - tux2->y) < WINDOW_SIZE_Y )
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 void drawArena(arena_t *arena)
 {
 	if( isBigArena(arena) && 
 	    getNetTypeGame() == NET_GAME_TYPE_NONE &&
 	    ! isSettingAI() )
 	{
-		drawSplitArena(arena);
+		tux_t *tux1;
+		tux_t *tux2;
+
+		tux1 = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
+		tux2 = getControlTux(TUX_CONTROL_KEYBOARD_LEFT);
+
+		if( isTuxNear(tux1, tux2) )
+		{
+			drawCenterArena(arena, (tux1->x + tux2->x)/2, (tux1->y + tux2->y)/2);
+		}
+		else
+		{
+			drawSplitArena(arena);
+		}
+
 		return;
 	}
 
 	if( isBigArena(arena) )
 	{
-		drawCenterArena(arena);
+		tux_t *tux = NULL;
+	
+		tux = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
+	
+		if( tux == NULL )
+		{
+			return;
+		}
+
+		drawCenterArena(arena, tux->x, tux->y);
 		return;
 	}
 
