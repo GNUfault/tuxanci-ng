@@ -1,10 +1,15 @@
 ###############################################################################
 # WE NEED GETTEXT
 ##############################################################################
-FIND_PACKAGE ( Gettext REQUIRED )
-IF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
-	MESSAGE ( FATAL_ERROR "Please install the msgfmt binary" )
-ENDIF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
+IF ( NOT Win )
+	FIND_PACKAGE ( Gettext REQUIRED )
+	IF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
+		MESSAGE ( FATAL_ERROR "Please install the msgfmt binary" )
+	ENDIF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
+ELSE ( NOT Win )
+	# yet again windows need ugly hack
+	SET ( GETTEXT_MSGFMT_EXECUTABLE "C:/Program Files/GnuWin32/bin/msgfmt.exe" )
+ENDIF ( NOT Win )
 FILE ( GLOB _po_files *.po )
 SET ( _gmoFiles )
 ###############################################################################

@@ -148,6 +148,12 @@ IF ( Win )
 		SET ( SDLIMAGE_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include/" )
 		SET ( SDLTTF_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include/" )
 	ENDIF ( NOT Server )
+	IF ( NLS )
+		SET ( LIB_GETTEXT "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/lib/libgettextlib.dll" )
+		SET ( LIB_INTL "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/lib/libintl3.dll" )
+		SET ( LIB_GETTEXTPO "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/lib/libgettextpo.dll" )
+		SET ( LIBGETTEXTSRC "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/lib/libgettextsrc.dll" )
+	ENDIF ( NLS )
 	# noone wants to debug in windows
 	SET ( CMAKE_BUILD_TYPE Release )
 	# override basic directory placement
@@ -168,18 +174,19 @@ ENDIF ( Win )
 ###############################################################################
 # SDL SEARCH
 ###############################################################################
-IF ( NOT Win )
+IF ( NOT Win AND NOT Server )
 	FIND_PACKAGE ( SDL REQUIRED )
 	FIND_PACKAGE ( SDL_image REQUIRED )
 	FIND_PACKAGE ( SDL_ttf REQUIRED )
 	IF ( NOT NO_Audio )
 		FIND_PACKAGE ( SDL_mixer REQUIRED )
 	ENDIF ( NOT NO_Audio )
-ENDIF ( NOT Win )
+ENDIF ( NOT Win AND NOT Server )
 INCLUDE_DIRECTORIES (
 	${SDL_INCLUDE_DIR}
 	${SDLTTF_INCLUDE_DIR}
 	${SDLIMAGE_INCLUDE_DIR}
+	"${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/include/"
 )
 IF ( NOT NO_Audio )
 	INCLUDE_DIRECTORIES ( ${SDLMIXER_INCLUDE_DIR} )
@@ -238,6 +245,8 @@ INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
 IF ( NOT Server )
 	IF ( Win )
 		FILE ( GLOB files "${CMAKE_SOURCE_DIR}/packaging/windows/SDL/lib/*.dll" )
+		INSTALL ( FILES ${files} DESTINATION ${APPNAME}/bin/ )
+		FILE ( GLOB files "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/lib/*.dll" )
 		INSTALL ( FILES ${files} DESTINATION ${APPNAME}/bin/ )
 	ENDIF ( Win )
 ENDIF ( NOT Server )
