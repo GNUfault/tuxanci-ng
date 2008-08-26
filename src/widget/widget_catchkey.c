@@ -135,7 +135,7 @@ void eventWidgetCatchkey(widget_t *widget)
 		if( key != WIDGET_CATCHKEY_NOKEY )
 		{
 			p->key = key;
-			p->fce_event(p);
+			p->fce_event(widget);
 		}
 	}
 }
