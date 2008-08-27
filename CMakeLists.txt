@@ -39,7 +39,7 @@ SET ( LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/" CACHE PATH "Library path pr
 ###############################################################################
 # BASIC PROJECT VALUES
 ###############################################################################
-PROJECT ( tuxanci )
+PROJECT ( tuxanci C )
 IF ( NOT Server )
 	SET ( APPNAME "tuxanci-${TUXANCI_VERSION}")
 ELSE ( NOT Server )

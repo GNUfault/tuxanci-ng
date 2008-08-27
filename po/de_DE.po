@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tuxanci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-22 13:25+0200\n"
+"POT-Creation-Date: 2008-08-27 18:45+0200\n"
 "PO-Revision-Date: 2008-08-19 00:37+0200\n"
 "Last-Translator: Marcel 'frostwork' Unbehaun\n"
 "Language-Team: GERMAN <de@li.org>\n"
@@ -15,81 +15,81 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/client/client.c:105
+#: src/client/client.c:117
 #, c-format
 msgid "Connected to: %s on port: %d via UDP\n"
 msgstr "Verbunden mit: %s auf Port: %d via UDP\n"
 
-#: src/client/client.c:123
+#: src/client/client.c:139
 #, c-format
 msgid "Connected to: %s on port: %d via TCP\n"
 msgstr "Verbunden mit: %s auf Port: %d via TCP\n"
 
-#: src/client/client.c:184
+#: src/client/client.c:190
 #, c-format
 msgid "Server did not respond!\n"
 msgstr "Server antwortet nicht!\n"
 
-#: src/client/client.c:185
+#: src/client/client.c:191
 msgid "Server is not running or being blocked. I was unable to connect."
 msgstr "Server läuft nicht oder wird geblockt. Konnte mich nicht verbinden."
 
-#: src/client/client.c:224 src/base/server.c:311
+#: src/client/client.c:236 src/base/server.c:326
 #, c-format
 msgid "Sending: \"%s\""
 msgstr "Gesendet: \"%s\""
 
-#: src/client/client.c:313 src/base/server.c:353
+#: src/client/client.c:334 src/base/server.c:374
 #, c-format
 msgid "Recieved: \"%s\""
 msgstr "Empfangen: \"%s\""
 
-#: src/client/client.c:416
+#: src/client/client.c:449
 #, c-format
 msgid "down: %d\n"
 msgstr "Runter: %d\n"
 
-#: src/client/client.c:417
+#: src/client/client.c:450
 #, c-format
 msgid "up  : %d\n"
 msgstr "Hoch: %d\n"
 
-#: src/client/client.c:444
+#: src/client/client.c:482
 #, c-format
 msgid "Closing UDP connection.\n"
 msgstr "Trenne UDP Verbindung.\n"
 
-#: src/client/client.c:453
+#: src/client/client.c:495
 #, c-format
 msgid "Closing TCP connection.\n"
 msgstr "Trenne TCP Verbindung.\n"
 
-#: src/client/interface.c:55
-#, c-format
-msgid "Initializing SDL system\n"
-msgstr "Initialisiere SDL System\n"
-
-#: src/client/interface.c:122
+#: src/client/interface.c:62
 #, c-format
 msgid "Unable to switch to FULLSCREEN mode!\n"
 msgstr "Kann nicht in Vollbild Modus wechseln!\n"
 
-#: src/client/interface.c:129
+#: src/client/interface.c:69
 #, c-format
 msgid "Unable to switch to WINDOW mode! Error: %s\n"
 msgstr "Kann nicht in Fenster Modus wechseln! Error: %s\n"
 
-#: src/client/interface.c:173
+#: src/client/interface.c:78
+#, c-format
+msgid "Initializing SDL system\n"
+msgstr "Initialisiere SDL System\n"
+
+#: src/client/interface.c:175
 #, c-format
 msgid "Pressed key with SDL value: %d\n"
 msgstr "Taste mit SDL Wert %d gedrückt\n"
 
-#: src/client/interface.c:245
+#: src/client/interface.c:249
 #, c-format
 msgid "Unable to change WINDOW resolution! Error: %s\n"
 msgstr "Kann Fensterauflösung nicht ändern! Error: %s\n"
 
-#: src/client/interface.c:274
+#: src/client/interface.c:278
 #, c-format
 msgid "Quitting SDL\n"
 msgstr "Beende SDL\n"
@@ -164,12 +164,12 @@ msgstr "Speichere Spiel nach: \"%s\"\n"
 msgid "I was unable to save: \"%s\"\n"
 msgstr "Ich konnte \"%s\" nicht speichern \n"
 
-#: src/client/saveLoad.c:255
+#: src/client/saveLoad.c:257
 #, c-format
 msgid "Loadig game from file: \"%s\"\n"
 msgstr "Lade Spiel von Datei: \"%s\"\n"
 
-#: src/client/saveLoad.c:266
+#: src/client/saveLoad.c:268
 #, c-format
 msgid "Unable to load save: \"%s\"\n"
 msgstr "Fehler beim Laden von Spielstand: \"%s\"\n"
@@ -240,18 +240,18 @@ msgstr "Starte Server: \"%s\" auf Port: \"%d\"\n"
 msgid "Starting server: \"%s\" on port: \"%d\" FAILED!\n"
 msgstr "Starten von Server: \"%s\" auf Port: \"%d\" FEHLGESCHLAGEN!\n"
 
-#: src/base/udp_server.c:208
+#: src/base/udp_server.c:202
 #, c-format
 msgid "Client was not FOUND!\n"
 msgstr "Client wurde NICHT gefunden!\n"
 
-#: src/base/udp_server.c:272 src/base/udp_server.c:280
+#: src/base/udp_server.c:266 src/base/udp_server.c:274
 #: src/base/tcp_server.c:309 src/base/tcp_server.c:317
 #, c-format
 msgid "Closing port: \"%d\"\n"
 msgstr "Schliesse Port: \"%d\"\n"
 
-#: src/base/udp_server.c:285
+#: src/base/udp_server.c:279
 #, c-format
 msgid "Quitting UDP\n"
 msgstr "Beende UDP\n"
@@ -284,7 +284,7 @@ msgstr "ID %d (count %d)\n"
 msgid "Quitting ID manger\n"
 msgstr "Beende ID Manager\n"
 
-#: src/base/server.c:162 src/base/server.c:324
+#: src/base/server.c:173 src/base/server.c:345
 msgid "Bad client type (TCP/UDP)!"
 msgstr "Schlechter Client Typ (TCP/UDP)!"
 
@@ -409,6 +409,14 @@ msgstr "Proto Fehlermeldung: \"%d\"\n"
 msgid "Version of your client isn't supported by the server."
 msgstr "Die Version deines Clients wird vom Server nicht unterstützt."
 
+#: src/base/proto.c:76
+msgid "The timeout of ping from server is out"
+msgstr ""
+
+#: src/base/proto.c:80
+msgid "The maximum amount of connected players has been exceeded!"
+msgstr ""
+
 #: src/screen/screen_table.c:98
 #, c-format
 msgid "Highscore file: \"%s\" was not loaded!"
@@ -438,22 +446,21 @@ msgstr "Ich konnte \"%s\" nicht erstellen!\n"
 msgid "back"
 msgstr "Zurück"
 
-#: src/screen/screen_world.c:67
+#: src/screen/screen_world.c:69
 #, c-format
 msgid "Network initialization error!\n"
 msgstr "Netzwerk Fehler!\n"
 
-#: src/screen/screen_world.c:435
+#: src/screen/screen_world.c:425
 msgid "Tux has not defined controls!"
 msgstr "Tux hat keine definierte Steuerung!"
 
-#: src/screen/screen_world.c:620
+#: src/screen/screen_world.c:618
 #, c-format
 msgid "Quitting screen world\n"
 msgstr "Beende Welt\n"
 
 #: src/screen/screen_mainMenu.c:104
-#, c-format
 msgid "Start game"
 msgstr "Starte Spiel"
 
@@ -724,7 +731,7 @@ msgstr "Konnte Socket beim Binden nicht erstellen!\n"
 msgid "Unable to set socket %s %d!\n"
 msgstr "Konnte Socket %s %d nicht setzen!\n"
 
-#: src/net/udp.c:139 src/net/tcp.c:68
+#: src/net/udp.c:139 src/net/tcp.c:69
 #, c-format
 msgid "Unable to create socket when connecting!\n"
 msgstr "Konnte Socket beim Verbinden nicht erstellen!\n"
@@ -739,16 +746,16 @@ msgstr "Fehler beim Lesen von Socket %d %s %d!\n"
 msgid "Unable to write on socket %d %s %d!\n"
 msgstr "Fehler beim Schreiben auf Socket %d %s %d!\n"
 
-#: src/net/udp.c:320 src/net/tcp.c:183
+#: src/net/udp.c:320 src/net/tcp.c:186
 msgid "Bad IP proto!"
 msgstr "Schlechte IP proto!"
 
-#: src/net/tcp.c:98
+#: src/net/tcp.c:101
 #, c-format
 msgid "Unable to bint to port: %d\n"
 msgstr "Fehler beim Binden an Port: %d\n"
 
-#: src/net/tcp.c:213
+#: src/net/tcp.c:216
 #, c-format
 msgid "Unable to create TCP socket!\n"
 msgstr "Fehler beim Erstellen des TCP Sockets\n"
