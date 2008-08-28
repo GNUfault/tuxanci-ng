@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=tuxanci-svn
-Comment=game tuxanci
-Exec=/usr/games/bin/tuxanci-svn
-Terminal=false
-Type=Application
-Icon=/usr/games/share/tuxanci-svn/images/tuxanci.png
-Encoding=UTF-8
-Categories=Game

@@ -11,7 +11,7 @@ echo "<******************************>"
 if [[ $1 == "--help" ]]; then
 	echo "usage: $0 -v version -a arch -r revision"
 	echo "-v 0.2.5 \"compile version 0.2.5\""
-	echo "-a 32b \"compile 32b ELF (64b for 64b ELF)\""
+	echo "-a i386 \"compile 32b ELF (64b for 64b ELF)\""
 	echo "-r 183 \"create packages from svn revision 183\""
 	echo "!if no version is specified svn version is created!"
 	echo "!if no arch is specified 64b is used!"
@@ -22,7 +22,7 @@ fi
 # ARGUMENT PASSING
 ###############################################################################
 VERSION="9999"
-ARCH="64b"
+ARCH="amd64"
 SVN_REV=""
 while getopts v:a:r: arg ; do
 	case $arg in
@@ -36,13 +36,14 @@ done
 ###############################################################################
 APPNAME="tuxanci"
 SVN="https://opensvn.csie.org/tuxanci_ng/"
-BUNDLE_PREFIX="${HOME}/tuxanci-bundle"
-LOG="${BUNDLE_PREFIX}/linux.log"
+BUNDLE_PREFIX="${HOME}"/tuxanci-bundle
+LOG="${BUNDLE_PREFIX}"/linux.log
 SOURCE="${BUNDLE_PREFIX}"/"${APPNAME}"_source_"${VERSION}"
-D="${BUNDLE_PREFIX}/${APPNAME}"
+D="${BUNDLE_PREFIX}"/"${APPNAME}"
+DEST_DEB="${BUNDLE_PREFIX}"/"${APPNAME}"-deb
 OPTIONS="client server"
 ERROR_MESSAGE="Check ${LOG}, cause i was unable to finish my stuff correctly!"
-CMAKE_PARAMS="-DBundle=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release"
+CMAKE_PARAMS="-DNLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release"
 ###############################################################################
 # PREPARING ENVIROMENT
 ###############################################################################
@@ -60,6 +61,58 @@ rm -rf ${SOURCE}/packaging
 ###############################################################################
 tar cjf "${APPNAME}"_source_"${VERSION}".tar.bz2 "${APPNAME}"_source_"${VERSION}"/
 ###############################################################################
+# DEBIAN PACKAGE ENVIROMENT CREATION
+###############################################################################
+mkdir "${DEST_DEB}"
+mkdir -p "${DEST_DEB}"/DEBIAN
+mkdir -p "${DEST_DEB}"/usr/share/applications/
+# create desktop file and other debian related
+echo "2.0" > "${DEST_DEB}"/DEBIAN/debian-binary
+echo "[Desktop Entry]
+Name=${APPNAME}-${VERSION}
+Comment=game tuxanci
+Exec=/usr/games/bin/${APPNAME}-${VERSION}
+Terminal=false
+Type=Application
+Icon=/usr/games/share/tuxanci-svn/images/tuxanci.png
+Encoding=UTF-8
+Categories=Game" > "${DEST_DEB}"/usr/share/applications/tuxanci.desktop
+echo"Package: tuxanci
+Version: ${VERSION}
+Section: Game
+Priority: optional
+Depends: libc6 (>= 2.2.4-4), libsdl1.2debian (>= 1.2), libsdl-image1.2 (>= 1.2), libsdl-mixer1.2 (>= 1.2), libsdl-ttf2.0-0 (>= 2.0), gettext
+Architecture: ${ARCH}
+Installed-Size: 4993
+Maintainer: Tomas Chvatal <tomas.chvatal@gmail.com>
+Description: Game tuxanci next generation version ${VERSION}
+ .
+ http://www.tuxanci.org" > "${DEST_DEB}"/DEBIAN/control
+###############################################################################
+# BUILDING DEBIAN PACKAGES
+###############################################################################
+for Y in ${OPTIONS}; do
+echo "<******************************>"
+echo "<Building ${Y} ${ARCH}>"
+echo "<******************************>"
+CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_INSTALL_PREFIX=/usr/games/"
+if [[ ${Y} == "server" ]]; then
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DServer=1"
+fi
+cd "${SOURCE}"
+rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
+make clean >> "${LOG}"
+cmake . ${CMAKE_PARAMS}  >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+make install DESTDIR="${DEST_DEB}" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+cd "${DEST_DEB}"/
+`which strip` --strip-unneeded lib/tuxanci/* bin/* >> "${LOG}"
+md5sum `find . -type f | awk '/.\// { print substr($0, 3) }'` > DEBIAN/md5sums
+cd "${BUNDLE_PREFIX}"
+dpkg-deb -b "${DEST_DEB}" ${APPNAME}_${VERSION}-1_${ARCH}.deb
+done
+CMAKE_PARAMS="-DBundle=1 -DNLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release" # duplicating due to override
+###############################################################################
 # BUILDING BINARIES
 ###############################################################################
 for Y in ${OPTIONS}; do
@@ -72,7 +125,7 @@ fi
 cd "${SOURCE}"
 rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
 make clean >> "${LOG}"
-cmake . ${CMAKE_PARAMS}  >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+cmake . ${CMAKE_PARAMS} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make install DESTDIR="${D}_${Y}_${VERSION}-${ARCH}/" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 cd "${D}"_"${Y}"_"${VERSION}"-"${ARCH}"/
@@ -102,7 +155,7 @@ done
 ###############################################################################
 echo "<What have i created :>"
 echo "<******************************>"
-find ./ -maxdepth 1 -type f -name \*.tar.bz2 -print | while read FILE ; do
+find ./ -maxdepth 1 -type f \( -name \*.tar.bz2 , -name *.deb \) -print | while read FILE ; do
 	echo "FILE: ${FILE}"
 	echo "      SIZE: $(`which du` -h ${FILE} |`which awk` -F' ' '{print $1}')"
 	echo "    MD5SUM: $(`which md5sum` ${FILE} |`which awk` -F' ' '{print $1}')"
