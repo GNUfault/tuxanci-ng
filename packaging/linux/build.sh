@@ -106,7 +106,7 @@ cmake . ${CMAKE_PARAMS}  >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make install DESTDIR="${DEST_DEB}" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 cd "${DEST_DEB}"/
-`which strip` --strip-unneeded usr/games/lib/${APPNAME}-${Y}-${VERSION}/* usr/games/bin/* >> "${LOG}"
+`which strip` --strip-unneeded usr/games/lib/${APPNAME}-${VERSION}/* usr/games/bin/* >> "${LOG}"
 md5sum `find . -type f | awk '/.\// { print substr($0, 3) }'` > DEBIAN/md5sums
 cd "${BUNDLE_PREFIX}"
 Y_N=$(echo ${Y} |tr s S |tr c C)
@@ -131,7 +131,7 @@ cmake . ${CMAKE_PARAMS} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 make install DESTDIR="${D}_${Y}_${VERSION}-${ARCH}/" >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 cd "${D}"_"${Y}"_"${VERSION}"-"${ARCH}"/
-`which strip` --strip-unneeded lib/${APPNAME}-${Y}-${VERSION}/* bin/* >> "${LOG}"
+`which strip` --strip-unneeded lib/${APPNAME}-${VERSION}/* bin/* >> "${LOG}"
 done
 ###############################################################################
 # DESTRUCTION OF SRC
