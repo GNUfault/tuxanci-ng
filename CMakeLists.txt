@@ -186,8 +186,10 @@ INCLUDE_DIRECTORIES (
 	${SDL_INCLUDE_DIR}
 	${SDLTTF_INCLUDE_DIR}
 	${SDLIMAGE_INCLUDE_DIR}
-	"${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/include/"
 )
+IF ( Win )
+INCLUDE_DIRECTORIES ( "${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/include/" )
+ENDIF ( Win )
 IF ( NOT NO_Audio )
 	INCLUDE_DIRECTORIES ( ${SDLMIXER_INCLUDE_DIR} )
 ENDIF ( NOT NO_Audio )
