@@ -152,6 +152,26 @@ void replaceItemID(item_t *item, int id)
 	item->id = id;
 }
 
+#ifdef PUBLIC_SERVER
+static void action_countitem(space_t *space, item_t *item, int *count)
+{
+	if( ( item->type >= GUN_DUAL_SIMPLE &&  item->type <= GUN_BOMBBALL ) ||
+	    ( item->type >= BONUS_SPEED &&  item->type <= BONUS_HIDDEN ) )
+	{
+		(*count)++;
+	}
+}
+
+static int getCountWeaponOrBonusItem(space_t *spaceItem)
+{
+	int count = 0;
+
+	actionSpace(spaceItem, action_countitem, &count);
+
+	return count;
+}
+#endif
+
 void addNewItem(space_t *spaceItem, int author_id)
 {
 	arena_t *arena;
@@ -160,7 +180,7 @@ void addNewItem(space_t *spaceItem, int author_id)
 	int type;
 
 #ifdef PUBLIC_SERVER	
-	if( getSpaceCount(spaceItem) >= atoi( getSetting("MAX_ITEM", "--max-item", "100") ) )
+	if( getCountWeaponOrBonusItem(spaceItem) >= atoi( getSetting("MAX_ITEM", "--max-item", "100") ) )
 	{
 		return;
 	}
@@ -383,6 +403,7 @@ static void tuxGiveBonus(tux_t *tux, item_t *item)
 #endif
 	tux->bonus = item->type;
 	tux->bonus_time = TUX_MAX_BONUS;
+
 	if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 }
@@ -395,6 +416,7 @@ static void tuxGiveGun(tux_t *tux, item_t *item)
 	tux->pickup_time = 0;
 	tux->shot[ item->type ] += GUN_MAX_SHOT;
 	tux->gun = item->type;
+
 	if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
 }
@@ -449,10 +471,13 @@ void eventGiveTuxListItem(tux_t *tux, space_t *spaceItem)
 
 	assert(spaceItem != NULL);
 	assert(tux != NULL);
+
 	if (getNetTypeGame() == NET_GAME_TYPE_CLIENT)
 		return;
+
 	if (tux->status == TUX_STATUS_DEAD)
 		return;
+
 	getTuxProportion(tux, &x, &y, &w, &h);
 	actionSpaceFromLocation(spaceItem, action_giveitem, tux, x, y, w, h);
 }

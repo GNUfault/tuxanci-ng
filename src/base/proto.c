@@ -880,7 +880,7 @@ void proto_send_module_client(char *msg)
 {
 	char out[STR_PROTO_SIZE];
 
-	snprintf(out, STR_PROTO_SIZE, "modules %s\n", msg);
+	snprintf(out, STR_PROTO_SIZE, "module %s\n", msg);
 /*
 	strcpy(out, "modules ");
 	strcat(out, msg);
@@ -893,14 +893,14 @@ void proto_send_module_client(char *msg)
 
 void proto_recv_module_server(client_t *client, char *msg)
 {
-	recvMsgModule(msg+8);
+	recvMsgModule(msg+7);
 }
 
 void proto_send_module_server(int type, client_t *client, char *msg)
 {
 	char out[STR_PROTO_SIZE];
 
-	snprintf(out, STR_PROTO_SIZE, "modules %s\n", msg);
+	snprintf(out, STR_PROTO_SIZE, "module %s\n", msg);
 /*
 	strcpy(out, "modules ");
 	strcat(out, msg);
@@ -914,7 +914,7 @@ void proto_send_module_server(int type, client_t *client, char *msg)
 
 void proto_recv_module_client(char *msg)
 {
-	recvMsgModule(msg+8);
+	recvMsgModule(msg+7);
 }
 
 #endif
