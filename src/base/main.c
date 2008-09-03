@@ -112,6 +112,22 @@ int tryExistFile (const char *s)
 		return 0;
 }
 
+int isFillPath(const char *path)
+{
+	assert( path != NULL);
+
+#ifndef __WIN32__
+	if( path[0] == '/' ) // for Unix-like systems ;)
+#else
+	if( path[1] == ':' ) // for Windows-like systems ;)
+#endif
+	{
+		return 1;
+	}
+	
+	return 0;
+}
+
 #ifdef __WIN32__
 int WINAPI WinMain(
     HINSTANCE hInstance,

@@ -21,8 +21,11 @@ extern char *getArenaName(arenaFile_t *arenaFile);
 extern char *getArenaNetName(arenaFile_t *arenaFile);
 extern arenaFile_t* getArenaFileFormNetName(char *s);
 extern char *getArenaImage(arenaFile_t *arenaFile);
+#ifndef PUBLIC_SERVER
 extern image_t* loadImageFromArena(arenaFile_t *arenaFile, char *filename, char *group, char *name, int alpha);
+#endif
 extern arenaFile_t* getArenaFile(int n);
+extern int getArenaFileID(arenaFile_t *arenaFile);
 extern arena_t* getArena(arenaFile_t *arenaFile);
 extern arenaFile_t* newArenaFile(char *path);
 extern void initArenaFile();

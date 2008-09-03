@@ -40,13 +40,13 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 	char str[STR_PATH_SIZE];
 
 
-	if( filename[0] != '/' )
+	if( isFillPath(filename) )
 	{
-		sprintf(str, PATH_IMAGE "%s", filename);
+		strcpy(str, filename);
 	}
 	else
 	{
-		strcpy(str, filename);
+		sprintf(str, PATH_IMAGE "%s", filename);
 	}
 
 	accessExistFile(str);

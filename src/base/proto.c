@@ -228,8 +228,7 @@ void proto_send_status_server(int type, client_t *client)
 	clients = getCurrentArena()->spaceTux->listIndex->count;
 	maxclients = getServerMaxClients();
 	uptime = (unsigned int)getUpdateServer();
-	//arena = getArenaNetName( getChoiceArenaId() );
-	//TODO
+	arena = getArenaNetName( getChoiceArena() );
 
 	snprintf(msg, STR_PROTO_SIZE,
 		"name: %s\n"
@@ -347,12 +346,10 @@ void proto_send_init_server(int type, client_t *client, client_t *client2)
 #endif
 
 	check_id = getNewIDcount(0);
-/*	
+	
 	snprintf(msg, STR_PROTO_SIZE, "init %d %d %d %d %s %d\n",
 		client2->tux->id, client2->tux->x, client2->tux->y,
-		count, getArenaNetName( getChoiceArenaId() ), check_id);
-*/
-	//TODO
+		count, getArenaNetName( getChoiceArena() ), check_id);
 	
 	//proto_send(type, client, msg);
 	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
@@ -388,10 +385,9 @@ void proto_recv_init_client(char *msg)
 		return;
 	}
 
-	//setWorldArena( getArenaIdFormNetName(arena_name) );
-	//TODO
-	arena = getCurrentArena();
+	setWorldArena( getArenaFileFormNetName(arena_name) );
 
+	arena = getCurrentArena();
 	arena->max_countRound = n;
 
 	tux = newTux();

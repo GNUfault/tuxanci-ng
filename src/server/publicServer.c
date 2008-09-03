@@ -39,9 +39,9 @@
 
 #include "dns.h"
 
-static int arenaId;
 static arena_t *arena;
 static bool_t isSignalEnd;
+static arenaFile_t *choice_arenaFile;
 
 extern int errno;
 
@@ -227,6 +227,13 @@ static int initPublicServerNetwork()
 	return ret;
 }
 
+static void loadArena()
+{
+	choice_arenaFile = getArenaFileFormNetName( getSetting("ARENA", "--arena", "FAGN") );
+	arena = getArena(choice_arenaFile);
+	setCurrentArena(arena);
+}
+
 int initPublicServer()
 {
 	int ret;
@@ -250,9 +257,7 @@ int initPublicServer()
 
 	initHeightScore( getSetting("SCORE_FILE", "--score-file", "/tmp/heightscore") );
 
-	arenaId = getArenaIdFormNetName( getSetting("ARENA", "--arena", "FAGN") );
-	arena = getArena(arenaId);
-	setCurrentArena(arena);
+	loadArena();
 
 	for( i = 0 ; i < atoi(getSetting("ITEM", "--item", "10")) ; i++ )
 	{
@@ -279,9 +284,9 @@ int initPublicServer()
 	return 0;
 }
 
-int getChoiceArenaId()
+arenaFile_t* getChoiceArena()
 {
-	return arenaId;
+	return choice_arenaFile;
 }
 
 void eventPublicServer()

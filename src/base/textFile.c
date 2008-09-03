@@ -14,11 +14,8 @@ textFile_t* newTextFile(char *s)
 	textFile_t *new;
 	char path[STR_PATH_SIZE];
 	assert( s != NULL );
-#ifndef __WIN32__
-	if( s[0] == '/' )
-#else
-	if( s[1] == ':' )
-#endif
+
+	if( isFillPath(s) )
 	{
 		strcpy(path, s);
 	}
@@ -28,6 +25,7 @@ textFile_t* newTextFile(char *s)
 		strcat(path, "/");
 		strcat(path, s);
 	}
+
 	new = malloc(sizeof(textFile_t));
 	new->file = strdup(path);
 	new->text = newList();

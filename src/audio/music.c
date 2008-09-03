@@ -50,13 +50,26 @@ static Mix_Music* loadMixMusic(char *file)
 {
 	Mix_Music *mixer;
 	char str[STR_PATH_SIZE];
+
 #ifdef DEBUG
 	printf(_("Loading music file: %s\n"), file);
 #endif
-	sprintf(str, PATH_MUSIC "%s", file);
+
+	if( isFillPath(file) )
+	{
+		strcpy(str, file);
+	}
+	else
+	{
+		sprintf(str, PATH_MUSIC "%s", file);
+	}
+
 	accessExistFile(str);
+
 	mixer = Mix_LoadMUS(str);
-	if( mixer == NULL )	{
+
+	if( mixer == NULL )
+	{
 		fprintf(stderr, _("Unable to load music from file: %s\n"), file);
 		return NULL;
 	}

@@ -134,7 +134,7 @@ void prepareArena()
 	switch( getNetTypeGame() )
 	{
 		case NET_GAME_TYPE_NONE :
-			setWorldArena( getChoiceArenaId() );
+			setWorldArena( getChoiceArena() );
 			addNewItem(arena->spaceItem, ID_UNKNOWN);
 			getSettingCountRound(&arena->max_countRound);
 
@@ -165,7 +165,7 @@ void prepareArena()
 		break;
 
 		case NET_GAME_TYPE_SERVER :
-			setWorldArena( getChoiceArenaId() );
+			setWorldArena( getChoiceArena() );
 			addNewItem(arena->spaceItem, ID_UNKNOWN);
 			getSettingCountRound(&arena->max_countRound);
 

@@ -174,11 +174,12 @@ ENDIF ( Win )
 ###############################################################################
 # SDL SEARCH
 ###############################################################################
+FIND_PACKAGE ( ZZIP REQUIRED )
+
 IF ( NOT Win AND NOT Server )
 	FIND_PACKAGE ( SDL REQUIRED )
 	FIND_PACKAGE ( SDL_image REQUIRED )
 	FIND_PACKAGE ( SDL_ttf REQUIRED )
-	FIND_PACKAGE ( ZZIP REQUIRED )
 	IF ( NOT NO_Audio )
 		FIND_PACKAGE ( SDL_mixer REQUIRED )
 	ENDIF ( NOT NO_Audio )

@@ -61,6 +61,7 @@ int getArenaValue(char *line, char *env, char *val, int len)
 }
 
 
+#ifndef PUBLIC_SERVER
 image_t* loadImageFromArena(arenaFile_t *arenaFile, char *filename, char *group, char *name, int alpha)
 {
 	char *extractFile;
@@ -72,6 +73,18 @@ image_t* loadImageFromArena(arenaFile_t *arenaFile, char *filename, char *group,
 
 	return image;
 }
+
+#ifndef NO_SOUND
+void loadMusicFromArena(arenaFile_t *arenaFile, char *filename, char *group, char *name)
+{
+	char *extractFile;
+
+	extractFile = extractFileFromArchive(arenaFile->path, filename);
+	addMusic(extractFile, name, group);
+	deleteExtractFile(extractFile);
+}
+#endif
+#endif
 
 static void cmd_arena(arena_t **arena, char *line)
 {
@@ -121,13 +134,13 @@ static void cmd_loadImage(arenaFile_t *arenaFile, char *line)
 	if (getArenaValue(line, "alpha", str_alpha, STR_SIZE) != 0)
 		return;
 
-	printf("str_file=%s str_name=%s str_alpha=%s\n", str_file, str_name, str_alpha);
+	//printf("str_file=%s str_name=%s str_alpha=%s\n", str_file, str_name, str_alpha);
 	loadImageFromArena(arenaFile, str_file, IMAGE_GROUP_USER, str_name, isYesOrNO(str_alpha));
 
 	//addImageData(str_file, isYesOrNO(str_alpha), str_name, IMAGE_GROUP_USER);
 }
 
-static void cmd_loadMusic(char *line)
+static void cmd_loadMusic(arenaFile_t *arenaFile, char *line)
 {
 	char str_file[STR_SIZE];
 	char str_name[STR_SIZE];
@@ -137,7 +150,8 @@ static void cmd_loadMusic(char *line)
 	if (getArenaValue(line, "name", str_name, STR_SIZE) != 0)
 		return;
 #ifndef NO_SOUND
-	addMusic(str_file, str_name, MUSIC_GROUP_USER);
+	//addMusic(str_file, str_name, MUSIC_GROUP_USER);
+	loadMusicFromArena(arenaFile, str_file, MUSIC_GROUP_USER, str_name);
 #endif
 }
 
@@ -190,7 +204,7 @@ char *getArenaNetName(arenaFile_t *arenaFile)
 arenaFile_t* getArenaFileFormNetName(char *s)
 {
 	int i;
-
+// 
 	for (i = 0; i < listArenaFile->count; i++)
 	{
 		arenaFile_t *arenaFile;
@@ -213,6 +227,25 @@ arenaFile_t* getArenaFile(int n)
 	return (arenaFile_t *)listArenaFile->list[n];
 }
 
+int getArenaFileID(arenaFile_t *arenaFile)
+{
+	int i;
+
+	for (i = 0; i < listArenaFile->count; i++)
+	{
+		arenaFile_t *this;
+
+		this = (arenaFile_t *)listArenaFile->list[i];
+		
+		if( this == arenaFile)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 arena_t* getArena(arenaFile_t *arenaFile)
 {
 	textFile_t *ts;
@@ -230,7 +263,7 @@ arena_t* getArena(arenaFile_t *arenaFile)
 		if (strncmp(line, "loadImage", 9) == 0)
 			cmd_loadImage(arenaFile, line);
 		if (strncmp(line, "loadMusic", 9) == 0)
-			cmd_loadMusic(line);
+			cmd_loadMusic(arenaFile, line);
 		if (strncmp(line, "playMusic", 9) == 0)
 			cmd_playMusic(arena, line);
 #endif
@@ -254,7 +287,7 @@ arenaFile_t* newArenaFile(char *path)
 	new = malloc( sizeof(arenaFile_t) );
 	new->path = strdup(path);
 
-	extractFile = extractFileFromArchive(path, "mapa.map");
+	extractFile = extractFileFromArchive(path, "arena.map");
 	new->map = loadTextFile(extractFile);
 	deleteExtractFile(extractFile);
 
@@ -283,6 +316,7 @@ void initArenaFile()
 		char *line;
 	
 		line = (char *)( p->list->list[i] );
+
 		if (strstr(line, ".zip") != NULL &&
 			strstr(line, "~") == NULL) {
 			char path[STR_PATH_SIZE];

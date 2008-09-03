@@ -4,7 +4,7 @@
 # LINKING ( for binary )
 ###############################################################################
 IF ( Server )
-	LINK_LIBRARIES ( ${CMAKE_DL_LIBS} )
+	LINK_LIBRARIES (  ${ZZIP_LIBRARY} ${CMAKE_DL_LIBS} )
 ELSE ( Server )
 	IF  ( NO_Audio )
 		LINK_LIBRARIES ( ${ZZIP_LIBRARY} ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY} ${SDLTTF_LIBRARY} )

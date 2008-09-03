@@ -99,23 +99,20 @@ static void eventWidgetButtonImage(void *p)
 	}
 }
 
-arenaFile_t* getChoiceArenaId()
+arenaFile_t* getChoiceArena()
 {
 	return currentArena;
 }
 
-void setChoiceArenaId(int n)
+void setChoiceArena(arenaFile_t *arenaFile)
 {
 	widget_t *widget_buttonimage;
+	int id;
 
-	if( n < 0 )
-	{
-		return;
-	}
+	id = getArenaFileID(arenaFile);
+	currentArena = arenaFile;
 
-	currentArena = getArenaFile(n);
-
-	widget_buttonimage = (widget_t *)listWidgetButtonimage->list[n];
+	widget_buttonimage = (widget_t *)listWidgetButtonimage->list[id];
 	setWidgetButtonimageActive(widget_buttonimage, TRUE);
 }
 
