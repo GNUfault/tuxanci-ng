@@ -7,7 +7,7 @@ EAPI="2_pre1"
 ESVN_REPO_URI="http://opensvn.csie.org/tuxanci_ng"
 inherit games cmake-utils subversion
 
-DESCRIPTION="Tuxanci is first cushion shooter based on well-known Czech game Bulanci."
+DESCRIPTION="Tuxanci is first cushion shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
 #SRC_URI="http://download.${PN}.org/${PV}/${P}-src.tar.bz2"
 LICENSE="GPL-2"
