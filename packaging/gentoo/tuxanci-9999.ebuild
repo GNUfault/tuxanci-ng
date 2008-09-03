@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+EAPI="2_pre1"
+
 ESVN_REPO_URI="http://opensvn.csie.org/tuxanci_ng"
 inherit games cmake-utils subversion
 
@@ -16,13 +18,14 @@ IUSE="alsa debug dedicated nls"
 # alsa is used only when building client
 
 DEPEND="!dedicated? (
-			>=media-libs/libsdl-1.2.10
-			>=media-libs/sdl-ttf-2.0.7
-			>=media-libs/sdl-image-1.2.6-r1
+			>=media-libs/libsdl-1.2.10[X]
+			>=media-libs/sdl-ttf-2.0.7[X]
+			>=media-libs/sdl-image-1.2.6-r1[png]
 			alsa? (
-				>=media-libs/sdl-mixer-1.2.7
+				>=media-libs/sdl-mixer-1.2.7[vorbis]
 			)
 		)
+	dev-libs/zziplib[sdl]
 	nls? ( sys-devel/gettext )"
 
 S="${WORKDIR}"/"${PN}"
