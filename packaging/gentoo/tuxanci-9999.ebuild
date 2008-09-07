@@ -42,7 +42,8 @@ src_compile() {
 
 src_install() {
 	cmake-utils_src_install
-
+	#dosym ${GAMES_BINDIR}/${P} ${GAMES_BINDIR}/${PN}
+	dosym ${GAMES_BINDIR}/${PN}-svn ${GAMES_BINDIR}/${PN}
 	doicon data/${PN}.svg
 	# we compile our desktop file
 	cd "${WORKDIR}"/tuxanci_build
