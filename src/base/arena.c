@@ -22,6 +22,29 @@
 static arena_t *currentArena;
 static int splitType;
 
+static int isBigArena(arena_t *arena)
+{
+	if( arena->w > WINDOW_SIZE_X || arena->h > WINDOW_SIZE_Y )
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+static int isTuxNear(tux_t *tux1, tux_t *tux2)
+{
+	if( abs(tux1->x - tux2->x) < WINDOW_SIZE_X &&
+	    abs(tux1->y - tux2->y) < WINDOW_SIZE_Y )
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 void setCurrentArena(arena_t *p)
 {
 	currentArena = p;
@@ -181,21 +204,32 @@ void getCenterScreen(int *screen_x, int *screen_y, int x, int y, int screen_size
 
 static void drawBackground(arena_t *arena, int screen_x, int screen_y)
 {
-	int i, j;
 
-	for( i = screen_y/arena->background->h ;
-	     i <= screen_y/arena->background->h + WINDOW_SIZE_Y/arena->background->h+1 ; i++ )
+	if( isBigArena(arena) )
 	{
-		for( j = screen_x/arena->background->w ;
-		     j <= screen_x/arena->background->w + WINDOW_SIZE_X/arena->background->w+1 ; j++ )
+		int i, j;
+	
+		for( i = screen_y/arena->background->h ;
+		     i <= screen_y/arena->background->h + WINDOW_SIZE_Y/arena->background->h+1 ; i++ )
 		{
-			addLayer(arena->background,
-				j * arena->background->w,
-				i * arena->background->h,
-				0, 0, arena->background->w, arena->background->h, -100);
-
-			//count++;
+			for( j = screen_x/arena->background->w ;
+			     j <= screen_x/arena->background->w + WINDOW_SIZE_X/arena->background->w+1 ; j++ )
+			{
+				addLayer(arena->background,
+					j * arena->background->w,
+					i * arena->background->h,
+					0, 0, arena->background->w, arena->background->h, -100);
+	
+				//count++;
+			}
 		}
+	}
+	else
+	{
+		addLayer(arena->background,
+			0, 0,
+			0, 0,
+			arena->background->w, arena->background->h, -100);
 	}
 }
 
@@ -240,6 +274,11 @@ static void drawSplitArenaForTux(arena_t *arena, tux_t *tux, int location_x, int
 		case SCREEN_SPLIT_VERTICAL :
 			getCenterScreen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X/2, WINDOW_SIZE_Y);
 		break;
+		default :
+			screen_x = -1;
+			screen_y = -1;
+			assert( ! "stupd error ");
+		break;
 	}
 
 	drawBackground(arena, screen_x, screen_y);
@@ -252,6 +291,11 @@ static void drawSplitArenaForTux(arena_t *arena, tux_t *tux, int location_x, int
 		break;
 		case SCREEN_SPLIT_VERTICAL :
 			drawLayerSplit(location_x, location_y, screen_x, screen_y, WINDOW_SIZE_X/2, WINDOW_SIZE_Y);
+		break;
+		default :
+			screen_x = -1;
+			screen_y = -1;
+			assert( ! "stupd error ");
 		break;
 	}
 }
@@ -311,29 +355,6 @@ void drawSimpleArena(arena_t *arena)
 	drawBackground(arena, screen_x, screen_y);
 	drawObjects(arena, screen_x, screen_y);
 	drawLayer(tux->x, tux->y);
-}
-
-static int isBigArena(arena_t *arena)
-{
-	if( arena->w > WINDOW_SIZE_X || arena->h > WINDOW_SIZE_Y )
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-static int isTuxNear(tux_t *tux1, tux_t *tux2)
-{
-	if( abs(tux1->x - tux2->x) < WINDOW_SIZE_X &&
-	    abs(tux1->y - tux2->y) < WINDOW_SIZE_Y )
-	{
-		return 1;
-	}
-
-	return 0;
 }
 
 void drawArena(arena_t *arena)

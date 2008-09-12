@@ -99,6 +99,8 @@ void drawLayer()
 			this->w, this->h);
 	}
 
+	//printf("listLayer->count = %d\n", listLayer->count);
+
 	destroyListItem(listLayer, free);
 	listLayer = newList();
 }

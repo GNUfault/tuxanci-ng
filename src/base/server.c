@@ -318,7 +318,7 @@ void sendClient(client_t *p, char *msg)
 
 	if( p->status != NET_STATUS_ZOMBIE )
 	{
-		int ret;
+		int ret = -1; // no Warnnings
 
 #ifndef PUBLIC_SERVER
 		if( isParamFlag("--send") )

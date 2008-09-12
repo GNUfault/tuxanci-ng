@@ -17,7 +17,7 @@ static SDL_Surface *screen;
 static SDL_TimerID timer;
 
 // window flags
-static Uint32 g_win_flags = SDL_SWSURFACE|SDL_DOUBLEBUF|SDL_ANYFORMAT;
+static Uint32 g_win_flags = SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_ANYFORMAT;
 
 static bool_t isInterfaceInit = FALSE;
 

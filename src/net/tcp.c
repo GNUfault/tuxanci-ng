@@ -48,9 +48,9 @@ sock_tcp_t* bindTcpSocket(char *address, int port, int proto)
 	assert( port > 0 && port < 65535 );
 
 	new = newSockTcp(proto);
+	ret = -1; // no Warnnings
 
 	assert( new != NULL );
-
 
 	if( new->proto == PROTO_TCPv4 )
 	{
@@ -198,6 +198,7 @@ sock_tcp_t* connectTcpSocket(char *ip, int port, int proto)
 	assert( port > 0 && port < 65535 );
 
 	new = newSockTcp(proto);
+	ret = -1; // no Warnnings
 
 	if( new->proto == PROTO_TCPv4 )
 	{

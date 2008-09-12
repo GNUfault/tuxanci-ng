@@ -139,21 +139,30 @@ char* getScreen()
 
 void drawScreen()
 {
-	assert( currentScreen != NULL );
+	static int count = 0;
 
-#ifdef DEBUG_TIME_DRAW
-	my_time_t prev;
+	count++;
 
- 	prev = getMyTimeMicro();
-#endif
+	if( count == 1 )
+	{
+		count = 0;
 
-	currentScreen->fce_draw();
-
-	interfaceRefresh();
-
-#ifdef DEBUG_TIME_DRAW
-	printf("c draw time = %d\n", getMyTimeMicro() - prev );
-#endif
+		assert( currentScreen != NULL );
+	
+	#ifdef DEBUG_TIME_DRAW
+		my_time_t prev;
+	
+		prev = getMyTimeMicro();
+	#endif
+	
+		currentScreen->fce_draw();
+	
+		interfaceRefresh();
+	
+	#ifdef DEBUG_TIME_DRAW
+		printf("c draw time = %d\n", getMyTimeMicro() - prev );
+	#endif
+	}
 }
 
 
