@@ -382,6 +382,11 @@ static void eventTuxIsDeadWithItem(tux_t *tux, item_t *item)
 		tuxTeleport(tux);
 		return;
 	}
+	if (item->author_id == tux->id) {
+		tux->score--;
+		if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
+			proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+	}
 	if (item->author_id != tux->id) {
 		tux_t *author;
 

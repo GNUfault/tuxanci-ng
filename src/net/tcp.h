@@ -3,7 +3,10 @@
 
 #define MY_TCP_H
 #include "main.h"
+
+#include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h> 
 
 #define SUPPORT_IPv6
 
