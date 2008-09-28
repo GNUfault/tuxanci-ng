@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI="2_pre1"
+EAPI="2"
 
-ESVN_REPO_URI="http://opensvn.csie.org/tuxanci_ng"
-inherit games cmake-utils subversion
+inherit games cmake-utils git
 
 DESCRIPTION="Tuxanci is first cushion shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
+EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
 #SRC_URI="http://download.${PN}.org/${PV}/${P}-src.tar.bz2"
 LICENSE="GPL-2"
 
