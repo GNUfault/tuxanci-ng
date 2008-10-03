@@ -5,9 +5,9 @@
 
 #include "main.h"
 
-#define NAME_AI			"tuxAI"
-#define NAME_PLAYER_RIGHT	"name1"
-#define NAME_PLAYER_LEFT	"name2"
+#define NAME_AI			"TuxBot"
+#define NAME_PLAYER_RIGHT	"Name1"
+#define NAME_PLAYER_LEFT	"Name2"
 
 extern void initScreenSetting();
 extern void drawScreenSetting();
