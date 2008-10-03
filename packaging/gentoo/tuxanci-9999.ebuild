@@ -2,13 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI="2_pre1"
+EAPI="2"
 
-ESVN_REPO_URI="http://opensvn.csie.org/tuxanci_ng"
-inherit games cmake-utils subversion
+inherit games cmake-utils git
 
 DESCRIPTION="Tuxanci is first cushion shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
+EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
 #SRC_URI="http://download.${PN}.org/${PV}/${P}-src.tar.bz2"
 LICENSE="GPL-2"
 
@@ -31,7 +31,7 @@ DEPEND="!dedicated? (
 
 S="${WORKDIR}"/"${PN}"
 
-src_compile() {
+src_configure() {
 	local mycmakeargs
 	use alsa || mycmakeargs="${mycmakeargs} -DNO_Audio=1"
 	use debug && mycmakeargs="${mycmakeargs} -DDebug=1"
@@ -42,7 +42,7 @@ src_compile() {
 	-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
 	-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/
 	-DCMAKE_ETC_PATH=${GAMES_SYSCONFDIR} -DLIB_INSTALL_DIR=$(games_get_libdir)"
-	cmake-utils_src_compile
+	cmake-utils_src_configure
 }
 
 src_install() {

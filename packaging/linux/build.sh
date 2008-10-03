@@ -35,7 +35,7 @@ done
 # VARIABLES
 ###############################################################################
 APPNAME="tuxanci"
-SVN="http://opensvn.csie.org/tuxanci_ng/"
+GIT="git://repo.or.cz/tuxanci.git"
 BUNDLE_PREFIX="${HOME}"/tuxanci-bundle
 LOG="${BUNDLE_PREFIX}"/linux.log
 SOURCE="${BUNDLE_PREFIX}"/"${APPNAME}"_source_"${VERSION}"
@@ -53,7 +53,7 @@ touch "${LOG}" || ( echo "I was unable to create log file"; exit 1 )
 echo "" > "${LOG}"	# LOG CLEANUP
 echo "<Downloading files from SVN repository>"
 echo "<******************************>"
-svn export $SVN ${SVN_REV} ${SOURCE} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
+git export ${GIT} ${SVN_REV} ${SOURCE} >> "${LOG}" || ( echo "${ERROR_MESSAGE}"; exit 1 )
 rm -rf ${SOURCE}/packaging
 ###############################################################################
 # CREATE SOURCE PACKAGE
