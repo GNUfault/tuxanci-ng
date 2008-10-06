@@ -38,17 +38,20 @@ src_configure() {
 	use dedicated && mycmakeargs="${mycmakeargs} -DServer=1"
 	use nls && mycmakeargs="${mycmakeargs} -DNLS=1"
 	mycmakeargs="${mycmakeargs} -DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
-	-DCMAKE_DATA_PATH=${GAMES_DATADIR}
-	-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
-	-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/
-	-DCMAKE_ETC_PATH=${GAMES_SYSCONFDIR} -DLIB_INSTALL_DIR=$(games_get_libdir)"
+		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
+		-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
+		-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/
+		-DCMAKE_ETC_PATH=${GAMES_SYSCONFDIR} -DLIB_INSTALL_DIR=$(games_get_libdir)"
 	cmake-utils_src_configure
 }
 
 src_install() {
+	local MY_PN
+	use dedicated && MY_PN=${PN}-server || MY_PN=${PN}
+
 	cmake-utils_src_install
 	#dosym ${GAMES_BINDIR}/${P} ${GAMES_BINDIR}/${PN}
-	dosym ${GAMES_BINDIR}/${PN}-svn ${GAMES_BINDIR}/${PN}
+	dosym ${GAMES_BINDIR}/${MY_PN}-dev ${GAMES_BINDIR}/${MY_PN}
 	doicon data/${PN}.svg
 	# we compile our desktop file
 	cd "${WORKDIR}"/tuxanci_build
