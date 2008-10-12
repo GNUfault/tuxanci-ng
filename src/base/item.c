@@ -16,6 +16,7 @@
 
 #include "interface.h"
 #include "image.h"
+#include "radar.h"
 #include "layer.h"
 
 #include "screen_world.h"
@@ -249,6 +250,11 @@ void addNewItem(space_t *spaceItem, int author_id)
 	addObjectToSpace(spaceItem, item);
 	if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
+
+#ifndef PUBLIC_SERVER
+	if (getNetTypeGame() != NET_GAME_TYPE_CLIENT)
+		addToRadar(item->id, new_x, new_y, RADAR_TYPE_ITEM);
+#endif
 }
 
 #ifndef PUBLIC_SERVER
@@ -411,6 +417,11 @@ static void tuxGiveBonus(tux_t *tux, item_t *item)
 
 	if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+
+#ifndef PUBLIC_SERVER
+	if (getNetTypeGame() != NET_GAME_TYPE_CLIENT)
+		delFromRadar(item->id);
+#endif
 }
 
 static void tuxGiveGun(tux_t *tux, item_t *item)
@@ -424,6 +435,11 @@ static void tuxGiveGun(tux_t *tux, item_t *item)
 
 	if (getNetTypeGame() == NET_GAME_TYPE_SERVER)
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+
+#ifndef PUBLIC_SERVER
+	if (getNetTypeGame() != NET_GAME_TYPE_CLIENT)
+		delFromRadar(item->id);
+#endif
 }
 
 static void action_giveitem(space_t *space, item_t *item, tux_t *tux)
