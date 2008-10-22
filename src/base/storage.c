@@ -9,125 +9,117 @@
 
 typedef struct struct_storage_item
 {
-   char *name;
-   char *group;
-   void *data;
+	char *name;
+	char *group;
+	void *data;
 } storage_item_t;
 
-list_t *
-newStorage()
+list_t* newStorage()
 {
-   return newList();
+	return newList();
 }
 
-static storage_item_t *
-newStorageItem(char *group, char *name, void *data)
+static storage_item_t* newStorageItem(char *group, char *name, void *data)
 {
-   storage_item_t *new;
+	storage_item_t *new;
 
-   assert(name != NULL);
-   assert(group != NULL);
-   assert(data != NULL);
-   new = malloc(sizeof(storage_item_t));
-   new->name = strdup(name);
-   new->group = strdup(group);
-   new->data = data;
-   return new;
+	assert(name != NULL);
+	assert(group != NULL);
+	assert(data != NULL);
+	new = malloc(sizeof(storage_item_t));
+	new->name = strdup(name);
+	new->group = strdup(group);
+	new->data = data;
+	return new;
 }
 
-static void
-destroyStorageItem(storage_item_t * p, void *f)
+static void destroyStorageItem(storage_item_t *p, void *f)
 {
-   void (*fce) (void *);
+	void(*fce)(void *);
 
-   assert(p != NULL);
-   assert(f != NULL);
-   fce = f;
-   fce(p->data);
-   free(p->name);
-   free(p->group);
-   free(p);
+	assert(p != NULL);
+	assert(f != NULL);
+	fce = f;
+	fce(p->data);
+	free(p->name);
+	free(p->group);
+	free(p);
 }
 
-void
-addItemToStorage(list_t * list, char *group, char *name, void *data)
+void addItemToStorage(list_t *list, char *group, char *name, void *data)
 {
-   assert(list != NULL);
-   assert(group != NULL);
-   assert(name != NULL);
-   addList(list, newStorageItem(group, name, data));
+	assert(list != NULL);
+	assert(group != NULL);
+	assert(name != NULL);
+	addList(list, newStorageItem(group, name, data) );
 }
 
-void *
-getItemFromStorage(list_t * list, char *group, char *name)
+void* getItemFromStorage(list_t *list, char *group, char *name)
 {
-   storage_item_t *this;
-   int i;
+	storage_item_t *this;
+	int i;
 
-   assert(list != NULL);
-   assert(group != NULL);
-   assert(name != NULL);
-   for (i = 0; i < list->count; i++) {
-      this = (storage_item_t *) list->list[i];
-      if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0)
-         return this->data;
-   }
+	assert(list != NULL);
+	assert(group != NULL);
+	assert(name != NULL);
+	for (i = 0; i < list->count; i++) {
+		this = (storage_item_t *) list->list[i];
+		if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0)
+			return this->data;
+	}
 #ifdef DEBUG
-   printf(_("%s %s was not found in storage!\n"), group, name);
+	printf(_("%s %s was not found in storage!\n"), group, name);
 #endif
-   return NULL;
+	return NULL;
 }
 
-void
-delItemFromStorage(list_t * list, char *group, char *name, void *f)
+void delItemFromStorage(list_t *list, char *group, char *name, void *f)
 {
-   storage_item_t *this;
-   int i;
+	storage_item_t *this;
+	int i;
 
-   assert(list != NULL);
-   assert(group != NULL);
-   assert(name != NULL);
-   for (i = 0; i < list->count; i++) {
-      this = (storage_item_t *) list->list[i];
-      if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0) {
-         destroyStorageItem(this, f);
-         delList(list, i);
-         return;
-      }
-   }
-   return;
+	assert(list != NULL);
+	assert(group != NULL);
+	assert(name != NULL);
+	for (i = 0; i < list->count; i++) {
+		this = (storage_item_t *) list->list[i];
+		if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0) {
+			destroyStorageItem(this, f);
+			delList(list, i);
+			return;
+		}
+	}
+	return;
 }
 
-void
-delAllItemFromStorage(list_t * list, char *group, void *f)
+void delAllItemFromStorage(list_t *list, char *group, void *f)
 {
-   storage_item_t *this;
-   int i;
+	storage_item_t *this;
+	int i;
 
-   assert(list != NULL);
-   assert(group != NULL);
+	assert(list != NULL);
+	assert(group != NULL);
 
-   for (i = 0; i < list->count; i++) {
-      this = (storage_item_t *) list->list[i];
-      if (strcmp(group, this->group) == 0) {
-         destroyStorageItem(this, f);
-         delList(list, i);
-         i--;
-      }
-   }
+	for (i = 0; i < list->count; i++) {
+		this = (storage_item_t *) list->list[i];
+		if (strcmp(group, this->group) == 0) {
+			destroyStorageItem(this, f);
+			delList(list, i);
+			i--;
+		}
+	}
 }
 
-void
-destroyStorage(list_t * p, void *f)
+void destroyStorage(list_t *p, void *f)
 {
-   storage_item_t *this;
-   int i;
+	storage_item_t *this;
+	int i;
 
-   assert(p != NULL);
-   assert(f != NULL);
-   for (i = 0; i < p->count; i++) {
-      this = (storage_item_t *) p->list[i];
-      destroyStorageItem(this, f);
-   }
-   destroyList(p);
+	assert(p != NULL);
+	assert(f != NULL);
+	for (i = 0; i < p->count; i++) {
+		this = (storage_item_t *)p->list[i];
+		destroyStorageItem(this, f);
+	}
+	destroyList(p);
 }

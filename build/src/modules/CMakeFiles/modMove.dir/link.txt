@@ -1,1 +1,0 @@
-/usr/bin/gcc  -fPIC   -shared -Wl,-soname,libmodMove.so -o libmodMove.so CMakeFiles/modMove.dir/__/base/list.c.o CMakeFiles/modMove.dir/__/base/space.c.o CMakeFiles/modMove.dir/__/base/index.c.o CMakeFiles/modMove.dir/modMove.c.o -lzzip -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -lSDL_mixer -lSDL_image -lSDL_ttf -lSDLmain -ldl 

@@ -16,137 +16,119 @@ static bool_t var_isSoundActive = TRUE;
 /*
  * Return state of sound
  */
-bool_t
-isSoundInicialized()
+bool_t isSoundInicialized()
 {
-   return isSoundInit;
+	return isSoundInit;
 }
-
 /*
  * Audio initialization
  */
-void
-initSound()
+void initSound()
 {
-   if (isAudioInicialized() == FALSE) {
-      isSoundInit = FALSE;
-      return;
-   }
+	if( isAudioInicialized() == FALSE ) {
+		isSoundInit = FALSE;
+		return;
+	}
 
-   listStorage = newStorage();
-   isSoundInit = TRUE;
-   var_isSoundActive = TRUE;
-   if (isParamFlag("--nosound"))
-      setSoundActive(FALSE);
-   if (isParamFlag("--sound"))
-      setSoundActive(TRUE);
+	listStorage = newStorage();
+	isSoundInit = TRUE;
+	var_isSoundActive = TRUE;
+	if (isParamFlag("--nosound"))
+		setSoundActive(FALSE);
+	if (isParamFlag("--sound"))
+		setSoundActive(TRUE);
 #ifdef DEBUG
-   printf(_("Initializing sound...\n"));
+	printf(_("Initializing sound...\n"));
 #endif
 }
-
 /*
  * Load sound file (Null/mixer)
  */
-static Mix_Chunk *
-loadMixSound(char *file)
+static Mix_Chunk* loadMixSound(char *file)
 {
-   Mix_Chunk *new;
-   char str[STR_PATH_SIZE];
+	Mix_Chunk *new;
+	char str[STR_PATH_SIZE];
 
 #ifdef DEBUG
-   printf(_("Loading sound file: %s\n"), file);
+	printf(_("Loading sound file: %s\n"), file);
 #endif
-   sprintf(str, PATH_SOUND "%s", file);
-   accessExistFile(str);
-   new = Mix_LoadWAV(str);
-   if (new == NULL) {
-      fprintf(stderr, _("Unable to load sound file: %s with error: %s\n"),
-              str, Mix_GetError());
-      return NULL;
-   }
-   return new;
+	sprintf(str, PATH_SOUND "%s", file);
+	accessExistFile(str);
+	new = Mix_LoadWAV(str);
+	if (new == NULL) {
+		fprintf(stderr, _("Unable to load sound file: %s with error: %s\n"), str, Mix_GetError());
+		return NULL;
+	}
+	return new;
 }
 
 /*
  * Play sound with mixer
  */
-static void
-playMixSound(Mix_Chunk * p)
+static void playMixSound(Mix_Chunk *p)
 {
-   if (Mix_PlayChannel(-1, p, 0) == -1) {
-      fprintf(stderr, _("Unable to playback sound with error: %s\n"),
-              Mix_GetError());
-      return;
-   }
+	if (Mix_PlayChannel(-1, p, 0) == -1) {
+		fprintf(stderr, _("Unable to playback sound with error: %s\n"), Mix_GetError());
+		return;
+	}
 }
-
 /*
  * Destroy mixer chunk
  */
-static void
-destroySound(void *p)
+static void destroySound(void *p)
 {
-   Mix_FreeChunk((Mix_Chunk *) p);
+	Mix_FreeChunk((Mix_Chunk *)p);
 }
-
 /*
  * Add sound to list
  */
-void
-addSound(char *file, char *name, char *group)
+void addSound(char *file, char *name, char *group)
 {
-   Mix_Chunk *new;
+	Mix_Chunk *new;
 
-   if (isSoundInit == FALSE)
-      return;
-   assert(file != NULL);
-   assert(name != NULL);
-   assert(group != NULL);
-   new = loadMixSound(file);
-   addItemToStorage(listStorage, group, name, new);
+	if (isSoundInit == FALSE)
+		return;
+	assert( file != NULL );
+	assert( name != NULL );
+	assert( group != NULL );
+	new = loadMixSound(file);
+	addItemToStorage(listStorage, group, name, new );
 }
-
 /*
  * Start playback file from list
  */
-void
-playSound(char *name, char *group)
+void playSound(char *name, char *group)
 {
-   if (isSoundInit == FALSE || var_isSoundActive == FALSE)
-      return;
-   playMixSound(getItemFromStorage(listStorage, group, name));
+	if (isSoundInit == FALSE ||
+			var_isSoundActive == FALSE)
+		return;
+	playMixSound(getItemFromStorage(listStorage, group, name));
 }
-
 /*
  * Set if sound is active True/False
  */
-void
-setSoundActive(bool_t n)
+void setSoundActive(bool_t n)
 {
-   var_isSoundActive = n;
+	var_isSoundActive = n;
 }
-
 /*
  * Return state of sound
  */
-bool_t
-isSoundActive()
+bool_t isSoundActive()
 {
-   return var_isSoundActive;
+	return var_isSoundActive;
 }
-
 /*
  * Quit all sound stuff
  */
-void
-quitSound()
+void quitSound()
 {
-   if (isSoundInit == FALSE)
-      return;
-   destroyStorage(listStorage, destroySound);
-   isSoundInit = FALSE;
+	if( isSoundInit == FALSE )
+		return;
+	destroyStorage(listStorage, destroySound);
+	isSoundInit = FALSE;
 #ifdef DEBUG
-   printf(_("Quitting sound...\n"));
+	printf(_("Quitting sound...\n"));
 #endif
 }
+

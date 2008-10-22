@@ -10,62 +10,56 @@
 
 typedef struct share_fce_item_struct
 {
-   char *name;
-   void *function;
-} share_fce_item_t;
+	char *name;
+	void *function;
+}  share_fce_item_t;
 
 static list_t *listShareFce;
 
-static share_fce_item_t *
-newShareFceItem(char *name, void *function)
+static share_fce_item_t* newShareFceItem(char *name, void *function)
 {
-   share_fce_item_t *new;
+	share_fce_item_t *new;
 
-   new = malloc(sizeof(share_fce_item_t));
-   new->name = strdup(name);
-   new->function = function;
-   return new;
+	new = malloc( sizeof(share_fce_item_t) );
+	new->name = strdup(name);
+	new->function = function;
+	return new;
 }
 
-static void
-destroyShareFce(share_fce_item_t * p)
+static void destroyShareFce(share_fce_item_t *p)
 {
-   free(p->name);
-   free(p);
+	free(p->name);
+	free(p);
 }
 
-void
-initShareFunction()
+void initShareFunction()
 {
-   listShareFce = newList();
+	listShareFce = newList();
 }
-
-void
-addToShareFce(char *name, void *function)
+void addToShareFce(char *name, void *function)
 {
 #ifdef DEBUG
-   printf(_("Adding  \"%s\" to share function.\n"), name);
+	printf(_("Adding  \"%s\" to share function.\n"), name);
 #endif
-   addList(listShareFce, newShareFceItem(name, function));
+	addList(listShareFce, newShareFceItem(name, function) );
 }
 
-void *
-getShareFce(char *name)
+void* getShareFce(char *name)
 {
-   int i;
+	int i;
 
-   for (i = 0; i < listShareFce->count; i++) {
-      share_fce_item_t *this;
+	for (i = 0; i < listShareFce->count; i++) {
+		share_fce_item_t *this;
 
-      this = (share_fce_item_t *) listShareFce->list[i];
-      if (strcmp(this->name, name) == 0)
-         return this->function;
-   }
-   return NULL;
+		this = (share_fce_item_t *)listShareFce->list[i];
+		if( strcmp(this->name, name) == 0 )
+			return this->function;
+	}
+	return NULL;
 }
 
-void
-quitShareFunction()
+void quitShareFunction()
 {
-   destroyListItem(listShareFce, destroyShareFce);
+	destroyListItem(listShareFce, destroyShareFce);
 }
+

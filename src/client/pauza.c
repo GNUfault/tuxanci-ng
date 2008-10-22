@@ -15,57 +15,54 @@
 static image_t *g_pauza;
 static bool_t activePauza;
 
-static void
-switchPauzed()
+static void switchPauzed()
 {
-   if (activePauza == TRUE) {
-      activePauza = FALSE;
-   }
-   else {
-      activePauza = TRUE;
-   }
+	if( activePauza == TRUE )
+	{
+		activePauza = FALSE;
+	}
+	else
+	{
+		activePauza = TRUE;
+	}
 }
 
-static void
-hotkey_pauze()
+static void hotkey_pauze()
 {
-   switchPauzed();
+	switchPauzed();
 }
 
-void
-initPauza()
+void initPauza()
 {
-   g_pauza =
-      addImageData("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
-   activePauza = FALSE;
+	g_pauza = addImageData("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
+	activePauza = FALSE;
 
-   registerHotKey(SDLK_p, hotkey_pauze);
+	registerHotKey(SDLK_p, hotkey_pauze);
 }
 
-void
-drawPauza()
+void drawPauza()
 {
-   if (activePauza) {
-      drawImage(g_pauza,
-                WINDOW_SIZE_X / 2 - g_pauza->w / 2,
-                WINDOW_SIZE_Y / 2 - g_pauza->h / 2,
-                0, 0, g_pauza->w, g_pauza->h);
-   }
+	if( activePauza )
+	{
+		drawImage(g_pauza,
+			WINDOW_SIZE_X/2 - g_pauza->w/2,
+			WINDOW_SIZE_Y/2 - g_pauza->h/2,
+			0, 0,
+			g_pauza->w, g_pauza->h);
+	}
 }
 
-void
-eventPauza()
+void eventPauza()
 {
 }
 
-bool_t
-isPauzeActive()
+bool_t isPauzeActive()
 {
-   return activePauza;
+	return activePauza;
 }
 
-void
-quitPauza()
+void quitPauza()
 {
-   unregisterHotKey(SDLK_p);
+	unregisterHotKey(SDLK_p);
 }
+

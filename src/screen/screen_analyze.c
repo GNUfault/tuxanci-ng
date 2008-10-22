@@ -31,165 +31,150 @@ static widget_t *widgetLabelMsg;
 
 static widget_t *button_ok;
 
-static analyze_t *
-newAnalyze(char *name, int score)
+static analyze_t* newAnalyze(char *name, int score)
 {
-   analyze_t *new;
+	analyze_t *new;
 
-   new = malloc(sizeof(analyze_t));
-   new->name = strdup(name);
-   new->score = score;
+	new = malloc( sizeof(analyze_t) );
+	new->name = strdup(name);
+	new->score = score;
 
-   return new;
+	return new;
 }
 
-static void
-destroyAnalyze(analyze_t * p)
+static void destroyAnalyze(analyze_t *p)
 {
-   free(p->name);
-   free(p);
+	free(p->name);
+	free(p);
 }
 
-void
-startScreenAnalyze()
+void startScreenAnalyze()
 {
 #ifndef NO_SOUND
-   playMusic("menu", MUSIC_GROUP_BASE);
+	playMusic("menu", MUSIC_GROUP_BASE);
 #endif
 }
 
-void
-drawScreenAnalyze()
+void drawScreenAnalyze()
 {
-   widget_t *this;
-   int i;
+	widget_t *this;
+	int i;
 
-   drawWidgetImage(image_backgorund);
+	drawWidgetImage(image_backgorund);
 
-   for (i = 0; i < listWidgetLabelName->count; i++) {
-      this = (widget_t *) (listWidgetLabelName->list[i]);
-      drawWidgetLabel(this);
-   }
+	for( i = 0 ; i < listWidgetLabelName->count ; i++ )
+	{
+		this = (widget_t *)(listWidgetLabelName->list[i]);
+		drawWidgetLabel(this);
+	}
 
-   for (i = 0; i < listWidgetLabelScore->count; i++) {
-      this = (widget_t *) (listWidgetLabelScore->list[i]);
-      drawWidgetLabel(this);
-   }
+	for( i = 0 ; i < listWidgetLabelScore->count ; i++ )
+	{
+		this = (widget_t *)(listWidgetLabelScore->list[i]);
+		drawWidgetLabel(this);
+	}
 
-   drawWidgetLabel(widgetLabelMsg);
-   drawWidgetButton(button_ok);
+	drawWidgetLabel(widgetLabelMsg);
+	drawWidgetButton(button_ok);
 }
 
-void
-eventScreenAnalyze()
+void eventScreenAnalyze()
 {
-   eventWidgetButton(button_ok);
+	eventWidgetButton(button_ok);
 }
 
-void
-stopScreenAnalyze()
+void stopScreenAnalyze()
 {
-   destroyWidgetLabel(widgetLabelMsg);
-   widgetLabelMsg =
-      newWidgetLabel("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	destroyWidgetLabel(widgetLabelMsg);
+	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
 }
 
-static void
-eventWidget(void *p)
+static void eventWidget(void *p)
 {
-   widget_t *button;
+	widget_t *button;
+	
+	button = (widget_t *)(p);
 
-   button = (widget_t *) (p);
-
-   if (button == button_ok) {
-      setScreen("mainMenu");
-   }
+	if( button == button_ok )
+	{
+		setScreen("mainMenu");
+	}
 }
 
-void
-restartAnalyze()
+void restartAnalyze()
 {
-   destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-   destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
-   destroyListItem(listAnalyze, destroyAnalyze);
+	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
+	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+	destroyListItem(listAnalyze, destroyAnalyze);
 
-   listWidgetLabelName = newList();
-   listWidgetLabelScore = newList();
-   listAnalyze = newList();
+	listWidgetLabelName = newList();
+	listWidgetLabelScore = newList();
+	listAnalyze = newList();
 }
 
-void
-addAnalyze(char *name, int score)
+void addAnalyze(char *name, int score)
 {
-   addList(listAnalyze, newAnalyze(name, score));
+	addList(listAnalyze, newAnalyze(name, score) );
 }
 
-void
-setMsgToAnalyze(char *msg)
+void setMsgToAnalyze(char *msg)
 {
-   destroyWidgetLabel(widgetLabelMsg);
-   widgetLabelMsg =
-      newWidgetLabel(msg, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	destroyWidgetLabel(widgetLabelMsg);
+	widgetLabelMsg = newWidgetLabel(msg, WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
 }
 
-void
-endAnalyze()
+void endAnalyze()
 {
-   int i;
+	int i;
 
-   for (i = 0; i < listAnalyze->count; i++) {
-      analyze_t *this;
-      char *str;
+	for( i = 0 ; i < listAnalyze->count ; i++ )
+	{
+		analyze_t *this;
+		char *str;
 
-      this = (analyze_t *) (listAnalyze->list[i]);
+		this = (analyze_t *)(listAnalyze->list[i]);
 
-      addList(listWidgetLabelName, newWidgetLabel(this->name,
-                                                  100, 200 + 20 * i,
-                                                  WIDGET_LABEL_LEFT));
+		addList(listWidgetLabelName, newWidgetLabel(this->name,
+			100, 200 + 20*i, WIDGET_LABEL_LEFT) );
 
-      str = getString(this->score);
+		str = getString(this->score);
 
-      addList(listWidgetLabelScore, newWidgetLabel(str,
-                                                   WINDOW_SIZE_X - 100,
-                                                   200 + 20 * i,
-                                                   WIDGET_LABEL_RIGHT));
+		addList(listWidgetLabelScore, newWidgetLabel(str,
+			WINDOW_SIZE_X - 100, 200 + 20*i, WIDGET_LABEL_RIGHT) );
 
-      free(str);
-   }
+		free(str);
+	}
 }
 
-void
-initScreenAnalyze()
+void initScreenAnalyze()
 {
-   image_t *image;
+	image_t *image;
 
-   image = getImage(IMAGE_GROUP_BASE, "screen_main");
-   image_backgorund = newWidgetImage(0, 0, image);
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund  = newWidgetImage(0, 0, image);
 
-   listWidgetLabelName = newList();
-   listWidgetLabelScore = newList();
-   listAnalyze = newList();
+	listWidgetLabelName = newList();
+	listWidgetLabelScore = newList();
+	listAnalyze = newList();
 
-   button_ok =
-      newWidgetButton("OK", WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
-                      WINDOW_SIZE_Y - 100, eventWidget);
+	button_ok = newWidgetButton("OK", WINDOW_SIZE_X/2 -WIDGET_BUTTON_WIDTH/2,
+		WINDOW_SIZE_Y-100, eventWidget);
 
-   registerScreen(newScreen("analyze", startScreenAnalyze, eventScreenAnalyze,
-                            drawScreenAnalyze, stopScreenAnalyze));
+	registerScreen( newScreen("analyze", startScreenAnalyze, eventScreenAnalyze,
+		drawScreenAnalyze, stopScreenAnalyze) );
 
-   widgetLabelMsg =
-      newWidgetLabel("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2 , 250, WIDGET_LABEL_CENTER);
 }
 
-void
-quitScreenAnalyze()
+void quitScreenAnalyze()
 {
-   destroyWidgetImage(image_backgorund);
+	destroyWidgetImage(image_backgorund);
 
-   destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-   destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
-   destroyListItem(listAnalyze, destroyAnalyze);
+	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
+	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+	destroyListItem(listAnalyze, destroyAnalyze);
 
-   destroyWidgetButton(button_ok);
-   destroyWidgetLabel(widgetLabelMsg);
+	destroyWidgetButton(button_ok);
+	destroyWidgetLabel(widgetLabelMsg);
 }
+

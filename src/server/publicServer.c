@@ -47,330 +47,326 @@ extern int errno;
 
 #define	__PACKED__ __attribute__ ((__packed__))
 
-void
-countRoundInc()
+void countRoundInc()
 {
 }
 
-char *
-getSetting(char *env, char *param, char *default_val)
+char *getSetting(char *env, char *param, char *default_val)
 {
-   return getParamElse(param, getServerConfigFileValue(env, default_val));
+	return getParamElse(param, getServerConfigFileValue(env, default_val) );
 }
 
-static int
-registerPublicServer()
+static int registerPublicServer()
 {
 #ifndef __WIN32
-   int s;
+	int s;
 #else
-   SOCKET s;
+	SOCKET s;
 #endif
 
-   /* TODO: dodelat TCP makro */
-   struct sockaddr_in server;
-   char *master_server_ip;
+	/* TODO: dodelat TCP makro */
+	struct sockaddr_in server;
+	char *master_server_ip;
 
-   master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
+	master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
 
-   //printf("master_server_ip = %s\n", master_server_ip);
+	//printf("master_server_ip = %s\n", master_server_ip);
 
-   if (master_server_ip == NULL)        // master server is down
-   {
-      return -1;
-   }
+	if( master_server_ip == NULL ) // master server is down
+	{
+		return -1;
+	}
 
-   server.sin_family = AF_INET;
-   server.sin_port = htons(NET_MASTER_PORT);
-   server.sin_addr.s_addr = inet_addr(master_server_ip);
+	server.sin_family = AF_INET;
+	server.sin_port = htons (NET_MASTER_PORT);
+	server.sin_addr.s_addr = inet_addr (master_server_ip);
+	
+	free(master_server_ip);
 
-   free(master_server_ip);
+	if ((s = socket (AF_INET, SOCK_STREAM, 0)) < 0) {
+		return 0;
+	}
 
-   if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-      return 0;
-   }
-
-   /* Set to nonblocking socket mode */
+	/* Set to nonblocking socket mode */
 #ifndef __WIN32__
-   int oldFlag;
+	int oldFlag;
 
-   oldFlag = fcntl(s, F_GETFL, 0);
+	oldFlag = fcntl (s, F_GETFL, 0);
 
-   if (fcntl(s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
-      return -1;
-   }
+	if( fcntl(s, F_SETFL, oldFlag | O_NONBLOCK) == -1 )
+	{
+		return -1;
+	}
 #else
-   unsigned long arg = 1;
-   // Operation is  FIONBIO. Parameter is pointer on non-zero number.
-   if (ioctlsocket(s, FIONBIO, &arg) == SOCKET_ERROR) {
-      WSACleanup();
-      return -1;
-   }
+	unsigned long arg = 1;
+	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	if( ioctlsocket(s, FIONBIO, &arg) == SOCKET_ERROR )
+	{
+		WSACleanup();
+		return -1;
+	}	
 #endif
 
-   if (connect(s, (struct sockaddr *) &server, sizeof(server)) == -1) {
+	if( connect (s, (struct sockaddr *) &server, sizeof (server)) == -1 ) {
 #ifndef __WIN32__
-      if (errno != EINPROGRESS)
-         return -1;
+		if (errno != EINPROGRESS)
+		    return -1;
 #else
-      if (WSAGetLastError() != WSAEWOULDBLOCK) {
-         WSACleanup();
-         return -1;
-      }
+		if (WSAGetLastError() != WSAEWOULDBLOCK) {
+			WSACleanup();
+			return -1;
+		}
 #endif
-   }
+	}
 
-   struct timeval tv;
+	struct timeval tv;
 
-   fd_set myset;
+	fd_set myset;
 
-   FD_ZERO(&myset);
-   FD_SET(s, &myset);
+	FD_ZERO(&myset);
+	FD_SET(s, &myset);
 
-   tv.tv_sec = 3;
-   tv.tv_usec = 0;
+	tv.tv_sec = 3;
+	tv.tv_usec = 0;
 
-   int ret = select(s + 1, NULL, &myset, NULL, &tv);
+	int ret = select (s+1, NULL, &myset, NULL, &tv);
 
-   if (ret == -1)
-      return -1;
+	if (ret == -1)
+		return -1;
 
-   if (ret == 0)
-      return -1;
+	if (ret == 0)
+		return -1;
 
-   FD_ZERO(&myset);
-   FD_SET(s, &myset);
+	FD_ZERO(&myset);
+	FD_SET(s, &myset);
 
-   tv.tv_sec = 1;
-   tv.tv_usec = 0;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 
-   ret = select(s + 1, NULL, &myset, NULL, &tv);
+	ret = select (s+1, NULL, &myset, NULL, &tv);
 
-   if (ret == -1)
-      return -1;
+	if (ret == -1)
+		return -1;
 
-   if (ret == 0)
-      return -1;
+	if (ret == 0)
+		return -1;
 
 
-   typedef struct
-   {
-      unsigned char cmd;
-      unsigned port;
-      unsigned ip;
-   } __PACKED__ register_head;
+	typedef struct {
+		unsigned char cmd;
+		unsigned port;
+		unsigned ip;
+	} __PACKED__ register_head;
 
-   char *str = (char *) malloc(sizeof(register_head));
+	char *str = (char *) malloc (sizeof (register_head));
 
-   register_head *head = (register_head *) str;
+	register_head *head = (register_head *) str;
 
-   head->cmd = 'p';
-   head->port = atoi(getSetting("PORT4", "--port4", "2200"));
-   head->ip = 0;                // TODO
+	head->cmd = 'p';
+	head->port = atoi( getSetting("PORT4", "--port4", "2200") );
+	head->ip = 0;	// TODO
 
-   /* send request for server list */
-   int r = send(s, str, 9, 0);
+	/* send request for server list */
+	int r = send (s, str, 9, 0);
 
-   free(str);
+	free (str);
 
-   if (r == -1) {
+	if (r == -1) {
 #ifndef __WIN32
-      close(s);
+		close(s);
 #else
-      closesocket(s);
+		closesocket(s);
 #endif
-      return -1;
-   }
+		return -1;
+	}
 
 #ifndef __WIN32
-   close(s);
+		close(s);
 #else
-   closesocket(s);
+		closesocket(s);
 #endif
 
-   return 0;
+	return 0;
 }
 
-static int
-initPublicServerNetwork()
+static int initPublicServerNetwork()
 {
-   char ip4[STR_IP_SIZE];
-   char ip6[STR_IP_SIZE];
-   char *p_ip4, *p_ip6;
-   int port4;
-   int port6;
-   int ret;
+	char ip4[STR_IP_SIZE];
+	char ip6[STR_IP_SIZE];
+	char *p_ip4, *p_ip6;
+	int port4;
+	int port6;
+	int ret;
 
-   ret = -1;
+	ret = -1;
 
-   strcpy(ip4, getSetting("IP4", "--ip4", "none"));
-   strcpy(ip6, getSetting("IP6", "--ip6", "none"));
+	strcpy(ip4, getSetting("IP4", "--ip4", "none" ) );
+	strcpy(ip6, getSetting("IP6", "--ip6", "none" ) );
 
-   p_ip4 = ip4;
+	p_ip4 = ip4;
 
-   if (strcmp(ip4, "none") == 0) {
-      p_ip4 = NULL;
-   }
+	if( strcmp(ip4, "none") == 0 )
+	{
+		p_ip4 = NULL;
+	}
 
-   p_ip6 = ip6;
+	p_ip6 = ip6;
 
-   if (strcmp(ip6, "none") == 0) {
-      p_ip6 = NULL;
-   }
+	if( strcmp(ip6, "none") == 0 )
+	{
+		p_ip6 = NULL;
+	}
 
-   port4 = atoi(getSetting("PORT4", "--port4", "2200"));
-   port6 = atoi(getSetting("PORT6", "--port6", "2200"));
+	port4 = atoi( getSetting("PORT4", "--port4", "2200") );
+	port6 = atoi( getSetting("PORT6", "--port6", "2200") );
 
-   //ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+	//ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+	
+	ret = initNetMuliplayerForGameServer(p_ip4, port4, p_ip6, port6);
 
-   ret = initNetMuliplayerForGameServer(p_ip4, port4, p_ip6, port6);
-
-   return ret;
+	return ret;
 }
 
-static void
-loadArena()
+static void loadArena()
 {
-   choice_arenaFile =
-      getArenaFileFormNetName(getSetting("ARENA", "--arena", "FAGN"));
-   arena = getArena(choice_arenaFile);
-   setCurrentArena(arena);
+	choice_arenaFile = getArenaFileFormNetName( getSetting("ARENA", "--arena", "FAGN") );
+	arena = getArena(choice_arenaFile);
+	setCurrentArena(arena);
 }
 
-int
-initPublicServer()
+int initPublicServer()
 {
-   int ret;
-   int i;
+	int ret;
+	int i;
 
-   initListID();
-   initModule();
-   initArenaFile();
-   initTux();
-   initItem();
-   initShot();
-   initServerConfigFile();
+	initListID();
+	initModule();
+	initArenaFile();
+	initTux();
+	initItem();
+	initShot();
+	initServerConfigFile();
+	
+	ret = initLog(getSetting("LOG_FILE", "--log-file", "/tmp/tuxanci-server.log") );
+	
+	if( ret < 0 )
+	{
+		fprintf(stderr, _("I was unable to open config file!\n"));
+		return -1;
+	}
 
-   ret =
-      initLog(getSetting
-              ("LOG_FILE", "--log-file", "/tmp/tuxanci-server.log"));
+	initHeightScore( getSetting("SCORE_FILE", "--score-file", "/tmp/heightscore") );
 
-   if (ret < 0) {
-      fprintf(stderr, _("I was unable to open config file!\n"));
-      return -1;
-   }
+	loadArena();
 
-   initHeightScore(getSetting
-                   ("SCORE_FILE", "--score-file", "/tmp/heightscore"));
+	for( i = 0 ; i < atoi(getSetting("ITEM", "--item", "10")) ; i++ )
+	{
+		addNewItem(arena->spaceItem, ID_UNKNOWN);
+	}
 
-   loadArena();
+	isSignalEnd = FALSE;
 
-   for (i = 0; i < atoi(getSetting("ITEM", "--item", "10")); i++) {
-      addNewItem(arena->spaceItem, ID_UNKNOWN);
-   }
+	ret = initPublicServerNetwork();
 
-   isSignalEnd = FALSE;
+	if( ret < 0 )
+	{
+		printf(_("Unable to initialize network socket!\n"));
+		return -1;
+	}
 
-   ret = initPublicServerNetwork();
+	setServerMaxClients( atoi( getSetting("MAX_CLIENTS", "--max-clients", "32") ));
 
-   if (ret < 0) {
-      printf(_("Unable to initialize network socket!\n"));
-      return -1;
-   }
+	if (registerPublicServer() < 0)
+	{
+		printf(_("Unable to contact MasterServer!)\n"));
+	}
 
-   setServerMaxClients(atoi
-                       (getSetting("MAX_CLIENTS", "--max-clients", "32")));
-
-   if (registerPublicServer() < 0) {
-      printf(_("Unable to contact MasterServer!)\n"));
-   }
-
-   return 0;
+	return 0;
 }
 
-arenaFile_t *
-getChoiceArena()
+arenaFile_t* getChoiceArena()
 {
-   return choice_arenaFile;
+	return choice_arenaFile;
 }
 
-void
-eventPublicServer()
+void eventPublicServer()
 {
-   static my_time_t lastActive = 0;
-   my_time_t interval;
+	static my_time_t lastActive = 0;
+	my_time_t interval;
 
-   eventNetMultiplayer();
+	eventNetMultiplayer();
 
-   if (isSignalEnd == TRUE) {
-      quitPublicServer();
-   }
+	if( isSignalEnd == TRUE )
+	{
+		quitPublicServer();
+	}
 
-   if (lastActive == 0) {
-      lastActive = getMyTime();
-   }
+	if( lastActive == 0 )
+	{
+		lastActive = getMyTime();
+	}
 
-   interval = getMyTime() - lastActive;
+	interval = getMyTime() - lastActive;
 
-   if (interval < 50) {
-      return;
-   }
+	if( interval < 50 )
+	{
+		return;
+	}
 
-   //printf("interval = %d\n", interval);
+	//printf("interval = %d\n", interval);
 
-   lastActive = getMyTime();
+	lastActive = getMyTime();
 
-   eventArena(arena);
+	eventArena(arena);
 }
 
-void
-my_handler_quit(int n)
+void my_handler_quit(int n)
 {
 #ifdef DEBUG
-   printf("my_handler_quit\n");
+	printf("my_handler_quit\n");
 #endif
-   isSignalEnd = TRUE;
+	isSignalEnd = TRUE;
 }
 
-void
-quitPublicServer()
+void quitPublicServer()
 {
 #ifdef DEBUG
-   printf(_("Quitting public server\n"));
+	printf(_("Quitting public server\n"));
 #endif
-   quitNetMultiplayer();
-   destroyArena(arena);
+	quitNetMultiplayer();
+	destroyArena(arena);
+	
+	quitTux();
+	quitItem();
+	quitShot();
 
-   quitTux();
-   quitItem();
-   quitShot();
+	quitArenaFile();
+	quitServerConfigFile();
+	quitModule();
+	quitListID();
+	quitHeightScore();
+	quitLog();
 
-   quitArenaFile();
-   quitServerConfigFile();
-   quitModule();
-   quitListID();
-   quitHeightScore();
-   quitLog();
-
-   exit(0);
+	exit(0);
 }
 
-int
-startPublicServer()
+int startPublicServer()
 {
 #ifndef __WIN32__
-   signal(SIGINT, my_handler_quit);
-   signal(SIGTERM, my_handler_quit);
-   signal(SIGQUIT, my_handler_quit);
+	signal(SIGINT, my_handler_quit);
+	signal(SIGTERM, my_handler_quit);
+	signal(SIGQUIT, my_handler_quit);
 #endif
-   if (initPublicServer() < 0) {
-      quitPublicServer();
-      return -1;
-   }
+	if( initPublicServer() < 0 )
+	{
+		quitPublicServer();
+		return -1;
+	}
 
-   while (1) {
-      eventPublicServer();
-   }
+	while(1)
+	{
+		eventPublicServer();
+	}
 
-   return 0;
+	return 0;
 }

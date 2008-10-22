@@ -24,115 +24,116 @@
 
 static int netGameType;
 
-int
-getNetTypeGame()
+int getNetTypeGame()
 {
-   return netGameType;
+	return netGameType;
 }
 
-int
-initNetMuliplayerForGameServer(char *ip4, int port4, char *ip6, int port6)
+int initNetMuliplayerForGameServer(char *ip4, int port4, char *ip6, int port6)
 {
-   int ret;
+	int ret;
 
-   ret = initServer(ip4, port4, ip6, port6);
+	ret = initServer(ip4, port4, ip6, port6);
 
-   if (ret > 0) {
-      netGameType = NET_GAME_TYPE_SERVER;
-   }
+	if( ret > 0 )
+	{
+		netGameType = NET_GAME_TYPE_SERVER;
+	}
 
-   return ret;
+	return ret;
 }
 
-int
-initNetMuliplayer(int type, char *ip, int port, int proto)
+int initNetMuliplayer(int type, char *ip, int port, int proto)
 {
-   netGameType = type;
+	netGameType = type;
 
-   switch (netGameType) {
-   case NET_GAME_TYPE_NONE:
-      break;
+	switch( netGameType )
+	{
+		case NET_GAME_TYPE_NONE :
+		break;
 
-   case NET_GAME_TYPE_SERVER:
-      switch (proto) {
-      case PROTO_UDPv4:
-         if (initServer(ip, port, NULL, 0) != 1) {
-            fprintf(stderr,
-                    _("Unable to inicialize network game as server!\n"));
-            netGameType = NET_GAME_TYPE_NONE;
-            return -1;
-         }
-         break;
-      case PROTO_UDPv6:
-         if (initServer(NULL, 0, ip, port) != 1) {
-            fprintf(stderr,
-                    _("Unable to inicialize network game as server!\n"));
-            netGameType = NET_GAME_TYPE_NONE;
-            return -1;
-         }
-         break;
-      }
-      break;
+		case NET_GAME_TYPE_SERVER :
+			switch( proto )
+			{
+				case PROTO_UDPv4 :
+					if( initServer(ip, port, NULL, 0) != 1 )
+					{
+						fprintf(stderr, _("Unable to inicialize network game as server!\n"));
+						netGameType = NET_GAME_TYPE_NONE; 
+						return -1;
+					}
+				break;
+				case PROTO_UDPv6 :
+					if( initServer(NULL, 0, ip, port) != 1 )
+					{
+						fprintf(stderr, _("Unable to inicialize network game as server!\n"));
+						netGameType = NET_GAME_TYPE_NONE; 
+						return -1;
+					}
+				break;
+			}
+		break;
 
-#ifndef PUBLIC_SERVER
-   case NET_GAME_TYPE_CLIENT:
-      if (initClient(ip, port, proto) != 0) {
-         fprintf(stderr, _("Unable to inicialize network game as client!\n"));
-         netGameType = NET_GAME_TYPE_NONE;
-         return -1;
-      }
-      break;
+#ifndef PUBLIC_SERVER	
+		case NET_GAME_TYPE_CLIENT :
+			if( initClient(ip, port, proto) != 0 )
+			{
+				fprintf(stderr, _("Unable to inicialize network game as client!\n"));
+				netGameType = NET_GAME_TYPE_NONE;
+				return -1;
+			}
+		break;
 #endif
-   default:
-      assert(!_("Variable netGameType has a really wierd value!"));
-      break;
-   }
+		default :
+			assert( ! _("Variable netGameType has a really wierd value!") );
+		break;
+	}
 
-   return 0;
+	return 0;
 }
 
-void
-eventNetMultiplayer()
+void eventNetMultiplayer()
 {
-   switch (netGameType) {
-   case NET_GAME_TYPE_NONE:
-      break;
+	switch( netGameType )
+	{
+		case NET_GAME_TYPE_NONE :
+		break;
 
-   case NET_GAME_TYPE_SERVER:
-      eventServer();
-      break;
+		case NET_GAME_TYPE_SERVER :
+			eventServer();
+		break;
 
-#ifndef PUBLIC_SERVER
-   case NET_GAME_TYPE_CLIENT:
-      eventClient();
-      break;
+#ifndef PUBLIC_SERVER	
+		case NET_GAME_TYPE_CLIENT :
+			eventClient();
+		break;
 #endif
-   default:
-      assert(!_("Variable netGameType has a really wierd value!"));
-      break;
-   }
+		default :
+			assert( ! _("Variable netGameType has a really wierd value!") );
+		break;
+	}
 }
 
-void
-quitNetMultiplayer()
+void quitNetMultiplayer()
 {
-   switch (netGameType) {
-   case NET_GAME_TYPE_NONE:
-      break;
+	switch( netGameType )
+	{
+		case NET_GAME_TYPE_NONE :
+		break;
 
-   case NET_GAME_TYPE_SERVER:
-      quitServer();
-      break;
+		case NET_GAME_TYPE_SERVER :
+			quitServer();
+		break;
 
-#ifndef PUBLIC_SERVER
-   case NET_GAME_TYPE_CLIENT:
-      quitClient();
-      break;
+#ifndef PUBLIC_SERVER	
+		case NET_GAME_TYPE_CLIENT :
+			quitClient();
+		break;
 #endif
-   default:
-      assert(!_("Variable netGameType has a really wierd value!"));
-      break;
-   }
+		default :
+			assert( ! _("Variable netGameType has a really wierd value!") );
+		break;
+	}
 
-   netGameType = NET_GAME_TYPE_NONE;
+	netGameType = NET_GAME_TYPE_NONE;
 }

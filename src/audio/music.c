@@ -18,224 +18,204 @@ static Mix_Music *currentMusic;
 /*
  * Return state of music initialization
  */
-bool_t
-isMusicInicialized()
+bool_t isMusicInicialized()
 {
-   return isMusicInit;
+	return isMusicInit;
 }
-
 /*
  * Initialize music
  */
-void
-initMusic()
+void initMusic()
 {
-   if (isAudioInicialized() == FALSE) {
-      isMusicInit = FALSE;
-      return;
-   }
-   listStorage = newStorage();
-   currentMusic = NULL;
-   isMusicInit = TRUE;
-   var_isMusicActive = TRUE;
-   if (isParamFlag("--nomusic"))
-      setMusicActive(FALSE);
-   if (isParamFlag("--music"))
-      setMusicActive(TRUE);
+	if (isAudioInicialized() == FALSE) {
+		isMusicInit = FALSE;
+		return;
+	}
+	listStorage = newStorage();
+	currentMusic = NULL;
+	isMusicInit = TRUE;
+	var_isMusicActive = TRUE;
+	if (isParamFlag("--nomusic"))
+		setMusicActive(FALSE);
+	if (isParamFlag("--music"))
+		setMusicActive(TRUE);
 #ifdef DEBUG
-   printf(_("Initializing music...\n"));
+	printf(_("Initializing music...\n"));
 #endif
 }
-
 /*
  * Load music file and returns it
  */
-static Mix_Music *
-loadMixMusic(char *file)
+static Mix_Music* loadMixMusic(char *file)
 {
-   Mix_Music *mixer;
-   char str[STR_PATH_SIZE];
+	Mix_Music *mixer;
+	char str[STR_PATH_SIZE];
 
 #ifdef DEBUG
-   printf(_("Loading music file: %s\n"), file);
+	printf(_("Loading music file: %s\n"), file);
 #endif
 
-   if (isFillPath(file)) {
-      strcpy(str, file);
-   }
-   else {
-      sprintf(str, PATH_MUSIC "%s", file);
-   }
+	if( isFillPath(file) )
+	{
+		strcpy(str, file);
+	}
+	else
+	{
+		sprintf(str, PATH_MUSIC "%s", file);
+	}
 
-   accessExistFile(str);
+	accessExistFile(str);
 
-   mixer = Mix_LoadMUS(str);
+	mixer = Mix_LoadMUS(str);
 
-   if (mixer == NULL) {
-      fprintf(stderr, _("Unable to load music from file: %s\n"), file);
-      return NULL;
-   }
+	if( mixer == NULL )
+	{
+		fprintf(stderr, _("Unable to load music from file: %s\n"), file);
+		return NULL;
+	}
 
-   return mixer;
+	return mixer;
 }
-
 /*
  * Prepare music mixer
  */
-static void
-playMixMusic()
+static void playMixMusic()
 {
-   if (currentMusic != NULL)
-      Mix_PlayMusic(currentMusic, 1000);
+	if (currentMusic != NULL)
+		Mix_PlayMusic(currentMusic, 1000);
 }
-
 /*
  * Free memory of music
  */
-static void
-destroyMusic(void *p)
+static void destroyMusic(void *p)
 {
-   Mix_FreeMusic((Mix_Music *) p);
+	Mix_FreeMusic((Mix_Music *)p);
 }
-
 /*
  * Add file to list with music
  */
-void
-addMusic(char *file, char *name, char *group)
+void addMusic(char *file, char *name, char *group)
 {
-   Mix_Music *new;
-   if (isMusicInit == FALSE)
-      return;
+	Mix_Music *new;
+	if (isMusicInit == FALSE)
+		return;
 
-   assert(file != NULL);
-   assert(name != NULL);
-   assert(group != NULL);
+	assert( file != NULL );
+	assert( name != NULL );
+	assert( group != NULL );
 
-   new = loadMixMusic(file);
-   addItemToStorage(listStorage, group, name, new);
+	new = loadMixMusic(file);
+	addItemToStorage(listStorage, group, name, new );
 }
-
 /*
  * Disable music and stop playback
  */
-void
-stopMusic()
+void stopMusic()
 {
-   if (isMusicInit == FALSE || var_isMusicActive == FALSE)
-      return;
+	if (isMusicInit == FALSE ||
+			var_isMusicActive == FALSE)
+		return;
 
-   if (currentMusic != NULL) {
+	if (currentMusic != NULL) {
 #ifdef DEBUG
-      printf(_("Stopping music...\n"));
+		printf(_("Stopping music...\n"));
 #endif
-      Mix_HaltMusic();
-      currentMusic = NULL;
-   }
+		Mix_HaltMusic();
+		currentMusic = NULL;
+	}
 }
-
 /*
  * start music playback
  */
-void
-playMusic(char *name, char *group)
+void playMusic(char *name, char *group)
 {
-   static char currentMusic_group[STR_SIZE];
-   static char currentMusic_name[STR_SIZE];
-   static int isStrInit = 0;
+	static char currentMusic_group[STR_SIZE];
+	static char currentMusic_name[STR_SIZE];
+	static int isStrInit = 0;
 
-   if (isStrInit == 0) {
-      strcpy(currentMusic_group, "none");
-      strcpy(currentMusic_name, "none");
-      isStrInit = 1;
-   }
+	if (isStrInit == 0) {
+		strcpy(currentMusic_group, "none");
+		strcpy(currentMusic_name, "none");
+		isStrInit = 1;	
+	}
 
-   if (isMusicInit == FALSE || var_isMusicActive == FALSE)
-      return;
+	if (isMusicInit == FALSE ||
+			var_isMusicActive == FALSE)
+		return;
 
-   if (currentMusic != NULL &&
-       strcmp(currentMusic_group, group) == 0 &&
-       strcmp(currentMusic_name, name) == 0) {
-      return;
-   }
+	if (currentMusic != NULL &&
+			strcmp(currentMusic_group, group) == 0 &&
+			strcmp(currentMusic_name, name) == 0) {
+		return;
+	}
 
-   if (currentMusic != NULL)
-      stopMusic();
+	if (currentMusic != NULL)
+		stopMusic();
 
-   currentMusic = getItemFromStorage(listStorage, group, name);
-   strcpy(currentMusic_group, group);
-   strcpy(currentMusic_name, name);
+	currentMusic = getItemFromStorage(listStorage, group, name);
+	strcpy(currentMusic_group, group);
+	strcpy(currentMusic_name, name);
 
-   if (currentMusic != NULL) {
+	if( currentMusic != NULL ) {
 #ifdef DEBUG
-      printf(_("Playing music file %s\n"), name);
+		printf(_("Playing music file %s\n"), name);
 #endif
-      playMixMusic();
-   }
+		playMixMusic();
+	}
 }
-
 /*
  * Set music active/deactivated
  */
-void
-setMusicActive(bool_t n)
+void setMusicActive(bool_t n)
 {
-   static Mix_Music *music = NULL;
+	static Mix_Music *music = NULL;
 
-   if (n == FALSE) {
-      music = currentMusic;
-      stopMusic();
-   }
-   if (n == TRUE) {
-      currentMusic = music;
-      playMixMusic();
-   }
+	if (n == FALSE) {
+		music = currentMusic;
+		stopMusic();
+	}
+	if (n == TRUE) {
+		currentMusic = music;
+		playMixMusic();
+	}
 
-   var_isMusicActive = n;
+	var_isMusicActive = n;
 }
-
 /*
  * Return status of music
  */
-bool_t
-isMusicActive()
+bool_t isMusicActive()
 {
-   return var_isMusicActive;
+	return var_isMusicActive;
 }
-
 /*
  * TOCOMMENT
  */
-char *
-getCurrentMusic()
+char* getCurrentMusic()
 {
-   return "unknown";
+	return "unknown";
 }
-
 /*
  * TOCOMMENT
  */
-void
-delAllMusicInGroup(char *group)
+void delAllMusicInGroup(char *group)
 {
-   if (isMusicInit == FALSE)
-      return;
-   delAllItemFromStorage(listStorage, group, destroyMusic);
+	if (isMusicInit == FALSE)
+		return;
+	delAllItemFromStorage(listStorage, group, destroyMusic);
 }
-
 /*
  * Deactivate all what is ment for music
  */
-void
-quitMusic()
+void quitMusic()
 {
-   if (isMusicInit == FALSE)
-      return;
+	if (isMusicInit == FALSE)
+		return;
 
-   stopMusic();
-   destroyStorage(listStorage, destroyMusic);
-   isMusicInit = FALSE;
+	stopMusic();
+	destroyStorage(listStorage, destroyMusic);
+	isMusicInit = FALSE;
 #ifdef DEBUG
-   printf(_("Quitting music...\n"));
+	printf(_("Quitting music...\n"));
 #endif
 }

@@ -47,334 +47,342 @@ static int traffic_up;
 
 typedef struct proto_cmd_client_struct
 {
-   char *name;
-   int len;
-   void (*fce_proto) (char *msg);
+	char *name;
+	int len;
+	void (*fce_proto)(char *msg);
 } proto_cmd_client_t;
 
-static proto_cmd_client_t proto_cmd_list[] = {
-   {.name = "error",.len = 5,.fce_proto = proto_recv_error_client},
-   {.name = "init",.len = 4,.fce_proto = proto_recv_init_client},
-   {.name = "event",.len = 5,.fce_proto = proto_recv_event_client},
-   {.name = "newtux",.len = 6,.fce_proto = proto_recv_newtux_client},
-   {.name = "del",.len = 3,.fce_proto = proto_recv_del_client},
-   {.name = "additem",.len = 7,.fce_proto = proto_recv_additem_client},
-   {.name = "shot",.len = 4,.fce_proto = proto_recv_shot_client},
-   {.name = "kill",.len = 4,.fce_proto = proto_recv_kill_client},
-   {.name = "module",.len = 6,.fce_proto = proto_recv_module_client},
-   {.name = "chat",.len = 4,.fce_proto = proto_recv_chat_client},
-   {.name = "ping",.len = 4,.fce_proto = proto_recv_ping_client},
-   {.name = "end",.len = 3,.fce_proto = proto_recv_end_client},
-   {.name = "",.len = 0,.fce_proto = NULL},
+static proto_cmd_client_t proto_cmd_list[] =
+{
+	{ .name = "error",	.len = 5,	.fce_proto = proto_recv_error_client },
+	{ .name = "init",	.len = 4,	.fce_proto = proto_recv_init_client },
+	{ .name = "event",	.len = 5,	.fce_proto = proto_recv_event_client },
+	{ .name = "newtux",	.len = 6,	.fce_proto = proto_recv_newtux_client },
+	{ .name = "del",	.len = 3,	.fce_proto = proto_recv_del_client },
+	{ .name = "additem",	.len = 7,	.fce_proto = proto_recv_additem_client },
+	{ .name = "shot",	.len = 4,	.fce_proto = proto_recv_shot_client },
+	{ .name = "kill",	.len = 4,	.fce_proto = proto_recv_kill_client },
+	{ .name = "module",	.len = 6,	.fce_proto = proto_recv_module_client },
+	{ .name = "chat",	.len = 4,	.fce_proto = proto_recv_chat_client },
+	{ .name = "ping",	.len = 4,	.fce_proto = proto_recv_ping_client },
+	{ .name = "end",	.len = 3,	.fce_proto = proto_recv_end_client },
+	{ .name = "",		.len = 0,	.fce_proto = NULL },
 };
 
-static proto_cmd_client_t *
-findCmdProto(char *msg)
+static proto_cmd_client_t* findCmdProto(char *msg)
 {
-   int len;
-   int i;
+	int len;
+	int i;
 
-   len = strlen(msg);
+	len = strlen(msg);
 
-   for (i = 0; proto_cmd_list[i].len != 0; i++) {
-      proto_cmd_client_t *thisCmd;
+	for( i = 0 ; proto_cmd_list[i].len != 0 ; i++ )
+	{
+		proto_cmd_client_t *thisCmd;
+		
+		thisCmd = &proto_cmd_list[i];
 
-      thisCmd = &proto_cmd_list[i];
+		if( len >= thisCmd->len && strncmp(msg, thisCmd->name, thisCmd->len) == 0 )
+		{
+			return thisCmd;
+		}
+	}
 
-      if (len >= thisCmd->len
-          && strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
-         return thisCmd;
-      }
-   }
-
-   return NULL;
+	return NULL;
 }
 
-static int
-initUdpClient(char *ip, int port, int proto)
+static int initUdpClient(char *ip, int port, int proto)
 {
-   sock_server_udp = connectUdpSocket(ip, port, proto);
+	sock_server_udp = connectUdpSocket(ip, port, proto);
 
-   if (sock_server_udp == NULL) {
-      return -1;
-   }
+	if( sock_server_udp == NULL )
+	{
+		return -1;
+	}
 #ifdef DEBUG
-   printf(_("Connected to: %s on port: %d via UDP\n"), ip, port);
+	printf(_("Connected to: %s on port: %d via UDP\n"), ip, port);
 #endif
-   return 0;
+	return 0;
 }
 
-int
-initClient(char *ip, int port, int proto)
+int initClient(char *ip, int port, int proto)
 {
-   char name[STR_NAME_SIZE];
-   int ret;
+	char name[STR_NAME_SIZE];
+	int ret;
 
-   listRecvMsg = newList();
-   lastPing = getMyTime();
-   lastPingServerAlive = getMyTime();
+	listRecvMsg = newList();
+	lastPing = getMyTime();
+	lastPingServerAlive = getMyTime();
 
 #ifdef SUPPORT_TRAFFIC
-   lastTraffic = getMyTime();
-   traffic_down = 0;
-   traffic_up = 0;
+	lastTraffic = getMyTime();
+	traffic_down = 0;
+	traffic_up = 0;
 #endif
 
-   clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
-   clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
+	clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
+	clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 
-   ret = initUdpClient(ip, port, proto);
+	ret = initUdpClient(ip, port, proto);
 
-   if (ret < 0) {
-      return -1;
-   }
+	if( ret < 0 )
+	{
+		return -1;
+	}
 
-   getSettingNameRight(name);
-   proto_send_hello_client(name);
+	getSettingNameRight(name);
+	proto_send_hello_client(name);
 
-   return 0;
+	return 0;
 }
 
-static void
-errorWithServer()
+static void errorWithServer()
 {
-   fprintf(stderr, _("Server did not respond!\n"));
-   setMsgToAnalyze(_
-                   ("Server is not running or being blocked. I was unable to connect."));
-   setWorldEnd();
+	fprintf(stderr, _("Server did not respond!\n"));
+	setMsgToAnalyze(_("Server is not running or being blocked. I was unable to connect."));
+	setWorldEnd();
 }
 
-void
-sendServer(char *msg)
+void sendServer(char *msg)
 {
-   int ret;
+	int ret;
 
-   assert(msg != NULL);
+	assert( msg != NULL );
 
-   ret = -1;
+	ret = -1;
 
 #ifndef PUBLIC_SERVER
-   if (isParamFlag("--send")) {
-      printf(_("Sending: \"%s\""), msg);
-   }
+	if( isParamFlag("--send") )
+	{
+		printf(_("Sending: \"%s\""), msg);
+	}
 
 #endif
 
 #ifdef SUPPORT_TRAFFIC
-   traffic_up += strlen(msg);
+	traffic_up += strlen(msg);
 #endif
 
-   if (sock_server_udp != NULL) {
-      ret =
-         writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
-   }
+	if( sock_server_udp != NULL )
+	{
+		ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
+	}
 
-   if (ret < 0) {
-      errorWithServer();
-      return;
-   }
+	if( ret < 0 )
+	{
+		errorWithServer();
+		return;
+	}
 }
 
-static int
-eventServerSelect()
+static int eventServerSelect()
 {
-   char buffer[STR_PROTO_SIZE];
-   int ret;
+	char buffer[STR_PROTO_SIZE];
+	int ret;
 
-   memset(buffer, 0, STR_PROTO_SIZE);
-   ret = -1;
+	memset(buffer, 0, STR_PROTO_SIZE);
+	ret = -1;
+	
+	if( sock_server_udp != NULL )
+	{
+		ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE-1);
+	}
 
-   if (sock_server_udp != NULL) {
-      ret =
-         readUdpSocket(sock_server_udp, sock_server_udp, buffer,
-                       STR_PROTO_SIZE - 1);
-   }
-
-   if (ret < 0) {
-      errorWithServer();
-      return ret;
-   }
+	if( ret < 0 )
+	{
+		errorWithServer();
+		return ret;
+	}
 
 #ifdef SUPPORT_TRAFFIC
-   traffic_down += ret;
+	traffic_down += ret;
 #endif
 
-   addList(listRecvMsg, strdup(buffer));
+	addList(listRecvMsg, strdup(buffer));
 
 #if 0
-   if (addBuffer(clientRecvBuffer, buffer, ret) < 0) {
-      errorWithServer();
-      return ret;
-   }
+	if( addBuffer(clientRecvBuffer, buffer, ret) < 0 )
+	{
+		errorWithServer();
+		return ret;
+	}
 
-   while (getBufferLine(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0) {
-      if (strlen(buffer) > 0) {
-         addList(listRecvMsg, strdup(buffer));
-      }
-   }
+	while( getBufferLine(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0 )
+	{
+		if( strlen(buffer) > 0)
+		{
+			addList(listRecvMsg, strdup(buffer) );
+		}
+	}
 #endif
 
-   return ret;
+	return ret;
 }
 
-static void
-eventClientWorkRecvList()
+static void eventClientWorkRecvList()
 {
-   proto_cmd_client_t *protoCmd;
-   char *line;
-   int i;
+	proto_cmd_client_t *protoCmd;
+	char *line;
+	int i;
 
-   /* obsluha udalosti od servera */
+	/* obsluha udalosti od servera */
+	
+	assert( listRecvMsg != NULL );
 
-   assert(listRecvMsg != NULL);
-
-   for (i = 0; i < listRecvMsg->count; i++) {
-      line = (char *) listRecvMsg->list[i];
-      protoCmd = findCmdProto(line);
+	for( i = 0 ; i < listRecvMsg->count ; i++ )
+	{
+		line = (char *)listRecvMsg->list[i];
+		protoCmd = findCmdProto(line);
 
 #ifndef PUBLIC_SERVER
-      if (isParamFlag("--recv")) {
-         printf(_("Recieved: \"%s\""), line);
-      }
+		if( isParamFlag("--recv") )
+		{
+			printf(_("Recieved: \"%s\""), line);
+		}
 #endif
-      if (protoCmd != NULL) {
-         protoCmd->fce_proto(line);
-         lastPingServerAlive = getMyTime();
-      }
-   }
+		if( protoCmd != NULL )
+		{
+			protoCmd->fce_proto(line);
+			lastPingServerAlive = getMyTime();
+		}
+	}
 
-   destroyListItem(listRecvMsg, free);
-   listRecvMsg = newList();
+	destroyListItem(listRecvMsg, free);
+	listRecvMsg = newList();
 }
 
-static void
-eventPingServer()
+static void eventPingServer()
 {
-   my_time_t currentTime;
+	my_time_t currentTime;
 
-   currentTime = getMyTime();
+ 	currentTime = getMyTime();
 
-   if (currentTime - lastPing > CLIENT_TIMEOUT) {
-      proto_send_ping_client();
-      lastPing = getMyTime();
-   }
+	if( currentTime - lastPing > CLIENT_TIMEOUT )
+	{
+		proto_send_ping_client();
+		lastPing = getMyTime();
+	}
 }
 
-static bool_t
-isServerAlive()
+static bool_t isServerAlive()
 {
-   my_time_t currentTime;
+	my_time_t currentTime;
 
-   currentTime = getMyTime();
+ 	currentTime = getMyTime();
 
-   if (currentTime - lastPingServerAlive > SERVER_TIMEOUT_ALIVE) {
-      return FALSE;
-   }
+	if( currentTime - lastPingServerAlive > SERVER_TIMEOUT_ALIVE )
+	{
+		return FALSE;
+	}
 
-   return TRUE;
+	return TRUE;
 }
 
-static void
-selectClientSocket()
+static void selectClientSocket()
 {
-   fd_set readfds;
-   struct timeval tv;
-   int max_fd;
-   int sock;
-   bool_t isNext;
+	fd_set readfds;
+	struct timeval tv;
+	int max_fd;
+	int sock;
+	bool_t isNext;
 
-   max_fd = 0;
-   sock = 0;
+	max_fd = 0;
+	sock = 0;
 
-   if (sock_server_udp != NULL) {
-      if (isServerAlive() == FALSE) {
-         errorWithServer();
-         return;
-      }
-   }
+	if( sock_server_udp != NULL )
+	{
+		if( isServerAlive() == FALSE )
+		{
+			errorWithServer();
+			return;
+		}
+	}
 
-   do {
-      isNext = FALSE;
+	do{
+		isNext = FALSE;
 
-      tv.tv_sec = 0;
-      tv.tv_usec = 0;
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		
+		FD_ZERO(&readfds);
 
-      FD_ZERO(&readfds);
+		if( sock_server_udp != NULL )
+		{
+			sock = sock_server_udp->sock;
+		}
 
-      if (sock_server_udp != NULL) {
-         sock = sock_server_udp->sock;
-      }
+		FD_SET(sock, &readfds);
+		max_fd = sock;
+		select(max_fd+1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &tv);
+	
+		if( FD_ISSET(sock, &readfds) )
+		{
+			if( eventServerSelect() > 0 )
+			{
+				isNext = TRUE;
+			}
+		}
 
-      FD_SET(sock, &readfds);
-      max_fd = sock;
-      select(max_fd + 1, &readfds, (fd_set *) NULL, (fd_set *) NULL, &tv);
-
-      if (FD_ISSET(sock, &readfds)) {
-         if (eventServerSelect() > 0) {
-            isNext = TRUE;
-         }
-      }
-
-   } while (isNext == TRUE);
+	}while( isNext == TRUE );
 }
 
 #ifdef SUPPORT_TRAFFIC
 
-static void
-eventTraffic()
+static void eventTraffic()
 {
-   my_time_t currentTime;
+	my_time_t currentTime;
 
-   currentTime = getMyTime();
+ 	currentTime = getMyTime();
 
-   if (currentTime - lastTraffic > 5000) {
-      lastTraffic = currentTime;
+	if( currentTime - lastTraffic > 5000 )
+	{
+		lastTraffic = currentTime;
 #ifdef DEBUG
-      printf(_("down: %d\n")
-             _("up  : %d\n"), traffic_down, traffic_up);
+		printf(_("down: %d\n")
+		       _("up  : %d\n"),
+		traffic_down, traffic_up);
 #endif
-      traffic_down = 0;
-      traffic_up = 0;
-   }
+		traffic_down = 0;
+		traffic_up = 0;
+	}
 }
 
 #endif
 
-void
-eventClient()
+void eventClient()
 {
 #ifdef SUPPORT_TRAFFIC
-   eventTraffic();
+	eventTraffic();
 #endif
 
-   eventPingServer();
-   selectClientSocket();
-   eventClientWorkRecvList();
+	eventPingServer();
+	selectClientSocket();
+	eventClientWorkRecvList();
 
 }
 
-static void
-quitUdpClient()
+static void quitUdpClient()
 {
-   assert(sock_server_udp != NULL);
-   closeUdpSocket(sock_server_udp);
+	assert( sock_server_udp != NULL );
+	closeUdpSocket(sock_server_udp);
 #ifdef DEBUG
-   printf(_("Closing UDP connection.\n"));
+	printf(_("Closing UDP connection.\n"));
 #endif
 }
 
-void
-quitClient()
+void quitClient()
 {
-   proto_send_end_client();
+	proto_send_end_client();
 
-   assert(listRecvMsg != NULL);
+	assert( listRecvMsg != NULL );
 
-   destroyListItem(listRecvMsg, free);
-   destroyBuffer(clientRecvBuffer);
-   destroyBuffer(clientSendBuffer);
+	destroyListItem(listRecvMsg, free);
+	destroyBuffer(clientRecvBuffer);
+	destroyBuffer(clientSendBuffer);
 
-   if (sock_server_udp != NULL) {
-      quitUdpClient();
-   }
+	if( sock_server_udp != NULL )
+	{
+		quitUdpClient();
+	}
 }
+

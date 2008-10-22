@@ -23,336 +23,313 @@
 
 typedef struct pipe_struct
 {
-   int x;                       // poloha steny  
-   int y;
+	int x; // poloha steny	
+	int y;
 
-   int w;                       // rozmery steny
-   int h;
+	int w; // rozmery steny
+	int h;
 
-   int id;
-   int id_out;
-   int position;
+	int id;
+	int id_out;
+	int position;
 
-   int layer;                   // vrstva
+	int layer; // vrstva
 
-#ifndef PUBLIC_SERVER
-   image_t *img;                //obrazok
+#ifndef PUBLIC_SERVER	
+	image_t *img; //obrazok
 #endif
 } pipe_t;
 
-static void (*fce_move_shot) (shot_t * shot, int position, int src_x,
-                              int src_y, int dist_x, int dist_y, int dist_w,
-                              int dist_h);
+static void (*fce_move_shot)(shot_t *shot, int position, int src_x, int src_y,
+		int dist_x, int dist_y, int dist_w, int dist_h);
 
 static export_fce_t *export_fce;
 
 static list_t *listPipe;
 static space_t *spacePipe;
 
-#ifndef PUBLIC_SERVER
-static pipe_t *
-newPipe(int x, int y, int w, int h, int layer, int id, int id_out,
-        int position, image_t * img)
+#ifndef PUBLIC_SERVER	
+static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out, int position, image_t *img)
 #endif
-#ifdef PUBLIC_SERVER
-     static pipe_t *newPipe(int x, int y, int w, int h, int layer, int id,
-                            int id_out, int position)
+
+#ifdef PUBLIC_SERVER	
+static pipe_t* newPipe(int x, int y, int w, int h, int layer, int id, int id_out, int position)
 #endif
+
 {
-   pipe_t *new;
-
-#ifndef PUBLIC_SERVER
-   assert(img != NULL);
+	pipe_t *new;
+	
+#ifndef PUBLIC_SERVER	
+	assert( img != NULL );
 #endif
 
-   new = malloc(sizeof(pipe_t));
-   assert(new != NULL);
+	new  = malloc( sizeof(pipe_t) );
+	assert( new != NULL );
 
-   new->x = x;
-   new->y = y;
-   new->w = w;
-   new->h = h;
-   new->layer = layer;
-   new->id = id;
-   new->id_out = id_out;
-   new->position = position;
-#ifndef PUBLIC_SERVER
-   new->img = img;
+	new->x = x;
+	new->y = y;
+	new->w = w;
+	new->h = h;
+	new->layer = layer;
+	new->id = id;
+	new->id_out = id_out;
+	new->position = position;
+#ifndef PUBLIC_SERVER	
+	new->img = img;
 #endif
-   return new;
+	return new;
 }
 
-static void
-setStatusPipe(void *p, int x, int y, int w, int h)
+static void setStatusPipe(void *p, int x, int y, int w, int h)
 {
-   pipe_t *pipe;
+	pipe_t *pipe;
 
-   pipe = p;
+	pipe = p;
 
-   pipe->x = x;
-   pipe->y = y;
-   pipe->w = w;
-   pipe->h = h;
+	pipe->x = x;
+	pipe->y = y;
+	pipe->w = w;
+	pipe->h = h;
 }
 
-static void
-getStatusPipe(void *p, int *id, int *x, int *y, int *w, int *h)
+static void getStatusPipe(void *p, int *id, int *x, int *y, int *w, int *h)
 {
-   pipe_t *pipe;
+	pipe_t *pipe;
 
-   pipe = p;
+	pipe = p;
 
-   *id = pipe->id;
-   *x = pipe->x;
-   *y = pipe->y;
-   *w = pipe->w;
-   *h = pipe->h;
+	*id = pipe->id;
+	*x = pipe->x;
+	*y = pipe->y;
+	*w = pipe->w;
+	*h = pipe->h;
 }
 
-#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER	
 
-static void
-drawPipe(pipe_t * p)
+static void drawPipe(pipe_t *p)
 {
-   assert(p != NULL);
+	assert( p != NULL );
 
-   export_fce->fce_addLayer(p->img, p->x, p->y, 0, 0, p->img->w, p->img->h,
-                            p->layer);
+	export_fce->fce_addLayer(p->img, p->x, p->y, 0, 0, p->img->w, p->img->h, p->layer);
 }
 
 #endif
 
-static void
-destroyPipe(pipe_t * p)
+static void destroyPipe(pipe_t *p)
 {
-   assert(p != NULL);
-   free(p);
+	assert( p != NULL );
+	free(p);
 }
 
 
-static void
-cmd_teleport(char *line)
+static void cmd_teleport(char *line)
 {
-   char str_x[STR_NUM_SIZE];
-   char str_y[STR_NUM_SIZE];
-   char str_w[STR_NUM_SIZE];
-   char str_h[STR_NUM_SIZE];
-   char str_id[STR_NUM_SIZE];
-   char str_id_out[STR_NUM_SIZE];
-   char str_position[STR_NUM_SIZE];
-   char str_layer[STR_NUM_SIZE];
-   char str_image[STR_SIZE];
-   pipe_t *new;
+	char str_x[STR_NUM_SIZE];
+	char str_y[STR_NUM_SIZE];
+	char str_w[STR_NUM_SIZE];
+	char str_h[STR_NUM_SIZE];
+	char str_id[STR_NUM_SIZE];
+	char str_id_out[STR_NUM_SIZE];
+	char str_position[STR_NUM_SIZE];
+	char str_layer[STR_NUM_SIZE];
+	char str_image[STR_SIZE];
+	pipe_t *new;
 
-   if (export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "h", str_h, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "id", str_id, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "id_out", str_id_out, STR_NUM_SIZE) !=
-       0)
-      return;
-   if (export_fce->
-       fce_getValue(line, "position", str_position, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0)
-      return;
-   if (export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0)
-      return;
+	if( export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "id", str_id, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "id_out", str_id_out, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "position", str_position, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
+	if( export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0 )return;
 
 #ifndef PUBLIC_SERVER
-   new = newPipe(atoi(str_x), atoi(str_y),
-                 atoi(str_w), atoi(str_h),
-                 atoi(str_layer), atoi(str_id), atoi(str_id_out),
-                 atoi(str_position),
-                 export_fce->fce_getImage(IMAGE_GROUP_USER, str_image));
+	new = newPipe(atoi(str_x), atoi(str_y),
+			atoi(str_w), atoi(str_h),
+			atoi(str_layer), atoi(str_id), atoi(str_id_out), atoi(str_position),
+			export_fce->fce_getImage(IMAGE_GROUP_USER, str_image) );
 #endif
 
 #ifdef PUBLIC_SERVER
-   new = newPipe(atoi(str_x), atoi(str_y),
-                 atoi(str_w), atoi(str_h),
-                 atoi(str_layer), atoi(str_id), atoi(str_id_out),
-                 atoi(str_position));
+	new = newPipe(atoi(str_x), atoi(str_y),
+			atoi(str_w), atoi(str_h),
+			atoi(str_layer), atoi(str_id), atoi(str_id_out), atoi(str_position) );
 #endif
 
-   if (spacePipe == NULL) {
-      spacePipe =
-         newSpace(export_fce->fce_getCurrentArena()->w,
-                  export_fce->fce_getCurrentArena()->h, 320, 240,
-                  getStatusPipe, setStatusPipe);
-   }
+	if( spacePipe == NULL )
+	{
+		spacePipe  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
+				320, 240, getStatusPipe, setStatusPipe);
+	}
 
-   addObjectToSpace(spacePipe, new);
+	addObjectToSpace(spacePipe, new);
 }
 
-static void
-moveShotFromPipe(shot_t * shot, pipe_t * pipe)
+static void moveShotFromPipe(shot_t *shot, pipe_t *pipe)
 {
-   pipe_t *distPipe;
+	pipe_t *distPipe;
 
-   distPipe = getObjectFromSpaceWithID(spacePipe, pipe->id_out);
+	distPipe = getObjectFromSpaceWithID(spacePipe, pipe->id_out);
 
-   if (distPipe == NULL) {
-      fprintf(stderr, "Pipe ID for pipe \"%d\" was not found\n", pipe->id);
-      return;
-   }
+	if( distPipe == NULL )
+	{
+		fprintf(stderr, "Pipe ID for pipe \"%d\" was not found\n", pipe->id);
+		return;
+	}
 
-   fce_move_shot(shot, distPipe->position, pipe->x, pipe->y,
-                 distPipe->x, distPipe->y, distPipe->w, distPipe->h);
+	fce_move_shot(shot, distPipe->position, pipe->x, pipe->y,
+		distPipe->x, distPipe->y, distPipe->w, distPipe->h);
 }
 
-int
-init(export_fce_t * p)
+int init(export_fce_t *p)
 {
-   export_fce = p;
+	export_fce = p;
 
-   listPipe = newList();
+	listPipe = newList();
 
-   if (export_fce->fce_loadDepModule("libmodMove") != 0) {
-      return -1;
-   }
+	if( export_fce->fce_loadDepModule("libmodMove") != 0 )
+	{
+		return -1;
+	}
 
-   if ((fce_move_shot = export_fce->fce_getShareFce("move_shot")) == NULL) {
-      return -1;
-   }
+	if( ( fce_move_shot = export_fce->fce_getShareFce("move_shot") ) == NULL )
+	{
+		return -1;
+	}
 
-   return 0;
+	return 0;
 }
 
 #ifndef PUBLIC_SERVER
 
-static void
-action_drawpipe(space_t * space, pipe_t * pipe, void *p)
+static void action_drawpipe(space_t *space, pipe_t *pipe, void *p)
 {
-   drawPipe(pipe);
+	drawPipe(pipe);
 }
 
-int
-draw(int x, int y, int w, int h)
+int draw(int x, int y, int w, int h)
 {
-   if (spacePipe == NULL) {
-      return 0;
-   }
+	if( spacePipe == NULL )
+	{
+		return 0;
+	}
 
-   actionSpaceFromLocation(spacePipe, action_drawpipe, NULL, x, y, w, h);
-   //printSpace(spacePipe);
+	actionSpaceFromLocation(spacePipe, action_drawpipe, NULL, x, y, w, h);
+	//printSpace(spacePipe);
 
-   return 0;
+	return 0;
 }
 #endif
 
-static int
-negPosition(int n)
+static int negPosition(int n)
 {
-   switch (n) {
-   case TUX_UP:
-      return TUX_DOWN;
+	switch( n )
+	{
+		case TUX_UP :
+		return TUX_DOWN;
 
-   case TUX_LEFT:
-      return TUX_RIGHT;
+		case TUX_LEFT :
+		return TUX_RIGHT;
 
-   case TUX_RIGHT:
-      return TUX_LEFT;
+		case TUX_RIGHT :
+		return TUX_LEFT;
 
-   case TUX_DOWN:
-      return TUX_UP;
+		case TUX_DOWN :
+		return TUX_UP;
 
-   default:
-      assert(!"Tux is moving in another dimension maybe!");
-      break;
-   }
+		default :
+			assert( ! "Tux is moving in another dimension maybe!" );
+		break;
+	}
 
-   return -1;                   // no warnning
+	return -1; // no warnning
 }
 
-static void
-action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
+static void action_eventpipe(space_t *space, pipe_t *pipe, shot_t *shot)
 {
-   arena_t *arena;
-   tux_t *author;
+	arena_t *arena;
+	tux_t *author;
 
-   arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_getCurrentArena();
 
-   author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+			
+	if( author != NULL &&
+		author->bonus == BONUS_GHOST &&
+		author->bonus_time > 0 )
+	{
+		return;
+	}
 
-   if (author != NULL &&
-       author->bonus == BONUS_GHOST && author->bonus_time > 0) {
-      return;
-   }
-
-   if (negPosition(shot->position) == pipe->position &&
-       export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
-      moveShotFromPipe(shot, pipe);
-   }
-   else {
-      if (shot->gun == GUN_BOMBBALL &&
-          export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
-         export_fce->fce_boundBombBall(shot);
-      }
-      else {
-         //delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
-         shot->del = TRUE;
-      }
-   }
+	if( negPosition( shot->position ) == pipe->position &&
+	    export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT )
+	{
+		moveShotFromPipe(shot, pipe);
+	}
+	else
+	{
+		if( shot->gun == GUN_BOMBBALL && 
+		    export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT  )
+		{
+			export_fce->fce_boundBombBall(shot);
+		}
+		else
+		{
+			//delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
+			shot->del = TRUE;
+		}
+	}
 }
 
-static void
-action_eventshot(space_t * space, shot_t * shot, space_t * spacePipe)
+static void action_eventshot(space_t *space, shot_t *shot, space_t *spacePipe)
 {
-   actionSpaceFromLocation(spacePipe, action_eventpipe, shot, shot->x,
-                           shot->y, shot->w, shot->h);
+	actionSpaceFromLocation(spacePipe, action_eventpipe, shot, shot->x, shot->y, shot->w, shot->h);
 
-   if (shot->del == TRUE) {
-      delObjectFromSpaceWithObject(space, shot, export_fce->fce_destroyShot);
-   }
+	if( shot->del == TRUE )
+	{
+		delObjectFromSpaceWithObject(space, shot, export_fce->fce_destroyShot);
+	}
 }
 
-int
-event()
+int event()
 {
-   if (spacePipe == NULL) {
-      return 0;
-   }
+	if( spacePipe == NULL )
+	{
+		return 0;
+	}
 
-   actionSpace(export_fce->fce_getCurrentArena()->spaceShot, action_eventshot,
-               spacePipe);
+	actionSpace(export_fce->fce_getCurrentArena()->spaceShot, action_eventshot, spacePipe);
 
-   return 0;
+	return 0;
 }
 
-int
-isConflict(int x, int y, int w, int h)
+int isConflict(int x, int y, int w, int h)
 {
-   if (spacePipe == NULL) {
-      return 0;
-   }
+	if( spacePipe == NULL )
+	{
+		return 0;
+	}
 
-   return isConflictWithObjectFromSpace(spacePipe, x, y, w, h);
+	return isConflictWithObjectFromSpace(spacePipe, x, y, w, h);
 }
 
-void
-cmdArena(char *line)
+void cmdArena(char *line)
 {
-   if (strncmp(line, "pipe", 4) == 0)
-      cmd_teleport(line);
+	if( strncmp(line, "pipe", 4) == 0 )cmd_teleport(line);
 }
 
-void
-recvMsg(char *msg)
+void recvMsg(char *msg)
 {
 
 }
 
-int
-destroy()
+int destroy()
 {
-   destroySpaceWithObject(spacePipe, destroyPipe);
-   destroyList(listPipe);
+	destroySpaceWithObject(spacePipe, destroyPipe);
+	destroyList(listPipe);
 
-   return 0;
+	return 0;
 }

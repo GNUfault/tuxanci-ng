@@ -11,95 +11,98 @@
 
 static textFile_t *serverTextFile;
 
-static void
-prepareConfigFile(textFile_t * ts)
+static void prepareConfigFile(textFile_t *ts)
 {
-   int i;
-   int j;
+	int i;
+	int j;
 
-   for (i = 0; i < serverTextFile->text->count; i++) {
-      char *line;
-      int len;
+	for( i = 0 ; i < serverTextFile->text->count ; i++ )
+	{
+		char *line;
+		int len;
 
-      line = (char *) (serverTextFile->text->list[i]);
-      len = strlen(line);
+		line = (char *)(serverTextFile->text->list[i]);
+		len = strlen(line);
 
-      for (j = 0; j < len; j++) {
-         if (line[j] == '	')      // [TAB]
-         {
-            line[j] = ' ';
-         }
-      }
-   }
+		for( j = 0 ; j < len ; j++ )
+		{
+			if( line[j] == '	' ) // [TAB]
+			{
+				line[j] = ' ';
+			}
+		}
+	}
 }
 
-void
-initServerConfigFile()
+void initServerConfigFile()
 {
-   char *configFile;
+	char *configFile;
 
-   configFile = getParamElse("--config-file", SERVER_CONFIG);
-   printf(_("Loading configuration from: \"%s\"\n"),
-          getParamElse("--config-file", SERVER_CONFIG));
+	configFile = getParamElse("--config-file", SERVER_CONFIG);
+	printf(_("Loading configuration from: \"%s\"\n"), getParamElse("--config-file", SERVER_CONFIG) );
 
-   serverTextFile = loadTextFile(configFile);
+	serverTextFile = loadTextFile(configFile);
 
-   if (serverTextFile == NULL) {
-      fprintf(stderr,
-              _
-              ("I was unable to load config file. Falling back to defaults!\n"));
-      return;
-   }
-
-   prepareConfigFile(serverTextFile);
+	if( serverTextFile == NULL )
+	{
+		fprintf(stderr, _("I was unable to load config file. Falling back to defaults!\n"));
+		return;
+	}
+	
+	prepareConfigFile(serverTextFile);
 }
 
-static char *
-findValue(char *s)
+static char *findValue(char *s)
 {
-   int len;
-   int i;
+	int len;
+	int i;
 
-   len = strlen(s);
+	len = strlen(s);
 
-   for (i = 0; i < len - 1; i++) {
-      if (s[i] == ' ' && s[i + 1] != ' ') {
-         return s + i + 1;
-      }
-   }
+	for( i = 0 ; i < len-1 ; i++)
+	{
+		if( s[i] == ' ' && s[i+1] != ' ' )
+		{
+			return s+i+1;
+		}
+	}
 
-   return NULL;
+	return NULL;
 }
 
-char *
-getServerConfigFileValue(char *env, char *s)
+char* getServerConfigFileValue(char *env, char *s)
 {
-   int i;
-   int len;
+	int i;
+	int len;
 
-   if (serverTextFile == NULL) {
-      return s;
-   }
+	if( serverTextFile == NULL )
+	{
+		return s;
+	}
 
-   len = strlen(env);
+	len = strlen(env);
 
-   for (i = 0; i < serverTextFile->text->count; i++) {
-      char *line;
+	for( i = 0 ; i < serverTextFile->text->count ; i++ )
+	{
+		char *line;
 
-      line = (char *) (serverTextFile->text->list[i]);
+		line = (char *)(serverTextFile->text->list[i]);
 
-      if (strncmp(line, env, len) == 0) {
-         return findValue(line);
-      }
-   }
+		if( strncmp(line, env, len) == 0 )
+		{
+			return findValue(line);
+		}
+	}
 
-   return s;
+	return s;
 }
 
-void
-quitServerConfigFile()
+void quitServerConfigFile()
 {
-   if (serverTextFile != NULL) {
-      destroyTextFile(serverTextFile);
-   }
+	if( serverTextFile != NULL )
+	{
+		destroyTextFile(serverTextFile);
+	}
 }
+
+ 

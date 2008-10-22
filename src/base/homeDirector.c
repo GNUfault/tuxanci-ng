@@ -10,39 +10,37 @@
 
 static char homeDirector[STR_PATH_SIZE];
 
-void
-createHomeDirector()
+void createHomeDirector()
 {
-   char *envHome;
+	char *envHome;
 #ifndef __WIN32__
-   envHome = getenv("HOME");
+	envHome = getenv("HOME");
 #else
-   envHome = getenv("USERPROFILE");
+	envHome = getenv("USERPROFILE");
 #endif
-   if (envHome == NULL) {
-      fprintf(stderr, _("Environment variable HOME not found!\n"));
-      exit(0);
-   }
+	if (envHome == NULL) {
+		fprintf(stderr, _("Environment variable HOME not found!\n"));
+		exit(0);
+	}
 
-   sprintf(homeDirector, "%s/%s", envHome, HOMEDIRECTOR_NAME);
+	sprintf(homeDirector, "%s/%s", envHome, HOMEDIRECTOR_NAME);
 
-   if (access(homeDirector, F_OK) != 0) {
+	if (access(homeDirector, F_OK) != 0) {
 #ifdef DEBUG
-      printf(_("Creating home directory %s.\n"), homeDirector);
+		printf(_("Creating home directory %s.\n"), homeDirector);
 #endif
 #ifndef __WIN32__
-      if (mkdir(homeDirector, 0755) != 0) {
+		if (mkdir(homeDirector, 0755) != 0) {
 #else
-      if (mkdir(homeDirector) != 0) {
+		if (mkdir(homeDirector) != 0) {
 #endif
-         fprintf(stderr, _("Unable to create home directory!\n"));
-         exit(0);
-      }
-   }
+			fprintf(stderr, _("Unable to create home directory!\n"));
+			exit(0);
+		}
+	}
 }
 
-char *
-getHomeDirector()
+char *getHomeDirector()
 {
-   return homeDirector;
+	return homeDirector;
 }

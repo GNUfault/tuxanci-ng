@@ -19,182 +19,175 @@ static list_t *listScreen;
 
 static bool_t isScreenInit = FALSE;
 
-bool_t
-isScreenInicialized()
+bool_t isScreenInicialized()
 {
-   return isScreenInit;
+	return isScreenInit;
 }
 
-screen_t *
-newScreen(char *name,
-          void (*fce_start) (), void (*fce_event) (),
-          void (*fce_draw) (), void (*fce_stop) ())
+screen_t* newScreen(char *name,
+		void (*fce_start)(), void (*fce_event)(),
+		void (*fce_draw)(), void (*fce_stop)())
 {
-   screen_t *new;
+	screen_t *new;
 
-   assert(name != NULL);
-   assert(fce_start != NULL);
-   assert(fce_event != NULL);
-   assert(fce_draw != NULL);
-   assert(fce_stop != NULL);
+	assert( name != NULL );
+	assert( fce_start != NULL );
+	assert( fce_event != NULL );
+	assert( fce_draw != NULL );
+	assert( fce_stop != NULL );
 
-   new = malloc(sizeof(screen_t));
-   new->name = strdup(name);
-   new->fce_start = fce_start;
-   new->fce_event = fce_event;
-   new->fce_draw = fce_draw;
-   new->fce_stop = fce_stop;
+	new = malloc( sizeof(screen_t) );
+	new->name = strdup(name);
+	new->fce_start = fce_start;
+	new->fce_event = fce_event;
+	new->fce_draw = fce_draw;
+	new->fce_stop = fce_stop;
 
-   return new;
+	return new;
 }
 
-void
-destroyScreen(screen_t * p)
+void destroyScreen(screen_t *p)
 {
-   assert(p != NULL);
+	assert( p != NULL );
 
-   free(p->name);
-   free(p);
+	free(p->name);
+	free(p);
 }
 
-void
-registerScreen(screen_t * p)
+void registerScreen(screen_t *p)
 {
-   assert(p != NULL);
+	assert( p != NULL );
 #ifdef DEBUG
-   printf(_("Registering screen: \"%s\"\n"), p->name);
+	printf(_("Registering screen: \"%s\"\n"), p->name);
 #endif
-   addList(listScreen, p);
+	addList(listScreen, p);
 }
 
-void
-initScreen()
+void initScreen()
 {
-   listScreen = newList();
+	listScreen = newList();
 
-   currentScreen = NULL;
-   futureScreen = NULL;
+	currentScreen = NULL;
+	futureScreen = NULL;
 
-   isScreenInit = TRUE;
+	isScreenInit = TRUE;
 }
 
-static screen_t *
-findScreen(char *name)
+static screen_t* findScreen(char *name)
 {
-   screen_t *this;
-   int i;
+	screen_t *this;
+	int i;
 
-   for (i = 0; i < listScreen->count; i++) {
-      this = (screen_t *) (listScreen->list[i]);
-      assert(this != NULL);
+	for( i = 0 ; i < listScreen->count ; i++ )
+	{
+		this = (screen_t *) (listScreen->list[i]);
+		assert( this != NULL );
 
-      if (strcmp(name, this->name) == 0) {
-         return this;
-      }
-   }
+		if( strcmp(name, this->name) == 0 )
+		{
+			return this;
+		}
+	}
 
-   return NULL;
+	return NULL;
 }
 
-void
-setScreen(char *name)
+void setScreen(char *name)
 {
-   futureScreen = findScreen(name);
-   assert(futureScreen != NULL);
+	futureScreen = findScreen(name);
+	assert( futureScreen != NULL );
 }
 
-void
-switchScreen()
+void switchScreen()
 {
-   if (futureScreen == NULL) {
-      return;
-   }
+	if( futureScreen == NULL )
+	{
+		return;
+	}
 
-   flushLayer();
+	flushLayer();
 
-   if (currentScreen != NULL) {
+	if( currentScreen != NULL )
+	{
 #ifdef DEBUG
-      printf(_("Stopping screen:\" %s\"\n"), currentScreen->name);
+		printf(_("Stopping screen:\" %s\"\n"), currentScreen->name);
 #endif
-      currentScreen->fce_stop();
-   }
+		currentScreen->fce_stop();
+	}
 
-   currentScreen = futureScreen;
-   futureScreen = NULL;
+	currentScreen = futureScreen;
+	futureScreen  = NULL;
 
-   //printf("switch screen %s..\n", currentScreen->name);
+	//printf("switch screen %s..\n", currentScreen->name);
 #ifdef DEBUG
-   printf(_("Starting screen: \"%s\"\n"), currentScreen->name);
+	printf(_("Starting screen: \"%s\"\n"), currentScreen->name);
 #endif
-   currentScreen->fce_start();
+	currentScreen->fce_start();
 }
 
-void
-startScreen(char *name)
+void startScreen(char *name)
 {
-   setScreen(name);
-   switchScreen();
+	setScreen(name);
+	switchScreen();
 }
 
-char *
-getScreen()
+char* getScreen()
 {
-   assert(currentScreen != NULL);
-   return currentScreen->name;
+	assert( currentScreen != NULL );
+	return currentScreen->name;
 }
 
-void
-drawScreen()
+void drawScreen()
 {
-   static int count = 0;
+	static int count = 0;
 
-   count++;
+	count++;
 
-   if (count == 1) {
-      count = 0;
+	if( count == 1 )
+	{
+		count = 0;
 
-      assert(currentScreen != NULL);
-
-#ifdef DEBUG_TIME_DRAW
-      my_time_t prev;
-
-      prev = getMyTimeMicro();
-#endif
-
-      currentScreen->fce_draw();
-
-      interfaceRefresh();
-
-#ifdef DEBUG_TIME_DRAW
-      printf("c draw time = %d\n", getMyTimeMicro() - prev);
-#endif
-   }
+		assert( currentScreen != NULL );
+	
+	#ifdef DEBUG_TIME_DRAW
+		my_time_t prev;
+	
+		prev = getMyTimeMicro();
+	#endif
+	
+		currentScreen->fce_draw();
+	
+		interfaceRefresh();
+	
+	#ifdef DEBUG_TIME_DRAW
+		printf("c draw time = %d\n", getMyTimeMicro() - prev );
+	#endif
+	}
 }
 
 
-void
-eventScreen()
+void eventScreen()
 {
-   assert(currentScreen != NULL);
+	assert( currentScreen != NULL );
 
 #ifdef DEBUG_TIME_EVENT
-   my_time_t prev;
+	my_time_t prev;
 
-   prev = getMyTimeMicro();
+ 	prev = getMyTimeMicro();
 #endif
 
-   currentScreen->fce_event();
+	currentScreen->fce_event();
 
 #ifdef DEBUG_TIME_EVENT
-   printf("c event time = %d\n", getMyTimeMicro() - prev);
+	printf("c event time = %d\n", getMyTimeMicro() - prev );
 #endif
 }
 
-void
-quitScreen()
+void quitScreen()
 {
-   assert(listScreen != NULL);
+	assert( listScreen != NULL );
 
-   destroyListItem(listScreen, destroyScreen);
-   isScreenInit = FALSE;
+	destroyListItem(listScreen, destroyScreen);
+	isScreenInit = FALSE;
 }
+
