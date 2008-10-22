@@ -27,134 +27,133 @@
 static int my_argc;
 static char **my_argv;
 
-char* getParam(char *s)
+char *
+getParam(char *s)
 {
-	int i;
-	int len;
+    int i;
+    int len;
 
-	len = strlen(s);
+    len = strlen(s);
 
-	for( i = 1 ; i < my_argc ; i++ )
-	{
-		//printf("%s %s\n", s, my_argv[i]);
-		
-		if( strlen(my_argv[i]) < len )
-		{
-			continue;
-		}
+    for (i = 1; i < my_argc; i++) {
+        //printf("%s %s\n", s, my_argv[i]);
 
-		if( strncmp(s, my_argv[i], len) == 0 )
-		{
-			return strchr(my_argv[i], '=')+1;
-		}
-	}
+        if (strlen(my_argv[i]) < len) {
+            continue;
+        }
 
-	return NULL;
+        if (strncmp(s, my_argv[i], len) == 0) {
+            return strchr(my_argv[i], '=') + 1;
+        }
+    }
+
+    return NULL;
 }
 
-char* getParamElse(char *s1, char *s2)
+char *
+getParamElse(char *s1, char *s2)
 {
-	char *ret;
-	ret = getParam(s1);
+    char *ret;
+    ret = getParam(s1);
 
-	if( ret == NULL)
-	{
-		return s2;
-	}
+    if (ret == NULL) {
+        return s2;
+    }
 
-	return ret;
+    return ret;
 }
 
-bool_t isParamFlag(char *s)
+bool_t
+isParamFlag(char *s)
 {
-	int i;
+    int i;
 
-	for( i = 0 ; i < my_argc ; i++ )
-	{
-		if( strcmp(s, my_argv[i]) == 0 )
-		{
-			return TRUE;
-		}
-	}
+    for (i = 0; i < my_argc; i++) {
+        if (strcmp(s, my_argv[i]) == 0) {
+            return TRUE;
+        }
+    }
 
-	return FALSE;
+    return FALSE;
 }
 
-char *getString(int n)
+char *
+getString(int n)
 {
-	char str[STR_NUM_SIZE];
-	sprintf(str, "%d", n);
-	return strdup(str);
+    char str[STR_NUM_SIZE];
+    sprintf(str, "%d", n);
+    return strdup(str);
 }
 
-int* newInt(int x)
+int *
+newInt(int x)
 {
-	int *new;
-	new = malloc( sizeof(int) );
-	*new = x;
-	return new;
+    int *new;
+    new = malloc(sizeof(int));
+    *new = x;
+    return new;
 }
 
-void accessExistFile(const char *s)
+void
+accessExistFile(const char *s)
 {
-	if( access(s, F_OK) != 0 )
-	{
-		fprintf(stderr, _("File %s not found !\nProgram shutdown !\n"), s);
-		exit(-1);
-	}
+    if (access(s, F_OK) != 0) {
+        fprintf(stderr, _("File %s not found !\nProgram shutdown !\n"), s);
+        exit(-1);
+    }
 }
 
-int tryExistFile (const char *s)
+int
+tryExistFile(const char *s)
 {
-	if (access(s, F_OK) != 0)
-		return 1;
-	else
-		return 0;
+    if (access(s, F_OK) != 0)
+        return 1;
+    else
+        return 0;
 }
 
-int isFillPath(const char *path)
+int
+isFillPath(const char *path)
 {
-	assert( path != NULL);
+    assert(path != NULL);
 
 #ifndef __WIN32__
-	if( path[0] == '/' ) // for Unix-like systems ;)
+    if (path[0] == '/')         // for Unix-like systems ;)
 #else
-	if( path[1] == ':' ) // for Windows-like systems ;)
+    if (path[1] == ':')         // for Windows-like systems ;)
 #endif
-	{
-		return 1;
-	}
-	
-	return 0;
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
 #ifdef __WIN32__
-int WINAPI WinMain(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine,
-    int nCmdShow
-)
+int WINAPI
+WinMain(HINSTANCE hInstance,
+        HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 #endif
 {
 #ifndef __WIN32__
-	signal(SIGPIPE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 #endif
 
-	srand( (unsigned) time(NULL) );
+    srand((unsigned) time(NULL));
 
 
 #ifdef NLS
-	setlocale( LC_ALL, "" );
-	bindtextdomain( PACKAGE, PATH_LOCALE);
-	bind_textdomain_codeset (PACKAGE, "UTF-8");
-	textdomain( PACKAGE );
+    setlocale(LC_ALL, "");
+    bindtextdomain(PACKAGE, PATH_LOCALE);
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+    textdomain(PACKAGE);
 #endif
 #ifndef __WIN32__
-	my_argc = argc;
-	my_argv = argv;
+    my_argc = argc;
+    my_argv = argv;
 #endif
 /*
 	test_space();
@@ -162,24 +161,24 @@ int main(int argc, char *argv[])
 */
 
 #ifdef __WIN32__
-	WORD wVersionRequested = MAKEWORD(1,1); 	// WinSock version
-	WSADATA data;                        		// WinSock information structure
+    WORD wVersionRequested = MAKEWORD(1, 1);    // WinSock version
+    WSADATA data;               // WinSock information structure
 
-	/* Let's initialize WinSock */
-	if( WSAStartup(wVersionRequested, &data) != 0 )
-	{
-		fprintf(stderr, _("WinSock initialization failed !\nProgram shutdown !\n"));
-		exit(-1);
-	}  
+    /* Let's initialize WinSock */
+    if (WSAStartup(wVersionRequested, &data) != 0) {
+        fprintf(stderr,
+                _("WinSock initialization failed !\nProgram shutdown !\n"));
+        exit(-1);
+    }
 #endif
 
 #ifndef PUBLIC_SERVER
-	startGame();
+    startGame();
 #endif
 
 #ifdef PUBLIC_SERVER
-	startPublicServer();
+    startPublicServer();
 #endif
 
-	return 0;
+    return 0;
 }

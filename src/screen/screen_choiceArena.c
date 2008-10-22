@@ -29,165 +29,170 @@ static widget_t *button_play;
 static widget_t *button_back;
 
 static list_t *listWidgetButtonimage;
-static arenaFile_t* currentArena;
+static arenaFile_t *currentArena;
 
-void startScreenChoiceArena()
+void
+startScreenChoiceArena()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+    playMusic("menu", MUSIC_GROUP_BASE);
 #endif
 }
 
-void drawScreenChoiceArena()
+void
+drawScreenChoiceArena()
 {
-	int i;
+    int i;
 
-	drawWidgetImage(image_backgorund);
+    drawWidgetImage(image_backgorund);
 
-	drawWidgetButton(button_play);
-	drawWidgetButton(button_back);
+    drawWidgetButton(button_play);
+    drawWidgetButton(button_back);
 
-	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
-	{
-		widget_t *this;
-		this = (widget_t *) listWidgetButtonimage->list[i];
-		drawWidgetButtonimage(this);
-	}
+    for (i = 0; i < listWidgetButtonimage->count; i++) {
+        widget_t *this;
+        this = (widget_t *) listWidgetButtonimage->list[i];
+        drawWidgetButtonimage(this);
+    }
 }
 
-void eventScreenChoiceArena()
+void
+eventScreenChoiceArena()
 {
-	int i;
+    int i;
 
-	eventWidgetButton(button_play);
-	eventWidgetButton(button_back);
+    eventWidgetButton(button_play);
+    eventWidgetButton(button_back);
 
-	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
-	{
-		widget_t *this;
-		this = (widget_t *) listWidgetButtonimage->list[i];
-		eventWidgetButtonimage(this);
-	}
+    for (i = 0; i < listWidgetButtonimage->count; i++) {
+        widget_t *this;
+        this = (widget_t *) listWidgetButtonimage->list[i];
+        eventWidgetButtonimage(this);
+    }
 }
 
-void stopScreenChoiceArena()
+void
+stopScreenChoiceArena()
 {
 }
 
-static void eventWidgetButtonImage(void *p)
+static void
+eventWidgetButtonImage(void *p)
 {
-	widget_t *buttonimage;
-	int i;
+    widget_t *buttonimage;
+    int i;
 
-	buttonimage = (widget_t *)(p);
+    buttonimage = (widget_t *) (p);
 
-	for( i = 0 ; i < listWidgetButtonimage->count ; i++ )
-	{
-		widget_t *this;
+    for (i = 0; i < listWidgetButtonimage->count; i++) {
+        widget_t *this;
 
-		this = (widget_t *)(listWidgetButtonimage->list[i]);
-		
-		if( buttonimage == this )
-		{
-			setWidgetButtonimageActive(this, TRUE);
-			currentArena = getArenaFile(i);
-		}
-		else
-		{
-			setWidgetButtonimageActive(this, FALSE);
-		}
-	}
+        this = (widget_t *) (listWidgetButtonimage->list[i]);
+
+        if (buttonimage == this) {
+            setWidgetButtonimageActive(this, TRUE);
+            currentArena = getArenaFile(i);
+        }
+        else {
+            setWidgetButtonimageActive(this, FALSE);
+        }
+    }
 }
 
-arenaFile_t* getChoiceArena()
+arenaFile_t *
+getChoiceArena()
 {
-	return currentArena;
+    return currentArena;
 }
 
-void setChoiceArena(arenaFile_t *arenaFile)
+void
+setChoiceArena(arenaFile_t * arenaFile)
 {
-	widget_t *widget_buttonimage;
-	int id;
+    widget_t *widget_buttonimage;
+    int id;
 
-	id = getArenaFileID(arenaFile);
-	currentArena = arenaFile;
+    id = getArenaFileID(arenaFile);
+    currentArena = arenaFile;
 
-	if( id >= 0 )
-	{
-		widget_buttonimage = (widget_t *)listWidgetButtonimage->list[id];
-		setWidgetButtonimageActive(widget_buttonimage, TRUE);
-	}
+    if (id >= 0) {
+        widget_buttonimage = (widget_t *) listWidgetButtonimage->list[id];
+        setWidgetButtonimageActive(widget_buttonimage, TRUE);
+    }
 }
 
-static void eventWidget(void *p)
+static void
+eventWidget(void *p)
 {
-	widget_t *button;
-	
-	button = (widget_t *)(p);
+    widget_t *button;
 
-	if( button == button_play )
-	{
-		setScreen("world");
-	}
+    button = (widget_t *) (p);
 
-	if( button == button_back )
-	{
-		setScreen("gameType");
-	}
+    if (button == button_play) {
+        setScreen("world");
+    }
+
+    if (button == button_back) {
+        setScreen("gameType");
+    }
 }
 
-void initScreenChoiceArena()
+void
+initScreenChoiceArena()
 {
-	image_t *image;
-	int i;
+    image_t *image;
+    int i;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund  = newWidgetImage(0, 0, image);
+    image = getImage(IMAGE_GROUP_BASE, "screen_main");
+    image_backgorund = newWidgetImage(0, 0, image);
 
-	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y-100, eventWidget);
-	button_play = newWidgetButton(_("play"), WINDOW_SIZE_X-200, WINDOW_SIZE_Y-100, eventWidget);
-	
-	listWidgetButtonimage = newList();
-	currentArena = NULL;
+    button_back =
+        newWidgetButton(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
+    button_play =
+        newWidgetButton(_("play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100,
+                        eventWidget);
 
-	for( i = 0 ; i < getArenaCount() ; i++ )
-	{
-		widget_t *widget_buttonimage;
-		arenaFile_t* arenaFile;
-		int x, y;
+    listWidgetButtonimage = newList();
+    currentArena = NULL;
 
-		arenaFile = getArenaFile(i);
-		//image = addImageData(getArenaImage(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);
-		image = loadImageFromArena(arenaFile,
-			getArenaImage(arenaFile),
-			IMAGE_GROUP_BASE,
-			"none",
-			IMAGE_NO_ALPHA);
+    for (i = 0; i < getArenaCount(); i++) {
+        widget_t *widget_buttonimage;
+        arenaFile_t *arenaFile;
+        int x, y;
 
-		x = 100 + 200 * ( i -  3 * ( i/3 ) );
-		y = 150 + 200 * ( i/3 );
+        arenaFile = getArenaFile(i);
+        //image = addImageData(getArenaImage(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);
+        image = loadImageFromArena(arenaFile,
+                                   getArenaImage(arenaFile),
+                                   IMAGE_GROUP_BASE, "none", IMAGE_NO_ALPHA);
 
-		widget_buttonimage = newWidgetButtonimage(image,
-			x, y, eventWidgetButtonImage);
+        x = 100 + 200 * (i - 3 * (i / 3));
+        y = 150 + 200 * (i / 3);
+
+        widget_buttonimage = newWidgetButtonimage(image,
+                                                  x, y,
+                                                  eventWidgetButtonImage);
 /*
 		if( i == choiceArenaId )
 		{
 			widget_buttonimage->active = 1;
 		}
 */
-		addList( listWidgetButtonimage, widget_buttonimage);
-	}
+        addList(listWidgetButtonimage, widget_buttonimage);
+    }
 
-	registerScreen( newScreen("chiceArena", startScreenChoiceArena, eventScreenChoiceArena,
-		drawScreenChoiceArena, stopScreenChoiceArena) );
+    registerScreen(newScreen
+                   ("chiceArena", startScreenChoiceArena,
+                    eventScreenChoiceArena, drawScreenChoiceArena,
+                    stopScreenChoiceArena));
 }
 
-void quitScreenChoiceArena()
+void
+quitScreenChoiceArena()
 {
-	destroyWidgetImage(image_backgorund);
+    destroyWidgetImage(image_backgorund);
 
-	destroyWidgetButton(button_play);
-	destroyWidgetButton(button_back);
+    destroyWidgetButton(button_play);
+    destroyWidgetButton(button_back);
 
-	destroyListItem(listWidgetButtonimage, destroyWidgetButtonimage);
+    destroyListItem(listWidgetButtonimage, destroyWidgetButtonimage);
 }

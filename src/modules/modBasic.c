@@ -23,53 +23,61 @@
 
 static export_fce_t *export_fce;
 
-int init(export_fce_t *p)
+int
+init(export_fce_t * p)
 {
-	export_fce = p;
+    export_fce = p;
 
-	printf("Initializing Basic module.\n");
-	return 0;
+    printf("Initializing Basic module.\n");
+    return 0;
 }
 
 #ifndef PUBLIC_SERVER
 
-int draw(int x, int y, int w, int h)
+int
+draw(int x, int y, int w, int h)
 {
-	printf("Drawing Basic module.\n");
-	return 0;
+    printf("Drawing Basic module.\n");
+    return 0;
 }
 #endif
 
-int event()
+int
+event()
 {
-	printf("Basic module catch event.\n");
-	return 0;
+    printf("Basic module catch event.\n");
+    return 0;
 }
 
-int isConflict(int x, int y, int w, int h)
+int
+isConflict(int x, int y, int w, int h)
 {
-	printf("isConflict(%d, %d, %d, %d) in Basic module.\n", x, y, w, h);
-	return 0;
+    printf("isConflict(%d, %d, %d, %d) in Basic module.\n", x, y, w, h);
+    return 0;
 }
 
-static void cmd_basic(char *line)
+static void
+cmd_basic(char *line)
 {
-	printf("cmd_basic(%s) in Basic module.\n", line);
+    printf("cmd_basic(%s) in Basic module.\n", line);
 }
 
-void cmdArena(char *line)
+void
+cmdArena(char *line)
 {
-	if (strncmp(line, "basic", 5) == 0)
-		cmd_basic(line);
+    if (strncmp(line, "basic", 5) == 0)
+        cmd_basic(line);
 }
 
-void recvMsg(char *msg)
+void
+recvMsg(char *msg)
 {
-	printf("recvMsg(%s) in Basic module.\n", msg);
+    printf("recvMsg(%s) in Basic module.\n", msg);
 }
 
-int destroy()
+int
+destroy()
 {
-	printf("Destroying Basic module.\n");
-	return 0;
+    printf("Destroying Basic module.\n");
+    return 0;
 }

@@ -12,147 +12,148 @@
 
 typedef struct hotKey_struct
 {
-	SDLKey key;
-	bool_t active;
-	void (*handler)();
+    SDLKey key;
+    bool_t active;
+    void (*handler) ();
 } hotKey_t;
 
 static list_t *listHotKey;
 static my_time_t lastActive;
 
-static hotKey_t* newHotKey(SDLKey key, void (*handler)())
+static hotKey_t *
+newHotKey(SDLKey key, void (*handler) ())
 {
-	hotKey_t *new;
+    hotKey_t *new;
 
-	new = malloc( sizeof(hotKey_t) );
-	new->key = key;
-	new->active = TRUE;
-	new->handler = handler;
+    new = malloc(sizeof(hotKey_t));
+    new->key = key;
+    new->active = TRUE;
+    new->handler = handler;
 
-	return new;
+    return new;
 }
 
-static void destroyHotKey(hotKey_t *hotkey)
+static void
+destroyHotKey(hotKey_t * hotkey)
 {
-	free(hotkey);
+    free(hotkey);
 }
 
-static hotKey_t* findHotkey(SDLKey key)
+static hotKey_t *
+findHotkey(SDLKey key)
 {
-	int i;
+    int i;
 
-	for( i = 0 ; i < listHotKey->count ; i++ )
-	{
-		hotKey_t *this;
+    for (i = 0; i < listHotKey->count; i++) {
+        hotKey_t *this;
 
-		this = (hotKey_t *)listHotKey->list[i];
+        this = (hotKey_t *) listHotKey->list[i];
 
-		if( this->key == key )
-		{
-			return this;
-		}
-	}
+        if (this->key == key) {
+            return this;
+        }
+    }
 
-	return NULL;
+    return NULL;
 }
 
-void initHotKey()
+void
+initHotKey()
 {
-	listHotKey = newList();
-	lastActive = getMyTime();
+    listHotKey = newList();
+    lastActive = getMyTime();
 }
 
-void registerHotKey(SDLKey key, void (*handler)())
+void
+registerHotKey(SDLKey key, void (*handler) ())
 {
-	hotKey_t *hotkey;
+    hotKey_t *hotkey;
 
-	if( findHotkey(key) != NULL )
-	{
-		assert( ! "Conflict with register key");
-	}
+    if (findHotkey(key) != NULL) {
+        assert(!"Conflict with register key");
+    }
 
-	hotkey = newHotKey(key, handler);
-	addList(listHotKey, hotkey);
+    hotkey = newHotKey(key, handler);
+    addList(listHotKey, hotkey);
 }
 
-void unregisterHotKey(SDLKey key)
+void
+unregisterHotKey(SDLKey key)
 {
-	hotKey_t *hotkey;
-	int index;
+    hotKey_t *hotkey;
+    int index;
 
-	hotkey = findHotkey(key);
+    hotkey = findHotkey(key);
 
-	if( hotkey == NULL )
-	{
-		assert( ! "This hotkey not register");
-	}
+    if (hotkey == NULL) {
+        assert(!"This hotkey not register");
+    }
 
-	index = searchListItem(listHotKey, hotkey);
-	assert( index != -1 );
-	delListItem(listHotKey, index, destroyHotKey);
+    index = searchListItem(listHotKey, hotkey);
+    assert(index != -1);
+    delListItem(listHotKey, index, destroyHotKey);
 }
 
-void enableHotKey(SDLKey key)
+void
+enableHotKey(SDLKey key)
 {
-	hotKey_t *hotkey;
+    hotKey_t *hotkey;
 
-	hotkey = findHotkey(key);
+    hotkey = findHotkey(key);
 
-	if( hotkey == NULL )
-	{
-		assert( ! "This hotkey not register");
-	}
+    if (hotkey == NULL) {
+        assert(!"This hotkey not register");
+    }
 
-	lastActive = getMyTime();
-	hotkey->active = TRUE;
+    lastActive = getMyTime();
+    hotkey->active = TRUE;
 }
 
-void disableHotKey(SDLKey key)
+void
+disableHotKey(SDLKey key)
 {
-	hotKey_t *hotkey;
+    hotKey_t *hotkey;
 
-	hotkey = findHotkey(key);
+    hotkey = findHotkey(key);
 
-	if( hotkey == NULL )
-	{
-		assert( ! "This hotkey not register");
-	}
+    if (hotkey == NULL) {
+        assert(!"This hotkey not register");
+    }
 
-	lastActive = getMyTime();
-	hotkey->active = FALSE;
+    lastActive = getMyTime();
+    hotkey->active = FALSE;
 }
 
-void eventHotKey()
+void
+eventHotKey()
 {
-	my_time_t currentTime;
-	Uint8 *mapa;
-	int i;
+    my_time_t currentTime;
+    Uint8 *mapa;
+    int i;
 
-	currentTime = getMyTime();
+    currentTime = getMyTime();
 
-	if( currentTime - lastActive < HOTKEY_ACTIVE_INTERVAL )
-	{
-		return;
-	}
+    if (currentTime - lastActive < HOTKEY_ACTIVE_INTERVAL) {
+        return;
+    }
 
-	mapa = SDL_GetKeyState(NULL);
+    mapa = SDL_GetKeyState(NULL);
 
-	for( i = 0 ; i < listHotKey->count ; i++ )
-	{
-		hotKey_t *this;
+    for (i = 0; i < listHotKey->count; i++) {
+        hotKey_t *this;
 
-		this = (hotKey_t *)listHotKey->list[i];
+        this = (hotKey_t *) listHotKey->list[i];
 
-		if( mapa[this->key] == SDL_PRESSED && this->active == TRUE )
-		{
-			lastActive = getMyTime();
-			//printf("hotKey = %d\n", this->key);
-			this->handler();
-		}
-	}
+        if (mapa[this->key] == SDL_PRESSED && this->active == TRUE) {
+            lastActive = getMyTime();
+            //printf("hotKey = %d\n", this->key);
+            this->handler();
+        }
+    }
 }
 
-void quitHotKey()
+void
+quitHotKey()
 {
-	destroyListItem(listHotKey, destroyHotKey);
+    destroyListItem(listHotKey, destroyHotKey);
 }

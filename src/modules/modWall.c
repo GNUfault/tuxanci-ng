@@ -23,21 +23,21 @@
 
 typedef struct wall_struct
 {
-	int id;
+    int id;
 
-	int x; // poloha steny	
-	int y;
+    int x;                      // poloha steny  
+    int y;
 
-	int w; // rozmery steny
-	int h;
+    int w;                      // rozmery steny
+    int h;
 
-	int img_x; // poloha obrazka
-	int img_y;
+    int img_x;                  // poloha obrazka
+    int img_y;
 
-	int layer; // vrstva
+    int layer;                  // vrstva
 
-#ifndef PUBLIC_SERVER	
-	image_t *img; //obrazok
+#ifndef PUBLIC_SERVER
+    image_t *img;               //obrazok
 #endif
 } wall_t;
 
@@ -45,299 +45,326 @@ static export_fce_t *export_fce;
 
 static space_t *spaceWall;
 
-#ifndef PUBLIC_SERVER	
+#ifndef PUBLIC_SERVER
 static space_t *spaceImgWall;
 #endif
 
 static list_t *listWall;
 
-#ifndef PUBLIC_SERVER	
-wall_t* newWall(int x, int y, int w, int h,
-	int img_x, int img_y, int layer, image_t *img)
-#endif
-
-#ifdef PUBLIC_SERVER	
-wall_t* newWall(int x, int y, int w, int h,
-	int img_x, int img_y, int layer)
-#endif
-{
-	static int last_id = 0;
-	wall_t *new;
-	
-#ifndef PUBLIC_SERVER	
-	assert( img != NULL );
-#endif
-	new  = malloc( sizeof(wall_t) );
-	assert( new != NULL );
-
-	new->id = ++last_id;
-	new->x = x;
-	new->y = y;
-	new->w = w;
-	new->h = h;
-	new->img_x = img_x;
-	new->img_y = img_y;
-	new->layer = layer;
 #ifndef PUBLIC_SERVER
-	new->img = img;
+wall_t *
+newWall(int x, int y, int w, int h,
+        int img_x, int img_y, int layer, image_t * img)
 #endif
-
-	return new;
-}
-
-#ifndef PUBLIC_SERVER	
-
-void drawWall(wall_t *p)
-{
-	assert( p != NULL );
-
-	export_fce->fce_addLayer(p->img, p->img_x, p->img_y, 0, 0, p->img->w, p->img->h, p->layer);
-}
-
-void drawListWall(list_t *list)
-{
-	wall_t *thisWall;
-	int i;
-
-	assert( list != NULL );
-
-	for( i = 0 ; i < list->count ; i++ )
-	{
-		thisWall  = (wall_t *)list->list[i];
-		assert( thisWall != NULL );
-		drawWall(thisWall);
-	}
-}
-
+#ifdef PUBLIC_SERVER
+     wall_t *newWall(int x, int y, int w, int h,
+                     int img_x, int img_y, int layer)
 #endif
-
-void destroyWall(wall_t *p)
 {
-	assert( p != NULL );
-	free(p);
-}
-
-static void getStatusWall(void *p, int *id, int *x, int *y, int *w, int *h)
-{
-	wall_t *wall;
-
-	wall = p;
-
-	*id = wall->id;
-	*x = wall->x;
-	*y = wall->y;
-	*w = wall->w;
-	*h = wall->h;
-}
-
-static void setStatusWall(void *p, int x, int y, int w, int h)
-{
-	wall_t *wall;
-
-	wall = p;
-
-	wall->x = x;
-	wall->y = y;
-	wall->w = w;
-	wall->h = h;
-}
-
-#ifndef PUBLIC_SERVER	
-
-static void getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
-{
-	wall_t *wall;
-
-	wall = p;
-
-	*id = wall->id;
-	*x = wall->img_x;
-	*y = wall->img_y;
-	*w = wall->img->w;
-	*h = wall->img->h;
-}
-
-static void setStatusImgWall(void *p, int x, int y, int w, int h)
-{
-}
-
-#endif
-
-static void cmd_wall(char *line)
-{
-	char str_x[STR_NUM_SIZE];
-	char str_y[STR_NUM_SIZE];
-	char str_img_x[STR_NUM_SIZE];
-	char str_img_y[STR_NUM_SIZE];
-	char str_w[STR_NUM_SIZE];
-	char str_h[STR_NUM_SIZE];
-	char str_layer[STR_NUM_SIZE];
-	char str_image[STR_SIZE];
-	char str_rel[STR_SIZE];
-	int x, y, w, h, img_x, img_y, layer;
-	int rel;
-	wall_t *new;
-
-	rel = 0;
-
-	if( export_fce->fce_getValue(line, "rel", str_rel, STR_NUM_SIZE) != 0 )strcpy(str_rel, "0");
-	if( export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "h", str_h, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "img_x", str_img_x, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0 )return;
-	if( export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0 )return;
-
-	rel = atoi(str_rel);
-	x  = atoi(str_x);
-	y  = atoi(str_y);
-	w  = atoi(str_w);
-	h  = atoi(str_h);
-	img_x  = atoi(str_img_x);
-	img_y  = atoi(str_img_y);
-	layer  = atoi(str_layer);
-
-	if( rel == 1 )
-	{
-		img_x += x;
-		img_y += y;
-	}
+    static int last_id = 0;
+    wall_t *new;
 
 #ifndef PUBLIC_SERVER
-	new = newWall(x, y, w, h, img_x, img_y, layer, export_fce->fce_getImage(IMAGE_GROUP_USER, str_image) );
+    assert(img != NULL);
+#endif
+    new = malloc(sizeof(wall_t));
+    assert(new != NULL);
+
+    new->id = ++last_id;
+    new->x = x;
+    new->y = y;
+    new->w = w;
+    new->h = h;
+    new->img_x = img_x;
+    new->img_y = img_y;
+    new->layer = layer;
+#ifndef PUBLIC_SERVER
+    new->img = img;
+#endif
+
+    return new;
+}
+
+#ifndef PUBLIC_SERVER
+
+void
+drawWall(wall_t * p)
+{
+    assert(p != NULL);
+
+    export_fce->fce_addLayer(p->img, p->img_x, p->img_y, 0, 0, p->img->w,
+                             p->img->h, p->layer);
+}
+
+void
+drawListWall(list_t * list)
+{
+    wall_t *thisWall;
+    int i;
+
+    assert(list != NULL);
+
+    for (i = 0; i < list->count; i++) {
+        thisWall = (wall_t *) list->list[i];
+        assert(thisWall != NULL);
+        drawWall(thisWall);
+    }
+}
+
+#endif
+
+void
+destroyWall(wall_t * p)
+{
+    assert(p != NULL);
+    free(p);
+}
+
+static void
+getStatusWall(void *p, int *id, int *x, int *y, int *w, int *h)
+{
+    wall_t *wall;
+
+    wall = p;
+
+    *id = wall->id;
+    *x = wall->x;
+    *y = wall->y;
+    *w = wall->w;
+    *h = wall->h;
+}
+
+static void
+setStatusWall(void *p, int x, int y, int w, int h)
+{
+    wall_t *wall;
+
+    wall = p;
+
+    wall->x = x;
+    wall->y = y;
+    wall->w = w;
+    wall->h = h;
+}
+
+#ifndef PUBLIC_SERVER
+
+static void
+getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
+{
+    wall_t *wall;
+
+    wall = p;
+
+    *id = wall->id;
+    *x = wall->img_x;
+    *y = wall->img_y;
+    *w = wall->img->w;
+    *h = wall->img->h;
+}
+
+static void
+setStatusImgWall(void *p, int x, int y, int w, int h)
+{
+}
+
+#endif
+
+static void
+cmd_wall(char *line)
+{
+    char str_x[STR_NUM_SIZE];
+    char str_y[STR_NUM_SIZE];
+    char str_img_x[STR_NUM_SIZE];
+    char str_img_y[STR_NUM_SIZE];
+    char str_w[STR_NUM_SIZE];
+    char str_h[STR_NUM_SIZE];
+    char str_layer[STR_NUM_SIZE];
+    char str_image[STR_SIZE];
+    char str_rel[STR_SIZE];
+    int x, y, w, h, img_x, img_y, layer;
+    int rel;
+    wall_t *new;
+
+    rel = 0;
+
+    if (export_fce->fce_getValue(line, "rel", str_rel, STR_NUM_SIZE) != 0)
+        strcpy(str_rel, "0");
+    if (export_fce->fce_getValue(line, "x", str_x, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "y", str_y, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "w", str_w, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "h", str_h, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "img_x", str_img_x, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "img_y", str_img_y, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "layer", str_layer, STR_NUM_SIZE) != 0)
+        return;
+    if (export_fce->fce_getValue(line, "image", str_image, STR_SIZE) != 0)
+        return;
+
+    rel = atoi(str_rel);
+    x = atoi(str_x);
+    y = atoi(str_y);
+    w = atoi(str_w);
+    h = atoi(str_h);
+    img_x = atoi(str_img_x);
+    img_y = atoi(str_img_y);
+    layer = atoi(str_layer);
+
+    if (rel == 1) {
+        img_x += x;
+        img_y += y;
+    }
+
+#ifndef PUBLIC_SERVER
+    new =
+        newWall(x, y, w, h, img_x, img_y, layer,
+                export_fce->fce_getImage(IMAGE_GROUP_USER, str_image));
 #endif
 
 #ifdef PUBLIC_SERVER
-	new = newWall(x, y, w, h, img_x, img_y, layer);
+    new = newWall(x, y, w, h, img_x, img_y, layer);
 #endif
 
-	if( spaceWall == NULL )
-	{
-		spaceWall  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
-				320, 240, getStatusWall, setStatusWall);
+    if (spaceWall == NULL) {
+        spaceWall =
+            newSpace(export_fce->fce_getCurrentArena()->w,
+                     export_fce->fce_getCurrentArena()->h, 320, 240,
+                     getStatusWall, setStatusWall);
 
-#ifndef PUBLIC_SERVER	
-		spaceImgWall  = newSpace(export_fce->fce_getCurrentArena()->w, export_fce->fce_getCurrentArena()->h,
-				320, 240, getStatusImgWall, setStatusImgWall);
+#ifndef PUBLIC_SERVER
+        spaceImgWall =
+            newSpace(export_fce->fce_getCurrentArena()->w,
+                     export_fce->fce_getCurrentArena()->h, 320, 240,
+                     getStatusImgWall, setStatusImgWall);
 #endif
-	}
+    }
 
-	addObjectToSpace(spaceWall, new);
+    addObjectToSpace(spaceWall, new);
 
-#ifndef PUBLIC_SERVER	
-	addObjectToSpace(spaceImgWall, new);
+#ifndef PUBLIC_SERVER
+    addObjectToSpace(spaceImgWall, new);
 #endif
 }
 
-int init(export_fce_t *p)
+int
+init(export_fce_t * p)
 {
-	export_fce = p;
-	listWall = newList();
+    export_fce = p;
+    listWall = newList();
 
-	return 0;
+    return 0;
 }
 
 #ifndef PUBLIC_SERVER
 
-static void action_drawwall(space_t *space, wall_t *wall, void *p)
+static void
+action_drawwall(space_t * space, wall_t * wall, void *p)
 {
-	drawWall(wall);
+    drawWall(wall);
 }
 
-int draw(int x, int y, int w, int h)
+int
+draw(int x, int y, int w, int h)
 {
-	if( spaceWall == NULL )
-	{
-		return 0;
-	}
+    if (spaceWall == NULL) {
+        return 0;
+    }
 
-	actionSpaceFromLocation(spaceImgWall, action_drawwall, NULL, x, y, w, h);
+    actionSpaceFromLocation(spaceImgWall, action_drawwall, NULL, x, y, w, h);
 
-	//printSpace(spaceWall);
+    //printSpace(spaceWall);
 
-	return 0;
+    return 0;
 }
 #endif
 
-static void action_eventwall(space_t *space, wall_t *wall, shot_t *shot)
+static void
+action_eventwall(space_t * space, wall_t * wall, shot_t * shot)
 {
-	arena_t *arena;
-	tux_t *author;
+    arena_t *arena;
+    tux_t *author;
 
-	arena = export_fce->fce_getCurrentArena();
+    arena = export_fce->fce_getCurrentArena();
 
-	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id );
+    author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
 
-	if( author != NULL &&
-	    author->bonus == BONUS_GHOST &&
-	    author->bonus_time > 0 )
-	{
-		return;
-	}
+    if (author != NULL &&
+        author->bonus == BONUS_GHOST && author->bonus_time > 0) {
+        return;
+    }
 
-	if( shot->gun == GUN_BOMBBALL)
-	{
-		if( export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT )
-		{
-			export_fce->fce_boundBombBall(shot);
-		}
+    if (shot->gun == GUN_BOMBBALL) {
+        if (export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
+            export_fce->fce_boundBombBall(shot);
+        }
 
-		return;
-	}
+        return;
+    }
 
-	//delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
-	shot->del = TRUE;
+    //delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
+    shot->del = TRUE;
 }
 
-static void action_eventshot(space_t *space, shot_t *shot, space_t *spaceWall)
+static void
+action_eventshot(space_t * space, shot_t * shot, space_t * spaceWall)
 {
-	actionSpaceFromLocation(spaceWall, action_eventwall, shot, shot->x, shot->y, shot->w, shot->h);
+    actionSpaceFromLocation(spaceWall, action_eventwall, shot, shot->x,
+                            shot->y, shot->w, shot->h);
 
-	if( shot->del == TRUE )
-	{
-		delObjectFromSpaceWithObject(space, shot, export_fce->fce_destroyShot);
-	}
+    if (shot->del == TRUE) {
+        delObjectFromSpaceWithObject(space, shot,
+                                     export_fce->fce_destroyShot);
+    }
 }
 
-int event()
+int
+event()
 {
-	if( spaceWall == NULL )
-	{
-		return 0;
-	}
+    if (spaceWall == NULL) {
+        return 0;
+    }
 
-	actionSpace(export_fce->fce_getCurrentArena()->spaceShot, action_eventshot, spaceWall);
+    actionSpace(export_fce->fce_getCurrentArena()->spaceShot,
+                action_eventshot, spaceWall);
 
-	return 0;
+    return 0;
 }
 
-int isConflict(int x, int y, int w, int h)
+int
+isConflict(int x, int y, int w, int h)
 {
-	if( spaceWall == NULL )
-	{
-		return 0;
-	}
+    if (spaceWall == NULL) {
+        return 0;
+    }
 
-	return isConflictWithObjectFromSpace(spaceWall, x, y, w, h);
+    return isConflictWithObjectFromSpace(spaceWall, x, y, w, h);
 }
 
-void cmdArena(char *line)
+void
+cmdArena(char *line)
 {
-	if( strncmp(line, "wall", 4) == 0 )cmd_wall(line);
+    if (strncmp(line, "wall", 4) == 0)
+        cmd_wall(line);
 }
 
-void recvMsg(char *msg)
+void
+recvMsg(char *msg)
 {
 }
 
-int destroy()
+int
+destroy()
 {
-	destroySpaceWithObject(spaceWall, destroyWall);
-#ifndef PUBLIC_SERVER	
-	destroySpace(spaceImgWall);
+    destroySpaceWithObject(spaceWall, destroyWall);
+#ifndef PUBLIC_SERVER
+    destroySpace(spaceImgWall);
 #endif
-	destroyList(listWall);
-	return 0;
+    destroyList(listWall);
+    return 0;
 }

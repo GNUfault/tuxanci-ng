@@ -1,5 +1,5 @@
-#include "main.h" 
-#include "interface.h" 
+#include "main.h"
+#include "interface.h"
 #include "font.h"
 
 static TTF_Font *g_font;
@@ -7,132 +7,136 @@ static int fontSize;
 
 static bool_t isFontInit = FALSE;
 
-bool_t isFontInicialized()
+bool_t
+isFontInicialized()
 {
-	return isFontInit;
+    return isFontInit;
 }
 
-void initFont(char *file,int size)
+void
+initFont(char *file, int size)
 {
-	char str[STR_PATH_SIZE];
+    char str[STR_PATH_SIZE];
 
-	assert( file != NULL );
-	assert( size > 0 );
+    assert(file != NULL);
+    assert(size > 0);
 
-	assert( isInterfaceInicialized() == TRUE );
+    assert(isInterfaceInicialized() == TRUE);
 
-	sprintf(str, "%s", file);
+    sprintf(str, "%s", file);
 
-	if( TTF_Init() == -1 )
-	{
-		fprintf(stderr, "%s\n", SDL_GetError());
-		return;
-	}
+    if (TTF_Init() == -1) {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return;
+    }
 
-	accessExistFile(str);
+    accessExistFile(str);
 
-	g_font = TTF_OpenFont(str, size);
-	TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
+    g_font = TTF_OpenFont(str, size);
+    TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
 
-	fontSize = size;
+    fontSize = size;
 #ifdef DEBUG
-	printf(_("Loading font: \"%s\"\n"), file);
+    printf(_("Loading font: \"%s\"\n"), file);
 #endif
-	isFontInit = TRUE;
+    isFontInit = TRUE;
 }
 
 /*
  * Zobrazi text *s na suradnicu x y s farbou RGB
  */
-void drawFont(char *s, int x, int y, int r, int g, int b)
+void
+drawFont(char *s, int x, int y, int r, int g, int b)
 {
-	SDL_Rect dst_rect;
-	SDL_Surface *text;
-	SDL_Surface *p;
-	SDL_Color farba_pisma = {r, g, b, 0};
+    SDL_Rect dst_rect;
+    SDL_Surface *text;
+    SDL_Surface *p;
+    SDL_Color farba_pisma = { r, g, b, 0 };
 
-	//printf("drawFont %s\n", s);
+    //printf("drawFont %s\n", s);
 
-	assert( s != NULL );
+    assert(s != NULL);
 
-	p = getSDL_Screen();
+    p = getSDL_Screen();
 
-	text = TTF_RenderUTF8_Blended(g_font, s, farba_pisma);
+    text = TTF_RenderUTF8_Blended(g_font, s, farba_pisma);
 
-	dst_rect.x = x;
-	dst_rect.y = y;
-	
-	SDL_BlitSurface(text, NULL, p, &dst_rect);
-	SDL_FreeSurface(text);
+    dst_rect.x = x;
+    dst_rect.y = y;
+
+    SDL_BlitSurface(text, NULL, p, &dst_rect);
+    SDL_FreeSurface(text);
 }
 
-void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
+void
+drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
 {
-	SDL_Rect src_rect, dst_rect;
-	SDL_Surface *text;
-	SDL_Surface *p;
-	SDL_Color farba_pisma = {r, g, b, 0};
-	int my_w, my_h;
+    SDL_Rect src_rect, dst_rect;
+    SDL_Surface *text;
+    SDL_Surface *p;
+    SDL_Color farba_pisma = { r, g, b, 0 };
+    int my_w, my_h;
 
-	assert( s != NULL );
+    assert(s != NULL);
 
-	p = getSDL_Screen();
+    p = getSDL_Screen();
 
-	text = TTF_RenderUTF8_Blended(g_font, s, farba_pisma);
+    text = TTF_RenderUTF8_Blended(g_font, s, farba_pisma);
 
-	
-	my_w = text->w;
 
-	if( my_w > w )
-	{
-		my_w = w;
-	}
+    my_w = text->w;
 
-	my_h = text->h;
+    if (my_w > w) {
+        my_w = w;
+    }
 
-	if( my_w > w )
-	{
-		my_h = h;
-	}
+    my_h = text->h;
 
-	src_rect.x = 0;
-	src_rect.y = 0;
-	src_rect.w = my_w;
-	src_rect.h = my_h;
+    if (my_w > w) {
+        my_h = h;
+    }
 
-	dst_rect.x = x;
-	dst_rect.y = y;
-	
-	SDL_BlitSurface(text, &src_rect, p, &dst_rect);
-	SDL_FreeSurface(text);
+    src_rect.x = 0;
+    src_rect.y = 0;
+    src_rect.w = my_w;
+    src_rect.h = my_h;
+
+    dst_rect.x = x;
+    dst_rect.y = y;
+
+    SDL_BlitSurface(text, &src_rect, p, &dst_rect);
+    SDL_FreeSurface(text);
 }
 
 /*
  * Vrati velkost daneho fontu.
  */
-int getFontSize()
+int
+getFontSize()
 {
-	return fontSize;
+    return fontSize;
 }
 
-void getTextSize(char *s, int *w, int *h)
+void
+getTextSize(char *s, int *w, int *h)
 {
-	assert( s != NULL );
-	assert( w != NULL );
-	assert( h != NULL );
+    assert(s != NULL);
+    assert(w != NULL);
+    assert(h != NULL);
 
-	TTF_SizeUTF8(g_font, s, w, h);
+    TTF_SizeUTF8(g_font, s, w, h);
 }
 
 /*
  * Uvolni font z pamete.
  */
-void quitFont()
+void
+quitFont()
 {
-	TTF_CloseFont(g_font);
-	TTF_Quit();
+    TTF_CloseFont(g_font);
+    TTF_Quit();
 #ifdef DEBUG
-	printf(_("Unloading font\n"));
+    printf(_("Unloading font\n"));
 #endif
-	isFontInit = FALSE;
+    isFontInit = FALSE;
 }

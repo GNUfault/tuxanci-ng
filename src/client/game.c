@@ -42,81 +42,84 @@
 #include "screen_credits.h"
 #include "screen_browser.h"
 
-static void initGame()
+static void
+initGame()
 {
-	createHomeDirector();
+    createHomeDirector();
 
-	initSDL();
-	initFont(FONT_FILE , FONT_SIZE);
-	initLayer();
-	initImageData();
+    initSDL();
+    initFont(FONT_FILE, FONT_SIZE);
+    initLayer();
+    initImageData();
 #ifndef NO_SOUND
-	initAudio();
-	initSound();
-	initMusic();
+    initAudio();
+    initSound();
+    initMusic();
 #endif
-	initScreen();
-	initArenaFile();
-	initTux();
-	initItem();
-	initShot();
-	initPanel();
-	initWorld();
+    initScreen();
+    initArenaFile();
+    initTux();
+    initItem();
+    initShot();
+    initPanel();
+    initWorld();
 
-	initScreenMainMenu();
-	initScreenAnalyze();
-	initScreenChoiceArena();
-	initScreenSetting();
-	initScreenSettingKeys();
-	initScreenGameType();
-	initScreenDownArena();
-	initScreenCredits();
-	initScreenTable();
-	initScreenBrowser();
+    initScreenMainMenu();
+    initScreenAnalyze();
+    initScreenChoiceArena();
+    initScreenSetting();
+    initScreenSettingKeys();
+    initScreenGameType();
+    initScreenDownArena();
+    initScreenCredits();
+    initScreenTable();
+    initScreenBrowser();
 }
 
-void quitGame()
+void
+quitGame()
 {
-	quitSDL();
+    quitSDL();
 
-	quitScreenMainMenu();
-	quitScreenAnalyze();
-	quitScreenSetting();
-	quitScreenSettingKeys();
-	quitScreenGameType();
-	quitScreenDownArena();
-	quitScreenChoiceArena();
-	quitScreenCredits();
-	quitScreenTable();
-	quitScreenBrowser();
+    quitScreenMainMenu();
+    quitScreenAnalyze();
+    quitScreenSetting();
+    quitScreenSettingKeys();
+    quitScreenGameType();
+    quitScreenDownArena();
+    quitScreenChoiceArena();
+    quitScreenCredits();
+    quitScreenTable();
+    quitScreenBrowser();
 
-	quitLayer();
-	quitFont();
-	quitScreen();
-	quitArenaFile();
-	quitItem();
-	quitTux();
-	quitShot();
-	quitPanel();
-	quitWorld();
-	quitImageData();
+    quitLayer();
+    quitFont();
+    quitScreen();
+    quitArenaFile();
+    quitItem();
+    quitTux();
+    quitShot();
+    quitPanel();
+    quitWorld();
+    quitImageData();
 #ifndef NO_SOUND
-	quitSound();
-	quitMusic();
-	quitAudio();
+    quitSound();
+    quitMusic();
+    quitAudio();
 #endif
 #ifdef DEBUG
-	printf(_("Quitting TUXANCI...\n"));
+    printf(_("Quitting TUXANCI...\n"));
 #endif
-	exit(0);
+    exit(0);
 }
 
-void startGame()
+void
+startGame()
 {
-	initGame();
+    initGame();
 
-	startScreen("mainMenu");
+    startScreen("mainMenu");
 
-	eventSDL();
-	quitGame();
+    eventSDL();
+    quitGame();
 }
