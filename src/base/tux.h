@@ -81,58 +81,58 @@
 
 typedef struct tux_struct
 {
-	int id;
+    int id;
 
-	int x;
-	int y;
+    int x;
+    int y;
 
-	char name[STR_NAME_SIZE];
+    char name[STR_NAME_SIZE];
 
-	int status;
-	int control;
-	int position;
-	int score;
+    int status;
+    int control;
+    int position;
+    int score;
 
-	int gun;
-	int shot[GUN_COUNT];
-	int round;
-	int bonus;
+    int gun;
+    int shot[GUN_COUNT];
+    int round;
+    int bonus;
 
-	int bonus_time;
-	int pickup_time;
-	
-	bool_t isCanShot;
-	bool_t isCanSwitchGun;
+    int bonus_time;
+    int pickup_time;
 
-	int frame;
+    bool_t isCanShot;
+    bool_t isCanSwitchGun;
 
-	void *client;
+    int frame;
+
+    void *client;
 } tux_t;
 
 extern bool_t isTuxInicialized();
 extern void initTux();
-extern tux_t* newTux();
-extern void tuxSetName(tux_t *tux, char *name);
-extern bool_t isTuxAnyGun(tux_t *tux);
+extern tux_t *newTux();
+extern void tuxSetName(tux_t * tux, char *name);
+extern bool_t isTuxAnyGun(tux_t * tux);
 extern void getCourse(int n, int *x, int *y);
-extern void drawTux(tux_t *tux);
+extern void drawTux(tux_t * tux);
 //extern void drawListTux(list_t *listTux);
-extern void eventTuxIsDead(tux_t *tux);
+extern void eventTuxIsDead(tux_t * tux);
 //extern tux_t* isConflictWithListTux(list_t *listTux, int x, int y, int w, int h);
 //extern int isConflictTuxWithListTux(tux_t *tux, list_t *listTux);
-extern void eventConflictTuxWithShot(arena_t *arena);
+extern void eventConflictTuxWithShot(arena_t * arena);
 //extern void eventConflictTuxWithTeleport(list_t *listTux, list_t *listTeleport);
-extern void tuxTeleport(tux_t *tux);
-extern void actionTux(tux_t *tux, int action);
-extern void eventTux(tux_t *tux);
+extern void tuxTeleport(tux_t * tux);
+extern void actionTux(tux_t * tux, int action);
+extern void eventTux(tux_t * tux);
 //extern void eventListTux(list_t *listTux);
 //extern tux_t* getTuxID(list_t *listTux, int id);
-extern void getTuxProportion(tux_t *tux, int *x,int *y, int *w, int *h);
-extern void replaceTuxID(tux_t *tux, int id);
-extern void setTuxProportion(tux_t *tux, int x, int y);
-extern void getStatusTux(void *p, int *id, int *x,int *y, int *w, int *h);
+extern void getTuxProportion(tux_t * tux, int *x, int *y, int *w, int *h);
+extern void replaceTuxID(tux_t * tux, int id);
+extern void setTuxProportion(tux_t * tux, int x, int y);
+extern void getStatusTux(void *p, int *id, int *x, int *y, int *w, int *h);
 extern void setStatusTux(void *p, int x, int y, int w, int h);
-extern void destroyTux(tux_t *tux);
+extern void destroyTux(tux_t * tux);
 extern void quitTux();
 
 #endif

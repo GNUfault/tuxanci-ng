@@ -22,22 +22,21 @@
 
 typedef struct widget_textfield
 {
-	int w, h;
-	int canWrite;
-	int timeBlick;
-	int time;
-	int atime;
-	int filter;
-	char text[STR_SIZE];
-	bool_t active;
+    int w, h;
+    int canWrite;
+    int timeBlick;
+    int time;
+    int atime;
+    int filter;
+    char text[STR_SIZE];
+    bool_t active;
 } widget_textfield_t;
 
-extern widget_t* newWidgetTextfield(char *text, int filter, int x, int y);
-extern void setWidgetTextFiledText(widget_t *widget, char *text);
-extern char* getTextFromWidgetTextfield(widget_t *widget);
-extern void drawWidgetTextfield(widget_t *widget);
-extern void eventWidgetTextfield(widget_t *widget);
-extern void destroyWidgetTextfield(widget_t *widget);
+extern widget_t *newWidgetTextfield(char *text, int filter, int x, int y);
+extern void setWidgetTextFiledText(widget_t * widget, char *text);
+extern char *getTextFromWidgetTextfield(widget_t * widget);
+extern void drawWidgetTextfield(widget_t * widget);
+extern void eventWidgetTextfield(widget_t * widget);
+extern void destroyWidgetTextfield(widget_t * widget);
 
 #endif
-

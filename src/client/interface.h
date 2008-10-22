@@ -33,7 +33,7 @@ extern bool_t isInterfaceInicialized();
 extern void enableKeyboardBuffer();
 extern void disableKeyboardBuffer();
 extern int initSDL();
-extern SDL_Surface* getSDL_Screen();
+extern SDL_Surface *getSDL_Screen();
 extern void getMousePosition(int *x, int *y);
 extern int isMouseClicked();
 extern int isPressAnyKey();

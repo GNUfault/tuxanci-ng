@@ -17,4 +17,3 @@ extern void eventClient();
 extern void quitClient();
 
 #endif
-

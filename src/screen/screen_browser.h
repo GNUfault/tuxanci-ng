@@ -3,23 +3,24 @@
 
 #define SCREEN_BROWSER_H
 
-typedef struct server_context {
-  	struct server_context *next, *prev;
+typedef struct server_context
+{
+    struct server_context *next, *prev;
 
-	unsigned char state;
+    unsigned char state;
 
-	unsigned char ping;
+    unsigned char ping;
 
-	unsigned ip;
-	unsigned port;
+    unsigned ip;
+    unsigned port;
 
-	char *name;
+    char *name;
 
-	char *version;
-	unsigned char clients;
-	unsigned char maxclients;
-	unsigned uptime;
-	char *arena;
+    char *version;
+    unsigned char clients;
+    unsigned char maxclients;
+    unsigned uptime;
+    char *arena;
 } server_t;
 
 

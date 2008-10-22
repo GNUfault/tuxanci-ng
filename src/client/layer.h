@@ -8,21 +8,21 @@
 
 typedef struct layer_str
 {
-	int x; //suradnice obrazka na obrazovke
-	int y;
+    int x;                      //suradnice obrazka na obrazovke
+    int y;
 
-	int w; //rozmery obrazka na obrazovke
-	int h;
+    int w;                      //rozmery obrazka na obrazovke
+    int h;
 
-	int px; //suradnice casti surfrace
-	int py;
+    int px;                     //suradnice casti surfrace
+    int py;
 
-	int pw; //rozmeri casti surfrace
-	int ph;
+    int pw;                     //rozmeri casti surfrace
+    int ph;
 
-	int layer;
+    int layer;
 
-	image_t *image; //dane surfrace
+    image_t *image;             //dane surfrace
 } layer_t;
 
 extern bool_t isLayerInicialized();
@@ -39,16 +39,16 @@ extern void initLayer();
  *          (0 - pod tuxancami | 1 - na tej istej ako tuxanci | 2 - nad tuxancami)
  */
 
-extern void addLayer(image_t *img,
-	int x,int y, int px,int py,
-	int w,int h, int player);
+extern void addLayer(image_t * img,
+                     int x, int y, int px, int py, int w, int h, int player);
 
 /*
  * Vykresli zoznam na obrazovku
  */
 extern void drawLayer();
 extern void drawLayerCenter(int x, int y);
-extern void drawLayerSplit(int local_x, int local_y, int x, int y, int w, int h);
+extern void drawLayerSplit(int local_x, int local_y, int x, int y, int w,
+                           int h);
 extern void flushLayer();
 extern void quitLayer();
 

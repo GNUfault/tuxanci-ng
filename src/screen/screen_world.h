@@ -15,12 +15,12 @@
 
 extern bool_t isScreenWorldInicialized();
 extern void initWorld();
-extern void setWorldArena(arenaFile_t *arenaFile);
+extern void setWorldArena(arenaFile_t * arenaFile);
 extern void setWorldEnd();
 extern void countRoundInc();
-extern tux_t* getControlTux(int control_type);
-extern void setControlTux(tux_t *tux, int control_type);
-extern void tuxControl(tux_t *p);
+extern tux_t *getControlTux(int control_type);
+extern void setControlTux(tux_t * tux, int control_type);
+extern void tuxControl(tux_t * p);
 extern void drawWorld();
 extern void eventWorld();
 extern void startArena();

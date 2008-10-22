@@ -7,7 +7,7 @@
 
 extern void initHeightScore(char *file);
 extern int addPlayerInHighScore(char *name, int score);
-extern char* getTableItem(int index);
+extern char *getTableItem(int index);
 extern void quitHeightScore();
 
 #endif

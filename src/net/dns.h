@@ -3,6 +3,6 @@
 
 #define DNS_H
 
-extern char* getIPFormDNS(char *domain);
+extern char *getIPFormDNS(char *domain);
 
 #endif

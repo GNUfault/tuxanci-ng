@@ -17,26 +17,28 @@
 typedef struct struct_sock_udp_t
 {
 #ifndef __WIN32__
-	int sock;
+    int sock;
 #else
-	SOCKET sock;
+    SOCKET sock;
 #endif
-	int proto;
+    int proto;
 
 #ifdef SUPPORT_IPv6
-	struct sockaddr_in6 sockAddr6;
+    struct sockaddr_in6 sockAddr6;
 #endif
-	struct sockaddr_in sockAddr;
+    struct sockaddr_in sockAddr;
 } sock_udp_t;
 
-extern sock_udp_t* newSockUdp(int proto);
-extern void destroySockUdp(sock_udp_t *p);
-extern sock_udp_t* bindUdpSocket(char *address, int port, int proto);
-extern sock_udp_t* connectUdpSocket(char *address, int port, int proto);
-extern int setUdpSockNonBlock(sock_udp_t *p);
-extern int readUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);
-extern int writeUdpSocket(sock_udp_t *src, sock_udp_t *dst, void *address, int len);
-extern void getSockUdpIp(sock_udp_t *p, char *str_ip, int len);
-extern int getSockUdpPort(sock_udp_t *p);
-extern void closeUdpSocket(sock_udp_t *p);
+extern sock_udp_t *newSockUdp(int proto);
+extern void destroySockUdp(sock_udp_t * p);
+extern sock_udp_t *bindUdpSocket(char *address, int port, int proto);
+extern sock_udp_t *connectUdpSocket(char *address, int port, int proto);
+extern int setUdpSockNonBlock(sock_udp_t * p);
+extern int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address,
+                         int len);
+extern int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address,
+                          int len);
+extern void getSockUdpIp(sock_udp_t * p, char *str_ip, int len);
+extern int getSockUdpPort(sock_udp_t * p);
+extern void closeUdpSocket(sock_udp_t * p);
 #endif

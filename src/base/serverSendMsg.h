@@ -10,6 +10,7 @@
 #define PROTO_SEND_BUT			3
 #define PROTO_SEND_ALL_SEES_TUX		4
 
-extern void protoSendClient(int type, client_t *client, char *msg, int type2, int id);
+extern void protoSendClient(int type, client_t * client, char *msg, int type2,
+                            int id);
 
 #endif

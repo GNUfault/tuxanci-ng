@@ -21,7 +21,7 @@
 
 extern bool_t isPanelInicialized();
 extern void initPanel();
-extern void drawPanel(tux_t *tux_right, tux_t *tux_left);
+extern void drawPanel(tux_t * tux_right, tux_t * tux_left);
 extern void quitPanel();
 
 #endif

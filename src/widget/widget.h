@@ -17,17 +17,18 @@
 
 typedef struct widget_struct
 {
-	int type;
-	int x, y;
-	int w, h;
-	void *private_data;	
+    int type;
+    int x, y;
+    int w, h;
+    void *private_data;
 } widget_t;
 
-extern widget_t* newWidget(int type, int x, int y, int w, int h, void *private_data);
-extern void widgetSetLocation(widget_t *p, int x, int y);
-extern void widgetGetLocation(widget_t *p, int *x, int *y);
-extern void widgetSetSize(widget_t *p, int w, int h);
-extern void widgetGetSize(widget_t *p, int *w, int *h);
-extern void destroyWidget(widget_t *p);
+extern widget_t *newWidget(int type, int x, int y, int w, int h,
+                           void *private_data);
+extern void widgetSetLocation(widget_t * p, int x, int y);
+extern void widgetGetLocation(widget_t * p, int *x, int *y);
+extern void widgetSetSize(widget_t * p, int w, int h);
+extern void widgetGetSize(widget_t * p, int *w, int *h);
+extern void destroyWidget(widget_t * p);
 
 #endif

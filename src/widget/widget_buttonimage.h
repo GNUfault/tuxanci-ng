@@ -11,18 +11,18 @@
 
 typedef struct widget_buttonimageimage
 {
-	int w, h;
-	int active;
-	image_t *image;
-	void (*fce_event)(void *);
+    int w, h;
+    int active;
+    image_t *image;
+    void (*fce_event) (void *);
 } widget_buttonimage_t;
 
-extern widget_t* newWidgetButtonimage(image_t *image, int x, int y,
-		void (*fce_event)(void *));
+extern widget_t *newWidgetButtonimage(image_t * image, int x, int y,
+                                      void (*fce_event) (void *));
 
-extern void setWidgetButtonimageActive(widget_t *widget, bool_t active);
-extern void drawWidgetButtonimage(widget_t *widget);
-extern void eventWidgetButtonimage(widget_t *widget);
-extern void destroyWidgetButtonimage(widget_t *widget);
+extern void setWidgetButtonimageActive(widget_t * widget, bool_t active);
+extern void drawWidgetButtonimage(widget_t * widget);
+extern void eventWidgetButtonimage(widget_t * widget);
+extern void destroyWidgetButtonimage(widget_t * widget);
 
 #endif

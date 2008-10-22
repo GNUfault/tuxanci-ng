@@ -11,8 +11,8 @@
 
 extern void drawScreenChoiceArena();
 extern void eventScreenChoiceArena();
-extern arenaFile_t* getChoiceArena();
-extern void setChoiceArena(arenaFile_t *arenaFile);
+extern arenaFile_t *getChoiceArena();
+extern void setChoiceArena(arenaFile_t * arenaFile);
 extern void initScreenChoiceArena();
 extern void quitScreenChoiceArena();
 

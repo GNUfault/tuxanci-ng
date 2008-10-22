@@ -29,34 +29,34 @@
 
 typedef struct client_struct
 {
-	int type;
+    int type;
 
-	sock_udp_t *socket_udp;
+    sock_udp_t *socket_udp;
 
-	buffer_t *recvBuffer;
-	buffer_t *sendBuffer;
+    buffer_t *recvBuffer;
+    buffer_t *sendBuffer;
 
-	int status;
+    int status;
 
-	tux_t *tux;
+    tux_t *tux;
 
-	protect_t *protect;
+    protect_t *protect;
 
-	list_t *listSendMsg;
-	list_t *listRecvMsg;
+    list_t *listSendMsg;
+    list_t *listRecvMsg;
 
-	list_t *listSeesShot;
+    list_t *listSeesShot;
 } client_t;
 
 extern int initServer(char *ip4, int port4, char *ip6, int port6);
 extern time_t getUpdateServer();
-extern client_t* newAnyClient();
-extern void destroyAnyClient(client_t *p);
-extern list_t* getListServerClient();
+extern client_t *newAnyClient();
+extern void destroyAnyClient(client_t * p);
+extern list_t *getListServerClient();
 extern int getServerMaxClients();
 extern void setServerTimer();
 extern void setServerMaxClients(int n);
-extern void sendClient(client_t *p, char *msg);
+extern void sendClient(client_t * p, char *msg);
 extern void eventServer();
 extern void quitServer();
 

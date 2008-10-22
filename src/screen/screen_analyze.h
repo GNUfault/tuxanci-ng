@@ -7,8 +7,8 @@
 
 typedef struct analyze_struct
 {
-	char *name;
-	int score;
+    char *name;
+    int score;
 } analyze_t;
 
 extern void startScreenAnalyze();

@@ -18,7 +18,7 @@
 extern void initRadar();
 extern void addToRadar(int id, int x, int y, int type);
 extern void delFromRadar(int id);
-extern void drawRadar(arena_t *arena);
+extern void drawRadar(arena_t * arena);
 extern void quitRadar();
 
 #endif
