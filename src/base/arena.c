@@ -22,6 +22,7 @@
 static arena_t *currentArena;
 static int splitType;
 
+#ifndef PUBLIC_SERVER
 static int
 isBigArena(arena_t * arena)
 {
@@ -43,6 +44,7 @@ isTuxNear(tux_t * tux1, tux_t * tux2)
 
     return 0;
 }
+#endif
 
 void
 setCurrentArena(arena_t * p)
