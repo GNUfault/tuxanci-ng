@@ -33,7 +33,7 @@
 #endif
 
 #ifdef PUBLIC_SERVER
-#include "heightScore.h"
+#include "highScore.h"
 #include "publicServer.h"
 #include "serverConfigFile.h"
 #endif
@@ -298,7 +298,7 @@ proto_recv_listscore_server(client_t * client, char *msg)
     recv_count = sscanf(msg, "%s %d", cmd, &max);
 
     if (recv_count != 2) {
-        max = HEIGHTSCORE_MAX_PLAYERS;
+        max = HIGHSCORE_MAX_PLAYERS;
     }
 
     proto_send_listscore_server(PROTO_SEND_ONE, client, max);

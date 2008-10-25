@@ -217,14 +217,14 @@ initSettingFile()
     configFile = loadTextFile(path);
 
     if (configFile == NULL) {
-        fprintf(stderr, _("I am unable to load: \"%s\" !\n"), path);
+        fprintf(stderr, _("I am unable to load: \"%s\"!\n"), path);
         fprintf(stderr, _("Creating: \"%s\"\n"), path);
 
         configFile = newTextFile(path);
     }
 
     if (configFile == NULL) {
-        fprintf(stderr, _("I was unable to create: \"%s\" !\n"), path);
+        fprintf(stderr, _("I was unable to create: \"%s\"!\n"), path);
         return;
     }
 
@@ -384,11 +384,11 @@ initScreenSetting()
         newWidgetCheck(label_sound->x + label_sound->w + 10,
                        WINDOW_SIZE_Y - 80, isSoundActive(), eventWidget);
     label_ai =
-        newWidgetLabel("AI:", check_sound->x + WIDGET_CHECK_WIDTH + 10,
+        newWidgetLabel(_("AI:"), check_sound->x + WIDGET_CHECK_WIDTH + 10,
                        WINDOW_SIZE_Y - 85, WIDGET_LABEL_LEFT);
 #else
     label_ai =
-        newWidgetLabel("AI:", 100, WINDOW_SIZE_Y - 85, WIDGET_LABEL_LEFT);
+        newWidgetLabel(_("AI:"), 100, WINDOW_SIZE_Y - 85, WIDGET_LABEL_LEFT);
 #endif
 
     check_ai =

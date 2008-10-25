@@ -85,7 +85,7 @@ initNetMuliplayer(int type, char *ip, int port, int proto)
         break;
 #endif
     default:
-        assert(!_("Variable netGameType has a really wierd value!"));
+        assert(!_("Variable netGameType has a really weird value!"));
         break;
     }
 
@@ -109,7 +109,7 @@ eventNetMultiplayer()
         break;
 #endif
     default:
-        assert(!_("Variable netGameType has a really wierd value!"));
+        assert(!_("Variable netGameType has a really weird value!"));
         break;
     }
 }
@@ -131,7 +131,7 @@ quitNetMultiplayer()
         break;
 #endif
     default:
-        assert(!_("Variable netGameType has a really wierd value!"));
+        assert(!_("Variable netGameType has a really weird value!"));
         break;
     }
 

@@ -34,7 +34,7 @@
 
 #include "publicServer.h"
 #include "serverConfigFile.h"
-#include "heightScore.h"
+#include "highScore.h"
 #include "log.h"
 
 #include "dns.h"
@@ -260,8 +260,8 @@ initPublicServer()
         return -1;
     }
 
-    initHeightScore(getSetting
-                    ("SCORE_FILE", "--score-file", "/tmp/heightscore"));
+    initHighScore(getSetting
+                    ("SCORE_FILE", "--score-file", "/tmp/highscore"));
 
     loadArena();
 
@@ -349,7 +349,7 @@ quitPublicServer()
     quitServerConfigFile();
     quitModule();
     quitListID();
-    quitHeightScore();
+    quitHighScore();
     quitLog();
 
     exit(0);

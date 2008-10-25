@@ -5,6 +5,8 @@
 
 # remove folders
 find ./ -type d -name CMakeFiles -print | xargs -i rm {} -rf
+# some people build Tuxanci in speacial folder
+rm -rf ./build
 
 # remove cmake files
 find ./ \( -type f -name \*.so -print , -type f -name \*.cmake -print , -type f -name CMakeCache.txt -print , -type f -name Makefile -print \) | grep -v "./cmake" | xargs -i rm {} -f
@@ -18,3 +20,6 @@ find src -name tuxanci-\* -print | xargs -i rm {} -f
 
 # remove compiled gettext files
 find ./ -name \*.gmo -print | xargs -i rm {} -f
+
+# remove temporary backup files
+find ./ -type f -name \*~ -print | xargs -i rm {} -f

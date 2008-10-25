@@ -152,7 +152,7 @@ loadHighscoreFile()
     textFile = loadTextFile(path);
 
     if (textFile == NULL) {
-        fprintf(stderr, _("I am unable to load: \"%s\" !\n"), path);
+        fprintf(stderr, _("I am unable to load: \"%s\"!\n"), path);
         fprintf(stderr, _("Creating: \"%s\"\n"), path);
         textFile = newTextFile(path);
     }
@@ -161,7 +161,7 @@ loadHighscoreFile()
     }
 
     if (textFile == NULL) {
-        fprintf(stderr, _("I was unable to create: \"%s\" !\n"), path);
+        fprintf(stderr, _("I was unable to create: \"%s\"!\n"), path);
         return;
     }
 

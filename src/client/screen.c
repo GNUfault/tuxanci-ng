@@ -114,7 +114,7 @@ switchScreen()
 
     if (currentScreen != NULL) {
 #ifdef DEBUG
-        printf(_("Stopping screen:\" %s\"\n"), currentScreen->name);
+        printf(_("Stopping screen: \"%s\"\n"), currentScreen->name);
 #endif
         currentScreen->fce_stop();
     }

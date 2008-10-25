@@ -123,7 +123,7 @@ eventTimer(list_t * listTimer)
             }
             break;
         default:
-            assert(!_("Timer is really wierdly set!"));
+            assert(!_("Timer is really weirdly set!"));
             break;
         }
     }

@@ -7,19 +7,19 @@
 #include "main.h"
 #include "list.h"
 #include "textFile.h"
-#include "heightScore.h"
+#include "highScore.h"
 
 static textFile_t *textFile;
 
 void
-initHeightScore(char *file)
+initHighScore(char *file)
 {
     int i;
 
     textFile = loadTextFile(file);
 
     if (textFile == NULL) {
-        fprintf(stderr, _("I am unable to load: \"%s\" !\n"), file);
+        fprintf(stderr, _("I am unable to load: \"%s\"!\n"), file);
         fprintf(stderr, _("Creating: \"%s\"\n"), file);
         textFile = newTextFile(file);
     }
@@ -31,11 +31,11 @@ initHeightScore(char *file)
     }
 
     if (textFile == NULL) {
-        fprintf(stderr, _("I was unable to create: \"%s\" !\n"), file);
+        fprintf(stderr, _("I was unable to create: \"%s\"!\n"), file);
         return;
     }
 
-    for (i = 0; i < HEIGHTSCORE_MAX_PLAYERS; i++) {
+    for (i = 0; i < HIGHSCORE_MAX_PLAYERS; i++) {
         addList(textFile->text, strdup("no_name 0"));
     }
 
@@ -51,7 +51,7 @@ addPlayerInHighScore(char *name, int score)
         return -1;              // Ha ha ha
     }
 
-    for (i = 0; i < HEIGHTSCORE_MAX_PLAYERS; i++) {
+    for (i = 0; i < HIGHSCORE_MAX_PLAYERS; i++) {
         char *line;
         char thisName[STR_NAME_SIZE];
         int thisCore;
@@ -64,7 +64,7 @@ addPlayerInHighScore(char *name, int score)
 
             sprintf(new, "%s %d", name, score);
             insList(textFile->text, i, strdup(new));
-            delListItem(textFile->text, HEIGHTSCORE_MAX_PLAYERS, free);
+            delListItem(textFile->text, HIGHSCORE_MAX_PLAYERS, free);
             //printTextFile(textFile);
             saveTextFile(textFile);
 
@@ -86,7 +86,7 @@ getTableItem(int index)
 }
 
 void
-quitHeightScore()
+quitHighScore()
 {
     if (textFile != NULL) {
         saveTextFile(textFile);

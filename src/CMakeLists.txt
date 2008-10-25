@@ -72,7 +72,7 @@ SET ( SRC_audio
 
 SET ( SRC_server
 	${WORKDIR}/server/log	${WORKDIR}/server/serverConfigFile
-	${WORKDIR}/server/heightScore	${WORKDIR}/server/publicServer
+	${WORKDIR}/server/highScore	${WORKDIR}/server/publicServer
 )
 ###############################################################################
 # AUDIO CHECK

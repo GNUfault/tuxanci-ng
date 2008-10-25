@@ -35,7 +35,7 @@
 
 #ifdef PUBLIC_SERVER
 #include "publicServer.h"
-#include "heightScore.h"
+#include "highScore.h"
 #include "log.h"
 #endif
 
