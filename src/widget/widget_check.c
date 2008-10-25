@@ -85,7 +85,7 @@ eventWidgetCheck(widget_t * widget)
         }
 
         if (p->fce_event != NULL) {
-            p->fce_event(p);
+            p->fce_event(widget);
         }
     }
 }
