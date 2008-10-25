@@ -2,4 +2,5 @@
 @CMAKE_INSTALL_DATADIR@/@APPNAME@/arena/night_workshift.zip NW
 @CMAKE_INSTALL_DATADIR@/@APPNAME@/arena/in_a_captivity_of_8-bit.zip IACO8B
 @CMAKE_INSTALL_DATADIR@/@APPNAME@/arena/construction_site.zip CS
+@CMAKE_INSTALL_DATADIR@/@APPNAME@/arena/ba_in_a_captivity_of_8-bit.zip BAIACO8B
 

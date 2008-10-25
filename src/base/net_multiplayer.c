@@ -54,16 +54,14 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 		switch (proto) {
 		case PROTO_UDPv4:
 			if (initServer(ip, port, NULL, 0) != 1) {
-				fprintf(stderr,
-						_("Unable to inicialize network game as server!\n"));
+				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 				netGameType = NET_GAME_TYPE_NONE;
 				return -1;
 			}
 			break;
 		case PROTO_UDPv6:
 			if (initServer(NULL, 0, ip, port) != 1) {
-				fprintf(stderr,
-						_("Unable to inicialize network game as server!\n"));
+				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 				netGameType = NET_GAME_TYPE_NONE;
 				return -1;
 			}
@@ -74,8 +72,7 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 #ifndef PUBLIC_SERVER
 	case NET_GAME_TYPE_CLIENT:
 		if (initClient(ip, port, proto) != 0) {
-			fprintf(stderr,
-					_("Unable to inicialize network game as client!\n"));
+			fprintf(stderr, _("Unable to inicialize network game as client!\n"));
 			netGameType = NET_GAME_TYPE_NONE;
 			return -1;
 		}

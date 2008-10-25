@@ -20,7 +20,7 @@
 
 #define STR_PATH_SIZE			4096
 #define STR_ARENA_NET_NAME_SIZE		256
-#define BUFFER_SEND_FILE_SIZE 4096
+#define BUFFER_SEND_FILE_SIZE		4096
 
 #define NET_STATUS_OK		0
 #define NET_STATUS_ZOMBIE	1
@@ -118,7 +118,7 @@ static void proto_getarena(client_t * client, char *msg)
 		if (client->file == NULL || client->fileSize < 0) {
 			client->file = NULL;
 			client->fileSize = 0;
-			sprintf(msg_out, "ERR server has a problem !\n");
+			sprintf(msg_out, "ERR server has a problem!\n");
 		} else {
 			sprintf(msg_out, "OK %d\n", client->fileSize);
 		}
@@ -335,7 +335,7 @@ int main(int argc, char **argv)
 {
 	signal(SIGPIPE, SIG_IGN);
 
-	initDownServer("127.0.0.1", 2200);
+	initDownServer("0.0.0.0", 6800);
 
 	while (1) {
 		startDownServer();
