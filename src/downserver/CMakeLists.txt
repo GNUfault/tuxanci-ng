@@ -19,8 +19,8 @@ IF ( Server )
 ###############################################################################
 # COMPILATION AND INSTALLATION ITSELF
 ###############################################################################
-	ADD_EXECUTABLE ( tuxanci-downserver-${VERSION} ${SRC} )
-	INSTALL ( TARGETS tuxanci-downserver-${VERSION}
+	ADD_EXECUTABLE ( tuxanci-downserver-${TUXANCI_VERSION} ${SRC} )
+	INSTALL ( TARGETS tuxanci-downserver-${TUXANCI_VERSION}
 		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME} )
 ENDIF ( Server )
