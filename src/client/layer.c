@@ -22,7 +22,7 @@ bool_t isLayerInicialized()
 }
 
 /*
- * Inicializuje globalny zoznam vsrtiev
+ * Initializes global list of the layers
  */
 void initLayer()
 {
@@ -44,7 +44,7 @@ addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
 {
 	layer_t *new;
 	layer_t *actual;
-	int i, j;
+	int i;
 
 	assert(img != NULL);
 
@@ -58,29 +58,30 @@ addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
 	new->layer = player;
 	new->image = img;
 
-	//first, we check if we should insert our image at the begining of the queue
+	// first, we check if we should insert our image at the begining of the queue
 	if (listLayer->count == 0) {
 		addList(listLayer, new);
 		return;
 	};
 
-	if (((layer_t *)listLayer->list[0])->layer > new->layer) {
+	if (((layer_t *) listLayer->list[0])->layer > new->layer) {
 		insList(listLayer, 0, new);
 		return;
 	};
 
-	//here we are sure, that we want to insert it somewhere else than the begining
-	for (i = 0; i < listLayer->count; i ++) {
+	// here we are sure, that we want to insert it somewhere else than the begining
+	for (i = 0; i < listLayer->count; i++) {
 		actual = getList(listLayer, i);
-		//if we are at the same layer, we apply insert sort in (y+h)
+		// if we are at the same layer, we apply insert sort in (y+h)
 		while ((actual->layer == new->layer)) {
 			if ((new->y + new->h) < (actual->y + actual->h)) {
 				insList(listLayer, i, new);
 				return;
 			};
 
-			i ++;
-			if (i >= listLayer->count) break;
+			i++;
+			if (i >= listLayer->count)
+				break;
 			actual = getList(listLayer, i);
 
 			if (actual->layer > new->layer) {
@@ -88,9 +89,10 @@ addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
 				return;
 			};
 		};
-		if (i >= listLayer->count) break;
+		if (i >= listLayer->count)
+			break;
 
-		//we check if we are on layer, that is not present yet
+		// we check if we are on layer, that is not present yet
 		if (actual->layer > new->layer) {
 			insList(listLayer, i, new);
 			return;
@@ -100,9 +102,8 @@ addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
 }
 
 /*
- * Vykresli vsetky polozky na obrazovku
- * poukadane podla vrstvy a suradnice Y+H
- * po dokresleni sa zoznam uvolni.
+ * Draws all items onto the screen according to the layer and coordinate Y+H
+ * After drawing frees the list
  */
 void drawLayer()
 {
@@ -112,8 +113,7 @@ void drawLayer()
 	for (i = 0; i < listLayer->count; i++) {
 		this = (layer_t *) listLayer->list[i];
 
-		drawImage(this->image,
-				  this->x, this->y, this->px, this->py, this->w, this->h);
+		drawImage(this->image, this->x, this->y, this->px, this->py, this->w, this->h);
 	}
 
 	//printf("listLayer->count = %d\n", listLayer->count);
@@ -217,7 +217,7 @@ void flushLayer()
 }
 
 /*
- * Odstrani zoznam vrtsiev z pamete.
+ * Delete list of layers from memory
  */
 void quitLayer()
 {
