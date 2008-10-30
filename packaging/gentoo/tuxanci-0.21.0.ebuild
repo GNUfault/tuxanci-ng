@@ -1,35 +1,33 @@
 # Copyright 1999-2008 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
+# $Header: /var/cvsroot/gentoo-x86/games-arcade/tuxanci/tuxanci-0.21.0.ebuild,v 1.2 2008/10/27 08:56:52 scarabeus Exp $
 
-EAPI="2"
+EAPI="1"
 
-inherit games cmake-utils git
+inherit cmake-utils games
 
 DESCRIPTION="Tuxanci is first cushion shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
-EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
-#SRC_URI="http://download.${PN}.org/${P}.tar.bz2"
-LICENSE="GPL-2"
+SRC_URI="http://download.${PN}.org/${P}.tar.bz2"
 
+LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="alsa debug dedicated nls"
 # alsa is used only when building client
 
 RDEPEND="!dedicated? (
-			>=media-libs/libsdl-1.2.10[X]
-			>=media-libs/sdl-ttf-2.0.7[X]
-			>=media-libs/sdl-image-1.2.6-r1[png]
+			>=media-libs/libsdl-1.2.10
+			>=media-libs/sdl-ttf-2.0.7
+			>=media-libs/sdl-image-1.2.6-r1
 			alsa? (
-				>=media-libs/sdl-mixer-1.2.7[vorbis]
+				>=media-libs/sdl-mixer-1.2.7
 			)
 		)
-	dev-libs/zziplib[sdl]"
-DEPEND=">=dev-util/cmake-2.6.0
+	dev-libs/zziplib"
+DEPEND="${RDEPEND}
+	>=dev-util/cmake-2.6.0
 	nls? ( sys-devel/gettext )"
-
-S="${WORKDIR}"/"${PN}"
 
 src_configure() {
 	local mycmakeargs
@@ -37,10 +35,12 @@ src_configure() {
 	use debug && mycmakeargs="${mycmakeargs} -DDebug=1"
 	use dedicated && mycmakeargs="${mycmakeargs} -DServer=1"
 	use nls && mycmakeargs="${mycmakeargs} -DNLS=1"
+	# This cant be quoted due to cmake nature.
+	# Read as: quote it and it wont compile.
 	mycmakeargs="${mycmakeargs} -DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
 		-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
-		-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/${PF}
+		-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/
 		-DCMAKE_ETC_PATH=${GAMES_SYSCONFDIR} -DLIB_INSTALL_DIR=$(games_get_libdir)"
 	cmake-utils_src_configure
 }
@@ -50,12 +50,9 @@ src_install() {
 	use dedicated && MY_PN=${PN}-server || MY_PN=${PN}
 
 	cmake-utils_src_install
-	#dosym ${GAMES_BINDIR}/${P} ${GAMES_BINDIR}/${PN}
-	dosym ${GAMES_BINDIR}/${MY_PN}-dev ${GAMES_BINDIR}/${MY_PN}
+	dosym "${GAMES_BINDIR}"/${MY_PN}-${PV} "${GAMES_BINDIR}"/${MY_PN}
 	doicon data/${PN}.svg
 	# we compile our desktop file
-	cd "${WORKDIR}"/tuxanci_build
 	domenu data/${PN}.desktop
-
 	prepgamesdirs
 }

@@ -14,7 +14,7 @@
 # -DCMAKE_DATA_PATH=/other/bla/	# install path for data
 # -DCMAKE_CONF_PATH=/etc	# install path for conf
 # -DLIB_INSTALL_DIR=/other/bla	# install path for lib
-# -DCMAKE_DOC_PATH=/other/bla	# install path for doc
+# -DCMAKE_DOC_PATH=/other/bla/doc/tuxanci-version/	# install path for doc
 # -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
 # -DCMAKE_FONT=/bla/font.ttf	# install path for locale
 ###############################################################################
@@ -25,7 +25,6 @@ SET ( WORKDIR ${CMAKE_SOURCE_DIR}/src )
 # data because some distributions want different data placement
 SET ( CMAKE_CONF_PATH "/etc" CACHE PATH "Config path prefix" )
 SET ( CMAKE_INSTALL_PREFIX "/usr/local/" CACHE PATH "Install path prefix" )
-SET ( CMAKE_DOC_PATH "${CMAKE_INSTALL_PREFIX}/share/doc" CACHE PATH "Data path prefix" )
 SET ( CMAKE_LOCALE_PATH "${CMAKE_INSTALL_PREFIX}/share/locale" CACHE PATH "Locale path prefix" )
 SET ( CMAKE_DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/" CACHE PATH "Data path prefix" )
 SET ( CMAKE_LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib/" CACHE PATH "Library path prefix" )
@@ -58,6 +57,7 @@ SET ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 #various variables
 SET ( CMAKE_FONT "${CMAKE_DATA_PATH}/${APPNAME}/font/DejaVuSans.ttf" CACHE PATH "Font" )
 SET ( CMAKE_INSTALL_ETCDIR ${CMAKE_CONF_PATH} )
+SET ( CMAKE_DOC_PATH "${CMAKE_INSTALL_PREFIX}/share/doc/${APPNAME}" CACHE PATH "Doc path prefix" )
 SET ( CMAKE_INSTALL_BINDIR bin )
 SET ( CMAKE_INSTALL_LOCALEDIR ${CMAKE_LOCALE_PATH} )
 SET ( CMAKE_INSTALL_DATADIR ${CMAKE_DATA_PATH} )
@@ -188,9 +188,9 @@ ADD_SUBDIRECTORY ( src )
 # path which user send us
 ADD_SUBDIRECTORY ( data )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/LICENCE
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/AUTHORS
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
 INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
-	DESTINATION ${CMAKE_INSTALL_DOCDIR}/${APPNAME}/ )
+	DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
 ###############################################################################
