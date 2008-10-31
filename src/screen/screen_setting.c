@@ -333,8 +333,11 @@ static void saveAndDestroyConfigFile()
 						 getYesOrNo(getWidgetCheckStatus(check_sound)));
 #endif
 
-	setValueInConfigFile(configFile, "ARENA",
-						 getArenaNetName(getChoiceArena()));
+	if( getChoiceArena() != NULL )
+	{
+		setValueInConfigFile(configFile, "ARENA",
+							getArenaNetName(getChoiceArena()));
+	}
 	//TODO
 
 	saveTextFile(configFile);

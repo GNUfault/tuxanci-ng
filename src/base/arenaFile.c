@@ -308,22 +308,17 @@ void loadArenaFile(char *path)
 	addList(listArenaFile, newArenaFile(path));
 }
 
-void initArenaFile()
+static void loadArenaFromDirector(char *director)
 {
 	director_t *p;
 	int i;
 
-#ifndef PUBLIC_SERVER
-	assert(isImageInicialized() == TRUE);
-#endif
-	isArenaFileInit = TRUE;
-	listArenaFile = newList();
-
-	p = loadDirector(PATH_ARENA);
+	printf(_("Load arena file from %s\n"), director);
+	p = loadDirector(director);
 
 	if (p==NULL)
 	{
-		fprintf(stderr, _("Director " PATH_ARENA " not found !\n"));
+		fprintf(stderr, _("Director %s not found !\n"), director);
 		exit(-1);
 	}
 
@@ -335,7 +330,14 @@ void initArenaFile()
 		if (strstr(line, ".zip") != NULL && strstr(line, "~") == NULL) {
 			char path[STR_PATH_SIZE];
 
-			sprintf(path, PATH_ARENA "%s", line);
+			if( director[strlen(director)-1] == '/' )
+			{
+				sprintf(path, "%s%s", director, line);
+			}
+			else
+			{
+				sprintf(path, "%s/%s", director, line);
+			}
 #ifdef DEBUG
 			printf(_("Loading arena: %s\n"), line);
 #endif
@@ -343,8 +345,23 @@ void initArenaFile()
 			loadArenaFile(path);
 		}
 	}
+
 	//printf("No. of Arens: %d\n", listArenaFile->count);
 	destroyDirector(p);
+
+}
+
+void initArenaFile()
+{
+#ifndef PUBLIC_SERVER
+	assert(isImageInicialized() == TRUE);
+#endif
+	isArenaFileInit = TRUE;
+	listArenaFile = newList();
+
+	loadArenaFromDirector(PATH_ARENA);
+	loadArenaFromDirector(getHomeDirector());
+
 }
 
 void quitArenaFile()

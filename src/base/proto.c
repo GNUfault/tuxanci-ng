@@ -94,6 +94,8 @@ void proto_send_hello_client(char *name)
 
 	snprintf(msg, STR_PROTO_SIZE, "hello %s %s\n",
 			 getParamElse("--version", TUXANCI_VERSION), name);
+
+	printf("-> %s", msg);
 	sendServer(msg);
 }
 

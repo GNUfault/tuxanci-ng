@@ -54,8 +54,7 @@ static void setStatusString(char *s)
 {
 	//printf("status -> %s\n", s);
 	destroyWidgetLabel(label_status);
-	label_status =
-		newWidgetLabel(s, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	label_status = newWidgetLabel(s, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 }
 
 static void connectToDownServer()
@@ -63,12 +62,11 @@ static void connectToDownServer()
 	char status[STR_SIZE];
 	char msg[STR_PROTO_SIZE];
 
-	sock_server_tcp =
-		connectTcpSocket(getSettingIP(), getSettingPort(), PROTO_TCPv4);
+	sock_server_tcp = connectTcpSocket(getSettingIP(), getSettingPort(), PROTO_TCPv4);
 
-	if (sock_server_tcp == NULL) {
-		sprintf(status, "I do not connect to %s %d TCP down server",
-				getSettingIP(), getSettingPort());
+	if( sock_server_tcp == NULL )
+	{
+		sprintf(status, "I do not connect to %s %d TCP down server", getSettingIP(), getSettingPort());
 		setStatusString(status);
 		return;
 	}
@@ -87,8 +85,7 @@ static void connectToDownServer()
 
 	addBuffer(sendBuffer, msg, strlen(msg));
 
-	sprintf(status, "Connect to %s %d TCP down server", getSettingIP(),
-			getSettingPort());
+	sprintf(status, "Connect to %s %d TCP down server", getSettingIP(), getSettingPort());
 	setStatusString(status);
 }
 
@@ -106,10 +103,10 @@ static void sendStatusToGameServer()
 {
 	char *msg = "status\n";
 
-	if (countSendMsg > DOWN_ARENA_MAX_SEND_MSG_STATUS) {
+	if( countSendMsg > DOWN_ARENA_MAX_SEND_MSG_STATUS )
+	{
 		char status[STR_SIZE];
-		sprintf(status, "Game server %s %d is down", getSettingIP(),
-				getSettingPort());
+		sprintf(status, "Game server %s %d is down", getSettingIP(), getSettingPort());
 		setStatusString(status);
 		return;
 	}
@@ -118,10 +115,10 @@ static void sendStatusToGameServer()
 	countSendMsg++;
 	printf("countSendMsg = %d\n", countSendMsg++);
 
-	if (writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg)) < 0) {
+	if( writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg)) < 0 )
+	{
 		char status[STR_SIZE];
-		sprintf(status, "I do not send message to %s %d UDP game server",
-				getSettingIP(), getSettingPort());
+		sprintf(status, "I do not send message to %s %d UDP game server", getSettingIP(), getSettingPort());
 		setStatusString(status);
 	}
 }
@@ -133,20 +130,18 @@ void startScreenDownArena()
 	strcpy(str_status, "none");
 	memset(arenaNetName, 0, STR_SIZE);
 
-	sock_server_udp =
-		connectUdpSocket(getSettingIP(), getSettingPort(), PROTO_UDPv4);
+	sock_server_udp = connectUdpSocket(getSettingIP(), getSettingPort(), PROTO_UDPv4);
 
-	if (sock_server_udp == NULL) {
-		sprintf(status, "I do not connect to %s %d UDP game server",
-				getSettingIP(), getSettingPort());
+	if (sock_server_udp == NULL)
+	{
+		sprintf(status, "I do not connect to %s %d UDP game server", getSettingIP(), getSettingPort());
 		setStatusString(status);
 		return;
 	}
 
 	setUdpSockNonBlock(sock_server_udp);
 
-	sprintf(status, "Connect to %s %d UDP game server", getSettingIP(),
-			getSettingPort());
+	sprintf(status, "Connect to %s %d UDP game server", getSettingIP(), getSettingPort());
 	setStatusString(status);
 
 	sendStatusToGameServer();
@@ -179,11 +174,13 @@ static void proto_err(char *line)
 
 static void eventProto(char *line)
 {
-	if (strncmp(line, "OK", 2) == 0) {
+	if( strncmp(line, "OK", 2) == 0 )
+	{
 		proto_ok(line);
 	}
 
-	if (strncmp(line, "ERR", 3) == 0) {
+	if( strncmp(line, "ERR", 3) == 0 )
+	{
 		proto_err(line);
 	}
 }
@@ -298,13 +295,13 @@ static void readArenaFromStatus()
 
 static void eventStatus()
 {
-	if (getMyTime() - timeSendMsg > DOWN_ARENA_MAX_TIEMOUT_LIMIT) {
+	if( getMyTime() - timeSendMsg > DOWN_ARENA_MAX_TIEMOUT_LIMIT )
+	{
 		sendStatusToGameServer();
 	}
 
-	if (readUdpSocket
-		(sock_server_udp, sock_server_udp, str_status,
-		 STR_PROTO_SIZE - 1) > 0) {
+	if( readUdpSocket(sock_server_udp, sock_server_udp, str_status, STR_PROTO_SIZE - 1) > 0 )
+	{
 		//printf("str_status = %s\n", str_status);
 		readArenaFromStatus();
 	}

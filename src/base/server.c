@@ -30,6 +30,7 @@
 #include "index.h"
 #include "serverSelect.h"
 #include "serverSendMsg.h"
+#include "downServer.h"
 
 #ifndef PUBLIC_SERVER
 #    include "screen_world.h"
@@ -249,6 +250,8 @@ int initServer(char *ip4, int port4, char *ip6, int port6)
 		return -1;
 	}
 
+	initDownServer(ip4, port4);
+
 	return ret;
 }
 
@@ -340,13 +343,16 @@ void eventServer()
 #ifndef PUBLIC_SERVER
 	int count;
 
-
-
 	do {
 		restartSelect();
+
 		setServerUdpSelect();
+		setDownServerSelect();
+
 		actionSelect();
+
 		count = selectServerUdpSocket();
+		selectDownServerSocket();
 	} while (count > 0);
 #endif
 
@@ -356,11 +362,13 @@ void eventServer()
 	restartSelect();
 
 	setServerUdpSelect();
+	setDownServerSelect();
 
 	ret = actionSelect();
 
 	if (ret > 0) {
 		selectServerUdpSocket();
+		selectDownServerSocket();
 	}
 #endif
 
@@ -379,4 +387,6 @@ void quitServer()
 	destroyTimer(listServerTimer);
 
 	quitUdpServer();
+
+	quitDownServer();
 }

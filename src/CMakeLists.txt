@@ -36,7 +36,7 @@ SET ( SRC_base
 	${WORKDIR}/base/director	${WORKDIR}/base/idManager
 	${WORKDIR}/base/homeDirector	${WORKDIR}/base/proto
 	${WORKDIR}/base/shareFunction	${WORKDIR}/base/buffer
-	${WORKDIR}/base/archive
+	${WORKDIR}/base/archive ${WORKDIR}/base/downServer
 	${WORKDIR}/net/dns
 )
 
