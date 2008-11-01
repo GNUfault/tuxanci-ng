@@ -164,13 +164,17 @@ void drawScreen()
 void eventScreen()
 {
 	assert(currentScreen != NULL);
+#if 0
+	static my_time_t last = 0;
 
-#ifdef DEBUG_TIME_EVENT
-	my_time_t prev;
+	if( last == 0 )
+	{
+  		last = getMyTime();
+	}
 
-	prev = getMyTimeMicro();
+	printf("%d\n", getMyTime()-last);
+	last = getMyTime();
 #endif
-
 	currentScreen->fce_event();
 
 #ifdef DEBUG_TIME_EVENT

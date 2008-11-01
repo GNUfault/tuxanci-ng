@@ -187,7 +187,7 @@ static void eventReadClient(client_ds_t * client)
 	ret = readTcpSocket(client->sock, buffer, STR_PROTO_SIZE - 1);
 	//printf("readTcpSocket = %d\n", ret);
 
-	if (ret <= 0)
+	if( ret <= 0 )
 	{
 		client->status_connect = NET_STATUS_ZOMBIE;
 		return;

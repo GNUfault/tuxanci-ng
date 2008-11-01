@@ -23,6 +23,7 @@ static bool_t isInterfaceInit = FALSE;
 
 // flag, kterym se ridi zarazovani klaves do bufferu
 bool_t keyboardBufferEnabled = FALSE;
+bool_t isSlowHack;
 
 bool_t isInterfaceInicialized()
 {
@@ -116,6 +117,7 @@ int initSDL()
 
 	srand((unsigned) time(NULL));
 	isInterfaceInit = TRUE;
+	isSlowHack = FALSE;
 
 	return 0;
 }
@@ -192,6 +194,33 @@ static void action_esc()
 }
 */
 
+void activeSlowHack()
+{
+	isSlowHack = TRUE;
+}
+
+static void slowHackRoutine()
+{
+	static time_t lastTime = 0;
+
+	if( lastTime == 0 )
+	{
+		lastTime = getMyTime();
+		return;
+	}
+
+	if( getMyTime() - lastTime >= 50 )
+	{
+		lastTime = 0;
+		isSlowHack = FALSE;
+		return;
+	}
+
+	//printf("SLOW HACK : %d\n", (getMyTime() - lastTime));
+
+	lastTime = getMyTime();
+}
+
 int eventAction()
 {
 	SDL_Event event;
@@ -223,6 +252,12 @@ int eventAction()
 		case SDL_USEREVENT:
 			switch (event.user.code) {
 			case USR_EVT_TIMER:
+				if( isSlowHack )
+				{
+					slowHackRoutine();
+					break;
+				}
+	
 				drawScreen();
 				eventScreen();
 				eventHotKey();
