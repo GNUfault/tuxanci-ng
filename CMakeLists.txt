@@ -8,7 +8,7 @@
 # -DNO_Audio=1 			# disable audio
 # -DDebug=1			# enable debug
 # -DCMAKE_C_FLAGS=-Wall		# modification for CFLAGS
-# -DNLS=0			# disable Gettext NLS
+# -DNO_NLS=1			# disable Gettext NLS
 # -DApple=1			# build apple port
 # -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
 # -DCMAKE_DATA_PATH=/other/bla/	# install path for data
@@ -176,12 +176,12 @@ ENDIF ( Bundle )
 ###############################################################################
 # GETTEXT SUPPORT
 ###############################################################################
-IF ( NLS )
+IF ( NOT NO_NLS )
 	MESSAGE ( STATUS "<Building with NLS as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	ADD_DEFINITIONS ( -DNLS )
 	ADD_SUBDIRECTORY ( po )
-ENDIF ( NLS )
+ENDIF ( NOT NO_NLS )
 ###############################################################################
 # COMPILATION ITSELF
 ###############################################################################

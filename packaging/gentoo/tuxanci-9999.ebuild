@@ -6,7 +6,7 @@ EAPI="2"
 
 inherit cmake-utils git games
 
-DESCRIPTION="Tuxanci is first cushion shooter inspired by game Bulanci."
+DESCRIPTION="Tuxanci is first tux shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
 EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
 #SRC_URI="http://download.${PN}.org/${P}.tar.bz2"
@@ -40,7 +40,7 @@ src_configure() {
 	use alsa || mycmakeargs="${mycmakeargs} -DNO_Audio=1"
 	use debug && mycmakeargs="${mycmakeargs} -DDebug=1"
 	use dedicated && mycmakeargs="${mycmakeargs} -DServer=1"
-	use nls && mycmakeargs="${mycmakeargs} -DNLS=1"
+	use nls || mycmakeargs="${mycmakeargs} -DNO_NLS=1"
 	use opengl || mycmakeargs="${mycmakeargs} -DNO_OPENGL=1"
 	mycmakeargs="${mycmakeargs} -DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
