@@ -38,9 +38,8 @@ void initShareFunction()
 
 void addToShareFce(char *name, void *function)
 {
-#ifdef DEBUG
-	printf(_("Adding  \"%s\" to share function.\n"), name);
-#endif
+	DEBUG_MSG(_("Adding  \"%s\" to share function.\n"), name);
+
 	addList(listShareFce, newShareFceItem(name, function));
 }
 
@@ -56,6 +55,7 @@ void *getShareFce(char *name)
 		if (strcmp(this->name, name) == 0)
 			return this->function;
 	}
+
 	return NULL;
 }
 

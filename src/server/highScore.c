@@ -22,9 +22,8 @@ void initHighScore(char *file)
 		fprintf(stderr, _("Creating: \"%s\"\n"), file);
 		textFile = newTextFile(file);
 	} else {
-#ifdef DEBUG
-		printf(_("Scorefile: \"%s\"\n"), file);
-#endif
+
+		DEBUG_MSG(_("Scorefile: \"%s\"\n"), file);
 		return;
 	}
 

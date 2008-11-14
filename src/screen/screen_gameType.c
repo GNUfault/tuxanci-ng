@@ -353,9 +353,9 @@ int getSettingProto()
 	if (strstr(getTextFromWidgetTextfield(textfield_ip), ":") != NULL) {
 		return PROTO_UDPv6;
 	}
-#ifdef DEBUG
-	printf(_("Unknown IP protocol!\n"));
-#endif
+
+	DEBUG_MSG(_("Unknown IP protocol!\n"));
+
 	return -1;
 }
 

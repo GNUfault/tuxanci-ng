@@ -26,9 +26,9 @@ void createHomeDirector()
 	sprintf(homeDirector, "%s/%s", envHome, HOMEDIRECTOR_NAME);
 
 	if (access(homeDirector, F_OK) != 0) {
-#ifdef DEBUG
-		printf(_("Creating home directory %s.\n"), homeDirector);
-#endif
+
+		DEBUG_MSG(_("Creating home directory %s.\n"), homeDirector);
+
 #ifndef __WIN32__
 		if (mkdir(homeDirector, 0755) != 0) {
 #else

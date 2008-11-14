@@ -20,6 +20,15 @@
 
 //#define SUPPORT_OPENGL
 
+#ifdef DEBUG
+#define DEBUG_MSG(msg,arg...) printf(msg, ##arg)
+#endif
+
+#ifndef DEBUG
+#define DEBUG_MSG(msg,arg...) 
+#endif
+
+
 extern char *getParam(char *s);
 extern char *getParamElse(char *s1, char *s2);
 extern bool_t isParamFlag(char *s);

@@ -86,9 +86,9 @@ void eventWidgetButton(widget_t * widget)
 		y >= widget->y && y <= widget->y + WIDGET_BUTTON_HEIGHT &&
 		isMouseClicked()) {
 		time = WIDGET_BUTTON_TIME;
-#ifdef DEBUG
-		printf(_("Event caught\n"));
-#endif
+
+		DEBUG_MSG(_("Event caught\n"));
+
 		p->fce_event(widget);
 	}
 }

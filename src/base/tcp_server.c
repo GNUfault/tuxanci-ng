@@ -130,14 +130,11 @@ int initTcpServer(char *ip4, int port4, char *ip6, int port6)
 		if (sock_server_tcp != NULL) {
 			ret++;
 			disableNagle(sock_server_tcp);
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
-#endif
+
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
 		} else {
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"),
-				   ip4, port4);
-#endif
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
+
 		}
 	}
 
@@ -147,14 +144,11 @@ int initTcpServer(char *ip4, int port4, char *ip6, int port6)
 		if (sock_server_tcp_second != NULL) {
 			ret++;
 			disableNagle(sock_server_tcp_second);
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
-#endif
+
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
 		} else {
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"),
-				   ip6, port6);
-#endif
+
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
 		}
 	}
 
@@ -284,20 +278,14 @@ int selectServerTcpSocket()
 void quitTcpServer()
 {
 	if (sock_server_tcp != NULL) {
-#ifdef DEBUG
-		printf(_("Closing port: \"%d\"\n"), getSockTcpPort(sock_server_tcp));
-#endif
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockTcpPort(sock_server_tcp));
 		closeTcpSocket(sock_server_tcp);
 	}
 
 	if (sock_server_tcp_second != NULL) {
-#ifdef DEBUG
-		printf(_("Closing port: \"%d\"\n"),
-			   getSockTcpPort(sock_server_tcp_second));
-#endif
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockTcpPort(sock_server_tcp_second));
 		closeTcpSocket(sock_server_tcp_second);
 	}
-#ifdef DEBUG
-	printf("Quitting TCP\n");
-#endif
+
+	DEBUG_MSG("Quitting TCP\n");
 }

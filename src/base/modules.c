@@ -16,6 +16,7 @@
 #include "arenaFile.h"
 #include "proto.h"
 #include "shareFunction.h"
+
 #ifndef PUBLIC_SERVER
 #    include "interface.h"
 #    include "image.h"
@@ -158,9 +159,9 @@ static module_t *newModule(char *name)
 	ret->fce_isConflict = getFce(ret, "isConflict");
 	ret->fce_cmd = getFce(ret, "cmdArena");
 	ret->fce_recvMsg = getFce(ret, "recvMsg");
-#ifdef DEBUG
-	printf(_("Loading module: \"%s\"\n"), name);
-#endif
+
+	DEBUG_MSG(_("Loading module: \"%s\"\n"), name);
+
 	if (ret->fce_init(&export_fce) != 0) {
 		fprintf(stderr, _("Failed initialization of module \"%s\""), name);
 		unmapImage(image);
@@ -179,9 +180,9 @@ static int destroyModule(module_t * p)
 	unmapImage(p->image);
 	free(p->name);
 	free(p);
-#ifdef DEBUG
-	printf(_("Destroing module...\n"));
-#endif
+
+	DEBUG_MSG(_("Destroing module...\n"));
+
 	return 0;
 }
 

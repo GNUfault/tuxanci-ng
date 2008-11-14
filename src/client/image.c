@@ -25,9 +25,9 @@ bool_t isImageInicialized()
 void initImageData()
 {
 	assert(isInterfaceInicialized() == TRUE);
-#ifdef DEBUG
-	printf(_("Initializing image database\n"));
-#endif
+
+	DEBUG_MSG(_("Initializing image database\n"));
+
 	listStorage = newStorage();
 	isImageDataInit = TRUE;
 }
@@ -187,9 +187,9 @@ image_t *addImageData(char *file, int alpha, char *name, char *group)
 	new = newImage(surface);
 
 	addItemToStorage(listStorage, group, name, new);
-#ifdef DEBUG
-	printf(_("Loading image %s\n"), file);
-#endif
+
+	DEBUG_MSG(_("Loading image %s\n"), file);
+
 	return new;
 }
 
@@ -295,9 +295,8 @@ void drawImage(image_t *image, int x,int y, int px, int py, int w, int h)
  */
 void quitImageData()
 {
-#ifdef DEBUG
-	printf(_("Quitting image database\n"));
-#endif
+	DEBUG_MSG(_("Quitting image database\n"));
+
 	destroyStorage(listStorage, destroyImage);
 	isImageDataInit = FALSE;
 }

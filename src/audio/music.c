@@ -32,17 +32,19 @@ void initMusic()
 		isMusicInit = FALSE;
 		return;
 	}
+
 	listStorage = newStorage();
 	currentMusic = NULL;
 	isMusicInit = TRUE;
 	var_isMusicActive = TRUE;
+
 	if (isParamFlag("--nomusic"))
 		setMusicActive(FALSE);
+
 	if (isParamFlag("--music"))
 		setMusicActive(TRUE);
-#ifdef DEBUG
-	printf(_("Initializing music...\n"));
-#endif
+
+	DEBUG_MSG(_("Initializing music...\n"));
 }
 
 /*
@@ -53,9 +55,7 @@ static Mix_Music *loadMixMusic(char *file)
 	Mix_Music *mixer;
 	char str[STR_PATH_SIZE];
 
-#ifdef DEBUG
-	printf(_("Loading music file: %s\n"), file);
-#endif
+	DEBUG_MSG(_("Loading music file: %s\n"), file);
 
 	if (isFillPath(file)) {
 		strcpy(str, file);
@@ -98,6 +98,7 @@ static void destroyMusic(void *p)
 void addMusic(char *file, char *name, char *group)
 {
 	Mix_Music *new;
+
 	if (isMusicInit == FALSE)
 		return;
 
@@ -118,9 +119,8 @@ void stopMusic()
 		return;
 
 	if (currentMusic != NULL) {
-#ifdef DEBUG
-		printf(_("Stopping music...\n"));
-#endif
+		DEBUG_MSG(_("Stopping music...\n"));
+
 		Mix_HaltMusic();
 		currentMusic = NULL;
 	}
@@ -158,9 +158,8 @@ void playMusic(char *name, char *group)
 	strcpy(currentMusic_name, name);
 
 	if (currentMusic != NULL) {
-#ifdef DEBUG
-		printf(_("Playing music file %s\n"), name);
-#endif
+		DEBUG_MSG(_("Playing music file %s\n"), name);
+
 		playMixMusic();
 	}
 }
@@ -221,7 +220,6 @@ void quitMusic()
 	stopMusic();
 	destroyStorage(listStorage, destroyMusic);
 	isMusicInit = FALSE;
-#ifdef DEBUG
-	printf(_("Quitting music...\n"));
-#endif
+
+	DEBUG_MSG(_("Quitting music...\n"));
 }

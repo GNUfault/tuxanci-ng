@@ -312,17 +312,15 @@ void eventPublicServer()
 
 void my_handler_quit(int n)
 {
-#ifdef DEBUG
-	printf("my_handler_quit\n");
-#endif
+	DEBUG_MSG("my_handler_quit\n");
+
 	isSignalEnd = TRUE;
 }
 
 void quitPublicServer()
 {
-#ifdef DEBUG
-	printf(_("Quitting public server\n"));
-#endif
+	DEBUG_MSG(_("Quitting public server\n"));
+
 	quitNetMultiplayer();
 	destroyArena(arena);
 

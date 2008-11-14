@@ -35,9 +35,9 @@ void initFont(char *file, int size)
 	TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
 
 	fontSize = size;
-#ifdef DEBUG
-	printf(_("Loading font: \"%s\"\n"), file);
-#endif
+
+	DEBUG_MSG(_("Loading font: \"%s\"\n"), file);
+
 	isFontInit = TRUE;
 }
 
@@ -129,8 +129,8 @@ void quitFont()
 {
 	TTF_CloseFont(g_font);
 	TTF_Quit();
-#ifdef DEBUG
-	printf(_("Unloading font\n"));
-#endif
+
+	DEBUG_MSG(_("Unloading font\n"));
+
 	isFontInit = FALSE;
 }

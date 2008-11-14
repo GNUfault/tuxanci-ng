@@ -81,9 +81,9 @@ void saveArena(char *filename, arena_t * arena)
 	char path[STR_PATH_SIZE];
 
 	sprintf(path, "%s/%s.sav", getHomeDirector(), filename);
-#ifdef DEBUG
-	printf(_("Saving game to: \"%s\"\n"), path);
-#endif
+
+	DEBUG_MSG(_("Saving game to: \"%s\"\n"), path);
+
 	textFile = newTextFile(path);
 
 	if (textFile != NULL) {
@@ -247,9 +247,9 @@ void loadArena(char *filename)
 	char path[STR_PATH_SIZE];
 
 	sprintf(path, "%s/%s", getHomeDirector(), filename);
-#ifdef DEBUG
-	printf(_("Loadig game from file: \"%s\"\n"), path);
-#endif
+
+	DEBUG_MSG(_("Loadig game from file: \"%s\"\n"), path);
+
 	textFile = loadTextFile(path);
 
 	if (textFile != NULL) {

@@ -29,17 +29,19 @@ void initAudio()
 		fprintf(stderr, _("Unable to initialize audio: %s\n"), SDL_GetError());
 		return;
 	}
-	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) ==
-		-1) {
+
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
+	{
 		fprintf(stderr, _("Unable to create proper audio settings: %s\n"),
 				Mix_GetError());
 		return;
 	}
+
 	Mix_AllocateChannels(16);
 	Mix_Volume(-1, MIX_MAX_VOLUME);
-#ifdef DEBUG
-	printf(_("Initializing audio system...\n"));
-#endif
+
+	DEBUG_MSG(_("Initializing audio system...\n"));
+
 	isAudioInit = TRUE;
 }
 
@@ -50,7 +52,6 @@ void quitAudio()
 {
 	Mix_CloseAudio();
 	isAudioInit = TRUE;
-#ifdef DEBUG
-	printf(_("Quitting audio...\n"));
-#endif
+
+	DEBUG_MSG(_("Quitting audio...\n"));
 }

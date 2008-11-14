@@ -34,13 +34,15 @@ void initSound()
 	listStorage = newStorage();
 	isSoundInit = TRUE;
 	var_isSoundActive = TRUE;
+
 	if (isParamFlag("--nosound"))
 		setSoundActive(FALSE);
+
 	if (isParamFlag("--sound"))
 		setSoundActive(TRUE);
-#ifdef DEBUG
-	printf(_("Initializing sound...\n"));
-#endif
+
+	DEBUG_MSG(_("Initializing sound...\n"));
+
 }
 
 /*
@@ -51,17 +53,17 @@ static Mix_Chunk *loadMixSound(char *file)
 	Mix_Chunk *new;
 	char str[STR_PATH_SIZE];
 
-#ifdef DEBUG
-	printf(_("Loading sound file: %s\n"), file);
-#endif
+	DEBUG_MSG(_("Loading sound file: %s\n"), file);
+
 	sprintf(str, PATH_SOUND "%s", file);
 	accessExistFile(str);
 	new = Mix_LoadWAV(str);
+
 	if (new == NULL) {
-		fprintf(stderr, _("Unable to load sound file: %s with error: %s\n"),
-				str, Mix_GetError());
+		fprintf(stderr, _("Unable to load sound file: %s with error: %s\n"), str, Mix_GetError());
 		return NULL;
 	}
+
 	return new;
 }
 
@@ -71,8 +73,7 @@ static Mix_Chunk *loadMixSound(char *file)
 static void playMixSound(Mix_Chunk * p)
 {
 	if (Mix_PlayChannel(-1, p, 0) == -1) {
-		fprintf(stderr, _("Unable to playback sound with error: %s\n"),
-				Mix_GetError());
+		fprintf(stderr, _("Unable to playback sound with error: %s\n"), Mix_GetError());
 		return;
 	}
 }
@@ -94,9 +95,11 @@ void addSound(char *file, char *name, char *group)
 
 	if (isSoundInit == FALSE)
 		return;
+
 	assert(file != NULL);
 	assert(name != NULL);
 	assert(group != NULL);
+
 	new = loadMixSound(file);
 	addItemToStorage(listStorage, group, name, new);
 }
@@ -108,6 +111,7 @@ void playSound(char *name, char *group)
 {
 	if (isSoundInit == FALSE || var_isSoundActive == FALSE)
 		return;
+
 	playMixSound(getItemFromStorage(listStorage, group, name));
 }
 
@@ -136,7 +140,6 @@ void quitSound()
 		return;
 	destroyStorage(listStorage, destroySound);
 	isSoundInit = FALSE;
-#ifdef DEBUG
-	printf(_("Quitting sound...\n"));
-#endif
+
+	DEBUG_MSG(_("Quitting sound...\n"));
 }

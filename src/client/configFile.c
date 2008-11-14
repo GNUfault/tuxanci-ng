@@ -135,8 +135,7 @@ loadValueFromConfigFile(textFile_t * textFile, char *env, char *val, int len,
 
 		sprintf(line, "%s=\"%s\"", env, butVal);
 		addList(textFile->text, strdup(line));
-#ifdef DEBUG
-		printf(_("ADDING: \"%s\" into config file.\n"), line);
-#endif
+
+		DEBUG_MSG(_("ADDING: \"%s\" into config file.\n"), line);
 	}
 }

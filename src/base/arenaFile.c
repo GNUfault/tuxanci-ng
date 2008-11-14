@@ -119,9 +119,8 @@ static void cmd_arena(arena_t ** arena, char *line)
 	//(*arena)->w = atoi(str_w);
 	//(*arena)->h = atoi(str_h);
 	setCurrentArena(*arena);
-#ifdef DEBUG
-	printf(_("Loaded new arena...\n"));
-#endif
+
+	DEBUG_MSG(_("Loaded new arena...\n"));
 }
 
 static void cmd_loadModule(char *line)
@@ -168,10 +167,10 @@ static void cmd_loadMusic(arenaFile_t * arenaFile, char *line)
 	if (getArenaValue(line, "name", str_name, STR_SIZE) != 0)
 		return;
 
-#    ifndef NO_SOUND
+#ifndef NO_SOUND
 	//addMusic(str_file, str_name, MUSIC_GROUP_USER);
 	loadMusicFromArena(arenaFile, str_file, MUSIC_GROUP_USER, str_name);
-#    endif
+#endif
 }
 
 static void cmd_playMusic(arena_t * arena, char *line)
@@ -357,9 +356,9 @@ static void loadArenaFromDirector(char *director)
 			else {
 				sprintf(path, "%s/%s", director, line);
 			}
-#ifdef DEBUG
-			printf(_("Loading arena: %s\n"), line);
-#endif
+
+			DEBUG_MSG(_("Loading arena: %s\n"), line);
+
 			accessExistFile(path);
 			loadArenaFile(path);
 		}

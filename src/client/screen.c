@@ -57,9 +57,9 @@ void destroyScreen(screen_t * p)
 void registerScreen(screen_t * p)
 {
 	assert(p != NULL);
-#ifdef DEBUG
-	printf(_("Registering screen: \"%s\"\n"), p->name);
-#endif
+
+	DEBUG_MSG(_("Registering screen: \"%s\"\n"), p->name);
+
 	addList(listScreen, p);
 }
 
@@ -105,9 +105,7 @@ void switchScreen()
 	flushLayer();
 
 	if (currentScreen != NULL) {
-#ifdef DEBUG
-		printf(_("Stopping screen: \"%s\"\n"), currentScreen->name);
-#endif
+		DEBUG_MSG(_("Stopping screen: \"%s\"\n"), currentScreen->name);
 		currentScreen->fce_stop();
 	}
 
@@ -115,9 +113,9 @@ void switchScreen()
 	futureScreen = NULL;
 
 	//printf("switch screen %s..\n", currentScreen->name);
-#ifdef DEBUG
-	printf(_("Starting screen: \"%s\"\n"), currentScreen->name);
-#endif
+
+	DEBUG_MSG(_("Starting screen: \"%s\"\n"), currentScreen->name);
+
 	currentScreen->fce_start();
 }
 

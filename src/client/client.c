@@ -95,9 +95,9 @@ static int initUdpClient(char *ip, int port, int proto)
 	if (sock_server_udp == NULL) {
 		return -1;
 	}
-#ifdef DEBUG
-	printf(_("Connected to: %s on port: %d via UDP\n"), ip, port);
-#endif
+
+	DEBUG_MSG(_("Connected to: %s on port: %d via UDP\n"), ip, port);
+
 	return 0;
 }
 
@@ -134,8 +134,7 @@ int initClient(char *ip, int port, int proto)
 static void errorWithServer()
 {
 	fprintf(stderr, _("Server did not respond!\n"));
-	setMsgToAnalyze(_
-					("Server is not running or being blocked. I was unable to connect."));
+	setMsgToAnalyze(_("Server is not running or being blocked. I was unable to connect."));
 	setWorldEnd();
 }
 
@@ -315,10 +314,9 @@ static void eventTraffic()
 
 	if (currentTime - lastTraffic > 5000) {
 		lastTraffic = currentTime;
-#    ifdef DEBUG
-		printf(_("down: %d\n")
-			   _("up  : %d\n"), traffic_down, traffic_up);
-#    endif
+
+		DEBUG_MSG(_("down: %d\n") _("up  : %d\n"), traffic_down, traffic_up);
+
 		traffic_down = 0;
 		traffic_up = 0;
 	}
@@ -342,9 +340,8 @@ static void quitUdpClient()
 {
 	assert(sock_server_udp != NULL);
 	closeUdpSocket(sock_server_udp);
-#ifdef DEBUG
-	printf(_("Closing UDP connection.\n"));
-#endif
+
+	DEBUG_MSG(_("Closing UDP connection.\n"));
 }
 
 void quitClient()

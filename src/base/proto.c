@@ -63,9 +63,7 @@ void proto_recv_error_client(char *msg)
 		return;
 	}
 
-#ifdef DEBUG
-	printf(_("Proto error code: \"%d\"\n"), errorcode);
-#endif
+	DEBUG_MSG(_("Proto error code: \"%d\"\n"), errorcode);
 
 	switch (errorcode) {
 		case PROTO_ERROR_CODE_BAD_VERSION:

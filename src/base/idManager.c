@@ -37,9 +37,9 @@ void initListID()
 {
 	listID = newList();
 	lastID = 0;
-#ifdef DEBUG
-	printf(_("Starting ID manger\n"));
-#endif
+
+	DEBUG_MSG(_("Starting ID manger\n"));
+
 }
 
 int isRegisterID(int id)
@@ -176,24 +176,22 @@ void infoID(int id)
 	index = isRegisterID(id);
 
 	if (index == -1) {
-#ifdef DEBUG
-		printf(_("ID %d does not exist\n"), id);
-#endif
+		DEBUG_MSG(_("ID %d does not exist\n"), id);
+
 		return;
 	}
 
 	this = listID->list[index];
-#ifdef DEBUG
-	printf(_("ID %d (count %d)\n"), this->id, this->count);
-#endif
+
+	DEBUG_MSG(_("ID %d (count %d)\n"), this->id, this->count);
+
 	return;
 }
 
 void quitListID()
 {
-#ifdef DEBUG
-	printf(_("Quitting ID manger\n"));
-#endif
+	DEBUG_MSG(_("Quitting ID manger\n"));
+
 	assert(listID != NULL);
 	destroyListItem(listID, destroyIdItem);
 }

@@ -19,9 +19,9 @@ int initLog(char *name)
 		fprintf(stderr, _("Opening logfile \"%s\" failed!\n"), name);
 		return -1;
 	}
-#ifdef DEBUG
-	printf(_("I use logfile: \"%s\")\n"), name);
-#endif
+
+	DEBUG_MSG(_("I use logfile: \"%s\")\n"), name);
+
 	addToLog(LOG_INF, "open log file");
 
 	return 0;

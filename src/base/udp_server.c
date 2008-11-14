@@ -97,13 +97,9 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 
 		if (sock_server_udp != NULL) {
 			ret++;
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
-#endif
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
 		} else {
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
-#endif
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
 		}
 	}
 
@@ -112,13 +108,9 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 
 		if (sock_server_udp_second != NULL) {
 			ret++;
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
-#endif
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
 		} else {
-#ifdef DEBUG
-			printf(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
-#endif
+			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
 		}
 	}
 
@@ -241,19 +233,14 @@ int selectServerUdpSocket()
 void quitUdpServer()
 {
 	if (sock_server_udp != NULL) {
-#ifdef DEBUG
-		printf(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp));
-#endif
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp));
 		closeUdpSocket(sock_server_udp);
 	}
 
 	if (sock_server_udp_second != NULL) {
-#ifdef DEBUG
-		printf(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp_second));
-#endif
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp_second));
 		closeUdpSocket(sock_server_udp_second);
 	}
-#ifdef DEBUG
-	printf(_("Quitting UDP\n"));
-#endif
+
+	DEBUG_MSG(_("Quitting UDP\n"));
 }

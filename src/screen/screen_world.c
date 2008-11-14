@@ -600,8 +600,6 @@ void initWorld()
 
 void quitWorld()
 {
-#ifdef DEBUG
-	printf(_("Quitting screen world\n"));
-#endif
+	DEBUG_MSG(_("Quitting screen world\n"));
 	isScreenWorldInit = FALSE;
 }

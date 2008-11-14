@@ -105,9 +105,9 @@ void quitGame()
 	quitMusic();
 	quitAudio();
 #endif
-#ifdef DEBUG
-	printf(_("Quitting TUXANCI...\n"));
-#endif
+
+	DEBUG_MSG(_("Quitting TUXANCI...\n"));
+
 	exit(0);
 }
 

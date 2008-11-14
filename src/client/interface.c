@@ -121,7 +121,7 @@ SDL_Surface * SetVideoMode(int width, int height, int bpp, Uint32 flags)
 int initSDL()
 {
 #ifdef DEBUG
-	printf(_("Initializing SDL system\n"));
+	DEBUG_MSG(_("Initializing SDL system\n"));
 #endif
 	// initialization of SDL
 	if (SDL_Init(SDL_SUBSYSTEMS) == -1) {
@@ -332,9 +332,8 @@ void eventSDL()
 
 void quitSDL()
 {
-#ifdef DEBUG
-	printf(_("Quitting SDL\n"));
-#endif
+	DEBUG_MSG(_("Quitting SDL\n"));
+
 	quitHotKey();
 	quitKeyboardBuffer();
 
