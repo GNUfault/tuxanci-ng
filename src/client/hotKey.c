@@ -62,13 +62,13 @@ void initHotKey()
 void registerHotKey(SDLKey key, void (*handler) ())
 {
 	hotKey_t *hotkey;
-
+/*
 	if (findHotkey(key) != NULL) {
 		assert(!"Conflict with register key");
 	}
-
+*/
 	hotkey = newHotKey(key, handler);
-	addList(listHotKey, hotkey);
+	insList(listHotKey, 0, hotkey);
 }
 
 void unregisterHotKey(SDLKey key)
@@ -138,6 +138,8 @@ void eventHotKey()
 			lastActive = getMyTime();
 			//printf("hotKey = %d\n", this->key);
 			this->handler();
+
+			return;
 		}
 	}
 }

@@ -31,15 +31,30 @@ static int timeBlick;
 static bool_t chat_active;
 static bool_t receivedNewMsg;
 
-static void hotkey_chat();
+static void hotkey_chat_enter();
+static void hotkey_chat_enter();
+static void eventChatDisable();
 
-static void hotkey_chat()
+static void hotkey_chat_esc()
 {
+	//printf("*** hotkey_chat_esc\n");
+	//unregisterHotKey(SDLK_ESCAPE);
+	eventChatDisable();
+}
+
+static void hotkey_chat_enter()
+{
+	if( chat_active == TRUE )
+	{
+		return;
+	}
+
 	chat_active = TRUE;
 	receivedNewMsg = FALSE;
 
 	disableHotKey(SDLK_RETURN);
 	disableHotKey(SDLK_p);
+	registerHotKey(SDLK_ESCAPE, hotkey_chat_esc);
 
 	enableKeyboardBuffer();
 	clearKeyboardBuffer();
@@ -52,7 +67,8 @@ void initChat()
 	listText = newList();
 	strcpy(line, "");
 	chat_active = FALSE;
-	registerHotKey(SDLK_RETURN, hotkey_chat);
+
+	registerHotKey(SDLK_RETURN, hotkey_chat_enter);
 
 	receivedNewMsg = FALSE;
 	line_time = 0;
@@ -165,6 +181,7 @@ static void eventChatDisable()
 
 	enableHotKey(SDLK_RETURN);
 	enableHotKey(SDLK_p);
+	unregisterHotKey(SDLK_ESCAPE);
 
 	disableKeyboardBuffer();
 	clearKeyboardBuffer();
@@ -188,7 +205,7 @@ static void eventChatEnable()
 				continue;		/* continue with other keys */
 			} else {
 				/* the chat row is empty - it is needed to turn off the chat window */
-				eventChatDisable();
+				//eventChatDisable();
 				/* turn off key catching into the buffer and clear the buffer */
 				//disableKeyboardBuffer();
 				//clearKeyboardBuffer();
@@ -236,6 +253,6 @@ void quitChat()
 {
 	assert(listText != NULL);
 
-	unregisterHotKey(SDLK_RETURN);
+	//unregisterHotKey(SDLK_RETURN);
 	destroyListItem(listText, free);
 }
