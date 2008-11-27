@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="128.85066"
+   height="53.594299"
+   id="svg9046">
+  <defs
+     id="defs9048">
+    <linearGradient
+       x1="395.27277"
+       y1="600.7644"
+       x2="301.68018"
+       y2="600.7644"
+       id="linearGradient9033"
+       xlink:href="#linearGradient8954"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-1.4420738,0,0,1.4136784,1287.8404,-479.78264)" />
+    <linearGradient
+       id="linearGradient8954">
+      <stop
+         id="stop8956"
+         style="stop-color:#ffa400;stop-opacity:1"
+         offset="0" />
+      <stop
+         id="stop8958"
+         style="stop-color:#b28121;stop-opacity:1"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       x1="679.73816"
+       y1="281.21072"
+       x2="561.71466"
+       y2="281.21072"
+       id="linearGradient9029"
+       xlink:href="#linearGradient8954"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.9216028,0,0,0.9216028,232.79924,109.40375)" />
+  </defs>
+  <g
+     transform="translate(-741.77429,-342.70789)"
+     id="layer1">
+    <rect
+       width="125.85066"
+       height="50.594299"
+       rx="6.3242855"
+       ry="6.3242855"
+       x="743.27429"
+       y="344.20789"
+       id="rect8960"
+       style="fill:url(#linearGradient9033);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <path
+       d="M 757.58735,380.17726 L 745.08735,392.67726 L 757.58735,380.17726 z M 854.34371,380.17726 L 866.84371,392.67726 L 854.34371,380.17726 z"
+       id="path8964"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.29999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       width="111.61543"
+       height="36.864105"
+       rx="4.6080141"
+       ry="4.6080141"
+       x="750.13928"
+       y="349.07294"
+       id="rect9009"
+       style="fill:url(#linearGradient9029);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.29999995;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+  </g>
+</svg>
