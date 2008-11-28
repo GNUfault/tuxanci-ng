@@ -1,0 +1,5 @@
+.\" The Tuxanci man page.
+.\" Contact tomas.chvatal@gmail.com to correct errors or omissions.
+.TH man 6 "24 December 2008" "1.0" "Tuxanci man page"
+.SH NAME
+tuxanci - Tuxanci is first tux shooter inspired by game Bulanci.

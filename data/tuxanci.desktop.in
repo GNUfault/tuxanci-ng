@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=tuxanci
-Comment=Tuxanci first cushion shooter
+Comment=Tuxanci first tux shooter inspired by game Bulanci.
 Exec=tuxanci-@TUXANCI_VERSION@
 Terminal=false
 Type=Application
