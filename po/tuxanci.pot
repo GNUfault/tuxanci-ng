@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-30 00:20+0100\n"
+"POT-Creation-Date: 2008-11-30 00:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -332,7 +332,7 @@ msgstr ""
 
 #: src/base/downServer.c:134
 #, c-format
-msgid "down server do not inicialized !\n"
+msgid "Unable to initialize download server!\n"
 msgstr ""
 
 #: src/base/main.c:97

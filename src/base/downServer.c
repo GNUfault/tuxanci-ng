@@ -131,7 +131,7 @@ int initDownServer(char *ip4, int port4)
 
 	if( sock_server_tcp == NULL )
 	{
-		fprintf(stderr, _("down server do not inicialized !\n"));
+		fprintf(stderr, _("Unable to initialize download server!\n"));
 		return -1;
 	}
 

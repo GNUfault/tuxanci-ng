@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tuxanci\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-30 00:20+0100\n"
+"POT-Creation-Date: 2008-11-30 00:30+0100\n"
 "PO-Revision-Date: 2008-08-19 00:37+0200\n"
 "Last-Translator: Marcel 'frostwork' Unbehaun\n"
 "Language-Team: GERMAN <de@li.org>\n"
@@ -332,9 +332,9 @@ msgid "ERR Server has a problem !\n"
 msgstr ""
 
 #: src/base/downServer.c:134
-#, c-format
-msgid "down server do not inicialized !\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Unable to initialize download server!\n"
+msgstr "Konnte Netzwerk Spiel nicht als Server initialisieren!\n"
 
 #: src/base/main.c:97
 #, c-format
