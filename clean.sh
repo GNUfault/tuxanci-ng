@@ -16,7 +16,7 @@ find ./ \( -type f -name install_manifest.txt -print , -type f -name cmake_insta
 find ./ -name \*.in -print | while read r; do rm -f ${r/\.in/}; done
 
 # remove compiled binaries
-find src -name tuxanci-\* -print | xargs -i rm {} -f
+find src -name {tuxanci,tuxanci-server} -print | xargs -i rm {} -f
 
 # remove compiled gettext files
 find ./ -name \*.gmo -print | xargs -i rm {} -f
