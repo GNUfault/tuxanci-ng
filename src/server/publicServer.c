@@ -226,8 +226,7 @@ static void loadArena()
 {
 	choice_arenaFile = getArenaFileFormNetName(getSetting("ARENA", "--arena", "FAGN"));
 
-	if( choice_arenaFile == NULL )
-	{
+	if (choice_arenaFile == NULL) {
 		fprintf(stderr, _("I dont load arena %s!\n"), getSetting("ARENA", "--arena", "FAGN"));
 		exit(-1);
 	}

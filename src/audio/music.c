@@ -15,6 +15,7 @@ static list_t *listStorage;
 static bool_t isMusicInit = FALSE;
 static bool_t var_isMusicActive = TRUE;
 static Mix_Music *currentMusic;
+
 /*
  * Return state of music initialization
  */
@@ -38,24 +39,24 @@ void initMusic()
 	isMusicInit = TRUE;
 	var_isMusicActive = TRUE;
 
-	if (isParamFlag("--nomusic"))
+	if (isParamFlag("--no-music"))
 		setMusicActive(FALSE);
 
 	if (isParamFlag("--music"))
 		setMusicActive(TRUE);
 
-	DEBUG_MSG(_("Initializing music...\n"));
+	DEBUG_MSG(_("Initializing music\n"));
 }
 
 /*
- * Load music file and returns it
+ * Load a file with music and returns it
  */
 static Mix_Music *loadMixMusic(char *file)
 {
 	Mix_Music *mixer;
 	char str[STR_PATH_SIZE];
 
-	DEBUG_MSG(_("Loading music file: %s\n"), file);
+	DEBUG_MSG(_("Loading a file with music: %s\n"), file);
 
 	if (isFillPath(file)) {
 		strcpy(str, file);
@@ -68,7 +69,7 @@ static Mix_Music *loadMixMusic(char *file)
 	mixer = Mix_LoadMUS(str);
 
 	if (mixer == NULL) {
-		fprintf(stderr, _("Unable to load music from file: %s\n"), file);
+		fprintf(stderr, _("Unable to load music from file %s\n"), file);
 		return NULL;
 	}
 
@@ -80,8 +81,9 @@ static Mix_Music *loadMixMusic(char *file)
  */
 static void playMixMusic()
 {
-	if (currentMusic != NULL)
+	if (currentMusic != NULL) {
 		Mix_PlayMusic(currentMusic, 1000);
+	}
 }
 
 /*
@@ -115,11 +117,12 @@ void addMusic(char *file, char *name, char *group)
  */
 void stopMusic()
 {
-	if (isMusicInit == FALSE || var_isMusicActive == FALSE)
+	if (isMusicInit == FALSE || var_isMusicActive == FALSE) {
 		return;
+	}
 
 	if (currentMusic != NULL) {
-		DEBUG_MSG(_("Stopping music...\n"));
+		DEBUG_MSG(_("Stopping music\n"));
 
 		Mix_HaltMusic();
 		currentMusic = NULL;
@@ -127,7 +130,7 @@ void stopMusic()
 }
 
 /*
- * start music playback
+ * Play music playback
  */
 void playMusic(char *name, char *group)
 {
@@ -145,27 +148,28 @@ void playMusic(char *name, char *group)
 		return;
 
 	if (currentMusic != NULL &&
-		strcmp(currentMusic_group, group) == 0 &&
-		strcmp(currentMusic_name, name) == 0) {
+	    strcmp(currentMusic_group, group) == 0 &&
+	    strcmp(currentMusic_name, name) == 0) {
 		return;
 	}
 
-	if (currentMusic != NULL)
+	if (currentMusic != NULL) {
 		stopMusic();
+	}
 
 	currentMusic = getItemFromStorage(listStorage, group, name);
 	strcpy(currentMusic_group, group);
 	strcpy(currentMusic_name, name);
 
 	if (currentMusic != NULL) {
-		DEBUG_MSG(_("Playing music file %s\n"), name);
+		DEBUG_MSG(_("Playing music from file %s\n"), name);
 
 		playMixMusic();
 	}
 }
 
 /*
- * Set music active/deactivated
+ * Set music status to active/inactive
  */
 void setMusicActive(bool_t n)
 {
@@ -206,6 +210,7 @@ void delAllMusicInGroup(char *group)
 {
 	if (isMusicInit == FALSE)
 		return;
+
 	delAllItemFromStorage(listStorage, group, destroyMusic);
 }
 
@@ -221,5 +226,5 @@ void quitMusic()
 	destroyStorage(listStorage, destroyMusic);
 	isMusicInit = FALSE;
 
-	DEBUG_MSG(_("Quitting music...\n"));
+	DEBUG_MSG(_("Quitting music\n"));
 }

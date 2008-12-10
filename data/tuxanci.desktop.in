@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=tuxanci
 Comment=Tuxanci first tux shooter inspired by game Bulanci.
-Exec=tuxanci-@TUXANCI_VERSION@
+Exec=tuxanci
 Terminal=false
 Type=Application
 Icon=tuxanci

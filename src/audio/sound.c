@@ -13,8 +13,9 @@
 static list_t *listStorage;
 static bool_t isSoundInit = FALSE;
 static bool_t var_isSoundActive = TRUE;
+
 /*
- * Return state of sound
+ * Return status of sound
  */
 bool_t isSoundInicialized()
 {
@@ -22,7 +23,7 @@ bool_t isSoundInicialized()
 }
 
 /*
- * Audio initialization
+ * Initialize sound
  */
 void initSound()
 {
@@ -35,18 +36,18 @@ void initSound()
 	isSoundInit = TRUE;
 	var_isSoundActive = TRUE;
 
-	if (isParamFlag("--nosound"))
+	if (isParamFlag("--no-sound"))
 		setSoundActive(FALSE);
 
 	if (isParamFlag("--sound"))
 		setSoundActive(TRUE);
 
-	DEBUG_MSG(_("Initializing sound...\n"));
+	DEBUG_MSG(_("Initializing sound\n"));
 
 }
 
 /*
- * Load sound file (Null/mixer)
+ * Load sound from file (Null/mixer)
  */
 static Mix_Chunk *loadMixSound(char *file)
 {
@@ -60,7 +61,7 @@ static Mix_Chunk *loadMixSound(char *file)
 	new = Mix_LoadWAV(str);
 
 	if (new == NULL) {
-		fprintf(stderr, _("Unable to load sound file: %s with error: %s\n"), str, Mix_GetError());
+		fprintf(stderr, _("Unable to load sound from file %s with error: %s\n"), str, Mix_GetError());
 		return NULL;
 	}
 
@@ -73,7 +74,7 @@ static Mix_Chunk *loadMixSound(char *file)
 static void playMixSound(Mix_Chunk * p)
 {
 	if (Mix_PlayChannel(-1, p, 0) == -1) {
-		fprintf(stderr, _("Unable to playback sound with error: %s\n"), Mix_GetError());
+		fprintf(stderr, _("Unable to play sound with error: %s\n"), Mix_GetError());
 		return;
 	}
 }
@@ -138,8 +139,9 @@ void quitSound()
 {
 	if (isSoundInit == FALSE)
 		return;
+
 	destroyStorage(listStorage, destroySound);
 	isSoundInit = FALSE;
 
-	DEBUG_MSG(_("Quitting sound...\n"));
+	DEBUG_MSG(_("Quitting sound\n"));
 }

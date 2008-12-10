@@ -8,14 +8,14 @@
 #        define SOUND_GROUP_BASE "base"
 #        define SOUND_GROUP_USER "user"
 
-				/*
-				   typedef struct sound_struct
-				   {
-				   char *name;
-				   int group;
-				   Mix_Chunk *sound;
-				   } sound_t;
-				 */
+/*
+   typedef struct sound_struct
+   {
+   char *name;
+   int group;
+   Mix_Chunk *sound;
+   } sound_t;
+ */
 
 extern bool_t isSoundInicialized();
 extern void initSound();

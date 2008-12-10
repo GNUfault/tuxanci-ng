@@ -8,14 +8,14 @@
 #        define MUSIC_GROUP_BASE "base"
 #        define MUSIC_GROUP_USER "user"
 
-				/*
-				   typedef struct music_struct
-				   {
-				   char *name;
-				   int group;
-				   Mix_Music *music;
-				   } music_t;
-				 */
+/*
+   typedef struct music_struct
+   {
+   char *name;
+   int group;
+   Mix_Music *music;
+   } music_t;
+ */
 
 extern bool_t isMusicInicialized();
 extern void initMusic();
