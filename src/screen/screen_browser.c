@@ -39,14 +39,14 @@ extern int errno;
 #    include "music.h"
 #endif
 
-#include "gameType.h"
-#include "browser.h"
+#include "screen_gameType.h"
+#include "screen_browser.h"
 
 #include "widget.h"
-#include "image.h"
-#include "label.h"
-#include "button.h"
-#include "select.h"
+#include "widget_image.h"
+#include "widget_label.h"
+#include "widget_button.h"
+#include "widget_select.h"
 
 #define SERVER_TIMEOUT	200
 
@@ -681,7 +681,7 @@ void initScreenBrowser()
 {
 	image_t *image;
 
-	image = getImage(IMAGE_GROUP_BASE, "main");
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund = newWidgetImage(0, 0, image);
 
 	button_back =

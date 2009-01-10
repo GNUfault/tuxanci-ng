@@ -15,14 +15,14 @@
 #    include "music.h"
 #endif
 
-#include "mainMenu.h"
-#include "choiceArena.h"
+#include "screen_mainMenu.h"
+#include "screen_choiceArena.h"
 
 #include "widget.h"
-#include "label.h"
-#include "button.h"
-#include "image.h"
-#include "buttonimage.h"
+#include "widget_label.h"
+#include "widget_button.h"
+#include "widget_image.h"
+#include "widget_buttonimage.h"
 
 static widget_t *image_backgorund;
 
@@ -143,7 +143,7 @@ void initScreenChoiceArena()
 	image_t *image;
 	int i;
 
-	image = getImage(IMAGE_GROUP_BASE, "main");
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund = newWidgetImage(0, 0, image);
 
 	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);

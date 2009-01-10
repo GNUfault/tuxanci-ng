@@ -20,7 +20,7 @@
 #include "interface.h"
 #include "screen.h"
 #include "font.h"
-#include "settingKeys.h"
+#include "screen_settingKeys.h"
 #include "panel.h"
 #include "radar.h"
 
@@ -30,17 +30,17 @@
 #    include "music.h"
 #endif
 
-#include "world.h"
-#include "mainMenu.h"
-#include "analyze.h"
-#include "setting.h"
-#include "settingKeys.h"
-#include "gameType.h"
-#include "downArena.h"
-#include "choiceArena.h"
-#include "table.h"
-#include "credits.h"
-#include "browser.h"
+#include "screen_world.h"
+#include "screen_mainMenu.h"
+#include "screen_analyze.h"
+#include "screen_setting.h"
+#include "screen_settingKeys.h"
+#include "screen_gameType.h"
+#include "screen_downArena.h"
+#include "screen_choiceArena.h"
+#include "screen_table.h"
+#include "screen_credits.h"
+#include "screen_browser.h"
 
 static void initGame()
 {

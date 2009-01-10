@@ -15,8 +15,8 @@
 #include "udp.h"
 
 #ifndef PUBLIC_SERVER
-#    include "setting.h"
-#    include "choiceArena.h"
+#    include "screen_setting.h"
+#    include "screen_choiceArena.h"
 
 #    include "screen.h"
 #    include "client.h"

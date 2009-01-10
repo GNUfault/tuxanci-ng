@@ -56,18 +56,18 @@ SET ( SRC_client
 	${WORKDIR}/client/pauza	${WORKDIR}/client/saveDialog
 	${WORKDIR}/client/hotKey
 
-	${WORKDIR}/screen/choiceArena
-	${WORKDIR}/screen/settingKeys	${WORKDIR}/screen/table
-	${WORKDIR}/screen/setting	${WORKDIR}/screen/credits
-	${WORKDIR}/screen/world	${WORKDIR}/screen/analyze
-	${WORKDIR}/screen/mainMenu	${WORKDIR}/screen/browser
-	${WORKDIR}/screen/gameType	${WORKDIR}/screen/downArena
+	${WORKDIR}/screen/screen_choiceArena
+	${WORKDIR}/screen/screen_settingKeys	${WORKDIR}/screen/screen_table
+	${WORKDIR}/screen/screen_setting	${WORKDIR}/screen/screen_credits
+	${WORKDIR}/screen/screen_world	${WORKDIR}/screen/screen_analyze
+	${WORKDIR}/screen/screen_mainMenu	${WORKDIR}/screen/screen_browser
+	${WORKDIR}/screen/screen_gameType	${WORKDIR}/screen/screen_downArena
 
-	${WORKDIR}/widget/check	${WORKDIR}/widget/button
-	${WORKDIR}/widget/textfield	${WORKDIR}/widget/label
-	${WORKDIR}/widget/buttonimage	${WORKDIR}/widget/image
-	${WORKDIR}/widget/select	${WORKDIR}/widget/catchkey
-	${WORKDIR}/widget/choicegroup	${WORKDIR}/widget/widget
+	${WORKDIR}/widget/widget_check	${WORKDIR}/widget/widget_button
+	${WORKDIR}/widget/widget_textfield	${WORKDIR}/widget/widget_label
+	${WORKDIR}/widget/widget_buttonimage	${WORKDIR}/widget/widget_image
+	${WORKDIR}/widget/widget_select	${WORKDIR}/widget/widget_catchkey
+	${WORKDIR}/widget/widget_choicegroup	${WORKDIR}/widget/widget
 )
 
 SET ( SRC_audio

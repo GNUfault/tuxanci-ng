@@ -8,7 +8,7 @@
 #include "image.h"
 
 #include "widget.h"
-#include "textfield.h"
+#include "widget_textfield.h"
 
 //#define ZZEEXX86_READKEY
 

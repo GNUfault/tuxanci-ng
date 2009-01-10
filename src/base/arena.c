@@ -14,8 +14,8 @@
 
 #ifndef PUBLIC_SERVER
 #    include "hotKey.h"
-#    include "world.h"
-#    include "setting.h"
+#    include "screen_world.h"
+#    include "screen_setting.h"
 #    include "layer.h"
 #endif
 

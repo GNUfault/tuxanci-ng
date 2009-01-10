@@ -21,15 +21,15 @@
 #    include "sound.h"
 #endif							/* 
  */
-#include "mainMenu.h"
-#include "setting.h"
-#include "settingKeys.h"
+#include "screen_mainMenu.h"
+#include "screen_setting.h"
+#include "screen_settingKeys.h"
 	
 #include "widget.h"
-#include "button.h"
-#include "image.h"
-#include "catchkey.h"
-#include "label.h"
+#include "widget_button.h"
+#include "widget_image.h"
+#include "widget_catchkey.h"
+#include "widget_label.h"
 
 static int keytable[KEY_LENGTH];
 
@@ -383,7 +383,7 @@ image_t * image;
 
 initKeyTable();
 	
-image = getImage(IMAGE_GROUP_BASE, "main");
+image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	
 image_backgorund = newWidgetImage(0, 0, image);
 	

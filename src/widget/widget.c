@@ -5,7 +5,7 @@
 #include "main.h"
 
 #include "widget.h"
-#include "label.h"
+#include "widget_label.h"
 
 widget_t *newWidget(int type, int x, int y, int w, int h, void *private_data)
 {

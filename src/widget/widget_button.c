@@ -9,7 +9,7 @@
 #include "font.h"
 
 #include "widget.h"
-#include "button.h"
+#include "widget_button.h"
 
 widget_t *newWidgetButton(char *text, int x, int y, void (*fce_event) (void *))
 {

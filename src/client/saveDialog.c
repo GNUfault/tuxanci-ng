@@ -17,9 +17,9 @@
 #include "hotKey.h"
 
 #include "widget.h"
-#include "label.h"
-#include "button.h"
-#include "textfield.h"
+#include "widget_label.h"
+#include "widget_button.h"
+#include "widget_textfield.h"
 
 static image_t *g_background;
 static bool_t activeSaveDialog;
@@ -64,7 +64,7 @@ void initSaveDialog()
 {
 	activeSaveDialog = FALSE;
 
-	g_background = getImage(IMAGE_GROUP_BASE, "main");
+	g_background = getImage(IMAGE_GROUP_BASE, "screen_main");
 
 	widgetLabelMsg = newWidgetLabel("name", SAVE_DIALOG_LOCATIN_X + 20,
 						SAVE_DIALOG_LOCATIN_Y + 20,

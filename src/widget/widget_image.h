@@ -8,7 +8,7 @@
 #    include "widget.h"
 
 typedef struct widget_image {
-	image_t *widget_image;
+	image_t *image;
 } widget_image_t;
 
 extern widget_t *newWidgetImage(int x, int y, image_t * image);

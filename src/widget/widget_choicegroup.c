@@ -7,7 +7,7 @@
 #include "image.h"
 
 #include "widget.h"
-#include "choicegroup.h"
+#include "widget_choicegroup.h"
 
 widget_t *newWidgetChoicegroup(int x, int y, bool_t status, list_t * list, void (*fce_event) (void *))
 {

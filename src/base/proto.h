@@ -18,9 +18,9 @@
 #    include "net_multiplayer.h"
 
 #    ifndef PUBLIC_SERVER
-#        include "world.h"
-#        include "setting.h"
-#        include "choiceArena.h"
+#        include "screen_world.h"
+#        include "screen_setting.h"
+#        include "screen_choiceArena.h"
 #        include "client.h"
 #    endif
 
