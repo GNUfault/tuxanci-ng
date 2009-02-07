@@ -10,7 +10,7 @@
 #include "layer.h"
 #include "image.h"
 
-#include "world.h"
+#include "screen_world.h"
 
 static list_t *listLayer;
 

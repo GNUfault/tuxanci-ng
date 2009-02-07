@@ -7,7 +7,7 @@
 #include "image.h"
 
 #include "widget.h"
-#include "check.h"
+#include "widget_check.h"
 
 widget_t *newWidgetCheck(int x, int y, bool_t status,  void (*fce_event) (void *))
 {

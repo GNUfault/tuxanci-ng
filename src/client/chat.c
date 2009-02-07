@@ -11,7 +11,7 @@
 #include "serverSendMsg.h"
 
 #include "net_multiplayer.h"
-#include "world.h"
+#include "screen_world.h"
 #include "proto.h"
 #include "interface.h"
 #include "chat.h"

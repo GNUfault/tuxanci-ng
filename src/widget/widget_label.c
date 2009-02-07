@@ -5,7 +5,7 @@
 #include "main.h"
 #include "interface.h"
 #include "font.h"
-#include "label.h"
+#include "widget_label.h"
 #include "widget.h"
 
 widget_t *newWidgetLabel(char *text, int x, int y, int bind)

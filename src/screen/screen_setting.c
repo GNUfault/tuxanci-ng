@@ -22,19 +22,19 @@
 #    include "sound.h"
 #endif
 
-#include "mainMenu.h"
-#include "setting.h"
-#include "settingKeys.h"
-#include "settingKeys.h"
-#include "choiceArena.h"
+#include "screen_mainMenu.h"
+#include "screen_setting.h"
+#include "screen_settingKeys.h"
+#include "screen_settingKeys.h"
+#include "screen_choiceArena.h"
 
 #include "widget.h"
-#include "label.h"
-#include "button.h"
-#include "image.h"
-#include "textfield.h"
-#include "check.h"
-#include "select.h"
+#include "widget_label.h"
+#include "widget_button.h"
+#include "widget_image.h"
+#include "widget_textfield.h"
+#include "widget_check.h"
+#include "widget_select.h"
 
 static widget_t *image_backgorund;
 
@@ -332,7 +332,7 @@ void initScreenSetting()
 	image_t *image;
 	int i;
 
-	image = getImage(IMAGE_GROUP_BASE, "main");
+	image = getImage(IMAGE_GROUP_BASE, "screen_main");
 	image_backgorund = newWidgetImage(0, 0, image);
 
 	button_back = newWidgetButton(_("back"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);

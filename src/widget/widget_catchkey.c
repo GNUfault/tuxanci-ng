@@ -7,7 +7,7 @@
 #include "font.h"
 
 #include "widget.h"
-#include "catchkey.h"
+#include "widget_catchkey.h"
 
 widget_t *newWidgetCatchkey(int key, int x, int y, void *event)
 {

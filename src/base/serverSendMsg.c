@@ -11,7 +11,7 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#    include "world.h"
+#    include "screen_world.h"
 #endif
 
 static void addMsgClient(client_t * p, char *msg, int type, int id)

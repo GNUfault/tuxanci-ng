@@ -19,8 +19,8 @@
 #    include "radar.h"
 #    include "layer.h"
 
-#    include "world.h"
-#    include "setting.h"
+#    include "screen_world.h"
+#    include "screen_setting.h"
 
 #    ifndef NO_SOUND
 #        include "sound.h"

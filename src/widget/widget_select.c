@@ -7,7 +7,7 @@
 #include "font.h"
 
 #include "widget.h"
-#include "select.h"
+#include "widget_select.h"
 
 widget_t *newWidgetSelect(int x, int y, void (*fce_event) (void *))
 {

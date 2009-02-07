@@ -14,15 +14,15 @@
 #    include "music.h"
 #endif
 
-#include "mainMenu.h"
-#include "setting.h"
+#include "screen_mainMenu.h"
+#include "screen_setting.h"
 
 #include "widget.h"
-#include "label.h"
-#include "button.h"
-#include "textfield.h"
-#include "check.h"
-#include "image.h"
+#include "widget_label.h"
+#include "widget_button.h"
+#include "widget_textfield.h"
+#include "widget_check.h"
+#include "widget_image.h"
 
 static widget_t *image_backgorund;
 
@@ -103,7 +103,7 @@ void initScreenMainMenu()
 	image_t *image;
 
 	image =
-		addImageData("main.png", IMAGE_NO_ALPHA, "main",
+		addImageData("screen_main.png", IMAGE_NO_ALPHA, "screen_main",
 					 IMAGE_GROUP_BASE);
 	image_backgorund = newWidgetImage(0, 0, image);
 

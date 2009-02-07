@@ -17,11 +17,11 @@
 #    include "music.h"
 #endif
 
-#include "table.h"
+#include "screen_table.h"
 
-#include "image.h"
-#include "label.h"
-#include "button.h"
+#include "widget_image.h"
+#include "widget_label.h"
+#include "widget_button.h"
 
 static widget_t *image_backgorund;
 static widget_t *button_back;
@@ -198,7 +198,7 @@ void initScreenTable()
 {
 	image_t *image;
 
-	image = addImageData("table.png", IMAGE_NO_ALPHA, "table", IMAGE_GROUP_BASE);
+	image = addImageData("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
 	image_backgorund = newWidgetImage(0, 0, image);
 
 	button_back = newWidgetButton(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,

@@ -21,11 +21,11 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#    include "world.h"
-#    include "setting.h"
-#    include "choiceArena.h"
-#    include "analyze.h"
-#    include "downArena.h"
+#    include "screen_world.h"
+#    include "screen_setting.h"
+#    include "screen_choiceArena.h"
+#    include "screen_analyze.h"
+#    include "screen_downArena.h"
 #    include "client.h"
 #    include "term.h"
 #    include "radar.h"

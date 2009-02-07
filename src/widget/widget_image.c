@@ -9,7 +9,7 @@
 #include "font.h"
 
 #include "widget.h"
-#include "image.h"
+#include "widget_image.h"
 
 widget_t *newWidgetImage(int x, int y, image_t * image)
 {
