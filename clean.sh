@@ -24,3 +24,6 @@ find ./ -name \*.gmo -print | xargs -i rm {} -f
 
 # remove temporary backup files
 find ./ -type f -name \*~ -print | xargs -i rm {} -f
+
+# remove so libraries
+find ./src/modules -type f -name mod\*.so\* | xargs -i rm {} -f
