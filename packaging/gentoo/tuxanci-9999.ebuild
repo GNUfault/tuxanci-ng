@@ -49,15 +49,9 @@ src_configure() {
 }
 
 src_install() {
-	local MY_PN
-	use dedicated && MY_PN=${PN}-server || MY_PN=${PN}
-
 	cmake-utils_src_install
-	#dosym ${GAMES_BINDIR}/${P} ${GAMES_BINDIR}/${PN}
-	#dosym ${GAMES_BINDIR}/${MY_PN}-dev ${GAMES_BINDIR}/${MY_PN}
+
 	doicon data/${PN}.svg
-	# we compile our desktop file
-	cd "${WORKDIR}"/tuxanci_build
 	domenu data/${PN}.desktop
 
 	prepgamesdirs
