@@ -10,10 +10,10 @@
 	#else
 		#define APPNAME					"tuxanci"
 	#endif
-	#define PATH_DIR	"@CMAKE_DATA_PATH@"	"/"	APPNAME	"-" "@TUXANCI_VERSION@" "/"
+	#define PATH_DIR	"@CMAKE_DATA_PATH@"	"/"	APPNAME "/"
 	// windows bug
 	#ifndef __WIN32__
-		#define PATH_MODULES 	"@LIB_INSTALL_DIR@" "/"	APPNAME	"-" "@TUXANCI_VERSION@" "/"
+		#define PATH_MODULES 	"@LIB_INSTALL_DIR@" "/"	APPNAME	"/"
 	#else
 		#define PATH_MODULES 	PREFIX
 	#endif
@@ -23,7 +23,7 @@
 	#define PATH_SOUND	PATH_DIR	"sound/"
 	#define PATH_MUSIC	PATH_DIR	"music/"
 	#define PATH_LOCALE	"@CMAKE_LOCALE_PATH@"	"/"
-	#define PATH_DOC	"@CMAKE_DOC_PATH@"	"/"		APPNAME	"-" "@TUXANCI_VERSION@" "/"
+	#define PATH_DOC	"@CMAKE_DOC_PATH@"	"/"		APPNAME	"/"
 	#define PACKAGE		"tuxanci"
 	#include "main.h"
 #endif
