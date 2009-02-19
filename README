@@ -84,20 +84,14 @@ HOWTO COMPILE
 		you have to place source to some directory with no space in its path.
 
 		# ADDITIONAL OPTIONS FOR CMAKE
-		# -DServer=1			# build server
-		# -DNO_Audio=1 			# disable audio
-		# -DDebug=1			# enable debug
-		# -DCMAKE_C_FLAGS=-Wall		# modification for CFLAGS
-		# -DWin=1			# build windows port
-		# -DNLS=0			# disable Gettext NLS
-		# -DApple=1			# build apple port
-		# -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
-		# -DCMAKE_DATA_PATH=/other/bla/	# install path for data
-		# -DCMAKE_CONF_PATH=/etc	# install path for conf. files
-		# -DLIB_INSTALL_DIR=/other/bla	# install path for libraries
-		# -DCMAKE_DOC_PATH=/other/bla	# install path for doc
-		# -DCMAKE_LOCALE_PATH=/bla	# install path for locale
-		# -DCMAKE_FONT=/bla/font.ttf	# install path for fonts
+		#option(WITH_SERVER      "Build the server instead of client"        ON)
+		#option(WITH_AUDIO       "Build with audio enabled"                  ON)
+		#option(ENABLE_DEBUG     "Build debug features"                      OFF)
+		#option(WITH_NLS         "Build the translations"                    ON)
+		#option(Apple            "Build some apple quirks. USE ONLY ON MAC!" OFF)
+		#option(WITH_OPENGL      "Use opengl as renderer instead of SW"      ON)
+		#option(BUNDLE           "Use for generating binary. DEV ONLY"       OFF)
+
 GAME USAGE
 ==========
 	Starting game is simple tuxanci-VERSION or tuxanci-server-V. based on what we
