@@ -4,11 +4,11 @@
 ###############################################################################
 # ALL CONDITIONAL OPTIONS
 ###############################################################################
-# -DServer=1			# build server
-# -DNO_Audio=1 			# disable audio
-# -DDebug=1			# enable debug
+# -DWITH_SERVER=1			# build server
+# -DWITH_AUDIO=1 			# enable audio
+# -DENABLE_DEBUG=1			# enable debug
 # -DCMAKE_C_FLAGS=-Wall		# modification for CFLAGS
-# -DNO_NLS=1			# disable Gettext NLS
+# -DWITH_NLS=1			# disable Gettext NLS
 # -DApple=1			# build apple port
 # -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
 # -DCMAKE_DATA_PATH=/other/bla/	# install path for data
@@ -17,7 +17,17 @@
 # -DCMAKE_DOC_PATH=/other/bla/doc/tuxanci-version/	# install path for doc
 # -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
 # -DCMAKE_FONT=/bla/font.ttf	# install path for locale
-# -DNO_OPENGL=1			# disable opengl
+# -DWITH_OPENGL=1			# enable/disable opengl
+###############################################################################
+# DEFAULT OPTIONS
+###############################################################################
+option(WITH_SERVER		"Build the server instead of client"		ON)
+option(WITH_AUDIO		"Build with audio enabled"					ON)
+option(ENABLE_DEBUG		"Build debug features"						OFF)
+option(WITH_NLS			"Build the translations"					ON)
+option(Apple			"Build some apple quirks. USE ONLY ON MAC!"	OFF)
+option(WITH_OPENGL		"Use opengl as renderer instead of SW"		ON)
+option(BUNDLE			"Use for generating binary. DEV ONLY"		OFF)
 ###############################################################################
 # IMPORTANT DEFINITIONS [PREFIX,...]
 ###############################################################################
@@ -34,11 +44,11 @@ SET ( LIB_INSTALL_DIR "${CMAKE_LIB_PATH}" )
 # BASIC PROJECT VALUES
 ###############################################################################
 PROJECT ( tuxanci C )
-IF ( NOT Server )
-	SET ( APPNAME "tuxanci")
-ELSE ( NOT Server )
-	SET ( APPNAME "tuxanci-server" )
-ENDIF ( NOT Server )
+IF ( WITH_SERVER )
+	SET ( APPNAME "tuxanci-server")
+ELSE ( WITH_SERVER )
+	SET ( APPNAME "tuxanci" )
+ENDIF ( WITH_SERVER )
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )
 MESSAGE ( "<******************************>" )
@@ -87,12 +97,12 @@ ADD_CUSTOM_TARGET ( uninstall "${CMAKE_COMMAND}"
 ###############################################################################
 # DEBUG STUFF
 ###############################################################################
-IF ( Debug )
+IF ( ENABLE_DEBUG )
 	SET( CMAKE_C_FLAGS "-g -O0 -Wall -pipe")
 	SET( CMAKE_CXX_FLAGS "-g -O0 -Wall -pipe")
 	ADD_DEFINITIONS ( -DDEBUG )
 	# SET ( CMAKE_VERBOSE_MAKEFILE on )
-ENDIF ( Debug )
+ENDIF ( ENABLE_DEBUG )
 ###############################################################################
 # BASIC DIRECTORIES FOR INCLUSION
 ###############################################################################
@@ -101,20 +111,20 @@ INCLUDE_DIRECTORIES ( ${WORKDIR}/net )
 ###############################################################################
 # CLIENT STUFF
 ###############################################################################
-IF ( NOT Server )
+IF ( NOT WITH_SERVER )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/client )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/screen )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/widget )
-ENDIF ( NOT Server )
+ENDIF ( NOT WITH_SERVER )
 ###############################################################################
 # SERVER STUFF (Basicly overriding default client values)
 ###############################################################################
-IF ( Server )
+IF ( WITH_SERVER )
 	ADD_DEFINITIONS ( -DPUBLIC_SERVER )
 	ADD_DEFINITIONS ( -DNO_SOUND )
 	SET ( NO_Audio "ON" )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/server )
-ENDIF ( Server )
+ENDIF ( WITH_SERVER )
 ###############################################################################
 # APPLE QUIRKS
 ###############################################################################
@@ -129,35 +139,35 @@ ENDIF ( Apple )
 MESSAGE ( STATUS "<Locating ZZIP library>" )
 MESSAGE ( STATUS "<******************************>" )
 FIND_PACKAGE ( ZZIP REQUIRED )
-IF ( NOT NO_OPENGL )
+IF ( WITH_OPENGL )
 	MESSAGE ( STATUS "<Locating OpenGL stuff>" )
 	MESSAGE ( STATUS "<******************************>" )
 	FIND_PACKAGE ( OpenGL REQUIRED )
 	FIND_PACKAGE ( GLU REQUIRED )
-ENDIF ( NOT NO_OPENGL )
+ENDIF ( WITH_OPENGL )
 MESSAGE ( STATUS "<Locating SDL stuff>" )
 MESSAGE ( STATUS "<******************************>" )
 
-IF ( NOT Server )
+IF ( NOT WITH_SERVER )
 	FIND_PACKAGE ( SDL REQUIRED )
 	FIND_PACKAGE ( SDL_image REQUIRED )
 	FIND_PACKAGE ( SDL_ttf REQUIRED )
-	IF ( NOT NO_Audio )
+	IF ( WITH_AUDIO )
 		FIND_PACKAGE ( SDL_mixer REQUIRED )
-	ENDIF ( NOT NO_Audio )
-ENDIF ( NOT Server )
+	ENDIF ( WITH_AUDIO )
+ENDIF ( NOT WITH_SERVER )
 INCLUDE_DIRECTORIES (
 	${SDL_INCLUDE_DIR}
 	${SDLTTF_INCLUDE_DIR}
 	${SDLIMAGE_INCLUDE_DIR}
 )
-IF ( NOT NO_Audio )
+IF ( WITH_AUDIO )
 	INCLUDE_DIRECTORIES ( ${SDLMIXER_INCLUDE_DIR} )
-ENDIF ( NOT NO_Audio )
+ENDIF ( WITH_AUDIO )
 ###############################################################################
 # BUNDLING (INTERNAL STUFF USERS/PACKAGERS SHOULD NEVER USE)
 ###############################################################################
-IF ( Bundle )
+IF ( BUNDLE )
 	SET ( CMAKE_CONF_PATH "../etc")
 	SET ( CMAKE_DATA_PATH "../share")
 	SET ( CMAKE_LOCALE_PATH "../share/locale/")
@@ -172,16 +182,16 @@ IF ( Bundle )
 	SET ( CMAKE_INSTALL_ETCDIR etc )
 	SET ( CMAKE_INSTALL_DOCDIR doc )
 	CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
-ENDIF ( Bundle )
+ENDIF ( BUNDLE )
 ###############################################################################
 # GETTEXT SUPPORT
 ###############################################################################
-IF ( NOT NO_NLS )
+IF ( WITH_NLS )
 	MESSAGE ( STATUS "<Building with NLS as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	ADD_DEFINITIONS ( -DNLS )
 	ADD_SUBDIRECTORY ( po )
-ENDIF ( NOT NO_NLS )
+ENDIF ( WITH_NLS )
 ###############################################################################
 # COMPILATION ITSELF
 ###############################################################################
@@ -189,9 +199,9 @@ MESSAGE ( "Cflags:${CMAKE_C_FLAGS}" )
 MESSAGE ( "CXXflags:${CMAKE_CXX_FLAGS}" )
 MESSAGE ( STATUS "<Compiling SRC>" )
 MESSAGE ( STATUS "<******************************>" )
-IF ( NOT Bundle )
+IF ( NOT BUNDLE )
 	CONFIGURE_FILE ( ${WORKDIR}/base/path.h.in ${WORKDIR}/base/path.h )
-ENDIF ( NOT Bundle )
+ENDIF ( NOT BUNDLE )
 ADD_SUBDIRECTORY ( src )
 ###############################################################################
 # DATA INSTALLATION

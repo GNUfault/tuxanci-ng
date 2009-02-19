@@ -3,21 +3,21 @@
 ###############################################################################
 # LINKING ( for binary )
 ###############################################################################
-IF ( Server )
+IF ( WITH_SERVER )
 	LINK_LIBRARIES (  ${ZZIP_LIBRARY} ${CMAKE_DL_LIBS} )
-ELSE ( Server )
-	IF ( NOT NO_OPENGL )
+ELSE ( WITH_SERVER )
+	IF ( WITH_OPENGL )
 		LINK_LIBRARIES ( ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} )
-	ENDIF ( NOT NO_OPENGL )
-	IF  ( NO_Audio )
+	ENDIF ( WITH_OPENGL )
+	IF  ( WITH_AUDIO )
+		LINK_LIBRARIES ( ${ZZIP_LIBRARY} ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY}
+		${SDLTTF_LIBRARY} ${SDLMIXER_LIBRARY} )
+	ELSE ( WITH_AUDIO )
 		LINK_LIBRARIES ( ${ZZIP_LIBRARY} ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY}
 		${SDLTTF_LIBRARY} )
-	ELSE ( NO_Audio )
-		LINK_LIBRARIES ( ${ZZIP_LIBRARY} ${SDL_LIBRARY} ${SDLMIXER_LIBRARY}
-		${SDLIMAGE_LIBRARY} ${SDLTTF_LIBRARY} )
-	ENDIF ( NO_Audio )
+	ENDIF ( WITH_AUDIO )
 	LINK_LIBRARIES ( SDLmain )
-ENDIF ( Server )
+ENDIF ( WITH_SERVER )
 
 ###############################################################################
 # SOURCE SPECIFICATION
@@ -82,23 +82,23 @@ SET ( SRC_server
 ###############################################################################
 # AUDIO CHECK
 ###############################################################################
-IF ( NO_Audio )
-	ADD_DEFINITIONS ( -DNO_SOUND )
-ELSE ( NO_Audio )
+IF ( WITH_AUDIO )
 	MESSAGE ( STATUS "<Building with audio as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	SET ( SRC_compile ${SRC_base} ${SRC_client} ${SRC_audio} )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/audio )
 	INCLUDE_DIRECTORIES ( ${SDLMIXER_INCLUDE_DIR} )
-ENDIF ( NO_Audio )
+ELSE ( WITH_AUDIO )
+	ADD_DEFINITIONS ( -DNO_SOUND )
+ENDIF ( WITH_AUDIO )
 ###############################################################################
 # OPENGL CHECK
 ###############################################################################
-IF ( NOT NO_OPENGL )
+IF ( WITH_OPENGL )
 	MESSAGE ( STATUS "<Building with OPENGL as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	ADD_DEFINITIONS ( -DSUPPORT_OPENGL )
-ENDIF ( NOT NO_OPENGL )
+ENDIF ( WITH_OPENGL )
 ###############################################################################
 # MODULES
 ###############################################################################
@@ -106,20 +106,19 @@ ADD_SUBDIRECTORY ( modules )
 ###############################################################################
 # SERVER COMPILATION
 ###############################################################################
-IF ( Server )
+IF ( WITH_SERVER )
 	MESSAGE ( STATUS "<Building server as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	SET ( SRC_compile ${SRC_base} ${SRC_server} )
 	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
-ENDIF ( Server )
+ELSE ( WITH_SERVER )
 ###############################################################################
 # CLIENT COMPILATION
 ###############################################################################
-IF ( NOT Server )
 	MESSAGE ( STATUS "<Building client as requested>" )
 	MESSAGE ( STATUS "<******************************>" )
 	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
-ENDIF ( NOT Server )
+ENDIF ( WITH_SERVER )
 ################################################################################
 # INSTALLATION OF BINARY
 ################################################################################

@@ -8,15 +8,15 @@ LINK_LIBRARIES ( ${CMAKE_DL_LIBS} )
 ###############################################################################
 # SOURCE SPECIFICATION
 ###############################################################################
-IF ( NOT Server )
-	SET ( SRC_base_modules
-		${WORKDIR}/client/interface.h ${WORKDIR}/client/image.h
-	)
-ELSE ( NOT Server )
+IF ( WITH_SERVER )
 	SET ( SRC_base_modules
 		${WORKDIR}/server/publicServer.h
 	)
-ENDIF ( NOT Server )
+ELSE ( WITH_SERVER )
+	SET ( SRC_base_modules
+		${WORKDIR}/client/interface.h ${WORKDIR}/client/image.h
+	)
+ENDIF ( WITH_SERVER )
 SET ( SRC_base_modules
 	${SRC_base_modules}
 	${WORKDIR}/base/main.h	${WORKDIR}/base/modules.h
