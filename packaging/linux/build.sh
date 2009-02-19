@@ -40,7 +40,7 @@ SOURCE="${BUNDLE_PREFIX}"/"${APPNAME}-source-${VERSION}"
 D="${BUNDLE_PREFIX}"/"${APPNAME}"
 OPTIONS="client server"
 ERROR_MESSAGE="Check ${LOG}, cause i was unable to finish my stuff correctly!"
-CMAKE_PARAMS="-DNLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release"
+CMAKE_PARAMS="-DWITH_NLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release"
 ###############################################################################
 # PREPARING ENVIROMENT
 ###############################################################################
@@ -96,7 +96,7 @@ Description: Game tuxanci next generation version 0.2.1
 ###############################################################################
 CMAKE_PARAMS="${CMAKE_PARAMS} -DCMAKE_INSTALL_PREFIX=/usr/games/"
 if [[ ${Y} == "server" ]]; then
-	CMAKE_PARAMS="${CMAKE_PARAMS} -DServer=1"
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_SERVER=1"
 fi
 cd "${SOURCE}"
 rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
@@ -112,7 +112,7 @@ Y_N=$(echo ${Y} |tr s S |tr c C)
 dpkg-deb -b "${DEST_DEB}" ${APPNAME}${Y_N}_${VERSION}-1_${ARCH}.deb
 rm -rf "${DEST_DEB}"
 done
-CMAKE_PARAMS="-DBundle=1 -DNLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release" # duplicating due to override
+CMAKE_PARAMS="-DBundle=1 -DWITH_NLS=1 -DTUXANCI_VERSION=${VERSION} -DCMAKE_BUILD_TYPE=Release" # duplicating due to override
 ###############################################################################
 # BUILDING BINARIES
 ###############################################################################
@@ -121,7 +121,7 @@ echo "<******************************>"
 echo "<Building ${Y} ${ARCH}>"
 echo "<******************************>"
 if [[ ${Y} == "server" ]]; then
-	CMAKE_PARAMS="${CMAKE_PARAMS} -DServer=1"
+	CMAKE_PARAMS="${CMAKE_PARAMS} -DWITH_SERVER=1"
 fi
 cd "${SOURCE}"
 rm CMakeCache.txt || ( echo "I was unable to cleanup CMakeCache.txt"; exit 1; )
