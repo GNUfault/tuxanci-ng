@@ -141,7 +141,8 @@ int initSDL()
 		SDL_Quit();
 		return -1;
 	}
-
+	// enable unicode by default for keyboard support
+	SDL_EnableUNICODE(1);
 	SDL_WM_SetCaption(WINDOW_TITLE, NULL);
 	//SDL_ShowCursor(0);
 	SDL_EnableKeyRepeat(0, 1);
