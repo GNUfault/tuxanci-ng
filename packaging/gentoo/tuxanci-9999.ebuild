@@ -30,8 +30,6 @@ DEPEND="${RDEPEND}
 	>=dev-util/cmake-2.6.0
 	nls? ( sys-devel/gettext )"
 
-S="${WORKDIR}"/"${PN}"
-
 src_configure() {
 	local mycmakeargs="$(cmake-utils_use_with alsa AUDIO)
 		$(cmake-utils_use_enable debug DEBUG)
