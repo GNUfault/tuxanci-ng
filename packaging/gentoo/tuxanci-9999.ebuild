@@ -5,7 +5,7 @@
 EAPI="2"
 
 EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
-inherit cmake-utils games git
+inherit games cmake-utils git
 
 DESCRIPTION="Tuxanci is first tux shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
