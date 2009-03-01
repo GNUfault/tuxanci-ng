@@ -1,0 +1,72 @@
+#!/bin/sh
+
+###
+# Defaults
+###
+VERSION=0.21.99
+PREFIX=/usr/local
+PREFIX_BIN=$PREFIX/bin
+PREFIX_DATA=$PREFIX/share/tuxanci
+PREFIX_DOC=$PREFIX/share/doc/tuxanci-$VERSION
+DESTDIR=
+DEBUG=1
+
+###
+# Predefined functions
+###
+help() {
+	echo "Supported options are:"
+	echo "--help			print this help and exit"
+	echo "--prefix=<path>		final path for the game [/usr/local]"
+	echo "--prefix-bin=<path>	will hold all binaries [$prefix/bin]"
+	echo "--prefix-data=<path>	data path [$prefix/share/tuxanci]"
+	echo "--prefix-doc=<path>	documentation path [$prefix/share/doc/tuxanci-$VERSION]"
+	echo "--destdir=<path>		useful option for packagers
+	echo "--enable-debug		debugging mode (default, recommended)"
+	echo "--disable-debug		enables optimization and quiet output"
+	echo ""
+}
+
+###
+# Parse options
+###
+while [ $# -gt 0 ]; do
+	case $1 in
+		--help)
+			help
+			exit 0
+			;;
+		--prefix=*)
+			PREFIX=`echo $1 | sed 's/--prefix=//'`
+			;;
+		--prefix-bin=*)
+			PREFIX_BIN=`echo $1 | sed 's/--prefix-bin=//'`
+			;;
+		--prefix-data=*)
+			PREFIX=`echo $1 | sed 's/--prefix-data=//'`
+			;;
+		--prefix-doc=*)
+			PREFIX=`echo $1 | sed 's/--prefix-doc=//'`
+			;;
+		--destdir=*)
+			DESTDIR=`echo $1 | sed 's/--destdir=//'`
+			;;
+		--enable-debug)
+			DEBUG=1
+			;;
+		--disable-debug)
+			DEBUG=0
+			;;
+		*)
+		echo "Error: unknown option $1"
+			help
+			exit 1
+			;;
+	esac
+	shift
+done
+
+###
+# Check for dependencies
+###
+
