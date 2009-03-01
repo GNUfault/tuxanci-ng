@@ -26,13 +26,21 @@
 
 #include "udp.h"
 
-sock_udp_t *newSockUdp(int proto)
+static int getProto(char *str)
+{
+	if( strstr(str, ".") != NULL )return PROTO_UDPv4;
+	if( strstr(str, ":") != NULL )return PROTO_UDPv6;
+
+	assert( ! "Protocol not detected !" );
+	return -1;
+}
+
+sock_udp_t *newSockUdp(void)
 {
 	sock_udp_t *new;
 
 	new = malloc(sizeof(sock_udp_t));
 	memset(new, 0, sizeof(sock_udp_t));
-	new->proto = proto;
 
 	return new;
 }
@@ -43,14 +51,15 @@ void destroySockUdp(sock_udp_t * p)
 	free(p);
 }
 
-sock_udp_t *bindUdpSocket(char *address, int port, int proto)
+sock_udp_t *bindUdpSocket(char *address, int port)
 {
 	sock_udp_t *new;
 	int res = -1;				// no warninng
 
 	assert(port > 0 && port < 65535);
 
-	new = newSockUdp(proto);
+	new = newSockUdp();
+	new->proto = getProto(address);
 
 	assert(new != NULL);
 
@@ -104,14 +113,15 @@ sock_udp_t *bindUdpSocket(char *address, int port, int proto)
 	return new;
 }
 
-sock_udp_t *connectUdpSocket(char *address, int port, int proto)
+sock_udp_t *connectUdpSocket(char *address, int port)
 {
 	sock_udp_t *new;
 
 	assert(address != NULL);
 	assert(port > 0 && port < 65536);
 
-	new = newSockUdp(proto);
+	new = newSockUdp();
+	new->proto = getProto(address);
 
 	assert(new != NULL);
 
@@ -182,7 +192,7 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	assert(dst != NULL);
 	assert(address != NULL);
 
-	if (dst->proto == PROTO_UDPv4) {
+	if (src->proto == PROTO_UDPv4) {
 		addrlen = sizeof(src->sockAddr);
 
 #ifndef __WIN32
@@ -197,7 +207,7 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	}
 
 #ifdef SUPPORT_IPv6
-	if (dst->proto == PROTO_UDPv6) {
+	if (src->proto == PROTO_UDPv6) {
 		addrlen = sizeof(src->sockAddr6);
 
 		size = recvfrom(src->sock, address, len, 0,
@@ -207,6 +217,7 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 #endif
 
 	dst->sock = src->sock;
+	dst->proto = src->proto;
 
 	if (size < 0) {
 		char str_ip[STR_IP_SIZE];
@@ -215,6 +226,7 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 
 		fprintf(stderr, _("Unable to read form socket %d %s %d!\n"), size,
 				str_ip, getSockUdpPort(dst));
+
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -233,14 +245,14 @@ int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	assert(dst != NULL);
 	assert(address != NULL);
 
-	if (dst->proto == PROTO_UDPv4) {
+	if (src->proto == PROTO_UDPv4) {
 		addrlen = sizeof(src->sockAddr);
 
 		size = sendto(src->sock, address, len, 0,
 		       (struct sockaddr *) &dst->sockAddr, addrlen);
 	}
 #ifdef SUPPORT_IPv6
-	if (dst->proto == PROTO_UDPv6) {
+	if (src->proto == PROTO_UDPv6) {
 		addrlen = sizeof(src->sockAddr6);
 
 		size = sendto(src->sock, address, len, 0,
@@ -253,8 +265,10 @@ int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 
 		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
 
-		fprintf(stderr, _("Unable to write on socket %d %s %d!\n"), size,
-				str_ip, getSockUdpPort(dst));
+		fprintf(stderr, _("Unable to write on socket %d %s %d %d!\n"), size,
+				str_ip, getSockUdpPort(dst), dst->proto);
+
+		//assert(0);
 #ifdef __WIN32__
 		WSACleanup();
 #endif

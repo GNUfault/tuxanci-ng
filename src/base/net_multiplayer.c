@@ -71,7 +71,7 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 
 #ifndef PUBLIC_SERVER
 	case NET_GAME_TYPE_CLIENT:
-		if (initClient(ip, port, proto) != 0) {
+		if (initClient(ip, port) != 0) {
 			fprintf(stderr, _("Unable to inicialize network game as client!\n"));
 			netGameType = NET_GAME_TYPE_NONE;
 			return -1;

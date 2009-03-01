@@ -93,7 +93,7 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 	ret = 0;
 
 	if (ip4 != NULL) {
-		sock_server_udp = bindUdpSocket(ip4, port4, PROTO_UDPv4);
+		sock_server_udp = bindUdpSocket(ip4, port4);
 
 		if (sock_server_udp != NULL) {
 			ret++;
@@ -104,7 +104,7 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 	}
 
 	if (ip6 != NULL) {
-		sock_server_udp_second = bindUdpSocket(ip6, port6, PROTO_UDPv6);
+		sock_server_udp_second = bindUdpSocket(ip6, port6);
 
 		if (sock_server_udp_second != NULL) {
 			ret++;
@@ -163,7 +163,7 @@ static void eventClientUdpSelect(sock_udp_t * sock_server)
 
 	assert(sock_server != NULL);
 
-	sock_client = newSockUdp(sock_server->proto);
+	sock_client = newSockUdp();
 	isCreateNewClient = FALSE;
 
 	memset(listRecvMsg, 0, STR_SIZE);

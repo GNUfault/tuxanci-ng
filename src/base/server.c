@@ -238,13 +238,21 @@ int initServer(char *ip4, int port4, char *ip6, int port6)
 	setServerMaxClients(SERVER_MAX_CLIENTS);
 	setServerTimer();
 
+	//printf("%s %d %s %d\n", ip4, port4, ip6, port6);
 	ret = initUdpServer(ip4, port4, ip6, port6);
 
 	if (ret == 0) {
 		return -1;
 	}
 
-	initDownServer(ip4, port4);
+	if( ip4 != NULL )
+	{
+		initDownServer(ip4, port4);
+	}
+	else if( ip6 != NULL )
+	{
+		initDownServer(ip6, port6);
+	}
 
 	return ret;
 }

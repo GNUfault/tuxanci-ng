@@ -127,7 +127,7 @@ static void destroyClient(client_ds_t *client)
 
 int initDownServer(char *ip4, int port4)
 {
-	sock_server_tcp = bindTcpSocket(ip4, port4, PROTO_TCPv4);
+	sock_server_tcp = bindTcpSocket(ip4, port4);
 
 	if( sock_server_tcp == NULL )
 	{

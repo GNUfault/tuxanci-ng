@@ -52,7 +52,7 @@ static int countSendMsg;
 
 static void setStatusString(char *s)
 {
-	//printf("status -> %s\n", s);
+	printf("status -> %s\n", s);
 	destroyWidgetLabel(label_status);
 	label_status = newWidgetLabel(s, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 }
@@ -62,7 +62,7 @@ static void connectToDownServer()
 	char status[STR_SIZE];
 	char msg[STR_PROTO_SIZE];
 
-	sock_server_tcp = connectTcpSocket(getSettingIP(), getSettingPort(), PROTO_TCPv4);
+	sock_server_tcp = connectTcpSocket(getSettingIP(), getSettingPort());
 
 	if( sock_server_tcp == NULL )
 	{
@@ -130,7 +130,7 @@ void startScreenDownArena()
 	strcpy(str_status, "none");
 	memset(arenaNetName, 0, STR_SIZE);
 
-	sock_server_udp = connectUdpSocket(getSettingIP(), getSettingPort(), PROTO_UDPv4);
+	sock_server_udp = connectUdpSocket(getSettingIP(), getSettingPort());
 
 	if (sock_server_udp == NULL)
 	{

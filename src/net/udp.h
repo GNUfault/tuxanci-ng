@@ -28,10 +28,10 @@ typedef struct struct_sock_udp_t {
 	struct sockaddr_in sockAddr;
 } sock_udp_t;
 
-extern sock_udp_t *newSockUdp(int proto);
+extern sock_udp_t *newSockUdp(void);
 extern void destroySockUdp(sock_udp_t * p);
-extern sock_udp_t *bindUdpSocket(char *address, int port, int proto);
-extern sock_udp_t *connectUdpSocket(char *address, int port, int proto);
+extern sock_udp_t *bindUdpSocket(char *address, int port);
+extern sock_udp_t *connectUdpSocket(char *address, int port);
 extern int setUdpSockNonBlock(sock_udp_t * p);
 extern int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address,
 						 int len);

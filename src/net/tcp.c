@@ -21,13 +21,12 @@
 
 #include "tcp.h"
 
-sock_tcp_t *newSockTcp(int proto)
+sock_tcp_t *newSockTcp(void)
 {
 	sock_tcp_t *new;
 
 	new = malloc(sizeof(sock_tcp_t));
 	memset(new, 0, sizeof(sock_tcp_t));
-	new->proto = proto;
 
 	return new;
 }
@@ -38,7 +37,16 @@ void destroySockTcp(sock_tcp_t * p)
 	free(p);
 }
 
-sock_tcp_t *bindTcpSocket(char *address, int port, int proto)
+static int getProto(char *str)
+{
+	if( strstr(str, ".") != NULL  )return PROTO_TCPv4;
+	if( strstr(str, ":") != NULL  )return PROTO_TCPv6;
+
+	assert( ! "Protocol not detected !" );
+	return -1;
+}
+
+sock_tcp_t *bindTcpSocket(char *address, int port)
 {
 	sock_tcp_t *new;
 	unsigned long param_setsock = 1;
@@ -47,7 +55,8 @@ sock_tcp_t *bindTcpSocket(char *address, int port, int proto)
 
 	assert(port > 0 && port < 65535);
 
-	new = newSockTcp(proto);
+	new = newSockTcp();
+	new->proto = getProto(address);
 	ret = -1;					// no Warnings
 
 	assert(new != NULL);
@@ -110,7 +119,8 @@ sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
 	assert(p != NULL);
 	assert(p->sock >= 0);
 
-	new = newSockTcp(p->proto);
+	new = newSockTcp();
+	new->proto = p->proto;
 
 	if (new->proto == PROTO_TCPv4) {
 		client_len = sizeof(new->sockAddr);
@@ -170,7 +180,7 @@ int getSockTcpPort(sock_tcp_t * p)
 	return -1;
 }
 
-sock_tcp_t *connectTcpSocket(char *ip, int port, int proto)
+sock_tcp_t *connectTcpSocket(char *ip, int port)
 {
 	sock_tcp_t *new;
 	int len;
@@ -179,7 +189,8 @@ sock_tcp_t *connectTcpSocket(char *ip, int port, int proto)
 	assert(ip != NULL);
 	assert(port > 0 && port < 65535);
 
-	new = newSockTcp(proto);
+	new = newSockTcp();
+	new->proto = getProto(ip);
 	ret = -1;					// no Warnnings
 
 	if (new->proto == PROTO_TCPv4) {

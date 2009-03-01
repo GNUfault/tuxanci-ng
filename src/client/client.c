@@ -88,9 +88,9 @@ static proto_cmd_client_t *findCmdProto(char *msg)
 	return NULL;
 }
 
-static int initUdpClient(char *ip, int port, int proto)
+static int initUdpClient(char *ip, int port)
 {
-	sock_server_udp = connectUdpSocket(ip, port, proto);
+	sock_server_udp = connectUdpSocket(ip, port);
 
 	if (sock_server_udp == NULL) {
 		return -1;
@@ -101,7 +101,7 @@ static int initUdpClient(char *ip, int port, int proto)
 	return 0;
 }
 
-int initClient(char *ip, int port, int proto)
+int initClient(char *ip, int port)
 {
 	char name[STR_NAME_SIZE];
 	int ret;
@@ -119,7 +119,7 @@ int initClient(char *ip, int port, int proto)
 	clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 	clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
 
-	ret = initUdpClient(ip, port, proto);
+	ret = initUdpClient(ip, port);
 
 	if (ret < 0) {
 		return -1;
