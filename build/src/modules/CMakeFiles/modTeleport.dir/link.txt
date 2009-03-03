@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fPIC   -shared -Wl,-soname,libmodTeleport.so.0 -o libmodTeleport.so.0.21.99 CMakeFiles/modTeleport.dir/__/base/list.c.o CMakeFiles/modTeleport.dir/__/base/space.c.o CMakeFiles/modTeleport.dir/__/base/index.c.o CMakeFiles/modTeleport.dir/modTeleport.c.o -lzzip -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -lSDL_image -lSDL_ttf -lSDL_mixer -lSDLmain -ldl 

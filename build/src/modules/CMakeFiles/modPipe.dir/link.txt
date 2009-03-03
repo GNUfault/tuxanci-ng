@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fPIC   -shared -Wl,-soname,libmodPipe.so.0 -o libmodPipe.so.0.21.99 CMakeFiles/modPipe.dir/__/base/list.c.o CMakeFiles/modPipe.dir/__/base/space.c.o CMakeFiles/modPipe.dir/__/base/index.c.o CMakeFiles/modPipe.dir/modPipe.c.o -lzzip -Wl,-Bstatic -lSDLmain -Wl,-Bdynamic -lSDL -lpthread -lSDL_image -lSDL_ttf -lSDL_mixer -lSDLmain -ldl 

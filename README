@@ -84,6 +84,7 @@ HOWTO COMPILE
 		you have to place source to some directory with no space in its path.
 
 		# ADDITIONAL OPTIONS FOR CMAKE
+		#option(ENABLE_IPV6      "Build with the ipv6 support"               OFF)
 		#option(WITH_SERVER      "Build the server instead of client"        OFF)
 		#option(WITH_AUDIO       "Build with audio enabled"                  ON)
 		#option(ENABLE_DEBUG     "Build debug features"                      OFF)

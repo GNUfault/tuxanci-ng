@@ -14,7 +14,7 @@ LICENSE="GPL-2"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="alsa debug dedicated nls opengl"
+IUSE="alsa debug dedicated ipv6 nls opengl"
 # alsa is used only when building client
 
 RDEPEND="!dedicated? (
@@ -35,7 +35,8 @@ src_configure() {
 		$(cmake-utils_use_enable debug DEBUG)
 		$(cmake-utils_use_with dedicated SERVER)
 		$(cmake-utils_use_with nls NLS)
-		$(cmake-utils_use_with opengl OPENGL)"
+		$(cmake-utils_use_with opengl OPENGL)
+		$(cmake-utils_use_enable ipv6 IPV6)"
 	mycmakeargs="${mycmakeargs}
 		-DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}

@@ -4,12 +4,7 @@
 ###############################################################################
 # ALL CONDITIONAL OPTIONS
 ###############################################################################
-# -DWITH_SERVER=1			# build server
-# -DWITH_AUDIO=1 			# enable audio
-# -DENABLE_DEBUG=1			# enable debug
 # -DCMAKE_C_FLAGS=-Wall		# modification for CFLAGS
-# -DWITH_NLS=1			# disable Gettext NLS
-# -DApple=1			# build apple port
 # -DCMAKE_INSTALL_PREFIX=/bla/	# install prefix
 # -DCMAKE_DATA_PATH=/other/bla/	# install path for data
 # -DCMAKE_CONF_PATH=/etc	# install path for conf
@@ -17,11 +12,11 @@
 # -DCMAKE_DOC_PATH=/other/bla/doc/tuxanci-version/	# install path for doc
 # -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
 # -DCMAKE_FONT=/bla/font.ttf	# install path for locale
-# -DWITH_OPENGL=1			# enable/disable opengl
 ###############################################################################
 # DEFAULT OPTIONS
 ###############################################################################
 option(WITH_SERVER		"Build the server instead of client"		OFF)
+option(ENABLE_IPV6      "Build with the ipv6 support"		        OFF)
 option(WITH_AUDIO		"Build with audio enabled"					ON)
 option(ENABLE_DEBUG		"Build debug features"						OFF)
 option(WITH_NLS			"Build the translations"					ON)
