@@ -71,7 +71,7 @@ SET ( CMAKE_INSTALL_LIBDIR ${LIB_INSTALL_DIR} )
 SET ( CMAKE_INSTALL_DOCDIR ${CMAKE_DOC_PATH} )
 # uninstall
 CONFIGURE_FILE (
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY )
 ADD_CUSTOM_TARGET ( uninstall "${CMAKE_COMMAND}" 
