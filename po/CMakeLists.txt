@@ -4,9 +4,6 @@
 MESSAGE ( STATUS "<Locating Gettext>" )
 MESSAGE ( STATUS "<******************************>" )
 FIND_PACKAGE ( Gettext REQUIRED )
-IF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
-	MESSAGE ( FATAL_ERROR "Please install the msgfmt binary" )
-ENDIF ( NOT GETTEXT_MSGFMT_EXECUTABLE )
 FILE ( GLOB _po_files *.po )
 SET ( _gmoFiles )
 ###############################################################################
