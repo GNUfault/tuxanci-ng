@@ -30,6 +30,7 @@ void initLayer()
 	isLayerInit = TRUE;
 }
 
+#if 0
 /*
  * Add image to queue for rendering
  * *img - image to be rendered
@@ -98,6 +99,53 @@ void addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int pla
 			return;
 		};
 	};
+	addList(listLayer, new);
+}
+#endif
+
+/*
+ * Add image to queue for rendering
+ * *img - image to be rendered
+ * x,y - coordinates where to draw the image
+ * w,h - width and height of rendered part of image
+ * px,py - coordinates of upper left corner of rendered part of image
+ * layer - on which layer to draw
+ *          (0 - under tuxanci | 1 - same as tuxanci | 2 - over tuxancami)
+ */
+void addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
+{
+	layer_t *new;
+	layer_t *actual;
+	int actual_value;
+	int new_value;
+	int i;
+
+	assert(img != NULL);
+
+	new = malloc(sizeof(layer_t));
+	new->x = x;
+	new->y = y;
+	new->w = w;
+	new->h = h;
+	new->px = px;
+	new->py = py;
+	new->layer = player;
+	new->image = img;
+
+	new_value = player*WINDOW_SIZE_Y + y + h;
+
+	// here we are sure, that we want to insert it somewhere else than the begining
+	for (i = 0; i < listLayer->count; i++) {
+		actual = getList(listLayer, i);
+
+		actual_value = actual->layer*WINDOW_SIZE_Y + actual->y + actual->h;
+
+		if (actual_value > new_value) {
+			insList(listLayer, i, new);
+			return;
+		};
+	};
+
 	addList(listLayer, new);
 }
 
