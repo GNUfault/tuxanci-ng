@@ -99,7 +99,7 @@ IF ( ENABLE_DEBUG )
 ENDIF ( ENABLE_DEBUG )
 IF ( DEVELOPER )
 	ADD_DEFINITIONS ( -DDEBUG )
-	SET ( CMAKE_C_FLAGS "-g -O0 -pipe -Wall -Wextra -Wshadow -pedantic" )
+	SET ( CMAKE_C_FLAGS "-g -O0 -pipe -Wall -Wextra -Wshadow" )
 ENDIF ( DEVELOPER )
 ###############################################################################
 # BASIC DIRECTORIES FOR INCLUSION
