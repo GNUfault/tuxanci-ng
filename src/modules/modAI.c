@@ -274,7 +274,7 @@ static void eventTuxAI(tux_t * tux)
 							  h)) {
 			//printf("this->step = %d\n", this->step);
 
-			delList(listAlternative, index);
+			delList(listAlternative, my_index);
 			addList(listDst, this);
 			my_index--;
 			//continue;
@@ -283,7 +283,7 @@ static void eventTuxAI(tux_t * tux)
 
 		if (export_fce->fce_isFreeSpace(arena, this->x, this->y, w, h) == 0) {
 			//forkAlternative(listFork, this, w*2, h*2);
-			delListItem(listAlternative, index, destroyAlternative);
+			delListItem(listAlternative, my_index, destroyAlternative);
 			my_index--;
 			countDel++;
 
