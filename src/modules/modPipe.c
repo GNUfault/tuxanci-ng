@@ -317,9 +317,9 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 }
 
 static void
-action_eventshot(space_t * space, shot_t * shot, space_t * spacePipe)
+action_eventshot(space_t * space, shot_t * shot, space_t * p_spacePipe)
 {
-	actionSpaceFromLocation(spacePipe, action_eventpipe, shot, shot->x,
+	actionSpaceFromLocation(p_spacePipe, action_eventpipe, shot, shot->x,
 							shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {

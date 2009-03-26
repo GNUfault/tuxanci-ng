@@ -61,7 +61,7 @@ void drawWidgetButton(widget_t * widget)
 void eventWidgetButton(widget_t * widget)
 {
 	widget_button_t *p;
-	static int time = 0;
+	static int my_time = 0;
 	int x, y;
 
 	assert(widget != NULL);
@@ -69,8 +69,8 @@ void eventWidgetButton(widget_t * widget)
 
 	p = (widget_button_t *) widget->private_data;
 
-	if (time > 0) {
-		time--;
+	if (my_time > 0) {
+		my_time--;
 		return;
 	}
 
@@ -79,7 +79,7 @@ void eventWidgetButton(widget_t * widget)
 	if (x >= widget->x && x <= widget->x + WIDGET_BUTTON_WIDTH &&
 	    y >= widget->y && y <= widget->y + WIDGET_BUTTON_HEIGHT &&
 	    isMouseClicked()) {
-		time = WIDGET_BUTTON_TIME;
+		my_time = WIDGET_BUTTON_TIME;
 
 		DEBUG_MSG(_("Event caught\n"));
 

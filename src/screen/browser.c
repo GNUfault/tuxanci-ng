@@ -192,7 +192,7 @@ static void eventWidget(void *p)
 
 server_t *server_getcurr()
 {
-	unsigned i = 0;
+	int i = 0;
 	server_t *server;
 
 	for (server = server_list.next; server != &server_list;
@@ -336,7 +336,8 @@ int server_getinfo(server_t * server)
 	   "uptime: D\n"
 	 */
 
-	unsigned i = 0;
+	//unsigned i = 0;
+	int i = 0;
 
 	while (i < ret) {
 		if (str[i] == '\n')
@@ -525,7 +526,7 @@ static int LoadServers()
 	if (len <= 0)
 		return 0;
 
-	unsigned i = 0;
+	int i = 0;
 	char list[256];
 
 	struct in_addr srv;
@@ -549,7 +550,8 @@ static int LoadServers()
 		ctx->version = 0;
 		ctx->arena = 0;
 
-		int ret = server_getinfo(ctx);
+		//int ret = server_getinfo(ctx);
+		ret = server_getinfo(ctx);
 
 		srv.s_addr = ctx->ip;
 

@@ -132,15 +132,15 @@ void eventWidgetChoicegroup(widget_t * widget)
 void destroyWidgetChoicegroup(widget_t * widget)
 {
 	widget_choicegroup_t *p;
-	int index;
+	int my_index;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_CHOICE);
 
 	p = (widget_choicegroup_t *) widget->private_data;
-	index = searchListItem(p->list, widget);
-	assert(index != -1);
-	delList(p->list, index);
+	my_index = searchListItem(p->list, widget);
+	assert(my_index != -1);
+	delList(p->list, my_index);
 
 	free(p);
 	destroyWidget(widget);

@@ -168,13 +168,13 @@ static void cmd_teleport(char *line)
 
 static teleport_t *getRandomTeleportBut(space_t * space, teleport_t * teleport)
 {
-	int index;
+	int my_index;
 
 	do {
-		index = random() % getSpaceCount(space);
-	} while (getItemFromSpace(space, index) == teleport);
+		my_index = random() % getSpaceCount(space);
+	} while (getItemFromSpace(space, my_index) == teleport);
 
-	return (teleport_t *) getItemFromSpace(space, index);
+	return (teleport_t *) getItemFromSpace(space, my_index);
 }
 
 static int getRandomPosition()
@@ -287,9 +287,9 @@ action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
 }
 
 static void
-action_eventshot(space_t * space, shot_t * shot, space_t * spaceTeleport)
+action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceTeleport)
 {
-	actionSpaceFromLocation(spaceTeleport, action_eventteleportshot, shot,
+	actionSpaceFromLocation(p_spaceTeleport, action_eventteleportshot, shot,
 							shot->x, shot->y, shot->w, shot->h);
 }
 
@@ -300,13 +300,13 @@ action_eventteleporttux(space_t * space, teleport_t * teleport, tux_t * tux)
 }
 
 static void
-action_eventtux(space_t * space, tux_t * tux, space_t * spaceTeleport)
+action_eventtux(space_t * space, tux_t * tux, space_t * p_spaceTeleport)
 {
 	int x, y, w, h;
 
 	export_fce->fce_getTuxProportion(tux, &x, &y, &w, &h);
 
-	actionSpaceFromLocation(spaceTeleport, action_eventteleporttux, tux, x, y,
+	actionSpaceFromLocation(p_spaceTeleport, action_eventteleporttux, tux, x, y,
 							w, h);
 }
 

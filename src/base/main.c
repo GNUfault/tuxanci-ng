@@ -29,8 +29,8 @@ static char **my_argv;
 
 char *getParam(char *s)
 {
+	unsigned int len;
 	int i;
-	int len;
 
 	len = strlen(s);
 

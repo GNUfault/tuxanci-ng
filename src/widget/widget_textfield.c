@@ -383,11 +383,11 @@ static void readKey(widget_textfield_t * p)
 			p->text[len] = c;
 
 			if (mapa[SDLK_LSHIFT] == SDL_PRESSED || mapa[SDLK_RSHIFT] == SDL_PRESSED) {
-				int i;
+				int j;
 
-				for (i = 0; i < len_shift_map; i += 2) {
-					if (c == shift_map[i]) {
-						p->text[len] = shift_map[i + 1];
+				for (j = 0; j < len_shift_map; j += 2) {
+					if (c == shift_map[j]) {
+						p->text[len] = shift_map[j + 1];
 					}
 				}
 

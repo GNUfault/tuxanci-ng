@@ -186,26 +186,26 @@ void stopScreenSetting()
 
 static void eventWidget(void *p)
 {
-	widget_t *button;
-	widget_t *check;
+	widget_t *my_button;
+	widget_t *my_check;
 
-	button = (widget_t *) (p);
-	check = (widget_t *) (p);
+	my_button = (widget_t *) (p);
+	my_check = (widget_t *) (p);
 
-	if (button == button_back) {
+	if (my_button == button_back) {
 		setScreen("mainMenu");
 	}
 
-	if (button == button_keys) {
+	if (my_button == button_keys) {
 		setScreen("settingKeys");
 	}
 
 #ifndef NO_SOUND
-	if (check == check_music) {
+	if (my_check == check_music) {
 		setMusicActive(getWidgetCheckStatus(check_music));
 	}
 
-	if (check == check_sound) {
+	if (my_check == check_sound) {
 		setSoundActive(getWidgetCheckStatus(check_sound));
 	}
 #endif

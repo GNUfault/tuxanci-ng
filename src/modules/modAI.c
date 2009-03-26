@@ -193,7 +193,7 @@ static void eventTuxAI(tux_t * tux)
 
 	int x, y, w, h;
 	int rival_x, rival_y;
-	int i, index;
+	int i, my_index;
 
 	int countFork = 0;
 	int countDel = 0;
@@ -225,12 +225,12 @@ static void eventTuxAI(tux_t * tux)
 	addList(listAlternative, newAlternative(TUX_LEFT, x - (w + 10), y));
 	addList(listAlternative, newAlternative(TUX_DOWN, x, y + (h + 10)));
 
-	index = -1;
+	my_index = -1;
 	while (1) {
 		alternative_t *this;
 
-		index++;
-		if (index < 0 || index >= listAlternative->count) {
+		my_index++;
+		if (my_index < 0 || my_index >= listAlternative->count) {
 
 			int j;
 
@@ -242,22 +242,22 @@ static void eventTuxAI(tux_t * tux)
 
 			listDoEmpty(listFork);
 
-			index = 0;
+			my_index = 0;
 		}
 
 		if (listAlternative->count == 0) {
 			break;
 		}
 
-		this = (alternative_t *) listAlternative->list[index];
+		this = (alternative_t *) listAlternative->list[my_index];
 
 		if (++countDo == 100)
 			break;
 
 		if (this->step > 100) {
-			delListItem(listAlternative, index, destroyAlternative);
+			delListItem(listAlternative, my_index, destroyAlternative);
 			countLimit++;
-			index--;
+			my_index--;
 			continue;
 		}
 
@@ -276,7 +276,7 @@ static void eventTuxAI(tux_t * tux)
 
 			delList(listAlternative, index);
 			addList(listDst, this);
-			index--;
+			my_index--;
 			//continue;
 			break;
 		}
@@ -284,7 +284,7 @@ static void eventTuxAI(tux_t * tux)
 		if (export_fce->fce_isFreeSpace(arena, this->x, this->y, w, h) == 0) {
 			//forkAlternative(listFork, this, w*2, h*2);
 			delListItem(listAlternative, index, destroyAlternative);
-			index--;
+			my_index--;
 			countDel++;
 
 			continue;

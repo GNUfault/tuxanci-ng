@@ -296,9 +296,9 @@ static void action_eventwall(space_t * space, wall_t * wall, shot_t * shot)
 }
 
 static void
-action_eventshot(space_t * space, shot_t * shot, space_t * spaceWall)
+action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceWall)
 {
-	actionSpaceFromLocation(spaceWall, action_eventwall, shot, shot->x,
+	actionSpaceFromLocation(p_spaceWall, action_eventwall, shot, shot->x,
 							shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {

@@ -49,7 +49,7 @@ void drawWidgetButtonimage(widget_t * widget)
 void eventWidgetButtonimage(widget_t * widget)
 {
 	widget_buttonimage_t *p;
-	static int time = 0;
+	static int my_time = 0;
 	int x, y;
 
 	assert(widget != NULL);
@@ -57,8 +57,8 @@ void eventWidgetButtonimage(widget_t * widget)
 
 	p = (widget_buttonimage_t *) widget->private_data;
 
-	if (time > 0) {
-		time--;
+	if (my_time > 0) {
+		my_time--;
 		return;
 	}
 
@@ -66,7 +66,7 @@ void eventWidgetButtonimage(widget_t * widget)
 
 	if (x >= widget->x && x <= widget->x + p->w &&
 	    y >= widget->y && y <= widget->y + p->h && isMouseClicked()) {
-		time = WIDGET_BUTTONIMAGE_TIME;
+		my_time = WIDGET_BUTTONIMAGE_TIME;
 		p->active = 1;
 		p->fce_event(widget);
 	}

@@ -16,7 +16,7 @@
 #    include "interface.h"
 #endif
 
-static struct timeval start = {.tv_sec = 0,.tv_usec = 0 };
+static struct timeval my_start = {.tv_sec = 0,.tv_usec = 0 };
 
 list_t *newTimer()
 {
@@ -25,7 +25,7 @@ list_t *newTimer()
 
 void restartTimer()
 {
-	gettimeofday(&start, NULL);
+	gettimeofday(&my_start, NULL);
 }
 
 
@@ -34,11 +34,11 @@ my_time_t getMyTime()
 	struct timeval now;
 	my_time_t ticks;
 
-	if (start.tv_sec == 0 && start.tv_usec == 0)
+	if (my_start.tv_sec == 0 && my_start.tv_usec == 0)
 		restartTimer();
 
 	gettimeofday(&now, NULL);
-	ticks = (now.tv_sec - start.tv_sec) * 1000 + (now.tv_usec - start.tv_usec) / 1000;
+	ticks = (now.tv_sec - my_start.tv_sec) * 1000 + (now.tv_usec - my_start.tv_usec) / 1000;
 	//printf("-> %d\n", ticks);
 
 	return ticks;
@@ -46,15 +46,15 @@ my_time_t getMyTime()
 
 my_time_t getMyTimeMicro()
 {
-	static struct timeval start = {.tv_sec = 0,.tv_usec = 0 };
+	static struct timeval my_micro_start = {.tv_sec = 0,.tv_usec = 0 };
 	struct timeval now;
 	my_time_t ticks;
 
-	if (start.tv_sec == 0 && start.tv_usec == 0)
-		gettimeofday(&start, NULL);
+	if (my_micro_start.tv_sec == 0 && my_micro_start.tv_usec == 0)
+		gettimeofday(&my_micro_start, NULL);
 
 	gettimeofday(&now, NULL);
-	ticks = (now.tv_sec - start.tv_sec) * 1000 * 1000 + (now.tv_usec - start.tv_usec);
+	ticks = (now.tv_sec - my_micro_start.tv_sec) * 1000 * 1000 + (now.tv_usec - my_micro_start.tv_usec);
 	//printf("-> %d\n", ticks);
 
 	return ticks;
@@ -131,15 +131,15 @@ void eventTimer(list_t * listTimer)
 
 void delTimer(list_t * listTimer, int id)
 {
-	int i;
 	my_timer_t *thisTimer;
+	int i;
 
 	for (i = 0; i < listTimer->count; i++) {
 		thisTimer = (my_timer_t *) listTimer->list[i];
 
 		assert(thisTimer != NULL);
 
-		if (thisTimer->id == id) {
+		if (thisTimer->id == (unsigned)id) {
 			delListItem(listTimer, i, free);
 			return;
 		}

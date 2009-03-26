@@ -35,17 +35,17 @@ void refreshLastMove(protect_t * p)
 	p->count++;
 
 	if (p->count == PROTECT_SPEED_AVARAGE) {
-		int index;
+		int my_index;
 
-		index = p->avarage / PROTECT_SPEED_AVARAGE;
+		my_index = p->avarage / PROTECT_SPEED_AVARAGE;
 		p->avarage = 0;
 		p->count = 0;
 #if 0
-		if (index < PROTECT_SPEED_INTERVAL_TIMEOUT) {
+		if (my_index < PROTECT_SPEED_INTERVAL_TIMEOUT) {
 			p->isDown = TRUE;
 		}
 #endif
-		//printf("speed index = %d\n", index);
+		//printf("speed index = %d\n", my_index);
 	}
 }
 

@@ -74,7 +74,7 @@ void registerHotKey(SDLKey key, void (*handler) ())
 void unregisterHotKey(SDLKey key)
 {
 	hotKey_t *hotkey;
-	int index;
+	int my_index;
 
 	hotkey = findHotkey(key);
 
@@ -82,9 +82,9 @@ void unregisterHotKey(SDLKey key)
 		assert(!"This hotkey not register");
 	}
 
-	index = searchListItem(listHotKey, hotkey);
-	assert(index != -1);
-	delListItem(listHotKey, index, destroyHotKey);
+	my_index = searchListItem(listHotKey, hotkey);
+	assert(my_index != -1);
+	delListItem(listHotKey, my_index, destroyHotKey);
 }
 
 void enableHotKey(SDLKey key)

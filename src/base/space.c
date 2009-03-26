@@ -213,7 +213,7 @@ void delObjectFromSpace(space_t * p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
-	int index;
+	int myIndex;
 	int i, j;
 
 	p->getStatus(item, &id, &x, &y, &w, &h);
@@ -225,9 +225,9 @@ void delObjectFromSpace(space_t * p, void *item)
 				continue;
 			}
 
-			index = searchListItem(p->zone[j][i]->list, item);
-			assert(index != -1);
-			delList(p->zone[j][i]->list, index);
+			myIndex = searchListItem(p->zone[j][i]->list, item);
+			assert(myIndex != -1);
+			delList(p->zone[j][i]->list, myIndex);
 		}
 	}
 

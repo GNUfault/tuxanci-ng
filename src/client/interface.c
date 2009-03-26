@@ -28,8 +28,7 @@ static Uint32 g_win_flags = SDL_OPENGL;
 static bool_t isInterfaceInit = FALSE;
 
 // flag, kterym se ridi zarazovani klaves do bufferu
-bool_t keyboardBufferEnabled = FALSE;
-bool_t isSlowHack;
+static bool_t keyboardBufferEnabled = FALSE;
 
 bool_t isInterfaceInicialized()
 {

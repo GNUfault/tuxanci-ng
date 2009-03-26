@@ -49,7 +49,7 @@ int cutBuffer(buffer_t * p, int len)
 	assert(p != NULL);
 	assert(len >= 0);
 
-	if (p->size - len >= 0) {
+	if (p->size - len > 0) {
 		memmove(p->data, p->data + len, p->size - len);
 		p->size -= len;
 		return 0;
@@ -116,7 +116,7 @@ int getBufferDataLen(buffer_t * p, char *line, int len)
 	assert(line != NULL);
 	assert(len >= 0);
 
-	if (p->size < len) {
+	if ((unsigned)p->size < (unsigned)len) {
 		len = p->size;
 	}
 
