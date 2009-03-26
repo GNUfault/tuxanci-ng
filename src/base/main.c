@@ -41,7 +41,7 @@ char *getParam(char *s)
 			continue;
 		}
 
-		if (strncmp(s, my_argv[i], len) == 0) {
+		if (strncmp(s, my_argv[i], len) == 0 && strchr(my_argv[i], '=') != NULL ) {
 			return strchr(my_argv[i], '=') + 1;
 		}
 	}
