@@ -4,12 +4,18 @@
 
 EAPI="2"
 
+[[ ${PV} = 9999* ]] && GIT="git"
 EGIT_REPO_URI="git://repo.or.cz/tuxanci.git"
-inherit games cmake-utils git
+
+inherit games cmake-utils ${GIT}
 
 DESCRIPTION="Tuxanci is first tux shooter inspired by game Bulanci."
 HOMEPAGE="http://www.tuxanci.org/"
-#SRC_URI="http://download.${PN}.org/${P}.tar.bz2"
+if [[ ${PV} = 9999* ]]; then
+	SRC_URI=""
+else
+	SRC_URI="http://download.${PN}.org/${P}.tar.bz2"
+fi
 LICENSE="GPL-2"
 
 SLOT="0"
@@ -27,7 +33,6 @@ RDEPEND="!dedicated? (
 	)
 	>=dev-libs/libzip-0.9"
 DEPEND="${RDEPEND}
-	>=dev-util/cmake-2.6.0
 	nls? ( sys-devel/gettext )"
 
 src_configure() {
