@@ -37,11 +37,11 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	local mycmakeargs="$(cmake-utils_use_with alsa AUDIO)
-		$(cmake-utils_use_enable debug DEBUG)
-		$(cmake-utils_use_with dedicated SERVER)
-		$(cmake-utils_use_with nls NLS)
-		$(cmake-utils_use_with opengl OPENGL)
-		$(cmake-utils_use_enable ipv6 IPV6)"
+		$(cmake-utils_use_enable debug)
+		$(cmake-utils_use_with dedicated)
+		$(cmake-utils_use_with nls)
+		$(cmake-utils_use_with opengl)
+		$(cmake-utils_use_enable ipv6)"
 	mycmakeargs="${mycmakeargs}
 		-DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
