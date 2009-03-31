@@ -17,18 +17,24 @@
 FIND_PATH(GETTEXT_INCLUDE_DIR libintl.h
 		PATHS
 		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/include
+		/usr/local/include
+		/usr/include
 		NO_DEFAULT_PATH
 )
 
 FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge
 		PATHS
 		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/exe/
+		/usr/local/bin
+		/usr/bin
 		NO_DEFAULT_PATH
 )
 
 FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt
 		PATHS
 		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/exe/
+		/usr/local/bin
+		/usr/bin
 		NO_DEFAULT_PATH
 )
 
