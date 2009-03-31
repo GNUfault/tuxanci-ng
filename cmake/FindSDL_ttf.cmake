@@ -30,6 +30,7 @@ FIND_PATH(SDLTTF_INCLUDE_DIR SDL_ttf.h
   /usr/include
   /sw/include/SDL # Fink
   /sw/include
+  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include #tuxanci
   /opt/local/include/SDL # DarwinPorts
   /opt/local/include
   /opt/csw/include/SDL # Blastwave
@@ -44,6 +45,7 @@ FIND_LIBRARY(SDLTTF_LIBRARY
   $ENV{SDLTTFDIR}
   $ENV{SDLDIR}
   PATHS
+  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
