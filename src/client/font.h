@@ -18,7 +18,7 @@
 #    define FONT_SIZE	16
 
 extern bool_t isFontInicialized();
-extern void initFont(char *file, int size);
+extern void initFont();
 extern void drawFont(char *s, int x, int y, int r, int g, int b);
 extern void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g,
 							int b);

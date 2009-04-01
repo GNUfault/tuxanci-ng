@@ -1,7 +1,9 @@
+
 #include "main.h"
 #include "interface.h"
 #include "font.h"
 #include "image.h"
+#include "fontConfig.h"
 
 static TTF_Font *g_font;
 static int fontSize;
@@ -13,30 +15,53 @@ bool_t isFontInicialized()
 	return isFontInit;
 }
 
-void initFont(char *file, int size)
+void initFont()
 {
-	char str[STR_PATH_SIZE];
-
-	assert(file != NULL);
-	assert(size > 0);
+	char *arg[] = {":lang=he:outline=true:style=Book", "family", "style", "weight", "file", NULL};
+	char *font_file;
+	font_config_t *font_list;
+	int res;
 
 	assert(isInterfaceInicialized() == TRUE);
 
-	sprintf(str, "%s", file);
+	res = fontconfig_init();
+
+	if( res != 0 )
+	{
+		return;
+	}
+
+	font_list = fontconfig_find(arg);
+/*
+	int i;
+	for(i = 0 ; font_list[i].path != NULL ; i++ )
+	{
+		printf("path[%d]=%s\nflag[%d]=%s\n\n", i, font_list[i].path, i, font_list[i].flag);
+	}
+*/
+	if( font_list == NULL )
+	{
+		fprintf(stderr, _("I do not find font\n"));
+		return;
+	}
+
+	font_file = strdup(font_list[0].path);
+	fontSize = FONT_SIZE;
+
+	fontconfig_del_list(font_list);
+	fontconfig_quit();
 
 	if (TTF_Init() == -1) {
 		fprintf(stderr, "%s\n", SDL_GetError());
 		return;
 	}
 
-	accessExistFile(str);
+	accessExistFile(font_file);
 
-	g_font = TTF_OpenFont(str, size);
+	g_font = TTF_OpenFont(font_file, fontSize);
 	TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
 
-	fontSize = size;
-
-	DEBUG_MSG(_("Loading font: \"%s\"\n"), file);
+	DEBUG_MSG(_("Loading font: \"%s\"\n"), font_file);
 
 	isFontInit = TRUE;
 }

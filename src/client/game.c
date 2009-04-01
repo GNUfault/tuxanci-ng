@@ -47,7 +47,7 @@ static void initGame()
 	createHomeDirector();
 
 	initSDL();
-	initFont(FONT_FILE, FONT_SIZE);
+	initFont();
 	initLayer();
 	initImageData();
 #ifndef NO_SOUND
