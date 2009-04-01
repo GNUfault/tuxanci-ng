@@ -11,7 +11,6 @@
 # -DLIB_INSTALL_DIR=/other/bla	# install path for lib
 # -DCMAKE_DOC_PATH=/other/bla/doc/tuxanci-version/	# install path for doc
 # -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
-# -DCMAKE_FONT=/bla/font.ttf	# install path for locale
 ###############################################################################
 # DEFAULT OPTIONS
 ###############################################################################
@@ -61,7 +60,6 @@ SET ( CMAKE_CXX_FLAGS $ENV{CXXFLAGS} )
 # this specify location of additional cmake sources
 SET ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 #various variables
-SET ( CMAKE_FONT "${CMAKE_DATA_PATH}/${APPNAME}/font/DejaVuSans.ttf" CACHE PATH "Font" )
 SET ( CMAKE_INSTALL_ETCDIR ${CMAKE_CONF_PATH} )
 SET ( CMAKE_DOC_PATH "${CMAKE_INSTALL_PREFIX}/share/doc/${APPNAME}" CACHE PATH "Doc path prefix" )
 SET ( CMAKE_INSTALL_BINDIR "${CMAKE_INSTALL_PREFIX}/bin" )
@@ -194,7 +192,6 @@ INSTALL ( FILES ${CMAKE_SOURCE_DIR}/README
 MESSAGE ( STATUS "<Printing out environment settings>" )
 MESSAGE ( STATUS "<******************************>" )
 MESSAGE ( STATUS "CFlags: ${CMAKE_C_FLAGS}" )
-MESSAGE ( STATUS "Font: ${CMAKE_FONT}" )
 MESSAGE ( STATUS "PREFIX: ${CMAKE_INSTALL_PREFIX}" )
 MESSAGE ( STATUS "ETC directory: ${CMAKE_CONF_PATH}" )
 MESSAGE ( STATUS "DOC directory: ${CMAKE_DOC_PATH}" )

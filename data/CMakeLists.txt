@@ -5,7 +5,6 @@
 ###############################################################################
 ADD_SUBDIRECTORY ( arena )
 ADD_SUBDIRECTORY ( conf )
-ADD_SUBDIRECTORY ( font )
 ADD_SUBDIRECTORY ( images )
 ADD_SUBDIRECTORY ( music )
 ADD_SUBDIRECTORY ( sound )

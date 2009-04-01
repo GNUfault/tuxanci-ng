@@ -18,7 +18,6 @@
 		#define PATH_MODULES 	PREFIX
 	#endif
 	#define PATH_IMAGE	PATH_DIR	"images/"
-	#define FONT_FILE	"@CMAKE_FONT@"
 	#define PATH_ARENA	PATH_DIR	"arena/"
 	#define PATH_SOUND	PATH_DIR	"sound/"
 	#define PATH_MUSIC	PATH_DIR	"music/"
