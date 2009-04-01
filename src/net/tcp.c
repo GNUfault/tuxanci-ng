@@ -3,21 +3,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef __WIN32__
 #include <sys/poll.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/select.h>
-#include <stdio.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <assert.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <fcntl.h>
+#else
+#include <windows.h>
+#include <wininet.h>
+#endif // __WIN32__
+#include <unistd.h>
+#include <assert.h>
 
 #include "tcp.h"
 
@@ -74,6 +78,9 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create socket when connecting!\n"));
 		destroySockTcp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -82,7 +89,11 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 
 	if (new->proto == PROTO_TCPv4) {
 		new->sockAddr.sin_family = AF_INET;
+#ifndef __WIN32__
 		inet_pton(AF_INET, address, &(new->sockAddr.sin_addr));
+#else
+		new->sockAddr.sin_addr.s_addr = inet_addr(address);
+#endif
 		new->sockAddr.sin_port = htons(port);
 
 		len = sizeof(new->sockAddr);
@@ -92,7 +103,11 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 	if (new->proto == PROTO_TCPv6) {
 		new->sockAddr6.sin6_family = AF_INET6;
 		//new->sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+#ifndef __WIN32__
 		inet_pton(AF_INET6, address, &(new->sockAddr6.sin6_addr));
+#else
+		new->sockAddr6.sin6_addr.s_addr = inet_addr(address);
+#endif
 		new->sockAddr6.sin6_port = htons(port);
 
 		len = sizeof(new->sockAddr6);
@@ -103,6 +118,9 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 	if (ret < 0) {
 		fprintf(stderr, _("Unable to bint to port: %d\n"), port);
 		destroySockTcp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -124,20 +142,29 @@ sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
 
 	if (new->proto == PROTO_TCPv4) {
 		client_len = sizeof(new->sockAddr);
-
+#ifndef __WIN32__
 		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (socklen_t *) & client_len);
+#else
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (long *) & client_len);
+#endif
 	}
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		client_len = sizeof(new->sockAddr6);
-
+#ifndef __WIN32__
 		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (socklen_t *) & client_len);
+#else
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (long *) & client_len);
+#endif
 	}
 #endif
 
 	if (new->sock < 0) {
 		//printf("XXX\n");
 		destroySockTcp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -151,15 +178,23 @@ void getSockTcpIp(sock_tcp_t * p, char *str_ip, int len)
 
 
 	if (p->proto == PROTO_TCPv4) {
+#ifndef __WIN32__
 		inet_ntop(AF_INET, &(p->sockAddr.sin_addr), str_ip, len);
+#else
 		strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
+#endif
 		//printf("strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));\n");
 	}
 #ifdef SUPPORT_IPv6
 	if (p->proto == PROTO_TCPv6) {
+#ifndef __WIN32__
 		inet_ntop(AF_INET6, &(p->sockAddr6.sin6_addr), str_ip, len);
+#else
+		// not tested
+		strcpy(str_ip, inet_ntoa(p->sockAddr6.sin6_addr));
+#endif // __WIN32__
 	}
-#endif
+#endif // SUPPORT_IPv6
 }
 
 int getSockTcpPort(sock_tcp_t * p)
@@ -206,6 +241,9 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create TCP socket!\n"));
 		destroySockTcp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -233,6 +271,9 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 		fprintf(stderr, "Unable to connect on: \"%s\" port: \"%d\"\n", ip,
 				port);
 		destroySockTcp(new);
+#ifdef __WIN32__
+		WSACleanup();
+#endif
 		return NULL;
 	}
 
@@ -309,68 +350,7 @@ void closeTcpSocket(sock_tcp_t * p)
 
 	close(p->sock);
 	destroySockTcp(p);
-}
-
-#if 0
-#    define MAX_CLIENTS	32
-#    define BUF_SIZE	512
-
-int main(int argc, char **argv)
-{
-	sock_tcp_t *sock;
-	sock_tcp_t *client[MAX_CLIENTS];
-	int count_client;
-	int changed, i;
-	struct pollfd *tmp;
-
-	sock = bindTcpSocket("127.0.0.1", 2200, PROTO_TCPv4);
-	disableNagle(sock);
-	count_client = 0;
-
-	for (;;) {
-		tmp = malloc((count_client + 1) * sizeof(struct pollfd));
-
-		tmp[0].fd = sock->sock;
-		tmp[0].events = POLLIN;
-		tmp[0].revents = 0;
-
-		for (i = 0; i < count_client; i++) {
-			tmp[1 + i].fd = client[i]->sock;
-			tmp[1 + i].events = POLLIN;
-			tmp[1 + i].revents = 0;
-		}
-
-		changed = poll(tmp, count_client + 1, 1000);
-
-		if (tmp[0].revents & POLLIN != 0) {
-			client[count_client] = getTcpNewClient(sock);
-			disableNagle(client[count_client]);
-			count_client++;
-		}
-
-		for (i = 0; i < count_client; i++) {
-			if (tmp[1 + i].revents & POLLIN != 0) {
-				char buf[BUF_SIZE];
-				int ret;
-
-				ret = read(client[i]->sock, buf, BUF_SIZE);
-
-				if (ret <= 0) {
-					closeTcpSocket(client[i]);
-
-					memmove(client + i,
-							client + (i + 1),
-							((count_client - 1) - i) * sizeof(sock_tcp_t *));
-
-					count_client--;
-					continue;
-				}
-
-				write(client[i]->sock, buf, ret);
-			}
-		}
-
-		free(tmp);
-	}
-}
+#ifdef __WIN32__
+	WSACleanup();
 #endif
+}

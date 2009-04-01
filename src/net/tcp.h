@@ -4,17 +4,25 @@
 #    define MY_TCP_H
 #    include "main.h"
 
+#    ifndef __WIN32__
 #    include <sys/socket.h>
 #    include <netinet/in.h>
 #    include <netinet/tcp.h>
-
+#    else
+#    include <windows.h>
+#    include <wininet.h>
+#    endif
 #    define SUPPORT_IPv6
 
 #    define	PROTO_TCPv4	0
 #    define	PROTO_TCPv6	1
 
 typedef struct struct_sock_tcp_t {
+#   ifndef __WIN32_
 	int sock;
+#   else
+	SOCKET sock;
+#   endif
 	int proto;
 
 	struct sockaddr_in sockAddr;
