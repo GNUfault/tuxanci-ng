@@ -333,12 +333,12 @@ static void loadArenaFromDirector(char *director)
 	director_t *p;
 	int i;
 
-	printf(_("Load arena file from %s\n"), director);
+	DEBUG_MSG(_("Loading arena files from %s\n"), director);
 	p = loadDirector(director);
 
 	if (p==NULL)
 	{
-		fprintf(stderr, _("Director %s not found !\n"), director);
+		fprintf(stderr, _("Directory %s not found !\n"), director);
 		exit(-1);
 	}
 
