@@ -68,6 +68,11 @@ void initTux()
 	isTuxInit = TRUE;
 }
 
+int getRandomGun()
+{
+	return random() % (GUN_BOMBBALL+1);
+}
+
 tux_t *newTux()
 {
 	int x, y;
@@ -86,7 +91,7 @@ tux_t *newTux()
 	setTuxProportion(new, x, y);
 
 	new->position = TUX_DOWN;
-	new->gun = GUN_SIMPLE;
+	new->gun = getRandomGun();
 	new->shot[new->gun] = GUN_MAX_SHOT;
 
 	sprintf(new->name, "no_name_id_%d", new->id);

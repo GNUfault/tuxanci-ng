@@ -124,8 +124,13 @@ static void sendInfoCreateClient(client_t * client)
 		thisClient = (client_t *) listClient->list[i];
 		thisTux = thisClient->tux;
 
-		if (thisTux != NULL && thisTux != client->tux) {
+		// odosli kazdemu stremu hracovy informacie o novom hracovy
+		if (thisTux != NULL && thisTux != client->tux) { 
 			proto_send_newtux_server(PROTO_SEND_ONE, thisClient, client->tux);
+		}
+
+		// odosli novemu hracovy informacie o kazdom starom hracovy aj o sebe
+		if (thisTux != NULL) {
 			proto_send_newtux_server(PROTO_SEND_ONE, client, thisTux);
 		}
 	}
@@ -617,6 +622,25 @@ void proto_send_del_server(int type, client_t * client, int id)
 
 #ifndef PUBLIC_SERVER
 
+void timer_delShot(void *p)
+{
+	shot_t *shot;
+	int *id;
+
+	assert( p != NULL );
+	id = (int *)(p);
+
+	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, *id);
+
+	if( shot != NULL )
+	{
+		delFromRadar(shot->id);
+		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+	}
+
+	free(p);
+}
+
 void proto_recv_del_client(char *msg)
 {
 	char cmd[STR_PROTO_SIZE];
@@ -648,8 +672,9 @@ void proto_recv_del_client(char *msg)
 
 	if (shot != NULL) {
 		//printf("delete shot..\n");
-		delFromRadar(id);
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+		//delFromRadar(id);
+		//delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+		addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_delShot, newInt(id), 50);
 		return;
 	}
 
@@ -734,7 +759,7 @@ void proto_send_shot_server(int type, client_t * client, shot_t * p)
 	assert(p != NULL);
 
 	snprintf(msg, STR_PROTO_SIZE, "shot %d %d %d %d %d %d %d %d %d\n",
-	 	 p->id, p->x, p->y, p->px, p->py, p->position, p->gun,
+	 	 p->id, p->x-p->px*8, p->y-p->py*8, p->px, p->py, p->position, p->gun,
 		 p->author_id, p->isCanKillAuthor);
 
 	//proto_send(type, client, msg);
