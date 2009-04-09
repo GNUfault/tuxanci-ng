@@ -44,6 +44,9 @@ src_configure() {
 		$(cmake-utils_use_with nls)
 		$(cmake-utils_use_with opengl)
 		$(cmake-utils_use_enable ipv6)"
+	use debug && mycmakeargs="${mycmakeargs}
+		-DDEVELOPER=1"
+
 	mycmakeargs="${mycmakeargs}
 		-DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
