@@ -120,8 +120,8 @@ int setValueInConfigFile(textFile_t * textFile, char *env, char *val)
 			ret = setValue(line, env, val);
 
 			if (ret != NULL) {
-				delListItem(textFile->text, i, free);
-				insList(textFile->text, i, ret);
+				list_del_item(textFile->text, i, free);
+				list_ins(textFile->text, i, ret);
 
 				return 0;
 			}
@@ -139,7 +139,7 @@ void loadValueFromConfigFile(textFile_t * textFile, char *env, char *val, int le
 		char line[STR_SIZE];
 
 		sprintf(line, "%s=\"%s\"", env, butVal);
-		addList(textFile->text, strdup(line));
+		list_add(textFile->text, strdup(line));
 
 		DEBUG_MSG(_("ADDING: \"%s\" into config file.\n"), line);
 	}

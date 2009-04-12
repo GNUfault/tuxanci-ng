@@ -3,6 +3,6 @@
 
 #    define DNS_H
 
-extern char *getIPFormDNS(char *domain);
+extern char *gns_resolv(char *domain);
 
 #endif

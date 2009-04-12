@@ -22,12 +22,12 @@ typedef struct widget_struct {
 	void *private_data;
 } widget_t;
 
-extern widget_t *newWidget(int type, int x, int y, int w, int h,
+extern widget_t *widget_new(int type, int x, int y, int w, int h,
 						   void *private_data);
-extern void widgetSetLocation(widget_t * p, int x, int y);
-extern void widgetGetLocation(widget_t * p, int *x, int *y);
-extern void widgetSetSize(widget_t * p, int w, int h);
-extern void widgetGetSize(widget_t * p, int *w, int *h);
-extern void destroyWidget(widget_t * p);
+extern void widget_set_location(widget_t * p, int x, int y);
+extern void widget_get_location(widget_t * p, int *x, int *y);
+extern void widget_get_size(widget_t * p, int w, int h);
+extern void widget_set_size(widget_t * p, int *w, int *h);
+extern void widget_destroy(widget_t * p);
 
 #endif

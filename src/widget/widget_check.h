@@ -17,12 +17,12 @@ typedef struct widget_check {
 	void (*fce_event) (void *);
 } widget_check_t;
 
-extern widget_t *newWidgetCheck(int x, int y, bool_t status,
+extern widget_t *check_new(int x, int y, bool_t status,
 								void (*fce_event) (void *));
-extern void drawWidgetCheck(widget_t * widget);
-extern void eventWidgetCheck(widget_t * widget);
-extern bool_t getWidgetCheckStatus(widget_t * widget);
-extern void setWidgetCheckStatus(widget_t * widget, bool_t status);
-extern void destroyWidgetCheck(widget_t * widget);
+extern void check_draw(widget_t * widget);
+extern void check_event(widget_t * widget);
+extern bool_t check_get_status(widget_t * widget);
+extern void check_set_status(widget_t * widget, bool_t status);
+extern void check_destroy(widget_t * widget);
 
 #endif

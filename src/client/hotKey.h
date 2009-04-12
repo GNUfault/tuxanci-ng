@@ -5,12 +5,12 @@
 
 #    define HOTKEY_ACTIVE_INTERVAL	500
 
-extern void initHotKey();
-extern void registerHotKey(SDLKey key, void (*handler) ());
-extern void unregisterHotKey(SDLKey key);
-extern void enableHotKey(SDLKey key);
-extern void disableHotKey(SDLKey key);
-extern void eventHotKey();
-extern void quitHotKey();
+extern void hotKey_init();
+extern void hotKey_register(SDLKey key, void (*handler) ());
+extern void unhotKey_register(SDLKey key);
+extern void hotKey_enable(SDLKey key);
+extern void hotKey_disable(SDLKey key);
+extern void hotKey_event();
+extern void hotKey_quit();
 
 #endif

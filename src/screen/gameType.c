@@ -62,9 +62,9 @@ static void loadSession(widget_t * p)
 	director_t *director;
 	int i;
 
-	director = loadDirector(getHomeDirector());
+	director = director_load(homeDirector_get());
 
-	removeAllFromWidgetSelect(p);
+	select_remove_all(p);
 
 	if (director == NULL) {
 		return;
@@ -76,79 +76,79 @@ static void loadSession(widget_t * p)
 		line = director->list->list[i];
 
 		if (strstr(line, ".sav") != NULL) {
-			addToWidgetSelect(p, line);
+			select_add(p, line);
 		}
 	}
 
-	destroyDirector(director);
+	director_destroy(director);
 }
 
 static void hotkey_escape()
 {
-	setScreen("mainMenu");
+	screen_set("mainMenu");
 }
 
-void startScreenGameType()
+void screen_startGameType()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	setWidgetChoiceStatus(check_none, TRUE);
-	setWidgetChoiceStatus(check_server, FALSE);
-	setWidgetChoiceStatus(check_client, FALSE);
-	setWidgetChoiceStatus(check_load_session, FALSE);
+	choiceGroup_set_status(check_none, TRUE);
+	choiceGroup_set_status(check_server, FALSE);
+	choiceGroup_set_status(check_client, FALSE);
+	choiceGroup_set_status(check_load_session, FALSE);
 
 	loadSession(selectSession);
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenGameType()
+void gameType_draw()
 {
 	int i;
 
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
 	for (i = 0; i < listChoiceGroup->count; i++) {
 		widget_t *this;
 
 		this = (widget_t *) listChoiceGroup->list[i];
-		drawWidgetChoicegroup(this);
+		choiceGroup_draw(this);
 	}
 
-	drawWidgetLabel(label_none);
-	drawWidgetLabel(label_server);
-	drawWidgetLabel(label_client);
-	drawWidgetLabel(label_load_session);
+	label_draw(label_none);
+	label_draw(label_server);
+	label_draw(label_client);
+	label_draw(label_load_session);
 
-	if (getWidgetChoiceStatus(check_server) == TRUE || getWidgetChoiceStatus(check_client) == TRUE) {
-		drawWidgetLabel(label_port);
-		drawWidgetTextfield(textfield_port);
-		drawWidgetLabel(label_ip);
-		drawWidgetTextfield(textfield_ip);
+	if (choiceGroup_get_status(check_server) == TRUE || choiceGroup_get_status(check_client) == TRUE) {
+		label_draw(label_port);
+		textField_draw(textfield_port);
+		label_draw(label_ip);
+		textField_draw(textfield_ip);
 	}
 
-	if (getWidgetChoiceStatus(check_load_session) == TRUE) {
-		drawWidgetLabel(label_session);
-		drawWidgetSelect(selectSession);
+	if (choiceGroup_get_status(check_load_session) == TRUE) {
+		label_draw(label_session);
+		select_draw(selectSession);
 	}
 #if 0
 	if (check_server->status == TRUE) {
-		setSettingIP(getParamElse("--ip", "127.0.0.1"));
-		setSettingPort(atoi(getParamElse("--port", "2200")));
+		gameType_set_ip(getParamElse("--ip", "127.0.0.1"));
+		gameType_set_port(atoi(getParamElse("--port", "2200")));
 	}
 #endif
 
-	if (getWidgetChoiceStatus(check_client) == TRUE)
-		drawWidgetButton(button_browser);
+	if (choiceGroup_get_status(check_client) == TRUE)
+		button_draw(button_browser);
 
-	drawWidgetButton(button_back);
-	drawWidgetButton(button_play);
+	button_draw(button_back);
+	button_draw(button_play);
 
 }
 
-void eventScreenGameType()
+void gameType_event()
 {
 	int i;
 
@@ -156,28 +156,28 @@ void eventScreenGameType()
 		widget_t *this;
 
 		this = (widget_t *) listChoiceGroup->list[i];
-		eventWidgetChoicegroup(this);
+		choiceGroup_event(this);
 	}
 
-	if (getWidgetChoiceStatus(check_server) == TRUE || getWidgetChoiceStatus(check_client) == TRUE) {
-		eventWidgetTextfield(textfield_ip);
-		eventWidgetTextfield(textfield_port);
+	if (choiceGroup_get_status(check_server) == TRUE || choiceGroup_get_status(check_client) == TRUE) {
+		textField_event(textfield_ip);
+		textField_event(textfield_port);
 	}
 
-	if (getWidgetChoiceStatus(check_load_session) == TRUE) {
-		eventWidgetSelect(selectSession);
+	if (choiceGroup_get_status(check_load_session) == TRUE) {
+		select_event(selectSession);
 	}
 
-	eventWidgetButton(button_back);
-	eventWidgetButton(button_play);
+	button_event(button_back);
+	button_event(button_play);
 
-	if (getWidgetChoiceStatus(check_client) == TRUE)
-		eventWidgetButton(button_browser);
+	if (choiceGroup_get_status(check_client) == TRUE)
+		button_event(button_browser);
 }
 
 void stopScreenGameType()
 {
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -187,110 +187,110 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_back) {
-		setScreen("mainMenu");
+		screen_set("mainMenu");
 	}
 
 	if (button == button_play) {
 		char *str;
 
-		str = getGemeTypeLoadSession();
+		str = gameType_load_session();
 
 		if (str != NULL) {
-			setScreen("world");
+			screen_set("world");
 			return;
 		}
 
-		if (getSettingGameType() == NET_GAME_TYPE_CLIENT) {
-			setScreen("downArena");
-			//setScreen("world");
+		if (publicServer_get_settingGameType() == NET_GAME_TYPE_CLIENT) {
+			screen_set("downArena");
+			//screen_set("world");
 		} else {
-			setScreen("chiceArena");
+			screen_set("chiceArena");
 		}
 	}
 
 	if (button == button_browser) {
-		setScreen("browser");
+		screen_set("browser");
 	}
 }
 
-void initScreenGameType()
+void gameType_init()
 {
 	image_t *image;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
-	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
-	button_play = newWidgetButton(_("play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
-	button_browser = newWidgetButton(_("browser"), 300, 345, eventWidget);
+	button_back = button_new(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
+	button_play = button_new(_("play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
+	button_browser = button_new(_("browser"), 300, 345, eventWidget);
 
-	listChoiceGroup = newList();
-	check_none = newWidgetChoicegroup(100, 150, FALSE, listChoiceGroup, eventWidget);
-	check_server = newWidgetChoicegroup(100, 200, FALSE, listChoiceGroup, eventWidget);
-	check_client = newWidgetChoicegroup(100, 250, FALSE, listChoiceGroup, eventWidget);
-	check_load_session = newWidgetChoicegroup(100, 300, FALSE, listChoiceGroup, eventWidget);
+	listChoiceGroup = list_new();
+	check_none = choiceGroup_new(100, 150, FALSE, listChoiceGroup, eventWidget);
+	check_server = choiceGroup_new(100, 200, FALSE, listChoiceGroup, eventWidget);
+	check_client = choiceGroup_new(100, 250, FALSE, listChoiceGroup, eventWidget);
+	check_load_session = choiceGroup_new(100, 300, FALSE, listChoiceGroup, eventWidget);
 
 	if (isParamFlag("--server")) {
-		setWidgetChoiceStatus(check_server, TRUE);
+		choiceGroup_set_status(check_server, TRUE);
 	} else if (isParamFlag("--client")) {
-		setWidgetChoiceStatus(check_client, TRUE);
+		choiceGroup_set_status(check_client, TRUE);
 	} else {
-		setWidgetChoiceStatus(check_none, TRUE);
+		choiceGroup_set_status(check_none, TRUE);
 	}
 
-	label_none = newWidgetLabel(_("Local game"), 130, 145, WIDGET_LABEL_LEFT);
-	label_server = newWidgetLabel(_("Set up a server"), 130, 195, WIDGET_LABEL_LEFT);
-	label_client = newWidgetLabel(_("Network game"), 130, 245, WIDGET_LABEL_LEFT);
-	label_load_session = newWidgetLabel("load session", 130, 295, WIDGET_LABEL_LEFT);
+	label_none = label_new(_("Local game"), 130, 145, WIDGET_LABEL_LEFT);
+	label_server = label_new(_("Set up a server"), 130, 195, WIDGET_LABEL_LEFT);
+	label_client = label_new(_("Network game"), 130, 245, WIDGET_LABEL_LEFT);
+	label_load_session = label_new("load session", 130, 295, WIDGET_LABEL_LEFT);
 
-	label_ip = newWidgetLabel(_("IP"), 300, 145, WIDGET_LABEL_LEFT);
-	label_port = newWidgetLabel(_("port"), 300, 245, WIDGET_LABEL_LEFT);
-	label_session = newWidgetLabel("load session :", 300, 145, WIDGET_LABEL_LEFT);
+	label_ip = label_new(_("IP"), 300, 145, WIDGET_LABEL_LEFT);
+	label_port = label_new(_("port"), 300, 245, WIDGET_LABEL_LEFT);
+	label_session = label_new("load session :", 300, 145, WIDGET_LABEL_LEFT);
 
-	textfield_ip = newWidgetTextfield(getParamElse("--ip", "127.0.0.1"),
+	textfield_ip = textField_new(getParamElse("--ip", "127.0.0.1"),
 					  WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN,
 					  300, 180);
 
-	textfield_port = newWidgetTextfield(getParamElse("--port", "6800"),
+	textfield_port = textField_new(getParamElse("--port", "6800"),
 					    WIDGET_TEXTFIELD_FILTER_NUM, 300, 280);
 
-	selectSession = newWidgetSelect(300, 185, eventWidget);
+	selectSession = select_new(300, 185, eventWidget);
 
-	registerScreen( newScreen("gameType", startScreenGameType, eventScreenGameType,
-			drawScreenGameType, stopScreenGameType));
+	screen_register( screen_new("gameType", screen_startGameType, gameType_event,
+			gameType_draw, stopScreenGameType));
 }
 
 int setSettingGameType(int status)
 {
 	if (status == NET_GAME_TYPE_NONE) {
-		setWidgetChoiceStatus(check_none, TRUE);
+		choiceGroup_set_status(check_none, TRUE);
 		return 0;
 	}
 
 	if (status == NET_GAME_TYPE_SERVER) {
-		setWidgetChoiceStatus(check_server, TRUE);
+		choiceGroup_set_status(check_server, TRUE);
 		return 0;
 	}
 
 	if (status == NET_GAME_TYPE_CLIENT) {
-		setWidgetChoiceStatus(check_client, TRUE);
+		choiceGroup_set_status(check_client, TRUE);
 		return 0;
 	}
 
 	return -1;
 }
 
-int getSettingGameType()
+int publicServer_get_settingGameType()
 {
-	if (getWidgetChoiceStatus(check_none) == TRUE || getWidgetChoiceStatus(check_load_session) == TRUE) {
+	if (choiceGroup_get_status(check_none) == TRUE || choiceGroup_get_status(check_load_session) == TRUE) {
 		return NET_GAME_TYPE_NONE;
 	}
 
-	if (getWidgetChoiceStatus(check_server) == TRUE) {
+	if (choiceGroup_get_status(check_server) == TRUE) {
 		return NET_GAME_TYPE_SERVER;
 	}
 
-	if (getWidgetChoiceStatus(check_client) == TRUE) {
+	if (choiceGroup_get_status(check_client) == TRUE) {
 		return NET_GAME_TYPE_CLIENT;
 	}
 
@@ -299,52 +299,52 @@ int getSettingGameType()
 	return -1;
 }
 
-char *getGemeTypeLoadSession()
+char *gameType_load_session()
 {
-	if (getWidgetChoiceStatus(check_load_session) == TRUE) {
-		return getWidgetSelectItem(selectSession);
+	if (choiceGroup_get_status(check_load_session) == TRUE) {
+		return select_get_item(selectSession);
 	}
 
 	return NULL;
 }
 
-int setSettingIP(char *address)
+int gameType_set_ip(char *address)
 {
 	char str[STR_SIZE];
 
 	strcpy(str, address);
-	setWidgetTextFiledText(textfield_ip, str);
+	textField_set_text(textfield_ip, str);
 
 	return 1;
 }
 
-char *getSettingIP()
+char *publicServer_get_settingIP()
 {
-	return getTextFromWidgetTextfield(textfield_ip);
+	return textField_get_text(textfield_ip);
 }
 
-int setSettingPort(int port)
+int gameType_set_port(int port)
 {
 	char str[STR_SIZE];
 
 	sprintf(str, "%d", port);
-	setWidgetTextFiledText(textfield_port, str);
+	textField_set_text(textfield_port, str);
 
 	return 0;
 }
 
-int getSettingPort()
+int publicServer_get_settingPort()
 {
-	return atoi(getTextFromWidgetTextfield(textfield_port));
+	return atoi(textField_get_text(textfield_port));
 }
 
-int getSettingProto()
+int publicServer_get_settingProto()
 {
-	if (strstr(getTextFromWidgetTextfield(textfield_ip), ".") != NULL) {
+	if (strstr(textField_get_text(textfield_ip), ".") != NULL) {
 		return PROTO_UDPv4;
 	}
 
-	if (strstr(getTextFromWidgetTextfield(textfield_ip), ":") != NULL) {
+	if (strstr(textField_get_text(textfield_ip), ":") != NULL) {
 		return PROTO_UDPv6;
 	}
 
@@ -353,32 +353,32 @@ int getSettingProto()
 	return -1;
 }
 
-void quitScreenGameType()
+void gameType_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetLabel(label_none);
-	destroyWidgetLabel(label_server);
-	destroyWidgetLabel(label_client);
-	destroyWidgetLabel(label_load_session);
+	label_destroy(label_none);
+	label_destroy(label_server);
+	label_destroy(label_client);
+	label_destroy(label_load_session);
 
-	destroyWidgetLabel(label_ip);
-	destroyWidgetLabel(label_port);
-	destroyWidgetLabel(label_session);
+	label_destroy(label_ip);
+	label_destroy(label_port);
+	label_destroy(label_session);
 
-	destroyWidgetTextfield(textfield_ip);
-	destroyWidgetTextfield(textfield_port);
+	textField_destroy(textfield_ip);
+	textField_destroy(textfield_port);
 
-	destroyWidgetSelect(selectSession);
+	select_destroy(selectSession);
 
-	destroyWidgetButton(button_back);
-	destroyWidgetButton(button_play);
-	destroyWidgetButton(button_browser);
+	button_destroy(button_back);
+	button_destroy(button_play);
+	button_destroy(button_browser);
 
-	destroyWidgetChoicegroup(check_none);
-	destroyWidgetChoicegroup(check_server);
-	destroyWidgetChoicegroup(check_client);
-	destroyWidgetChoicegroup(check_load_session);
+	choiceGroup_destroy(check_none);
+	choiceGroup_destroy(check_server);
+	choiceGroup_destroy(check_client);
+	choiceGroup_destroy(check_load_session);
 
-	destroyList(listChoiceGroup);
+	list_destroy(listChoiceGroup);
 }

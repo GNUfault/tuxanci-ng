@@ -103,12 +103,12 @@ static void startUpdateServer()
 	timeUpdate = time(NULL);
 }
 
-time_t getUpdateServer()
+time_t server_get_update()
 {
 	return time(NULL) - timeUpdate;
 }
 
-client_t *newAnyClient()
+client_t *server_new_any_client()
 {
 	client_t *new;
 
@@ -116,30 +116,30 @@ client_t *newAnyClient()
 	memset(new, 0, sizeof(client_t));
 
 	new->status = NET_STATUS_OK;
-	new->listRecvMsg = newList();
-	new->listSendMsg = newCheckFront();
-	new->listSeesShot = newList();
+	new->listRecvMsg = list_new();
+	new->listSendMsg = checkFront_new();
+	new->listSeesShot = list_new();
 	new->protect = newProtect();
 
 	return new;
 }
 
-void destroyAnyClient(client_t * p)
+void server_destroy_any_client(client_t * p)
 {
 	assert(p != NULL);
 
-	//eventMsgInCheckFront(p);
-	destroyListItem(p->listRecvMsg, free);
-	destroyListItem(p->listSeesShot, free);
-	destroyCheckFront(p->listSendMsg);
+	//checkFront_event(p);
+	list_destroy_item(p->listRecvMsg, free);
+	list_destroy_item(p->listSeesShot, free);
+	checkFront_destroy(p->listSendMsg);
 
 	destroyProtect(p->protect);
 
 	if (p->tux != NULL) {
 #ifdef PUBLIC_SERVER
-		addPlayerInHighScore(p->tux->name, p->tux->score);
+		table_add(p->tux->name, p->tux->score);
 #endif
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceTux, p->tux, destroyTux);
+		space_del_with_item(arena_get_current()->spaceTux, p->tux, tux_destroy);
 	}
 
 	free(p);
@@ -149,11 +149,11 @@ static void eventDelClientFromListClient(client_t * client)
 {
 	int offset;
 
-	offset = searchListItem(listClient, client);
+	offset = list_search(listClient, client);
 
 	assert(offset != -1);
 
-	delListItem(listClient, offset, destroyUdpClient);
+	list_del_item(listClient, offset, serverUdp_destroy_client);
 }
 
 static void delZombieCLient(void *p_nothink)
@@ -162,14 +162,14 @@ static void delZombieCLient(void *p_nothink)
 	my_time_t currentTime;
 	int i;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	for (i = 0; i < listClient->count; i++) {
 		thisClient = (client_t *) listClient->list[i];
 
 		if (isDown(thisClient->protect) == TRUE) {
 			proto_send_end_server(PROTO_SEND_ONE, thisClient);
-			eventMsgInCheckFront(thisClient);
+			checkFront_event(thisClient);
 			thisClient->status = NET_STATUS_ZOMBIE;
 		}
 
@@ -191,7 +191,7 @@ static void eventPeriodicSyncClient(void *p_nothink)
 	int i;
 
 #ifndef PUBLIC_SERVER
-	proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, NULL, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT));
+	proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, NULL, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
 #endif
 
 	for (i = 0; i < listClient->count; i++) {
@@ -212,34 +212,34 @@ static void eventSendPingClients(void *p_nothink)
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
 
-void setServerTimer()
+void server_set_time()
 {
 	if (listServerTimer != NULL) {
-		destroyTimer(listServerTimer);
+		timer_destroy(listServerTimer);
 	}
 
-	restartTimer();
-	listServerTimer = newTimer();
+	timer_restart();
+	listServerTimer = timer_new();
 
-	addTaskToTimer(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
-	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
-	addTaskToTimer(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
+	timer_add_task(listServerTimer, TIMER_PERIODIC, delZombieCLient, NULL, SERVER_TIMEOUT);
+	timer_add_task(listServerTimer, TIMER_PERIODIC, eventPeriodicSyncClient, NULL, SERVER_TIME_SYNC);
+	timer_add_task(listServerTimer, TIMER_PERIODIC, eventSendPingClients, NULL, SERVER_TIME_PING);
 }
 
-int initServer(char *ip4, int port4, char *ip6, int port6)
+int server_init(char *ip4, int port4, char *ip6, int port6)
 {
 	int ret;
 
 	startUpdateServer();
 	listServerTimer = NULL;
 
-	listClient = newList();
+	listClient = list_new();
 
-	setServerMaxClients(SERVER_MAX_CLIENTS);
-	setServerTimer();
+	server_set_max_clients(SERVER_MAX_CLIENTS);
+	server_set_time();
 
 	//printf("%s %d %s %d\n", ip4, port4, ip6, port6);
-	ret = initUdpServer(ip4, port4, ip6, port6);
+	ret = serverUdp_init(ip4, port4, ip6, port6);
 
 	if (ret == 0) {
 		return -1;
@@ -247,32 +247,32 @@ int initServer(char *ip4, int port4, char *ip6, int port6)
 
 	if( ip4 != NULL )
 	{
-		initDownServer(ip4, port4);
+		downServer_init(ip4, port4);
 	}
 	else if( ip6 != NULL )
 	{
-		initDownServer(ip6, port6);
+		downServer_init(ip6, port6);
 	}
 
 	return ret;
 }
 
-list_t *getListServerClient()
+list_t *server_get_list_clients()
 {
 	return listClient;
 }
 
-int getServerMaxClients()
+int server_get_max_clients()
 {
 	return maxClients;
 }
 
-void setServerMaxClients(int n)
+void server_set_max_clients(int n)
 {
 	maxClients = n;
 }
 
-void sendClient(client_t * p, char *msg)
+void server_send_client(client_t * p, char *msg)
 {
 	assert(p != NULL);
 	assert(msg != NULL);
@@ -285,7 +285,7 @@ void sendClient(client_t * p, char *msg)
 			printf(_("Sending: \"%s\""), msg);
 		}
 #endif
-		ret = writeUdpSocket(p->socket_udp, p->socket_udp, msg, strlen(msg));
+		ret = sock_udp_write(p->socket_udp, p->socket_udp, msg, strlen(msg));
 
 		if (ret <= 0) {
 			p->status = NET_STATUS_ZOMBIE;
@@ -293,7 +293,7 @@ void sendClient(client_t * p, char *msg)
 	}
 }
 
-static void eventClientWorkRecvList(client_t * client)
+static void client_eventWorkRecvList(client_t * client)
 {
 	proto_cmd_server_t *protoCmd;
 	char *line;
@@ -321,8 +321,8 @@ static void eventClientWorkRecvList(client_t * client)
 		}
 	}
 
-	destroyListItem(client->listRecvMsg, free);
-	client->listRecvMsg = newList();
+	list_destroy_item(client->listRecvMsg, free);
+	client->listRecvMsg = list_new();
 }
 
 static void porcesListClients()
@@ -333,60 +333,60 @@ static void porcesListClients()
 	for (i = 0; i < listClient->count; i++) {
 		thisClient = (client_t *) listClient->list[i];
 
-		eventClientWorkRecvList(thisClient);
-		eventMsgInCheckFront(thisClient);
+		client_eventWorkRecvList(thisClient);
+		checkFront_event(thisClient);
 	}
 }
 
-void eventServer()
+void server_event()
 {
 #ifndef PUBLIC_SERVER
 	int count;
 
 	do {
-		restartSelect();
+		select_restart();
 
-		setServerUdpSelect();
-		setDownServerSelect();
+		serverUdp_set_select();
+		downServer_set_select();
 
-		actionSelect();
+		select_action();
 
-		count = selectServerUdpSocket();
-		selectDownServerSocket();
+		count = serverUdp_select_sock();
+		downServer_select_socket();
 	} while (count > 0);
 #endif
 
 #ifdef PUBLIC_SERVER
 	int ret;
 
-	restartSelect();
+	select_restart();
 
-	setServerUdpSelect();
-	setDownServerSelect();
+	serverUdp_set_select();
+	downServer_set_select();
 
-	ret = actionSelect();
+	ret = select_action();
 
 	if (ret > 0) {
-		selectServerUdpSocket();
-		selectDownServerSocket();
+		serverUdp_select_sock();
+		downServer_select_socket();
 	}
 #endif
 
 	porcesListClients();
-	eventTimer(listServerTimer);
+	timer_event(listServerTimer);
 }
 
-void quitServer()
+void server_quit()
 {
 	proto_send_end_server(PROTO_SEND_ALL, NULL);
 
 	assert(listClient != NULL);
 
-	destroyListItem(listClient, destroyUdpClient);
+	list_destroy_item(listClient, serverUdp_destroy_client);
 
-	destroyTimer(listServerTimer);
+	timer_destroy(listServerTimer);
 
-	quitUdpServer();
+	serverUdp_quit();
 
-	quitDownServer();
+	downServer_quit();
 }

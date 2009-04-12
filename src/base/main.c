@@ -166,11 +166,11 @@ int main(int argc, char *argv[])
 #endif
 
 #ifndef PUBLIC_SERVER
-	startGame();
+	game_start();
 #endif
 
 #ifdef PUBLIC_SERVER
-	startPublicServer();
+	publicServer_start();
 #endif
 
 	return 0;

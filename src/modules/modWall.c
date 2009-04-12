@@ -213,7 +213,7 @@ static void cmd_wall(char *line)
 #ifndef PUBLIC_SERVER
 	new =
 		newWall(x, y, w, h, img_x, img_y, layer,
-				export_fce->fce_getImage(IMAGE_GROUP_USER, str_image));
+				export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
 #endif
 
 #ifdef PUBLIC_SERVER
@@ -222,29 +222,29 @@ static void cmd_wall(char *line)
 
 	if (spaceWall == NULL) {
 		spaceWall =
-			newSpace(export_fce->fce_getCurrentArena()->w,
-					 export_fce->fce_getCurrentArena()->h, 320, 240,
+			space_new(export_fce->fce_arena_get_current()->w,
+					 export_fce->fce_arena_get_current()->h, 320, 240,
 					 getStatusWall, setStatusWall);
 
 #ifndef PUBLIC_SERVER
 		spaceImgWall =
-			newSpace(export_fce->fce_getCurrentArena()->w,
-					 export_fce->fce_getCurrentArena()->h, 320, 240,
+			space_new(export_fce->fce_arena_get_current()->w,
+					 export_fce->fce_arena_get_current()->h, 320, 240,
 					 getStatusImgWall, setStatusImgWall);
 #endif
 	}
 
-	addObjectToSpace(spaceWall, new);
+	space_add(spaceWall, new);
 
 #ifndef PUBLIC_SERVER
-	addObjectToSpace(spaceImgWall, new);
+	space_add(spaceImgWall, new);
 #endif
 }
 
 int init(export_fce_t * p)
 {
 	export_fce = p;
-	listWall = newList();
+	listWall = list_new();
 
 	return 0;
 }
@@ -262,9 +262,9 @@ int draw(int x, int y, int w, int h)
 		return 0;
 	}
 
-	actionSpaceFromLocation(spaceImgWall, action_drawwall, NULL, x, y, w, h);
+	space_action_from_location(spaceImgWall, action_drawwall, NULL, x, y, w, h);
 
-	//printSpace(spaceWall);
+	//space_print(spaceWall);
 
 	return 0;
 }
@@ -275,9 +275,9 @@ static void action_eventwall(space_t * space, wall_t * wall, shot_t * shot)
 	arena_t *arena;
 	tux_t *author;
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
-	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+	author = space_get_object_id(arena->spaceTux, shot->author_id);
 
 	if (author != NULL &&
 		author->bonus == BONUS_GHOST && author->bonus_time > 0) {
@@ -285,24 +285,24 @@ static void action_eventwall(space_t * space, wall_t * wall, shot_t * shot)
 	}
 
 	if (shot->gun == GUN_BOMBBALL) {
-		if (export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
-			export_fce->fce_boundBombBall(shot);
+		if (export_fce->fce_netMultiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
+			export_fce->fce_shot_bound_bombBall(shot);
 		}
 
 		return;
 	}
-	//delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
+	//space_del_with_item(arena->spaceShot, shot, export_fce->fce_shot_destroy);
 	shot->del = TRUE;
 }
 
 static void
 action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceWall)
 {
-	actionSpaceFromLocation(p_spaceWall, action_eventwall, shot, shot->x,
+	space_action_from_location(p_spaceWall, action_eventwall, shot, shot->x,
 							shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {
-		delObjectFromSpaceWithObject(space, shot, export_fce->fce_destroyShot);
+		space_del_with_item(space, shot, export_fce->fce_shot_destroy);
 	}
 }
 
@@ -312,7 +312,7 @@ int event()
 		return 0;
 	}
 
-	actionSpace(export_fce->fce_getCurrentArena()->spaceShot,
+	space_action(export_fce->fce_arena_get_current()->spaceShot,
 				action_eventshot, spaceWall);
 
 	return 0;
@@ -324,7 +324,7 @@ int isConflict(int x, int y, int w, int h)
 		return 0;
 	}
 
-	return isConflictWithObjectFromSpace(spaceWall, x, y, w, h);
+	return space_is_conflict_with_object(spaceWall, x, y, w, h);
 }
 
 void cmdArena(char *line)
@@ -339,10 +339,10 @@ void recvMsg(char *msg)
 
 int destroy()
 {
-	destroySpaceWithObject(spaceWall, destroyWall);
+	space_destroy_with_item(spaceWall, destroyWall);
 #ifndef PUBLIC_SERVER
-	destroySpace(spaceImgWall);
+	space_destroy(spaceImgWall);
 #endif
-	destroyList(listWall);
+	list_destroy(listWall);
 	return 0;
 }

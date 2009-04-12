@@ -27,32 +27,32 @@
 static export_fce_t export_fce = {
 #ifndef PUBLIC_SERVER
 	.fce_addLayer = addLayer,
-	.fce_getImage = getImage,
+	.fce_image_get = image_get,
 #endif
-	.fce_loadDepModule = loadDepModule,
-	.fce_addToShareFce = addToShareFce,
-	.fce_getShareFce = getShareFce,
+	.fce_module_load_dep = module_load_dep,
+	.fce_shareFunction_add = shareFunction_add,
+	.fce_shareFunction_get = shareFunction_get,
 
-	.fce_getValue = getArenaValue,
-	.fce_getNetTypeGame = getNetTypeGame,
-	.fce_getTuxProportion = getTuxProportion,
-	.fce_setTuxProportion = setTuxProportion,
-	.fce_actionTux = actionTux,
+	.fce_getValue = arenaFile_get_value,
+	.fce_netMultiplayer_get_game_type = netMultiplayer_get_game_type,
+	.fce_tux_get_proportion = tux_get_proportion,
+	.fce_tux_set_proportion = tux_set_proportion,
+	.fce_tux_action = tux_action,
 
-	.fce_getMyTime = getMyTime,
+	.fce_timer_get_current_time = timer_get_current_time,
 
-	.fce_getCurrentArena = getCurrentArena,
-	.fce_conflictSpace = conflictSpace,
-	.fce_isFreeSpace = isFreeSpace,
-	.fce_findFreeSpace = findFreeSpace,
+	.fce_arena_get_current = arena_get_current,
+	.fce_arena_conflict_space = arena_conflict_space,
+	.fce_arena__is_free_space = arena__is_free_space,
+	.fce_arena_find_free_space = arena_find_free_space,
 
 	.fce_proto_send_module_server = proto_send_module_server,
 #ifndef PUBLIC_SERVER
 	.fce_proto_send_module_client = proto_send_module_client,
 #endif
-	.fce_destroyShot = destroyShot,
-	.fce_boundBombBall = boundBombBall,
-	.fce_transformOnlyLasser = transformOnlyLasser
+	.fce_shot_destroy = shot_destroy,
+	.fce_shot_bound_bombBall = shot_bound_bombBall,
+	.fce_shot_transform_lasser = shot_transform_lasser
 };
 static list_t *listModule;
 
@@ -186,10 +186,10 @@ static int destroyModule(module_t * p)
 	return 0;
 }
 
-void initModule()
+void module_init()
 {
-	listModule = newList();
-	initShareFunction();
+	listModule = list_new();
+	shareFunction_init();
 }
 
 int isModuleLoaded(char *name)
@@ -207,7 +207,7 @@ int isModuleLoaded(char *name)
 	return 0;
 }
 
-int loadModule(char *name)
+int module_load(char *name)
 {
 	module_t *module;
 
@@ -223,19 +223,19 @@ int loadModule(char *name)
 		return -1;
 	}
 
-	addList(listModule, module);
+	list_add(listModule, module);
 	return 0;
 }
 
-int loadDepModule(char *name)
+int module_load_dep(char *name)
 {
 	if (isModuleLoaded(name))
 		return 0;
 
-	return loadModule(name);
+	return module_load(name);
 }
 
-void cmdModule(char *s)
+void module_cmd(char *s)
 {
 	int i;
 
@@ -248,7 +248,7 @@ void cmdModule(char *s)
 }
 
 #ifndef PUBLIC_SERVER
-void drawModule(int x, int y, int w, int h)
+void module_draw(int x, int y, int w, int h)
 {
 	int i;
 
@@ -261,7 +261,7 @@ void drawModule(int x, int y, int w, int h)
 }
 #endif
 
-void eventModule()
+void module_event()
 {
 	int i;
 
@@ -273,7 +273,7 @@ void eventModule()
 	}
 }
 
-int isConflictModule(int x, int y, int w, int h)
+int module_is_conflict(int x, int y, int w, int h)
 {
 	int i;
 
@@ -288,7 +288,7 @@ int isConflictModule(int x, int y, int w, int h)
 	return 0;
 }
 
-int recvMsgModule(char *msg)
+int module_recv_msg(char *msg)
 {
 	int i;
 
@@ -301,8 +301,8 @@ int recvMsgModule(char *msg)
 	return 0;
 }
 
-void quitModule()
+void module_quit()
 {
-	destroyListItem(listModule, destroyModule);
-	quitShareFunction();
+	list_destroy_item(listModule, destroyModule);
+	shareFunction_quit();
 }

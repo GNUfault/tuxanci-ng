@@ -29,34 +29,34 @@ static void hotkey_pauze()
 	switchPauzed();
 }
 
-void initPauza()
+void pauza_init()
 {
-	g_pauza = addImageData("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
+	g_pauza = image_add("pauza.png", IMAGE_ALPHA, "pauza", IMAGE_GROUP_USER);
 	activePauza = FALSE;
 
-	registerHotKey(SDLK_p, hotkey_pauze);
+	hotKey_register(SDLK_p, hotkey_pauze);
 }
 
-void drawPauza()
+void pauza_draw()
 {
 	if (activePauza) {
-		drawImage(g_pauza,
+		image_draw(g_pauza,
 			WINDOW_SIZE_X / 2 - g_pauza->w / 2,
 			WINDOW_SIZE_Y / 2 - g_pauza->h / 2,
 			0, 0, g_pauza->w, g_pauza->h);
 	}
 }
 
-void eventPauza()
+void pauza_event()
 {
 }
 
-bool_t isPauzeActive()
+bool_t pauza_is_active()
 {
 	return activePauza;
 }
 
-void quitPauza()
+void pauza_quit()
 {
-	unregisterHotKey(SDLK_p);
+	unhotKey_register(SDLK_p);
 }

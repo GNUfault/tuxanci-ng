@@ -33,16 +33,16 @@ static void destroyIdItem(id_item_t * p)
 	free(p);
 }
 
-void initListID()
+void id_init_list()
 {
-	listID = newList();
+	listID = list_new();
 	lastID = 0;
 
 	DEBUG_MSG(_("Starting ID manger\n"));
 
 }
 
-int isRegisterID(int id)
+int id_is_register(int id)
 {
 	int i;
 
@@ -74,37 +74,37 @@ static int findNewID()
 	do {
 		//ret  = ( random() % (listID->count + 8 ) ) + 1;
 		ret = random() % MAX_ID + 1;
-	} while (isRegisterID(ret) != -1);
+	} while (id_is_register(ret) != -1);
 
 	//printf("new ID %d\n", ret);
 
 	return ret;
 }
 
-int getNewIDcount(int count)
+int id_get_newcount(int count)
 {
 	int id;
 
 	id = findNewID();
 
-	addList(listID, newIdItem(id, count));
+	list_add(listID, newIdItem(id, count));
 
 	return id;
 }
 
-int getNewID()
+int id_get_new()
 {
-	return getNewIDcount(1);
+	return id_get_newcount(1);
 }
 
-void incID(int id)
+void id_inc(int id)
 {
 	id_item_t *this;
 	int index;
 
 	assert(listID != NULL);
 
-	index = isRegisterID(id);
+	index = id_is_register(id);
 
 	if (index == -1) {
 		assert(!_("This kind of ID was never registered!"));
@@ -119,14 +119,14 @@ void incID(int id)
 	return;
 }
 
-void delID(int id)
+void id_del(int id)
 {
 	id_item_t *this;
 	int index;
 
 	assert(listID != NULL);
 
-	index = isRegisterID(id);
+	index = id_is_register(id);
 
 	if (index == -1) {
 		assert(!_("This kind of ID was never registered!"));
@@ -139,14 +139,14 @@ void delID(int id)
 	//printf("dec ID %d %d\n", this->id, this->count);
 
 	if (this->count <= 0) {
-		delListItem(listID, index, free);
+		list_del_item(listID, index, free);
 		//printf("listID->count = %d\n", listID->count);
 	}
 
 	return;
 }
 
-void replaceID(int old_id, int new_id)
+void id_replace(int old_id, int new_id)
 {
 	int index_old_id;
 	int index_new_id;
@@ -156,10 +156,10 @@ void replaceID(int old_id, int new_id)
 		return;
 	}
 
-	index_old_id = isRegisterID(old_id);
+	index_old_id = id_is_register(old_id);
 	assert(index_old_id != -1);
 
-	index_new_id = isRegisterID(new_id);
+	index_new_id = id_is_register(new_id);
 	assert(index_new_id == -1);
 
 	this = listID->list[index_old_id];
@@ -173,7 +173,7 @@ void infoID(int id)
 
 	assert(listID != NULL);
 
-	index = isRegisterID(id);
+	index = id_is_register(id);
 
 	if (index == -1) {
 		DEBUG_MSG(_("ID %d does not exist\n"), id);
@@ -188,10 +188,10 @@ void infoID(int id)
 	return;
 }
 
-void quitListID()
+void id_quit_list()
 {
 	DEBUG_MSG(_("Quitting ID manger\n"));
 
 	assert(listID != NULL);
-	destroyListItem(listID, destroyIdItem);
+	list_destroy_item(listID, destroyIdItem);
 }

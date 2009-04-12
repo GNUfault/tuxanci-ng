@@ -9,7 +9,7 @@
 #include "widget.h"
 #include "widget_check.h"
 
-widget_t *newWidgetCheck(int x, int y, bool_t status,  void (*fce_event) (void *))
+widget_t *check_new(int x, int y, bool_t status,  void (*fce_event) (void *))
 {
 	widget_check_t *new;
 
@@ -18,10 +18,10 @@ widget_t *newWidgetCheck(int x, int y, bool_t status,  void (*fce_event) (void *
 	new->status = status;
 	new->fce_event = fce_event;
 
-	return newWidget(WIDGET_TYPE_CHECK, x, y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, new);
+	return widget_new(WIDGET_TYPE_CHECK, x, y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, new);
 }
 
-void drawWidgetCheck(widget_t * widget)
+void check_draw(widget_t * widget)
 {
 	widget_check_t *p;
 	static image_t *g_check = NULL;
@@ -33,10 +33,10 @@ void drawWidgetCheck(widget_t * widget)
 
 	p = (widget_check_t *) widget->private_data;
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
 	if (g_check == NULL) {
-		g_check = addImageData("check.png", IMAGE_ALPHA, "check", IMAGE_GROUP_BASE);
+		g_check = image_add("check.png", IMAGE_ALPHA, "check", IMAGE_GROUP_BASE);
 	}
 
 	if (p->status == TRUE) {
@@ -45,10 +45,10 @@ void drawWidgetCheck(widget_t * widget)
 		offset = WIDGET_CHECK_WIDTH;
 	}
 
-	drawImage(g_check, widget->x, widget->y, offset, 0, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT);
+	image_draw(g_check, widget->x, widget->y, offset, 0, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT);
 }
 
-void eventWidgetCheck(widget_t * widget)
+void check_event(widget_t * widget)
 {
 	widget_check_t *p;
 	int x, y;
@@ -63,11 +63,11 @@ void eventWidgetCheck(widget_t * widget)
 		return;
 	}
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
 	if (x >= widget->x && x <= widget->x + WIDGET_CHECK_WIDTH &&
 	    y >= widget->y && y <= widget->y + WIDGET_CHECK_HEIGHT &&
-	    isMouseClicked()) {
+	    interface_is_mouse_clicket()) {
 		if (p->status == TRUE) {
 			p->status = FALSE;
 			p->time = WIDGET_CHECK_TIME_SWITCH_STATUS;
@@ -82,7 +82,7 @@ void eventWidgetCheck(widget_t * widget)
 	}
 }
 
-bool_t getWidgetCheckStatus(widget_t * widget)
+bool_t check_get_status(widget_t * widget)
 {
 	widget_check_t *p;
 
@@ -94,7 +94,7 @@ bool_t getWidgetCheckStatus(widget_t * widget)
 	return p->status;
 }
 
-void setWidgetCheckStatus(widget_t * widget, bool_t status)
+void check_set_status(widget_t * widget, bool_t status)
 {
 	widget_check_t *p;
 
@@ -105,7 +105,7 @@ void setWidgetCheckStatus(widget_t * widget, bool_t status)
 	p->status = status;
 }
 
-void destroyWidgetCheck(widget_t * widget)
+void check_destroy(widget_t * widget)
 {
 	widget_check_t *p;
 
@@ -114,5 +114,5 @@ void destroyWidgetCheck(widget_t * widget)
 
 	p = (widget_check_t *) widget->private_data;
 	free(p);
-	destroyWidget(widget);
+	widget_destroy(widget);
 }

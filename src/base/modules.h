@@ -21,37 +21,37 @@ typedef struct export_fce_s {
 	int (*fce_getValue) (char *line, char *env, char *val, int len);
 
 #    ifndef PUBLIC_SERVER
-	image_t *(*fce_getImage) (char *group, char *name);
+	image_t *(*fce_image_get) (char *group, char *name);
 
 	void (*fce_addLayer) (image_t * img,
 						  int x, int y, int px, int py,
 						  int w, int h, int player);
 #    endif
 
-	int (*fce_getNetTypeGame) ();
-	int (*fce_loadDepModule) (char *name);
-	void (*fce_addToShareFce) (char *name, void *function);
-	void *(*fce_getShareFce) (char *name);
+	int (*fce_netMultiplayer_get_game_type) ();
+	int (*fce_module_load_dep) (char *name);
+	void (*fce_shareFunction_add) (char *name, void *function);
+	void *(*fce_shareFunction_get) (char *name);
 
-	void (*fce_getTuxProportion) (tux_t * tux, int *x, int *y, int *w, int *h);
-	void (*fce_setTuxProportion) (tux_t * tux, int x, int y);
+	void (*fce_tux_get_proportion) (tux_t * tux, int *x, int *y, int *w, int *h);
+	void (*fce_tux_set_proportion) (tux_t * tux, int x, int y);
 	tux_t *(*fce_getTuxID) (list_t * listTux, int id);
-	void (*fce_actionTux) (tux_t * tux, int action);
+	void (*fce_tux_action) (tux_t * tux, int action);
 
-	arena_t *(*fce_getCurrentArena) ();
-	int (*fce_conflictSpace) (int x1, int y1, int w1, int h1, int x2, int y2,
+	arena_t *(*fce_arena_get_current) ();
+	int (*fce_arena_conflict_space) (int x1, int y1, int w1, int h1, int x2, int y2,
 							  int w2, int h2);
-	int (*fce_isFreeSpace) (arena_t * arena, int x, int y, int w, int h);
-	void (*fce_findFreeSpace) (arena_t * arena, int *x, int *y, int w, int h);
+	int (*fce_arena__is_free_space) (arena_t * arena, int x, int y, int w, int h);
+	void (*fce_arena_find_free_space) (arena_t * arena, int *x, int *y, int w, int h);
 	void (*fce_proto_send_module_server) (int type, client_t * client,
 										  char *msg);
 	void (*fce_proto_send_module_client) (char *msg);
 
-	 my_time_t(*fce_getMyTime) ();
+	 my_time_t(*fce_timer_get_current_time) ();
 
-	void (*fce_destroyShot) (shot_t * p);
-	void (*fce_boundBombBall) (shot_t * shot);
-	void (*fce_transformOnlyLasser) (shot_t * shot);
+	void (*fce_shot_destroy) (shot_t * p);
+	void (*fce_shot_bound_bombBall) (shot_t * shot);
+	void (*fce_shot_transform_lasser) (shot_t * shot);
 } export_fce_t;
 
 typedef struct module_s {
@@ -74,16 +74,16 @@ typedef struct module_s {
 
 } module_t;
 
-extern void initModule();
-extern int loadModule(char *name);
-extern int loadDepModule(char *name);
+extern void module_init();
+extern int module_load(char *name);
+extern int module_load_dep(char *name);
 #    ifndef PUBLIC_SERVER
-extern void drawModule(int x, int y, int w, int h);
+extern void module_draw(int x, int y, int w, int h);
 #    endif
-extern void eventModule();
-extern void cmdModule(char *s);
-extern int isConflictModule(int x, int y, int w, int h);
-extern int recvMsgModule(char *msg);
-extern void quitModule();
+extern void module_event();
+extern void module_cmd(char *s);
+extern int module_is_conflict(int x, int y, int w, int h);
+extern int module_recv_msg(char *msg);
+extern void module_quit();
 
 #endif

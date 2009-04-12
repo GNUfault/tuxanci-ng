@@ -16,9 +16,9 @@ typedef struct widget_label {
 #    define WIDGET_LABEL_LEFT	2
 #    define WIDGET_LABEL_CENTER	3
 
-extern widget_t *newWidgetLabel(char *text, int x, int y, int bind);
-extern void drawWidgetLabel(widget_t * widget);
-extern void eventWidgetLabel(widget_t * widget);
-extern void destroyWidgetLabel(widget_t * widget);
+extern widget_t *label_new(char *text, int x, int y, int bind);
+extern void label_draw(widget_t * widget);
+extern void label_event(widget_t * widget);
+extern void label_destroy(widget_t * widget);
 
 #endif

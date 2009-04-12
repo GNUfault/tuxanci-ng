@@ -13,8 +13,8 @@ protect_t *newProtect()
 	protect_t *new;
 
 	new = malloc(sizeof(protect_t));
-	new->lastMove = getMyTime();
-	new->lastPing = getMyTime();
+	new->lastMove = timer_get_current_time();
+	new->lastPing = timer_get_current_time();
 	new->avarage = 0;
 	new->count = 0;
 	new->isDown = FALSE;
@@ -27,10 +27,10 @@ void refreshLastMove(protect_t * p)
 	my_time_t currentTime;
 	my_time_t interval;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 	interval = currentTime - p->lastMove;
 
-	p->lastMove = getMyTime();
+	p->lastMove = timer_get_current_time();
 	p->avarage += interval;
 	p->count++;
 
@@ -53,9 +53,9 @@ void rereshLastPing(protect_t * p)
 {
 	//my_time_t currentTime;
 	//my_time_t interval;
-	//currentTime = getMyTime();
+	//currentTime = timer_get_current_time();
 	//interval = currentTime - p->lastPing;
-	p->lastPing = getMyTime();
+	p->lastPing = timer_get_current_time();
 	//printf("interval = %d\n", interval);
 }
 
@@ -64,7 +64,7 @@ bool_t isDown(protect_t * p)
 	my_time_t currentTime;
 	my_time_t interval;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 	interval = currentTime - p->lastPing;
 
 	if (interval > PROTECT_PING_INTERVAL_TIMEOUT)

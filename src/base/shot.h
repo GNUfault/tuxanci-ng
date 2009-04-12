@@ -31,23 +31,23 @@ typedef struct shot_struct {
 #    endif
 } shot_t;
 
-extern bool_t isShotInicialized();
-extern void initShot();
-extern shot_t *newShot(int x, int y, int px, int py, int gun, int author_id);
-extern shot_t *getShotID(list_t * listShot, int id);
-extern void replaceShotID(shot_t * shot, int id);
-extern void getStatusShot(void *p, int *id, int *x, int *y, int *w, int *h);
-extern void setStatusShot(void *p, int x, int y, int w, int h);
+extern bool_t shot_is_inicialized();
+extern void shot_init();
+extern shot_t *shot_new(int x, int y, int px, int py, int gun, int author_id);
+extern shot_t *shot_get_id(list_t * listShot, int id);
+extern void shot_replace_id(shot_t * shot, int id);
+extern void shot_get_status(void *p, int *id, int *x, int *y, int *w, int *h);
+extern void shot_set_status(void *p, int x, int y, int w, int h);
 #    ifndef PUBLIC_SERVER
-extern void drawShot(shot_t * p);
-extern void drawListShot(list_t * listShot);
+extern void shot_draw(shot_t * p);
+extern void shot_draw_list(list_t * listShot);
 #    endif
-extern int isConflictWithListShot(list_t * listShot, int x, int y, int w,
+extern int shot_is_conflict_with_list_shot(list_t * listShot, int x, int y, int w,
 								  int h);
-extern void eventMoveListShot(arena_t * arena);
-extern void checkShotIsInTuxScreen(arena_t * arena);
-extern void boundBombBall(shot_t * shot);
-extern void transformOnlyLasser(shot_t * shot);
-extern void destroyShot(shot_t * p);
-extern void quitShot();
+extern void shot_event_move_list(arena_t * arena);
+extern void shot_check_is_tux_screen(arena_t * arena);
+extern void shot_bound_bombBall(shot_t * shot);
+extern void shot_transform_lasser(shot_t * shot);
+extern void shot_destroy(shot_t * p);
+extern void shot_quit();
 #endif

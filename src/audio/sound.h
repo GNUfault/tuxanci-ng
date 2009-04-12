@@ -17,12 +17,12 @@
    } sound_t;
  */
 
-extern bool_t isSoundInicialized();
-extern void initSound();
-extern void addSound(char *file, char *name, char *group);
-extern void playSound(char *name, char *group);
-extern void setSoundActive(bool_t n);
-extern bool_t isSoundActive();
-extern void quitSound();
+extern bool_t sound_is_inicialized();
+extern void sound_init();
+extern void sound_add(char *file, char *name, char *group);
+extern void sound_play(char *name, char *group);
+extern void sound_set_active(bool_t n);
+extern bool_t sound_is_active();
+extern void sound_quit();
 #    endif
 #endif

@@ -17,10 +17,10 @@ typedef struct widget_button {
 	void (*fce_event) (void *);
 } widget_button_t;
 
-extern widget_t *newWidgetButton(char *text, int x, int y,
+extern widget_t *button_new(char *text, int x, int y,
 								 void (*fce_event) (void *));
-extern void drawWidgetButton(widget_t * widget);
-extern void eventWidgetButton(widget_t * widget);
-extern void destroyWidgetButton(widget_t * widget);
+extern void button_draw(widget_t * widget);
+extern void button_event(widget_t * widget);
+extern void button_destroy(widget_t * widget);
 
 #endif

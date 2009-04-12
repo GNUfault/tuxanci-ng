@@ -51,50 +51,50 @@ static void destroyAnalyze(analyze_t * p)
 
 static void hotkey_escape()
 {
-	setScreen("mainMenu");
+	screen_set("mainMenu");
 }
 
-void startScreenAnalyze()
+void analyze_start()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenAnalyze()
+void analyze_draw()
 {
 	widget_t *this;
 	int i;
 
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
 	for (i = 0; i < listWidgetLabelName->count; i++) {
 		this = (widget_t *) (listWidgetLabelName->list[i]);
-		drawWidgetLabel(this);
+		label_draw(this);
 	}
 
 	for (i = 0; i < listWidgetLabelScore->count; i++) {
 		this = (widget_t *) (listWidgetLabelScore->list[i]);
-		drawWidgetLabel(this);
+		label_draw(this);
 	}
 
-	drawWidgetLabel(widgetLabelMsg);
-	drawWidgetButton(button_ok);
+	label_draw(widgetLabelMsg);
+	button_draw(button_ok);
 }
 
-void eventScreenAnalyze()
+void analyze_event()
 {
-	eventWidgetButton(button_ok);
+	button_event(button_ok);
 }
 
-void stopScreenAnalyze()
+void analyze_stop()
 {
-	destroyWidgetLabel(widgetLabelMsg);
-	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	label_destroy(widgetLabelMsg);
+	widgetLabelMsg = label_new("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -104,33 +104,33 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_ok) {
-		setScreen("mainMenu");
+		screen_set("mainMenu");
 	}
 }
 
-void restartAnalyze()
+void analyze_restart()
 {
-	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
-	destroyListItem(listAnalyze, destroyAnalyze);
+	list_destroy_item(listWidgetLabelName, label_destroy);
+	list_destroy_item(listWidgetLabelScore, label_destroy);
+	list_destroy_item(listAnalyze, destroyAnalyze);
 
-	listWidgetLabelName = newList();
-	listWidgetLabelScore = newList();
-	listAnalyze = newList();
+	listWidgetLabelName = list_new();
+	listWidgetLabelScore = list_new();
+	listAnalyze = list_new();
 }
 
-void addAnalyze(char *name, int score)
+void analyze_add(char *name, int score)
 {
-	addList(listAnalyze, newAnalyze(name, score));
+	list_add(listAnalyze, newAnalyze(name, score));
 }
 
-void setMsgToAnalyze(char *msg)
+void analyze_set_msg(char *msg)
 {
-	destroyWidgetLabel(widgetLabelMsg);
-	widgetLabelMsg = newWidgetLabel(msg, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	label_destroy(widgetLabelMsg);
+	widgetLabelMsg = label_new(msg, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 }
 
-void endAnalyze()
+void analyze_end()
 {
 	int i;
 
@@ -140,46 +140,46 @@ void endAnalyze()
 
 		this = (analyze_t *) (listAnalyze->list[i]);
 
-		addList(listWidgetLabelName, newWidgetLabel(this->name, 100,
+		list_add(listWidgetLabelName, label_new(this->name, 100,
 							    200 + 20 * i, WIDGET_LABEL_LEFT));
 
 		str = getString(this->score);
 
-		addList(listWidgetLabelScore, newWidgetLabel(str, WINDOW_SIZE_X - 100,
+		list_add(listWidgetLabelScore, label_new(str, WINDOW_SIZE_X - 100,
 							     200 + 20 * i, WIDGET_LABEL_RIGHT));
 
 		free(str);
 	}
 }
 
-void initScreenAnalyze()
+void analyze_init()
 {
 	image_t *image;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
-	listWidgetLabelName = newList();
-	listWidgetLabelScore = newList();
-	listAnalyze = newList();
+	listWidgetLabelName = list_new();
+	listWidgetLabelScore = list_new();
+	listAnalyze = list_new();
 
-	button_ok = newWidgetButton("OK", WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
+	button_ok = button_new("OK", WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
 				    WINDOW_SIZE_Y - 100, eventWidget);
 
-	registerScreen( newScreen("analyze", startScreenAnalyze, eventScreenAnalyze,
-			drawScreenAnalyze, stopScreenAnalyze));
+	screen_register( screen_new("analyze", analyze_start, analyze_event,
+			analyze_draw, analyze_stop));
 
-	widgetLabelMsg = newWidgetLabel("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	widgetLabelMsg = label_new("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 }
 
-void quitScreenAnalyze()
+void analyze_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
-	destroyListItem(listAnalyze, destroyAnalyze);
+	list_destroy_item(listWidgetLabelName, label_destroy);
+	list_destroy_item(listWidgetLabelScore, label_destroy);
+	list_destroy_item(listAnalyze, destroyAnalyze);
 
-	destroyWidgetButton(button_ok);
-	destroyWidgetLabel(widgetLabelMsg);
+	button_destroy(button_ok);
+	label_destroy(widgetLabelMsg);
 }

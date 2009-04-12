@@ -17,12 +17,12 @@ typedef struct my_timer_struct {
 	my_time_t time;
 } my_timer_t;
 
-extern list_t *newTimer();
-extern void restartTimer();
-extern my_time_t getMyTime();
-extern int addTaskToTimer(list_t * listTimer, int type, void (*fce) (void *p),
+extern list_t *timer_new();
+extern void timer_restart();
+extern my_time_t timer_get_current_time();
+extern int timer_add_task(list_t * listTimer, int type, void (*fce) (void *p),
 						  void *arg, my_time_t my_time);
-extern void eventTimer(list_t * listTimer);
-extern void delTimer(list_t * listTimer, int id);
-extern void destroyTimer(list_t * listTimer);
+extern void timer_event(list_t * listTimer);
+extern void timer_del(list_t * listTimer, int id);
+extern void timer_destroy(list_t * listTimer);
 #endif

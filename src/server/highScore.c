@@ -11,16 +11,16 @@
 
 static textFile_t *textFile;
 
-void initHighScore(char *file)
+void highScore_init(char *file)
 {
 	int i;
 
-	textFile = loadTextFile(file);
+	textFile = textFile_load(file);
 
 	if (textFile == NULL) {
 		fprintf(stderr, _("I am unable to load: \"%s\"!\n"), file);
 		fprintf(stderr, _("Creating: \"%s\"\n"), file);
-		textFile = newTextFile(file);
+		textFile = textFile_new(file);
 	} else {
 
 		DEBUG_MSG(_("Scorefile: \"%s\"\n"), file);
@@ -33,13 +33,13 @@ void initHighScore(char *file)
 	}
 
 	for (i = 0; i < HIGHSCORE_MAX_PLAYERS; i++) {
-		addList(textFile->text, strdup("no_name 0"));
+		list_add(textFile->text, strdup("no_name 0"));
 	}
 
-	saveTextFile(textFile);
+	textFile_save(textFile);
 }
 
-int addPlayerInHighScore(char *name, int score)
+int table_add(char *name, int score)
 {
 	int i;
 
@@ -59,10 +59,10 @@ int addPlayerInHighScore(char *name, int score)
 			char new[STR_SIZE];
 
 			sprintf(new, "%s %d", name, score);
-			insList(textFile->text, i, strdup(new));
-			delListItem(textFile->text, HIGHSCORE_MAX_PLAYERS, free);
-			//printTextFile(textFile);
-			saveTextFile(textFile);
+			list_ins(textFile->text, i, strdup(new));
+			list_del_item(textFile->text, HIGHSCORE_MAX_PLAYERS, free);
+			//textFile_print(textFile);
+			textFile_save(textFile);
 
 			return 0;
 		}
@@ -71,7 +71,7 @@ int addPlayerInHighScore(char *name, int score)
 	return -1;
 }
 
-char *getTableItem(int index)
+char *highScore_get_table(int index)
 {
 	if (textFile != NULL && index >= 0 && index < textFile->text->count) {
 		return (char *) textFile->text->list[index];
@@ -80,10 +80,10 @@ char *getTableItem(int index)
 	return NULL;
 }
 
-void quitHighScore()
+void highScore_quit()
 {
 	if (textFile != NULL) {
-		saveTextFile(textFile);
-		destroyTextFile(textFile);
+		textFile_save(textFile);
+		textFile_destroy(textFile);
 	}
 }

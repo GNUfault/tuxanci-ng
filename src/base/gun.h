@@ -11,5 +11,5 @@
 #    include "main.h"
 #    include "tux.h"
 
-extern void shotInGun(tux_t * p);
+extern void gun_shot(tux_t * p);
 #endif

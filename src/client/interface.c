@@ -30,7 +30,7 @@ static bool_t isInterfaceInit = FALSE;
 // flag, kterym se ridi zarazovani klaves do bufferu
 static bool_t keyboardBufferEnabled = FALSE;
 
-bool_t isInterfaceInicialized()
+bool_t interface_is_inicialized()
 {
 	return isInterfaceInit;
 }
@@ -48,12 +48,12 @@ static Uint32 TimerCallback(Uint32 interval, void *param)
 	return interval;
 }
 
-void enableKeyboardBuffer()
+void interface_enable_keyboard_buffer()
 {
 	keyboardBufferEnabled = TRUE;
 }
 
-void disableKeyboardBuffer()
+void interface_disable_keyboard_buffer()
 {
 	keyboardBufferEnabled = FALSE;
 }
@@ -117,7 +117,7 @@ SDL_Surface * SetVideoMode(int width, int height, int bpp, Uint32 flags)
 }
 #endif
 
-int initSDL()
+int interface_init()
 {
 #ifdef DEBUG
 	DEBUG_MSG(_("Initializing SDL system\n"));
@@ -151,10 +151,10 @@ int initSDL()
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 	timer = SDL_AddTimer(INTERVAL, TimerCallback, NULL);
 
-	initKeyboardBuffer(KEYBOARD_BUFFER_SIZE);
+	keyboardBuffer_init(KEYBOARD_BUFFER_SIZE);
 
-	initHotKey();
-	registerHotKey(SDLK_F1, hotkey_screen);
+	hotKey_init();
+	hotKey_register(SDLK_F1, hotkey_screen);
 
 	srand((unsigned) time(NULL));
 	isInterfaceInit = TRUE;
@@ -162,13 +162,13 @@ int initSDL()
 	return 0;
 }
 
-SDL_Surface *getSDL_Screen()
+SDL_Surface *interface_get_screen()
 {
 	//return my_surface;
 	return screen;
 }
 
-void interfaceRefresh()
+void interface_refresh()
 {
 #ifndef SUPPORT_OPENGL
 	SDL_Flip(screen);
@@ -179,17 +179,17 @@ void interfaceRefresh()
 #endif
 }
 
-void getMousePosition(int *x, int *y)
+void interface_get_mouse_position(int *x, int *y)
 {
 	SDL_GetMouseState(x, y);
 }
 
-int isMouseClicked()
+int interface_is_mouse_clicket()
 {
 	return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 }
 
-int isPressAnyKey()
+int interface_is_press_any_key()
 {
 	Uint8 *mapa;
 	int i;
@@ -224,7 +224,7 @@ int hack_slow()
 	static bool_t isSlowHack = FALSE;
 	time_t currentTime;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if( lastTime == 0 )
 	{
@@ -238,7 +238,7 @@ int hack_slow()
 	{
 		//printf("start slow hack (%d)\n", currentTime - lastTime);
 		isSlowHack = TRUE;
-		lastTime = getMyTime();
+		lastTime = timer_get_current_time();
 		return 1;
 	}
 
@@ -246,7 +246,7 @@ int hack_slow()
 	{
 		//printf("stop slow hack (%d)\n", currentTime - lastTime);
 		isSlowHack = FALSE;
-		lastTime = getMyTime();
+		lastTime = timer_get_current_time();
 		return 0;
 	}
 
@@ -255,7 +255,7 @@ int hack_slow()
 		//printf("hack time interval %d\n", currentTime - lastTime);
 	}
 
-	lastTime = getMyTime();
+	lastTime = timer_get_current_time();
 
 	return isSlowHack;
 }
@@ -272,7 +272,7 @@ int eventAction()
 			default:
 				//neni potreba vyuzivat frontu stale
 				if (keyboardBufferEnabled == TRUE)
-					pushKeyToKeyboardBuffer(event.key.keysym);
+					keyboardBuffer_push(event.key.keysym);
 				break;
 			}
 			break;
@@ -285,10 +285,10 @@ int eventAction()
 					break;
 				}
 
-				drawScreen();
-				eventScreen();
-				eventHotKey();
-				switchScreen();
+				screen_draw();
+				screen_event();
+				hotKey_event();
+				screen_switch();
 				break;
 
 			default:
@@ -323,7 +323,7 @@ int eventAction()
 	return 0;
 }
 
-void eventSDL()
+void interface_event()
 {
 	while (1) {
 		if (eventAction() == -1)
@@ -331,12 +331,12 @@ void eventSDL()
 	}
 }
 
-void quitSDL()
+void interface_quit()
 {
 	DEBUG_MSG(_("Quitting SDL\n"));
 
-	quitHotKey();
-	quitKeyboardBuffer();
+	hotKey_quit();
+	keyboardBuffer_quit();
 
 	SDL_Quit();
 

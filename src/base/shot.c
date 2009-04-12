@@ -32,29 +32,29 @@ static image_t *g_shot_bombball;
 
 static bool_t isShotInit = FALSE;
 
-bool_t isShotInicialized()
+bool_t shot_is_inicialized()
 {
 	return isShotInit;
 }
 
-void initShot()
+void shot_init()
 {
 #ifndef PUBLIC_SERVER
-	assert(isImageInicialized() == TRUE);
+	assert(image_is_inicialized() == TRUE);
 #endif
 
 #ifndef PUBLIC_SERVER
-	g_shot_simple = addImageData("shot.png", IMAGE_ALPHA, "shot", IMAGE_GROUP_BASE);
-	g_shot_lasserX = addImageData("lasserX.png", IMAGE_NO_ALPHA, "lasserX", IMAGE_GROUP_BASE);
-	g_shot_lasserY = addImageData("lasserY.png", IMAGE_NO_ALPHA, "lasserY",IMAGE_GROUP_BASE);
-	g_shot_bombball = addImageData("bombball.png", IMAGE_ALPHA, "bombball", IMAGE_GROUP_BASE);
+	g_shot_simple = image_add("shot.png", IMAGE_ALPHA, "shot", IMAGE_GROUP_BASE);
+	g_shot_lasserX = image_add("lasserX.png", IMAGE_NO_ALPHA, "lasserX", IMAGE_GROUP_BASE);
+	g_shot_lasserY = image_add("lasserY.png", IMAGE_NO_ALPHA, "lasserY",IMAGE_GROUP_BASE);
+	g_shot_bombball = image_add("bombball.png", IMAGE_ALPHA, "bombball", IMAGE_GROUP_BASE);
 
 #endif
 
 	isShotInit = TRUE;
 }
 
-shot_t *newShot(int x, int y, int px, int py, int gun, int author_id)
+shot_t *shot_new(int x, int y, int px, int py, int gun, int author_id)
 {
 	shot_t *new;
 	tux_t *author;
@@ -62,7 +62,7 @@ shot_t *newShot(int x, int y, int px, int py, int gun, int author_id)
 	new = malloc(sizeof(shot_t));
 	memset(new, 0, sizeof(shot_t));
 
-	new->id = getNewID();
+	new->id = id_get_new();
 	new->x = x;
 	new->y = y;
 	new->px = px;
@@ -72,7 +72,7 @@ shot_t *newShot(int x, int y, int px, int py, int gun, int author_id)
 
 	new->position = POSITION_UNKNOWN;
 
-	author = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, author_id);
+	author = space_get_object_id(arena_get_current()->spaceTux, author_id);
 
 	if (author != NULL) {
 		new->position = author->position;
@@ -128,14 +128,14 @@ shot_t *newShot(int x, int y, int px, int py, int gun, int author_id)
 	return new;
 }
 
-void replaceShotID(shot_t * shot, int id)
+void shot_replace_id(shot_t * shot, int id)
 {
-	replaceID(shot->id, id);
+	id_replace(shot->id, id);
 	shot->id = id;
 }
 
 
-void getStatusShot(void *p, int *id, int *x, int *y, int *w, int *h)
+void shot_get_status(void *p, int *id, int *x, int *y, int *w, int *h)
 {
 	shot_t *shot;
 
@@ -147,7 +147,7 @@ void getStatusShot(void *p, int *id, int *x, int *y, int *w, int *h)
 	*h = shot->h;
 }
 
-void setStatusShot(void *p, int x, int y, int w, int h)
+void shot_set_status(void *p, int x, int y, int w, int h)
 {
 	shot_t *shot;
 
@@ -160,13 +160,13 @@ void setStatusShot(void *p, int x, int y, int w, int h)
 
 #ifndef PUBLIC_SERVER
 
-void drawShot(shot_t * p)
+void shot_draw(shot_t * p)
 {
 	assert(p != NULL);
 	addLayer(p->img, p->x, p->y, 0, 0, p->img->w, p->img->h, TUX_LAYER);
 }
 
-void drawListShot(list_t * listShot)
+void shot_draw_list(list_t * listShot)
 {
 	shot_t *thisShot;
 	int i;
@@ -176,7 +176,7 @@ void drawListShot(list_t * listShot)
 	for (i = 0; i < listShot->count; i++) {
 		thisShot = (shot_t *) listShot->list[i];
 		assert(thisShot != NULL);
-		drawShot(thisShot);
+		shot_draw(thisShot);
 	}
 }
 
@@ -203,7 +203,7 @@ static int getRandomCourse(int x, int y)
 	return ret;
 }
 
-void boundBombBall(shot_t * shot)
+void shot_bound_bombBall(shot_t * shot)
 {
 	if (shot->gun != GUN_BOMBBALL) {
 		return;
@@ -213,24 +213,24 @@ void boundBombBall(shot_t * shot)
 	shot->py = getRandomCourse(shot->py, +10);
 	shot->isCanKillAuthor = 1;
 
-	if (getNetTypeGame() == NET_GAME_TYPE_SERVER) {
+	if (netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_shot_server(PROTO_SEND_ALL, NULL, shot);
 	}
 }
 
-void transformOnlyLasser(shot_t * shot)
+void shot_transform_lasser(shot_t * shot)
 {
 	space_t *space;
 	int mustRefesh = 0;
 
-	space = getCurrentArena()->spaceShot;
+	space = arena_get_current()->spaceShot;
 
-	if (getObjectFromSpaceWithID(space, shot->id) != NULL) {
+	if (space_get_object_id(space, shot->id) != NULL) {
 		mustRefesh = 1;
 	}
 
 	if (mustRefesh) {
-		delObjectFromSpace(space, shot);
+		space_del(space, shot);
 	}
 
 	switch (shot->position) {
@@ -253,7 +253,7 @@ void transformOnlyLasser(shot_t * shot)
 	}
 
 	if (mustRefesh) {
-		addObjectToSpace(space, shot);
+		space_add(space, shot);
 	}
 }
 
@@ -262,22 +262,22 @@ static void action_moveShot(space_t * space, shot_t * shot, void *p)
 	int new_x, new_y;
 	arena_t *arena;
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 
 	new_x = shot->x + shot->px;
 	new_y = shot->y + shot->py;
 
-	moveObjectInSpace(space, shot, new_x, new_y);
+	space_move_object(space, shot, new_x, new_y);
 
 	if (shot->x + shot->w < 0 || shot->x > arena->w ||
 	    shot->y + shot->h < 0 || shot->y > arena->h) {
-		delObjectFromSpaceWithObject(space, shot, destroyShot);
+		space_del_with_item(space, shot, shot_destroy);
 	}
 }
 
-void eventMoveListShot(arena_t * arena)
+void shot_event_move_list(arena_t * arena)
 {
-	actionSpace(arena->spaceShot, action_moveShot, NULL);
+	space_action(arena->spaceShot, action_moveShot, NULL);
 }
 
 static int isValueInList(list_t * list, int x)
@@ -296,12 +296,12 @@ static int isValueInList(list_t * list, int x)
 static void action_check(space_t * space, shot_t * shot, client_t * client)
 {
 	if (isValueInList(client->listSeesShot, shot->id) == 0) {
-	    addList(client->listSeesShot, newInt(shot->id));
+	    list_add(client->listSeesShot, newInt(shot->id));
 	    proto_send_shot_server(PROTO_SEND_ONE, client, shot);
 	}
 }
 
-void checkShotIsInTuxScreen(arena_t * arena)
+void shot_check_is_tux_screen(arena_t * arena)
 {
 	int screen_x, screen_y;
 	tux_t *thisTux;
@@ -309,11 +309,11 @@ void checkShotIsInTuxScreen(arena_t * arena)
 	list_t *listClient;
 	int i;
 
-	if (getNetTypeGame() != NET_GAME_TYPE_SERVER) {
+	if (netMultiplayer_get_game_type() != NET_GAME_TYPE_SERVER) {
 		return;
 	}
 
-	listClient = getListServerClient();
+	listClient = server_get_list_clients();
 
 	for (i = 0; i < listClient->count; i++) {
 		thisClient = (client_t *) listClient->list[i];
@@ -324,15 +324,15 @@ void checkShotIsInTuxScreen(arena_t * arena)
 			continue;
 		}
 
-		getCenterScreen(&screen_x, &screen_y, thisTux->x, thisTux->y,
+		arena_get_center_screen(&screen_x, &screen_y, thisTux->x, thisTux->y,
 				WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
-		actionSpaceFromLocation(arena->spaceShot, action_check,
+		space_action_from_location(arena->spaceShot, action_check,
 					thisClient, screen_x, screen_y,
 					WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
 		while (thisClient->listSeesShot->count > 100) {
-			delListItem(thisClient->listSeesShot, 0, free);
+			list_del_item(thisClient->listSeesShot, 0, free);
 			del++;
 		}
 
@@ -340,16 +340,16 @@ void checkShotIsInTuxScreen(arena_t * arena)
 	}
 }
 
-void destroyShot(shot_t * p)
+void shot_destroy(shot_t * p)
 {
 	assert(p != NULL);
 
-	delID(p->id);
+	id_del(p->id);
 
 	free(p);
 }
 
-void quitShot()
+void shot_quit()
 {
 	isShotInit = FALSE;
 }

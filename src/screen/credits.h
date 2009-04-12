@@ -10,11 +10,11 @@
 #    define SCREEN_CREDITS_OFFSET_RESTART	-1000
 #    define SCREEN_CREDITS_OFFSET_SPEED	2
 
-extern void startScreenCredits();
-extern void drawScreenCredits();
-extern void eventScreenCredits();
-extern void stopScreenCredits();
-extern void initScreenCredits();
-extern void quitScreenCredits();
+extern void scredits_start();
+extern void scredits_draw();
+extern void scredits_event();
+extern void scredits_stop();
+extern void scredits_init();
+extern void scredits_quit();
 
 #endif

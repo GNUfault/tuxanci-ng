@@ -44,66 +44,66 @@
 
 static void initGame()
 {
-	createHomeDirector();
+	homeDirector_create();
 
-	initSDL();
-	initFont();
-	initLayer();
-	initImageData();
+	interface_init();
+	font_init();
+	layer_init();
+	image_init();
 #ifndef NO_SOUND
-	initAudio();
-	initSound();
-	initMusic();
+	audio_init();
+	sound_init();
+	music_init();
 #endif
-	initScreen();
-	initArenaFile();
-	initTux();
-	initItem();
-	initShot();
-	initPanel();
-	initWorld();
+	screen_init();
+	arenaFile_init();
+	tux_init();
+	item_init();
+	shot_init();
+	panel_init();
+	word_init();
 
-	initScreenMainMenu();
-	initScreenAnalyze();
-	initScreenChoiceArena();
-	initScreenSetting();
-	initScreenSettingKeys();
-	initScreenGameType();
-	initScreenDownArena();
-	initScreenCredits();
-	initScreenTable();
-	initScreenBrowser();
+	mainMenu_init();
+	analyze_init();
+	choiceArena_init();
+	setting_init();
+	settingKey_int();
+	gameType_init();
+	downArena_init();
+	scredits_init();
+	table_init();
+	browser_init();
 }
 
-void quitGame()
+void game_quit()
 {
-	quitSDL();
+	interface_quit();
 
-	quitScreenMainMenu();
-	quitScreenAnalyze();
-	quitScreenSetting();
-	quitScreenSettingKeys();
-	quitScreenGameType();
-	quitScreenDownArena();
-	quitScreenChoiceArena();
-	quitScreenCredits();
-	quitScreenTable();
-	quitScreenBrowser();
+	mainMenu_quit();
+	analyze_quit();
+	setting_quit();
+	settingKey_quit();
+	gameType_quit();
+	downArena_quit();
+	choiceArena_quit();
+	scredits_quit();
+	table_quit();
+	browser_quit();
 
-	quitLayer();
-	quitFont();
-	quitScreen();
-	quitArenaFile();
-	quitItem();
-	quitTux();
-	quitShot();
-	quitPanel();
-	quitWorld();
-	quitImageData();
+	layer_quit();
+	font_quit();
+	screen_quit();
+	arenaFile_quit();
+	item_quiy();
+	tux_quit();
+	shot_quit();
+	panel_quit();
+	word_quit();
+	image_quit();
 #ifndef NO_SOUND
-	quitSound();
-	quitMusic();
-	quitAudio();
+	sound_quit();
+	music_quit();
+	audio_quit();
 #endif
 
 	DEBUG_MSG(_("Quitting TUXANCI...\n"));
@@ -111,12 +111,12 @@ void quitGame()
 	exit(0);
 }
 
-void startGame()
+void game_start()
 {
 	initGame();
 
-	startScreen("mainMenu");
+	screen_start("mainMenu");
 
-	eventSDL();
-	quitGame();
+	interface_event();
+	game_quit();
 }

@@ -19,12 +19,12 @@ static list_t *listScreen;
 
 static bool_t isScreenInit = FALSE;
 
-bool_t isScreenInicialized()
+bool_t screen_is_inicialized()
 {
 	return isScreenInit;
 }
 
-screen_t *newScreen(char *name, void (*fce_start) (), void (*fce_event) (),
+screen_t *screen_new(char *name, void (*fce_start) (), void (*fce_event) (),
 				void (*fce_draw) (), void (*fce_stop) ())
 {
 	screen_t *new;
@@ -45,7 +45,7 @@ screen_t *newScreen(char *name, void (*fce_start) (), void (*fce_event) (),
 	return new;
 }
 
-void destroyScreen(screen_t * p)
+void screen_destroy(screen_t * p)
 {
 	assert(p != NULL);
 
@@ -53,18 +53,18 @@ void destroyScreen(screen_t * p)
 	free(p);
 }
 
-void registerScreen(screen_t * p)
+void screen_register(screen_t * p)
 {
 	assert(p != NULL);
 
 	DEBUG_MSG(_("Registering screen: \"%s\"\n"), p->name);
 
-	addList(listScreen, p);
+	list_add(listScreen, p);
 }
 
-void initScreen()
+void screen_init()
 {
-	listScreen = newList();
+	listScreen = list_new();
 
 	currentScreen = NULL;
 	futureScreen = NULL;
@@ -89,19 +89,19 @@ static screen_t *findScreen(char *name)
 	return NULL;
 }
 
-void setScreen(char *name)
+void screen_set(char *name)
 {
 	futureScreen = findScreen(name);
 	assert(futureScreen != NULL);
 }
 
-void switchScreen()
+void screen_switch()
 {
 	if (futureScreen == NULL) {
 		return;
 	}
 
-	flushLayer();
+	layer_flush();
 
 	if (currentScreen != NULL) {
 		DEBUG_MSG(_("Stopping screen: \"%s\"\n"), currentScreen->name);
@@ -118,19 +118,19 @@ void switchScreen()
 	currentScreen->fce_start();
 }
 
-void startScreen(char *name)
+void screen_start(char *name)
 {
-	setScreen(name);
-	switchScreen();
+	screen_set(name);
+	screen_switch();
 }
 
-char *getScreen()
+char *screen_get()
 {
 	assert(currentScreen != NULL);
 	return currentScreen->name;
 }
 
-void drawScreen()
+void screen_draw()
 {
 	static int count = 0;
 
@@ -144,21 +144,21 @@ void drawScreen()
 #ifdef DEBUG_TIME_DRAW
 		my_time_t prev;
 
-		prev = getMyTimeMicro();
+		prev = timer_get_current_timeMicro();
 #endif
 
 		currentScreen->fce_draw();
 
-		interfaceRefresh();
+		interface_refresh();
 
 #ifdef DEBUG_TIME_DRAW
-		printf("c draw time = %d\n", getMyTimeMicro() - prev);
+		printf("c draw time = %d\n", timer_get_current_timeMicro() - prev);
 #endif
 	}
 }
 
 
-void eventScreen()
+void screen_event()
 {
 	assert(currentScreen != NULL);
 #if 0
@@ -166,23 +166,23 @@ void eventScreen()
 
 	if( last == 0 )
 	{
-  		last = getMyTime();
+  		last = timer_get_current_time();
 	}
 
-	printf("%d\n", getMyTime()-last);
-	last = getMyTime();
+	printf("%d\n", timer_get_current_time()-last);
+	last = timer_get_current_time();
 #endif
 	currentScreen->fce_event();
 
 #ifdef DEBUG_TIME_EVENT
-	printf("c event time = %d\n", getMyTimeMicro() - prev);
+	printf("c event time = %d\n", timer_get_current_timeMicro() - prev);
 #endif
 }
 
-void quitScreen()
+void screen_quit()
 {
 	assert(listScreen != NULL);
 
-	destroyListItem(listScreen, destroyScreen);
+	list_destroy_item(listScreen, screen_destroy);
 	isScreenInit = FALSE;
 }

@@ -28,7 +28,7 @@ static checkfront_t *newCheck(char *s, int type, int id)
 	new = malloc(sizeof(checkfront_t));
 	memset(new, 0, sizeof(checkfront_t));
 	new->msg = strdup(s);
-	new->time = getMyTime();
+	new->time = timer_get_current_time();
 	new->id = id;
 	new->type = type;
 	new->count = 0;
@@ -43,25 +43,25 @@ static void destroyCheck(checkfront_t * p)
 	free(p);
 }
 
-list_t *newCheckFront()
+list_t *checkFront_new()
 {
-	return newList();
+	return list_new();
 }
 
-void addMsgInCheckFront(list_t * list, char *msg, int type, int id)
+void checkFront_add_msg(list_t * list, char *msg, int type, int id)
 {
 	if (type == CHECK_FRONT_TYPE_CHECK)
-		incID(id);
+		id_inc(id);
 
-	addList(list, newCheck(msg, type, id));
+	list_add(list, newCheck(msg, type, id));
 }
 
-void eventMsgInCheckFront(client_t * client)
+void checkFront_event(client_t * client)
 {
 	my_time_t currentTime;
 	int i;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	for (i = 0; i < client->listSendMsg->count; i++) {
 		checkfront_t *this;
@@ -70,19 +70,19 @@ void eventMsgInCheckFront(client_t * client)
 
 		switch (this->type) {
 			case CHECK_FRONT_TYPE_SIMPLE:
-				sendClient(client, this->msg);
-				delListItem(client->listSendMsg, i, destroyCheck);
+				server_send_client(client, this->msg);
+				list_del_item(client->listSendMsg, i, destroyCheck);
 				i--;
 				break;
 			case CHECK_FRONT_TYPE_CHECK:
 				if (this->count == 0 || currentTime - this->time > CHECK_FRONT_SEND_TIME_INTERVAL) {
-					sendClient(client, this->msg);
+					server_send_client(client, this->msg);
 					this->time = currentTime;
 					this->count++;
 				}
 				if (this->count > CHECK_FRONT_MAX_COUNT_SEND) {
-					delID(this->id);
-					delListItem(client->listSendMsg, i, destroyCheck);
+					id_del(this->id);
+					list_del_item(client->listSendMsg, i, destroyCheck);
 					i--;
 				}
 				break;
@@ -93,7 +93,7 @@ void eventMsgInCheckFront(client_t * client)
 	}
 }
 
-void delMsgInCheckFront(list_t * listCheckFront, int id)
+void checkFront_del_msg(list_t * listCheckFront, int id)
 {
 	int i;
 
@@ -103,15 +103,15 @@ void delMsgInCheckFront(list_t * listCheckFront, int id)
 		this = (checkfront_t *) listCheckFront->list[i];
 
 		if (this->id == id) {
-			delID(this->id);
-			delListItem(listCheckFront, i, destroyCheck);
+			id_del(this->id);
+			list_del_item(listCheckFront, i, destroyCheck);
 			return;
 		}
 	}
 }
 
-void destroyCheckFront(list_t * p)
+void checkFront_destroy(list_t * p)
 {
 	assert(p != NULL);
-	destroyListItem(p, destroyCheck);
+	list_destroy_item(p, destroyCheck);
 }

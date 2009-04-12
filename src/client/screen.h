@@ -13,21 +13,21 @@ typedef struct screen_struct {
 	void (*fce_stop) ();
 } screen_t;
 
-extern bool_t isScreenInicialized();
+extern bool_t screen_is_inicialized();
 
-extern screen_t *newScreen(char *name,
+extern screen_t *screen_new(char *name,
 						   void (*fce_start) (), void (*fce_event) (),
 						   void (*fce_draw) (), void (*fce_stop) ());
 
-extern void destroyScreen(screen_t * p);
-extern void registerScreen(screen_t * p);
-extern void initScreen();
-extern void setScreen(char *name);
-extern void switchScreen();
-extern void startScreen(char *name);
-extern char *getScreen();
-extern void drawScreen();
-extern void eventScreen();
-extern void quitScreen();
+extern void screen_destroy(screen_t * p);
+extern void screen_register(screen_t * p);
+extern void screen_init();
+extern void screen_set(char *name);
+extern void screen_switch();
+extern void screen_start(char *name);
+extern char *screen_get();
+extern void screen_draw();
+extern void screen_event();
+extern void screen_quit();
 
 #endif

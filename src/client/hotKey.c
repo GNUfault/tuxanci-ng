@@ -53,13 +53,13 @@ static hotKey_t *findHotkey(SDLKey key)
 	return NULL;
 }
 
-void initHotKey()
+void hotKey_init()
 {
-	listHotKey = newList();
-	lastActive = getMyTime();
+	listHotKey = list_new();
+	lastActive = timer_get_current_time();
 }
 
-void registerHotKey(SDLKey key, void (*handler) ())
+void hotKey_register(SDLKey key, void (*handler) ())
 {
 	hotKey_t *hotkey;
 /*
@@ -68,10 +68,10 @@ void registerHotKey(SDLKey key, void (*handler) ())
 	}
 */
 	hotkey = newHotKey(key, handler);
-	insList(listHotKey, 0, hotkey);
+	list_ins(listHotKey, 0, hotkey);
 }
 
-void unregisterHotKey(SDLKey key)
+void unhotKey_register(SDLKey key)
 {
 	hotKey_t *hotkey;
 	int my_index;
@@ -82,12 +82,12 @@ void unregisterHotKey(SDLKey key)
 		assert(!"This hotkey not register");
 	}
 
-	my_index = searchListItem(listHotKey, hotkey);
+	my_index = list_search(listHotKey, hotkey);
 	assert(my_index != -1);
-	delListItem(listHotKey, my_index, destroyHotKey);
+	list_del_item(listHotKey, my_index, destroyHotKey);
 }
 
-void enableHotKey(SDLKey key)
+void hotKey_enable(SDLKey key)
 {
 	hotKey_t *hotkey;
 
@@ -97,11 +97,11 @@ void enableHotKey(SDLKey key)
 		assert(!"This hotkey not register");
 	}
 
-	lastActive = getMyTime();
+	lastActive = timer_get_current_time();
 	hotkey->active = TRUE;
 }
 
-void disableHotKey(SDLKey key)
+void hotKey_disable(SDLKey key)
 {
 	hotKey_t *hotkey;
 
@@ -111,17 +111,17 @@ void disableHotKey(SDLKey key)
 		assert(!"This hotkey not register");
 	}
 
-	lastActive = getMyTime();
+	lastActive = timer_get_current_time();
 	hotkey->active = FALSE;
 }
 
-void eventHotKey()
+void hotKey_event()
 {
 	my_time_t currentTime;
 	Uint8 *mapa;
 	int i;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if (currentTime - lastActive < HOTKEY_ACTIVE_INTERVAL) {
 		return;
@@ -135,7 +135,7 @@ void eventHotKey()
 		this = (hotKey_t *) listHotKey->list[i];
 
 		if (mapa[this->key] == SDL_PRESSED && this->active == TRUE) {
-			lastActive = getMyTime();
+			lastActive = timer_get_current_time();
 			//printf("hotKey = %d\n", this->key);
 			this->handler();
 
@@ -144,7 +144,7 @@ void eventHotKey()
 	}
 }
 
-void quitHotKey()
+void hotKey_quit()
 {
-	destroyListItem(listHotKey, destroyHotKey);
+	list_destroy_item(listHotKey, destroyHotKey);
 }

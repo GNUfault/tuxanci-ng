@@ -90,7 +90,7 @@ static proto_cmd_client_t *findCmdProto(char *msg)
 
 static int initUdpClient(char *ip, int port)
 {
-	sock_server_udp = connectUdpSocket(ip, port);
+	sock_server_udp = sock_udp_connect(ip, port);
 
 	if (sock_server_udp == NULL) {
 		return -1;
@@ -101,23 +101,23 @@ static int initUdpClient(char *ip, int port)
 	return 0;
 }
 
-int initClient(char *ip, int port)
+int client_init(char *ip, int port)
 {
 	char name[STR_NAME_SIZE];
 	int ret;
 
-	listRecvMsg = newList();
-	lastPing = getMyTime();
-	lastPingServerAlive = getMyTime();
+	listRecvMsg = list_new();
+	lastPing = timer_get_current_time();
+	lastPingServerAlive = timer_get_current_time();
 
 #ifdef SUPPORT_TRAFFIC
-	lastTraffic = getMyTime();
+	lastTraffic = timer_get_current_time();
 	traffic_down = 0;
 	traffic_up = 0;
 #endif
 
-	clientRecvBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
-	clientSendBuffer = newBuffer(CLIENT_BUFFER_LIMIT);
+	clientRecvBuffer = buffer_new(CLIENT_BUFFER_LIMIT);
+	clientSendBuffer = buffer_new(CLIENT_BUFFER_LIMIT);
 
 	ret = initUdpClient(ip, port);
 
@@ -125,7 +125,7 @@ int initClient(char *ip, int port)
 		return -1;
 	}
 
-	getSettingNameRight(name);
+	publicServer_get_settingNameRight(name);
 	proto_send_hello_client(name);
 
 	return 0;
@@ -134,11 +134,11 @@ int initClient(char *ip, int port)
 static void errorWithServer()
 {
 	fprintf(stderr, _("Server did not respond!\n"));
-	setMsgToAnalyze(_("Server is not running or being blocked. I was unable to connect."));
-	setWorldEnd();
+	analyze_set_msg(_("Server is not running or being blocked. I was unable to connect."));
+	word_do_end();
 }
 
-void sendServer(char *msg)
+void client_send(char *msg)
 {
 	int ret;
 
@@ -157,7 +157,7 @@ void sendServer(char *msg)
 #endif
 
 	if (sock_server_udp != NULL) {
-		ret = writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg));
+		ret = sock_udp_write(sock_server_udp, sock_server_udp, msg, strlen(msg));
 	}
 
 	if (ret < 0) {
@@ -166,7 +166,7 @@ void sendServer(char *msg)
 	}
 }
 
-static int eventServerSelect()
+static int server_eventSelect()
 {
 	char buffer[STR_PROTO_SIZE];
 	int ret;
@@ -175,7 +175,7 @@ static int eventServerSelect()
 	ret = -1;
 
 	if (sock_server_udp != NULL) {
-		ret = readUdpSocket(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE - 1);
+		ret = sock_udp_read(sock_server_udp, sock_server_udp, buffer, STR_PROTO_SIZE - 1);
 	}
 
 	if (ret < 0) {
@@ -187,17 +187,17 @@ static int eventServerSelect()
 	traffic_down += ret;
 #endif
 
-	addList(listRecvMsg, strdup(buffer));
+	list_add(listRecvMsg, strdup(buffer));
 
 #if 0
-	if (addBuffer(clientRecvBuffer, buffer, ret) < 0) {
+	if (buffer_append(clientRecvBuffer, buffer, ret) < 0) {
 		errorWithServer();
 		return ret;
 	}
 
-	while (getBufferLine(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0) {
+	while (buffer_get_line(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0) {
 		if (strlen(buffer) > 0) {
-			addList(listRecvMsg, strdup(buffer));
+			list_add(listRecvMsg, strdup(buffer));
 		}
 	}
 #endif
@@ -205,7 +205,7 @@ static int eventServerSelect()
 	return ret;
 }
 
-static void eventClientWorkRecvList()
+static void client_eventWorkRecvList()
 {
 	proto_cmd_client_t *protoCmd;
 	char *line;
@@ -226,23 +226,23 @@ static void eventClientWorkRecvList()
 #endif
 		if (protoCmd != NULL) {
 			protoCmd->fce_proto(line);
-			lastPingServerAlive = getMyTime();
+			lastPingServerAlive = timer_get_current_time();
 		}
 	}
 
-	destroyListItem(listRecvMsg, free);
-	listRecvMsg = newList();
+	list_destroy_item(listRecvMsg, free);
+	listRecvMsg = list_new();
 }
 
 static void eventPingServer()
 {
 	my_time_t currentTime;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if (currentTime - lastPing > CLIENT_TIMEOUT) {
 		proto_send_ping_client();
-		lastPing = getMyTime();
+		lastPing = timer_get_current_time();
 	}
 }
 
@@ -250,7 +250,7 @@ static bool_t isServerAlive()
 {
 	my_time_t currentTime;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if (currentTime - lastPingServerAlive > SERVER_TIMEOUT_ALIVE) {
 		return FALSE;
@@ -294,7 +294,7 @@ static void selectClientSocket()
 		select(max_fd + 1, &readfds, (fd_set *) NULL, (fd_set *) NULL, &tv);
 
 		if (FD_ISSET(sock, &readfds)) {
-			if (eventServerSelect() > 0) {
+			if (server_eventSelect() > 0) {
 				isNext = TRUE;
 			}
 		}
@@ -308,7 +308,7 @@ static void eventTraffic()
 {
 	my_time_t currentTime;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if (currentTime - lastTraffic > 5000) {
 		lastTraffic = currentTime;
@@ -322,7 +322,7 @@ static void eventTraffic()
 
 #endif
 
-void eventClient()
+void client_event()
 {
 #ifdef SUPPORT_TRAFFIC
 	eventTraffic();
@@ -330,27 +330,27 @@ void eventClient()
 
 	eventPingServer();
 	selectClientSocket();
-	eventClientWorkRecvList();
+	client_eventWorkRecvList();
 
 }
 
 static void quitUdpClient()
 {
 	assert(sock_server_udp != NULL);
-	closeUdpSocket(sock_server_udp);
+	sock_udp_close(sock_server_udp);
 
 	DEBUG_MSG(_("Closing UDP connection.\n"));
 }
 
-void quitClient()
+void client_quit()
 {
 	proto_send_end_client();
 
 	assert(listRecvMsg != NULL);
 
-	destroyListItem(listRecvMsg, free);
-	destroyBuffer(clientRecvBuffer);
-	destroyBuffer(clientSendBuffer);
+	list_destroy_item(listRecvMsg, free);
+	buffer_destroy(clientRecvBuffer);
+	buffer_destroy(clientSendBuffer);
 
 	if (sock_server_udp != NULL) {
 		quitUdpClient();

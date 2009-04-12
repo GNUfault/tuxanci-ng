@@ -11,9 +11,9 @@ typedef struct widget_image {
 	image_t *image;
 } widget_image_t;
 
-extern widget_t *newWidgetImage(int x, int y, image_t * image);
-extern void drawWidgetImage(widget_t * p);
-extern void eventWidgetImage(widget_t * p);
-extern void destroyWidgetImage(widget_t * p);
+extern widget_t *wid_image_new(int x, int y, image_t * image);
+extern void wid_image_draw(widget_t * p);
+extern void wid_image_event(widget_t * p);
+extern void wid_image_destroy(widget_t * p);
 
 #endif

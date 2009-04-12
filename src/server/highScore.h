@@ -5,9 +5,9 @@
 
 #    define HIGHSCORE_MAX_PLAYERS	100
 
-extern void initHighScore(char *file);
-extern int addPlayerInHighScore(char *name, int score);
-extern char *getTableItem(int index);
-extern void quitHighScore();
+extern void highScore_init(char *file);
+extern int table_add(char *name, int score);
+extern char *highScore_get_table(int index);
+extern void highScore_quit();
 
 #endif

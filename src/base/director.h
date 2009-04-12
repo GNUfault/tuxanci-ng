@@ -10,6 +10,6 @@ typedef struct director_struct {
 	list_t *list;
 } director_t;
 
-extern director_t *loadDirector(char *s);
-extern void destroyDirector(director_t * p);
+extern director_t *director_load(char *s);
+extern void director_destroy(director_t * p);
 #endif

@@ -14,12 +14,12 @@
 #    define CHAT_LOCATION_X		(WINDOW_SIZE_X/2 - CHAT_SIZE_X/2)
 #    define CHAT_LOCATION_Y		(WINDOW_SIZE_Y/2 - CHAT_SIZE_Y/2)
 
-extern void initChat();
-extern void drawChat();
-extern void eventChat();
-extern void addToChat(char *s);
-extern bool_t isChatActive();
-extern bool_t isRecivedNewMsg();
-extern void quitChat();
+extern void chat_init();
+extern void chat_draw();
+extern void chat_event();
+extern void chat_add(char *s);
+extern bool_t chat_is_active();
+extern bool_t chat_is_recived_new_msg();
+extern void chat_quit();
 
 #endif

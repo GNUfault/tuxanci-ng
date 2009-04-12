@@ -24,16 +24,16 @@
 
 static int netGameType;
 
-int getNetTypeGame()
+int netMultiplayer_get_game_type()
 {
 	return netGameType;
 }
 
-int initNetMuliplayerForGameServer(char *ip4, int port4, char *ip6, int port6)
+int netMultiplayer_init_for_game_server(char *ip4, int port4, char *ip6, int port6)
 {
 	int ret;
 
-	ret = initServer(ip4, port4, ip6, port6);
+	ret = server_init(ip4, port4, ip6, port6);
 
 	if (ret > 0) {
 		netGameType = NET_GAME_TYPE_SERVER;
@@ -42,7 +42,7 @@ int initNetMuliplayerForGameServer(char *ip4, int port4, char *ip6, int port6)
 	return ret;
 }
 
-int initNetMuliplayer(int type, char *ip, int port, int proto)
+int netMultiplayer_init(int type, char *ip, int port, int proto)
 {
 	netGameType = type;
 
@@ -53,14 +53,14 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 	case NET_GAME_TYPE_SERVER:
 		switch (proto) {
 		case PROTO_UDPv4:
-			if (initServer(ip, port, NULL, 0) != 1) {
+			if (server_init(ip, port, NULL, 0) != 1) {
 				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 				netGameType = NET_GAME_TYPE_NONE;
 				return -1;
 			}
 			break;
 		case PROTO_UDPv6:
-			if (initServer(NULL, 0, ip, port) != 1) {
+			if (server_init(NULL, 0, ip, port) != 1) {
 				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
 				netGameType = NET_GAME_TYPE_NONE;
 				return -1;
@@ -71,7 +71,7 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 
 #ifndef PUBLIC_SERVER
 	case NET_GAME_TYPE_CLIENT:
-		if (initClient(ip, port) != 0) {
+		if (client_init(ip, port) != 0) {
 			fprintf(stderr, _("Unable to inicialize network game as client!\n"));
 			netGameType = NET_GAME_TYPE_NONE;
 			return -1;
@@ -86,19 +86,19 @@ int initNetMuliplayer(int type, char *ip, int port, int proto)
 	return 0;
 }
 
-void eventNetMultiplayer()
+void netMultiplayer_event()
 {
 	switch (netGameType) {
 	case NET_GAME_TYPE_NONE:
 		break;
 
 	case NET_GAME_TYPE_SERVER:
-		eventServer();
+		server_event();
 		break;
 
 #ifndef PUBLIC_SERVER
 	case NET_GAME_TYPE_CLIENT:
-		eventClient();
+		client_event();
 		break;
 #endif
 	default:
@@ -107,19 +107,19 @@ void eventNetMultiplayer()
 	}
 }
 
-void quitNetMultiplayer()
+void netMultiplayer_quit()
 {
 	switch (netGameType) {
 	case NET_GAME_TYPE_NONE:
 		break;
 
 	case NET_GAME_TYPE_SERVER:
-		quitServer();
+		server_quit();
 		break;
 
 #ifndef PUBLIC_SERVER
 	case NET_GAME_TYPE_CLIENT:
-		quitClient();
+		client_quit();
 		break;
 #endif
 	default:

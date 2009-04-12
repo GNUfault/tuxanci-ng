@@ -8,12 +8,12 @@
 
 #    define SERVER_TCP_BUFFER_LIMIT	4096
 
-extern client_t *newTcpClient(sock_tcp_t * sock_tcp);
-extern void destroyTcpClient(client_t * p);
-extern int initTcpServer(char *ip4, int port4, char *ip6, int port6);
-extern void setServerTcpSelect();
-extern int selectServerTcpSocket();
-extern void sendTcpClientBuffer(client_t * p);
-extern void quitTcpServer();
+extern client_t *serverTcp_new_client(sock_tcp_t * sock_tcp);
+extern void serverTcp_destroy_client(client_t * p);
+extern int serverTcp_init(char *ip4, int port4, char *ip6, int port6);
+extern void serverTcp_set_select();
+extern int serverTcp_select_sock();
+extern void serverTcp_send_client_buffer(client_t * p);
+extern void serverTcp_quit();
 
 #endif

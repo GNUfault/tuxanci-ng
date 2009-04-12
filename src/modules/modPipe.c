@@ -165,7 +165,7 @@ static void cmd_teleport(char *line)
 				  atoi(str_w), atoi(str_h),
 				  atoi(str_layer), atoi(str_id), atoi(str_id_out),
 				  atoi(str_position),
-				  export_fce->fce_getImage(IMAGE_GROUP_USER, str_image));
+				  export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
 #endif
 
 #ifdef PUBLIC_SERVER
@@ -177,19 +177,19 @@ static void cmd_teleport(char *line)
 
 	if (spacePipe == NULL) {
 		spacePipe =
-			newSpace(export_fce->fce_getCurrentArena()->w,
-					 export_fce->fce_getCurrentArena()->h, 320, 240,
+			space_new(export_fce->fce_arena_get_current()->w,
+					 export_fce->fce_arena_get_current()->h, 320, 240,
 					 getStatusPipe, setStatusPipe);
 	}
 
-	addObjectToSpace(spacePipe, new);
+	space_add(spacePipe, new);
 }
 
 static void moveShotFromPipe(shot_t * shot, pipe_t * pipe)
 {
 	pipe_t *distPipe;
 
-	distPipe = getObjectFromSpaceWithID(spacePipe, pipe->id_out);
+	distPipe = space_get_object_id(spacePipe, pipe->id_out);
 
 	if (distPipe == NULL) {
 		fprintf(stderr, "Pipe ID for pipe \"%d\" was not found\n", pipe->id);
@@ -204,13 +204,13 @@ int init(export_fce_t * p)
 {
 	export_fce = p;
 
-	listPipe = newList();
+	listPipe = list_new();
 
-	if (export_fce->fce_loadDepModule("libmodMove") != 0) {
+	if (export_fce->fce_module_load_dep("libmodMove") != 0) {
 		return -1;
 	}
 
-	if ((fce_move_shot = export_fce->fce_getShareFce("move_shot")) == NULL) {
+	if ((fce_move_shot = export_fce->fce_shareFunction_get("move_shot")) == NULL) {
 		return -1;
 	}
 
@@ -230,8 +230,8 @@ int draw(int x, int y, int w, int h)
 		return 0;
 	}
 
-	actionSpaceFromLocation(spacePipe, action_drawpipe, NULL, x, y, w, h);
-	//printSpace(spacePipe);
+	space_action_from_location(spacePipe, action_drawpipe, NULL, x, y, w, h);
+	//space_print(spacePipe);
 
 	return 0;
 }
@@ -267,9 +267,9 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 	arena_t *arena;
 	tux_t *author;
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
-	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+	author = space_get_object_id(arena->spaceTux, shot->author_id);
 
 	if (author != NULL &&
 		author->bonus == BONUS_GHOST && author->bonus_time > 0) {
@@ -277,14 +277,14 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 	}
 
 	if (negPosition(shot->position) == pipe->position &&
-		export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
+		export_fce->fce_netMultiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		moveShotFromPipe(shot, pipe);
 	} else {
 		if (shot->gun == GUN_BOMBBALL &&
-			export_fce->fce_getNetTypeGame() != NET_GAME_TYPE_CLIENT) {
-			export_fce->fce_boundBombBall(shot);
+			export_fce->fce_netMultiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
+			export_fce->fce_shot_bound_bombBall(shot);
 		} else {
-			//delObjectFromSpaceWithObject(arena->spaceShot, shot, export_fce->fce_destroyShot);
+			//space_del_with_item(arena->spaceShot, shot, export_fce->fce_shot_destroy);
 			shot->del = TRUE;
 		}
 	}
@@ -296,9 +296,9 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 	arena_t *arena;
 	tux_t *author;
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
-	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+	author = space_get_object_id(arena->spaceTux, shot->author_id);
 
 	if (author != NULL &&
 		author->bonus == BONUS_GHOST && author->bonus_time > 0) {
@@ -309,7 +309,7 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 		moveShotFromPipe(shot, pipe);
 	} else {
 		if (shot->gun == GUN_BOMBBALL) {
-			export_fce->fce_boundBombBall(shot);
+			export_fce->fce_shot_bound_bombBall(shot);
 		} else {
 			shot->del = TRUE;
 		}
@@ -319,15 +319,15 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 static void
 action_eventshot(space_t * space, shot_t * shot, space_t * p_spacePipe)
 {
-	actionSpaceFromLocation(p_spacePipe, action_eventpipe, shot, shot->x,
+	space_action_from_location(p_spacePipe, action_eventpipe, shot, shot->x,
 							shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {
-		if (getNetTypeGame() == NET_GAME_TYPE_SERVER) {
+		if (netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 		}
 
-		delObjectFromSpaceWithObject(space, shot, export_fce->fce_destroyShot);
+		space_del_with_item(space, shot, export_fce->fce_shot_destroy);
 	}
 }
 
@@ -338,11 +338,11 @@ int event()
 	}
 
 	// na skusku
-	if (export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT) {
+	if (export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return 0;
 	}
 
-	actionSpace(export_fce->fce_getCurrentArena()->spaceShot,
+	space_action(export_fce->fce_arena_get_current()->spaceShot,
 				action_eventshot, spacePipe);
 
 	return 0;
@@ -354,7 +354,7 @@ int isConflict(int x, int y, int w, int h)
 		return 0;
 	}
 
-	return isConflictWithObjectFromSpace(spacePipe, x, y, w, h);
+	return space_is_conflict_with_object(spacePipe, x, y, w, h);
 }
 
 void cmdArena(char *line)
@@ -370,8 +370,8 @@ void recvMsg(char *msg)
 
 int destroy()
 {
-	destroySpaceWithObject(spacePipe, destroyPipe);
-	destroyList(listPipe);
+	space_destroy_with_item(spacePipe, destroyPipe);
+	list_destroy(listPipe);
 
 	return 0;
 }

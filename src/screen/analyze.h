@@ -10,15 +10,15 @@ typedef struct analyze_struct {
 	int score;
 } analyze_t;
 
-extern void startScreenAnalyze();
-extern void drawScreenAnalyze();
-extern void eventScreenAnalyze();
-extern void stopScreenAnalyze();
-extern void restartAnalyze();
-extern void addAnalyze(char *name, int score);
-extern void setMsgToAnalyze(char *msg);
-extern void endAnalyze();
-extern void initScreenAnalyze();
-extern void quitScreenAnalyze();
+extern void analyze_start();
+extern void analyze_draw();
+extern void analyze_event();
+extern void analyze_stop();
+extern void analyze_restart();
+extern void analyze_add(char *name, int score);
+extern void analyze_set_msg(char *msg);
+extern void analyze_end();
+extern void analyze_init();
+extern void analyze_quit();
 
 #endif

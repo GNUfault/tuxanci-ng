@@ -148,7 +148,7 @@ static void cmd_teleport(char *line)
 	new = newTeleport(atoi(str_x), atoi(str_y),
 					  atoi(str_w), atoi(str_h),
 					  atoi(str_layer),
-					  export_fce->fce_getImage(IMAGE_GROUP_USER, str_image));
+					  export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
 #endif
 
 #ifdef PUBLIC_SERVER
@@ -158,12 +158,12 @@ static void cmd_teleport(char *line)
 
 	if (spaceTeleport == NULL) {
 		spaceTeleport =
-			newSpace(export_fce->fce_getCurrentArena()->w,
-					 export_fce->fce_getCurrentArena()->h, 320, 240,
+			space_new(export_fce->fce_arena_get_current()->w,
+					 export_fce->fce_arena_get_current()->h, 320, 240,
 					 getStatusTeleport, setStatusTeleport);
 	}
 
-	addObjectToSpace(spaceTeleport, new);
+	space_add(spaceTeleport, new);
 }
 
 static teleport_t *getRandomTeleportBut(space_t * space, teleport_t * teleport)
@@ -171,10 +171,10 @@ static teleport_t *getRandomTeleportBut(space_t * space, teleport_t * teleport)
 	int my_index;
 
 	do {
-		my_index = random() % getSpaceCount(space);
-	} while (getItemFromSpace(space, my_index) == teleport);
+		my_index = random() % space_get_count(space);
+	} while (space_get_item(space, my_index) == teleport);
 
-	return (teleport_t *) getItemFromSpace(space, my_index);
+	return (teleport_t *) space_get_item(space, my_index);
 }
 
 static int getRandomPosition()
@@ -204,7 +204,7 @@ static void teleportTux(tux_t * tux, teleport_t * teleport)
 	teleport_t *distTeleport;
 
 	if (tux->bonus == BONUS_GHOST ||
-		export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT) {
+		export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
 	}
 
@@ -230,17 +230,17 @@ int init(export_fce_t * p)
 {
 	export_fce = p;
 
-	listTeleport = newList();
+	listTeleport = list_new();
 
-	if (export_fce->fce_loadDepModule("libmodMove") != 0) {
+	if (export_fce->fce_module_load_dep("libmodMove") != 0) {
 		return -1;
 	}
 
-	if ((fce_move_tux = export_fce->fce_getShareFce("move_tux")) == NULL) {
+	if ((fce_move_tux = export_fce->fce_shareFunction_get("move_tux")) == NULL) {
 		return -1;
 	}
 
-	if ((fce_move_shot = export_fce->fce_getShareFce("move_shot")) == NULL) {
+	if ((fce_move_shot = export_fce->fce_shareFunction_get("move_shot")) == NULL) {
 		return -1;
 	}
 
@@ -261,7 +261,7 @@ int draw(int x, int y, int w, int h)
 		return 0;
 	}
 
-	actionSpaceFromLocation(spaceTeleport, action_drawteleport, NULL, x, y, w,
+	space_action_from_location(spaceTeleport, action_drawteleport, NULL, x, y, w,
 							h);
 
 	return 0;
@@ -274,9 +274,9 @@ action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
 	arena_t *arena;
 	tux_t *author;
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
-	author = getObjectFromSpaceWithID(arena->spaceTux, shot->author_id);
+	author = space_get_object_id(arena->spaceTux, shot->author_id);
 
 	if (author != NULL &&
 		author->bonus == BONUS_GHOST && author->bonus_time > 0) {
@@ -289,7 +289,7 @@ action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
 static void
 action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceTeleport)
 {
-	actionSpaceFromLocation(p_spaceTeleport, action_eventteleportshot, shot,
+	space_action_from_location(p_spaceTeleport, action_eventteleportshot, shot,
 							shot->x, shot->y, shot->w, shot->h);
 }
 
@@ -304,9 +304,9 @@ action_eventtux(space_t * space, tux_t * tux, space_t * p_spaceTeleport)
 {
 	int x, y, w, h;
 
-	export_fce->fce_getTuxProportion(tux, &x, &y, &w, &h);
+	export_fce->fce_tux_get_proportion(tux, &x, &y, &w, &h);
 
-	actionSpaceFromLocation(p_spaceTeleport, action_eventteleporttux, tux, x, y,
+	space_action_from_location(p_spaceTeleport, action_eventteleporttux, tux, x, y,
 							w, h);
 }
 
@@ -316,13 +316,13 @@ int event()
 		return 0;
 	}
 
-	if (export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT) {
+	if (export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return 0;
 	}
 
-	actionSpace(export_fce->fce_getCurrentArena()->spaceShot,
+	space_action(export_fce->fce_arena_get_current()->spaceShot,
 				action_eventshot, spaceTeleport);
-	actionSpace(export_fce->fce_getCurrentArena()->spaceTux, action_eventtux,
+	space_action(export_fce->fce_arena_get_current()->spaceTux, action_eventtux,
 				spaceTeleport);
 
 	return 0;
@@ -349,7 +349,7 @@ void recvMsg(char *msg)
 
 int destroy()
 {
-	destroySpaceWithObject(spaceTeleport, destroyTeleport);
-	destroyList(listTeleport);
+	space_destroy_with_item(spaceTeleport, destroyTeleport);
+	list_destroy(listTeleport);
 	return 0;
 }

@@ -7,7 +7,7 @@
 #include "widget.h"
 #include "widget_label.h"
 
-widget_t *newWidget(int type, int x, int y, int w, int h, void *private_data)
+widget_t *widget_new(int type, int x, int y, int w, int h, void *private_data)
 {
 	widget_t *new;
 
@@ -22,13 +22,13 @@ widget_t *newWidget(int type, int x, int y, int w, int h, void *private_data)
 	return new;
 }
 
-void widgetSetLocation(widget_t * p, int x, int y)
+void widget_set_location(widget_t * p, int x, int y)
 {
 	p->x = x;
 	p->y = y;
 }
 
-void widgetGetLocation(widget_t * p, int *x, int *y)
+void widget_get_location(widget_t * p, int *x, int *y)
 {
 	if (x != NULL)
 		*x = p->x;
@@ -37,13 +37,13 @@ void widgetGetLocation(widget_t * p, int *x, int *y)
 		*y = p->y;
 }
 
-void widgetSetSize(widget_t * p, int w, int h)
+void widget_get_size(widget_t * p, int w, int h)
 {
 	p->w = w;
 	p->h = h;
 }
 
-void widgetGetSize(widget_t * p, int *w, int *h)
+void widget_set_size(widget_t * p, int *w, int *h)
 {
 	if (w != NULL)
 		*w = p->w;
@@ -52,7 +52,7 @@ void widgetGetSize(widget_t * p, int *w, int *h)
 		*h = p->h;
 }
 
-void destroyWidget(widget_t * p)
+void widget_destroy(widget_t * p)
 {
 	free(p);
 }

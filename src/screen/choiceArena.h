@@ -9,11 +9,11 @@
 #    define SCREENSHOT_ARENA_WIDTH		160
 #    define SCREENSHOT_ARENA_HEIGHT		107
 
-extern void drawScreenChoiceArena();
-extern void eventScreenChoiceArena();
-extern arenaFile_t *getChoiceArena();
-extern void setChoiceArena(arenaFile_t * arenaFile);
-extern void initScreenChoiceArena();
-extern void quitScreenChoiceArena();
+extern void choiceArena_draw();
+extern void choiceArena_event();
+extern arenaFile_t *choiceArena_get();
+extern void choiceArena_set(arenaFile_t * arenaFile);
+extern void choiceArena_init();
+extern void choiceArena_quit();
 
 #endif

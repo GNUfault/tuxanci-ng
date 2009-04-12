@@ -29,7 +29,7 @@ static void move_tux(tux_t * tux, int x, int y, int w, int h)
 	int dist_x = 0, dist_y = 0;	// no warnning
 
 	if (tux->bonus == BONUS_GHOST ||
-		export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_CLIENT)
+		export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_CLIENT)
 		return;
 	switch (tux->position) {
 	case TUX_UP:
@@ -53,14 +53,14 @@ static void move_tux(tux_t * tux, int x, int y, int w, int h)
 		break;
 	}
 	if (export_fce->
-		fce_isFreeSpace(export_fce->fce_getCurrentArena(), dist_x, dist_y,
+		fce_arena__is_free_space(export_fce->fce_arena_get_current(), dist_x, dist_y,
 						TUX_WIDTH, TUX_HEIGHT)) {
-		moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceTux, tux,
+		space_move_object(export_fce->fce_arena_get_current()->spaceTux, tux,
 						  dist_x, dist_y);
 #ifndef PUBLIC_SERVER
-		//playSound("teleport", SOUND_GROUP_BASE);
+		//sound_play("teleport", SOUND_GROUP_BASE);
 #endif
-		if (export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER) {
+		if (export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			char msg[STR_PROTO_SIZE];
 			sprintf(msg, "movetux %d %d %d", tux->id, dist_x, dist_y);
 			if (tux->bonus == BONUS_HIDDEN)
@@ -114,7 +114,7 @@ static void transformShot(shot_t * shot, int position)
 	shot->isCanKillAuthor = TRUE;
 
 	if (shot->gun == GUN_LASSER)
-		export_fce->fce_transformOnlyLasser(shot);
+		export_fce->fce_shot_transform_lasser(shot);
 }
 
 static void
@@ -157,9 +157,9 @@ move_shot(shot_t * shot, int position, int src_x, int src_y,
 		break;
 	}
 
-	moveObjectInSpace(export_fce->fce_getCurrentArena()->spaceShot, shot,
+	space_move_object(export_fce->fce_arena_get_current()->spaceShot, shot,
 					  new_x, new_y);
-	if (export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER) {
+	if (export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		char msg[STR_PROTO_SIZE];
 
 		sprintf(msg, "moveshot %d %d %d %d %d %d",
@@ -172,8 +172,8 @@ move_shot(shot_t * shot, int position, int src_x, int src_y,
 int init(export_fce_t * p)
 {
 	export_fce = p;
-	export_fce->fce_addToShareFce("move_tux", (void *) move_tux);
-	export_fce->fce_addToShareFce("move_shot", (void *) move_shot);
+	export_fce->fce_shareFunction_add("move_tux", (void *) move_tux);
+	export_fce->fce_shareFunction_add("move_shot", (void *) move_shot);
 
 	return 0;
 }
@@ -188,11 +188,11 @@ static void proto_movetux(char *msg)
 	assert(msg != NULL);
 
 	sscanf(msg, "%s %d %d %d", cmd, &id, &x, &y);
-	space = export_fce->fce_getCurrentArena()->spaceTux;
-	tux = getObjectFromSpaceWithID(space, id);
+	space = export_fce->fce_arena_get_current()->spaceTux;
+	tux = space_get_object_id(space, id);
 
 	if (tux != NULL)
-		moveObjectInSpace(space, tux, x, y);
+		space_move_object(space, tux, x, y);
 }
 
 static void proto_moveshot(char *msg)
@@ -207,19 +207,19 @@ static void proto_moveshot(char *msg)
 	sscanf(msg, "%s %d %d %d %d %d %d",
 		   cmd, &shot_id, &x, &y, &px, &py, &position);
 
-	space = export_fce->fce_getCurrentArena()->spaceShot;
+	space = export_fce->fce_arena_get_current()->spaceShot;
 
-	if ((shot = getObjectFromSpaceWithID(space, shot_id)) == NULL)
+	if ((shot = space_get_object_id(space, shot_id)) == NULL)
 		return;
 
-	moveObjectInSpace(space, shot, x, y);
+	space_move_object(space, shot, x, y);
 	shot->isCanKillAuthor = 1;
 	shot->position = position;
 	shot->px = px;
 	shot->py = py;
 
 	if (shot->gun == GUN_LASSER)
-		export_fce->fce_transformOnlyLasser(shot);
+		export_fce->fce_shot_transform_lasser(shot);
 }
 
 #ifndef PUBLIC_SERVER
@@ -247,7 +247,7 @@ void cmdArena(char *line)
 
 void recvMsg(char *msg)
 {
-	if (export_fce->fce_getNetTypeGame() == NET_GAME_TYPE_SERVER)
+	if (export_fce->fce_netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
 		return;
 
 	if (strncmp(msg, "movetux", 7) == 0)

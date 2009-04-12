@@ -15,10 +15,10 @@
 #    define RADAR_TYPE_TUX	1
 #    define RADAR_TYPE_ITEM	2
 
-extern void initRadar();
-extern void addToRadar(int id, int x, int y, int type);
-extern void delFromRadar(int id);
-extern void drawRadar(arena_t * arena);
-extern void quitRadar();
+extern void radar_init();
+extern void radar_add(int id, int x, int y, int type);
+extern void radar_del(int id);
+extern void radar_draw(arena_t * arena);
+extern void radar_quit();
 
 #endif

@@ -7,7 +7,7 @@
 #include "main.h"
 #include "list.h"
 
-list_t *newList()
+list_t *list_new()
 {
 	list_t *new;
 
@@ -17,7 +17,7 @@ list_t *newList()
 	return new;
 }
 
-list_t *cloneList(list_t * p)
+list_t *list_clone(list_t * p)
 {
 	list_t *new;
 
@@ -32,7 +32,7 @@ list_t *cloneList(list_t * p)
 	return new;
 }
 
-list_t *cloneListItem(list_t * p, void *f)
+list_t *list_clone_item(list_t * p, void *f)
 {
 	list_t *new;
 	void *(*fce) (void *);
@@ -40,7 +40,7 @@ list_t *cloneListItem(list_t * p, void *f)
 
 	assert(p != NULL);
 	assert(f != NULL);
-	new = cloneList(p);
+	new = list_clone(p);
 	fce = f;
 
 	for (i = 0; i < p->count; i++)
@@ -49,7 +49,7 @@ list_t *cloneListItem(list_t * p, void *f)
 	return new;
 }
 
-void addList(list_t * p, void *item)
+void list_add(list_t * p, void *item)
 {
 	assert(p != NULL);
 
@@ -84,23 +84,23 @@ void addList(list_t * p, void *item)
 	}
 }
 
-void insList(list_t * p, int n, void *item)
+void list_ins(list_t * p, int n, void *item)
 {
 	assert(p != NULL);
-	addList(p, NULL);			// :)
+	list_add(p, NULL);			// :)
 	assert(n >= 0 || n < p->count);
 	memmove(p->list + n + 1, p->list + n, ((p->count - 1) - n) * sizeof(void *));
 	p->list[n] = item;
 }
 
-void *getList(list_t * p, int n)
+void *list_get(list_t * p, int n)
 {
 	assert(p != NULL);
 	assert(n >= 0 || n < p->count);
 	return p->list[n];
 }
 
-int searchListItem(list_t * p, void *n)
+int list_search(list_t * p, void *n)
 {
 	int i;
 
@@ -113,7 +113,7 @@ int searchListItem(list_t * p, void *n)
 	return -1;
 }
 
-void delList(list_t * p, int n)
+void list_del(list_t * p, int n)
 {
 	assert(p != NULL);
 	assert(n >= 0 || n < p->count);
@@ -136,7 +136,7 @@ void delList(list_t * p, int n)
 	}
 }
 
-void delListItem(list_t * p, int n, void *f)
+void list_del_item(list_t * p, int n, void *f)
 {
 	int (*fce) (void *);
 
@@ -147,15 +147,15 @@ void delListItem(list_t * p, int n, void *f)
 	if (fce != NULL)
 		fce(p->list[n]);
 
-	delList(p, n);
+	list_del(p, n);
 }
 
-void listDoEmpty(list_t * p)
+void list_do_empty(list_t * p)
 {
 	p->count = 0;
 }
 
-void destroyList(list_t * p)
+void list_destroy(list_t * p)
 {
 	assert(p != NULL);
 
@@ -165,7 +165,7 @@ void destroyList(list_t * p)
 	free(p);
 }
 
-void destroyListItem(list_t * p, void *f)
+void list_destroy_item(list_t * p, void *f)
 {
 	void (*fce) (void *);
 	int i;
@@ -178,5 +178,5 @@ void destroyListItem(list_t * p, void *f)
 	for (i = 0; i < p->count; i++)
 		fce(p->list[i]);
 
-	destroyList(p);
+	list_destroy(p);
 }

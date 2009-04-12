@@ -14,7 +14,7 @@ zone_t *newZone()
 	zone_t *new;
 
 	new = malloc(sizeof(zone_t));
-	new->list = newList();
+	new->list = list_new();
 
 	return new;
 }
@@ -23,17 +23,17 @@ void destroyZone(zone_t * p)
 {
 	assert(p != NULL);
 
-	destroyList(p->list);
+	list_destroy(p->list);
 	free(p);
 }
 
-static int my_conflictSpace(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
+static int my_arena_conflict_space(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
 				 int h2)
 {
 	return (x1 < x2 + w2 && x2 < x1 + w1 && y1 < y2 + h2 && y2 < y1 + h1);
 }
 
-space_t *newSpace(int w, int h, int segW, int segH,
+space_t *space_new(int w, int h, int segW, int segH,
 		   void (*getStatus) (void *p, int *id, int *x, int *y, int *w, int *h),
 		   void (*setStatus) (void *p, int x, int y, int w, int h))
 {
@@ -49,7 +49,7 @@ space_t *newSpace(int w, int h, int segW, int segH,
 	new->segH = segH;
 	new->getStatus = getStatus;
 	new->setStatus = setStatus;
-	new->listIndex = newIndex();
+	new->listIndex = index_new();
 
 	new->zone = malloc(new->w * sizeof(list_t **));
 
@@ -75,12 +75,12 @@ static void getSegment(space_t * p, int x, int y, int w, int h,
 	*segH = ((y + h) / p->segH + 1) - *segY;
 }
 
-int getSpaceCount(space_t * p)
+int space_get_count(space_t * p)
 {
 	return p->listIndex->count;
 }
 
-void *getItemFromSpace(space_t * p, int offset)
+void *space_get_item(space_t * p, int offset)
 {
 	index_item_t *this;
 
@@ -88,7 +88,7 @@ void *getItemFromSpace(space_t * p, int offset)
 	return this->data;
 }
 
-void addObjectToSpace(space_t * p, void *item)
+void space_add(space_t * p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
@@ -103,14 +103,14 @@ void addObjectToSpace(space_t * p, void *item)
 				continue;
 			}
 
-			addList(p->zone[j][i]->list, item);
+			list_add(p->zone[j][i]->list, item);
 		}
 	}
 
-	addToIndex(p->listIndex, id, item);
+	index_add(p->listIndex, id, item);
 }
 
-void getObjectFromSpace(space_t * p, int x, int y, int w, int h, list_t * list)
+void space_get_object(space_t * p, int x, int y, int w, int h, list_t * list)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -130,21 +130,21 @@ void getObjectFromSpace(space_t * p, int x, int y, int w, int h, list_t * list)
 				this = p->zone[j][i]->list->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
-				if (my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h) &&
-				    searchListItem(list, this) == -1) {
-					addList(list, this);
+				if (my_arena_conflict_space(x, y, w, h, this_x, this_y, this_w, this_h) &&
+				    list_search(list, this) == -1) {
+					list_add(list, this);
 				}
 			}
 		}
 	}
 }
 
-void *getObjectFromSpaceWithID(space_t * space, int id)
+void *space_get_object_id(space_t * space, int id)
 {
-	return getFromIndex(space->listIndex, id);
+	return index_get(space->listIndex, id);
 }
 
-int isConflictWithObjectFromSpace(space_t * p, int x, int y, int w, int h)
+int space_is_conflict_with_object(space_t * p, int x, int y, int w, int h)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -164,7 +164,7 @@ int isConflictWithObjectFromSpace(space_t * p, int x, int y, int w, int h)
 				this = p->zone[j][i]->list->list[k];
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
-				if (my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h)) {
+				if (my_arena_conflict_space(x, y, w, h, this_x, this_y, this_w, this_h)) {
 					return 1;
 				}
 			}
@@ -174,7 +174,7 @@ int isConflictWithObjectFromSpace(space_t * p, int x, int y, int w, int h)
 	return 0;
 }
 
-int isConflictWithObjectFromSpaceBut(space_t * p, int x, int y, int w, int h, void *but)
+int space_is_conflict_with_object_but(space_t * p, int x, int y, int w, int h, void *but)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -199,7 +199,7 @@ int isConflictWithObjectFromSpaceBut(space_t * p, int x, int y, int w, int h, vo
 
 				p->getStatus(this, &id, &this_x, &this_y, &this_w, &this_h);
 
-				if (my_conflictSpace(x, y, w, h, this_x, this_y, this_w, this_h)) {
+				if (my_arena_conflict_space(x, y, w, h, this_x, this_y, this_w, this_h)) {
 					return 1;
 				}
 			}
@@ -209,7 +209,7 @@ int isConflictWithObjectFromSpaceBut(space_t * p, int x, int y, int w, int h, vo
 	return 0;
 }
 
-void delObjectFromSpace(space_t * p, void *item)
+void space_del(space_t * p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
@@ -225,26 +225,26 @@ void delObjectFromSpace(space_t * p, void *item)
 				continue;
 			}
 
-			myIndex = searchListItem(p->zone[j][i]->list, item);
+			myIndex = list_search(p->zone[j][i]->list, item);
 			assert(myIndex != -1);
-			delList(p->zone[j][i]->list, myIndex);
+			list_del(p->zone[j][i]->list, myIndex);
 		}
 	}
 
-	delFromIndex(p->listIndex, id);
+	index_del(p->listIndex, id);
 }
 
-void delObjectFromSpaceWithObject(space_t * p, void *item, void *f)
+void space_del_with_item(space_t * p, void *item, void *f)
 {
 	void (*fce) (void *param);
 
 	fce = f;
 
-	delObjectFromSpace(p, item);
+	space_del(p, item);
 	fce(item);
 }
 
-void moveObjectInSpace(space_t * p, void *item, int move_x, int move_y)
+void space_move_object(space_t * p, void *item, int move_x, int move_y)
 {
 	int old_segX, old_segY, old_segW, old_segH;
 	int new_segX, new_segY, new_segW, new_segH;
@@ -260,16 +260,16 @@ void moveObjectInSpace(space_t * p, void *item, int move_x, int move_y)
 */
 	if (old_segX != new_segX || old_segY != new_segY ||
 	    old_segW != new_segW || old_segH != new_segH) {
-		delObjectFromSpace(p, item);
+		space_del(p, item);
 		p->setStatus(item, move_x, move_y, w, h);
-		addObjectToSpace(p, item);
+		space_add(p, item);
 		return;
 	}
 
 	p->setStatus(item, move_x, move_y, w, h);
 }
 
-void printSpace(space_t * p)
+void space_print(space_t * p)
 {
 	int i, j;
 
@@ -284,7 +284,7 @@ void printSpace(space_t * p)
 	}
 }
 
-void actionSpace(space_t * space, void *f, void *p)
+void space_action(space_t * space, void *f, void *p)
 {
 	void (*fce) (space_t * space, void *f, void *p);
 	int len;
@@ -294,7 +294,7 @@ void actionSpace(space_t * space, void *f, void *p)
 	len = space->listIndex->count;
 
 	for (i = 0; i < len; i++) {
-		fce(space, getItemFromSpace(space, i), p);
+		fce(space, space_get_item(space, i), p);
 
 		if (space->listIndex->count == len - 1) {
 			len--;
@@ -303,7 +303,7 @@ void actionSpace(space_t * space, void *f, void *p)
 	}
 }
 
-void actionSpaceFromLocation(space_t * space, void *f, void *p, int x, int y, int w, int h)
+void space_action_from_location(space_t * space, void *f, void *p, int x, int y, int w, int h)
 {
 	void (*fce) (space_t * space, void *f, void *p);
 	list_t *list;
@@ -312,9 +312,9 @@ void actionSpaceFromLocation(space_t * space, void *f, void *p, int x, int y, in
 
 	fce = f;
 
-	list = newList();
+	list = list_new();
 
-	getObjectFromSpace(space, x, y, w, h, list);
+	space_get_object(space, x, y, w, h, list);
 
 	len = list->count;
 
@@ -322,14 +322,14 @@ void actionSpaceFromLocation(space_t * space, void *f, void *p, int x, int y, in
 		fce(space, list->list[i], p);
 	}
 
-	destroyList(list);
+	list_destroy(list);
 }
 
-void destroySpace(space_t * p)
+void space_destroy(space_t * p)
 {
 	int j, i;
 
-	destroyIndex(p->listIndex);
+	index_destroy(p->listIndex);
 
 	for (i = 0; i < p->h; i++) {
 		for (j = 0; j < p->w; j++) {
@@ -345,7 +345,7 @@ void destroySpace(space_t * p)
 	free(p);
 }
 
-void destroySpaceWithObject(space_t * p, void *f)
+void space_destroy_with_item(space_t * p, void *f)
 {
 	void (*fce) (void *param);
 	int i;
@@ -353,8 +353,8 @@ void destroySpaceWithObject(space_t * p, void *f)
 	fce = f;
 
 	for (i = 0; i < p->listIndex->count; i++) {
-		fce(getItemFromSpace(p, i));
+		fce(space_get_item(p, i));
 	}
 
-	destroySpace(p);
+	space_destroy(p);
 }

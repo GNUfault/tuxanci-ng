@@ -9,7 +9,7 @@
 #include "widget.h"
 #include "widget_catchkey.h"
 
-widget_t *newWidgetCatchkey(int key, int x, int y, void *event)
+widget_t *catchKey_new(int key, int x, int y, void *event)
 {
 	widget_catchkey_t *new;
 
@@ -18,10 +18,10 @@ widget_t *newWidgetCatchkey(int key, int x, int y, void *event)
 	new->fce_event = event;
 	new->active = FALSE;
 
-	return newWidget(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, new);
+	return widget_new(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, new);
 }
 
-int getWidgetCatchKey(widget_t * widget)
+int catchKey_get(widget_t * widget)
 {
 	widget_catchkey_t *p;
 
@@ -33,7 +33,7 @@ int getWidgetCatchKey(widget_t * widget)
 	return p->key;
 }
 
-void setWidgetCatchKey(widget_t * widget, int key)
+void catchKey_set(widget_t * widget, int key)
 {
 	widget_catchkey_t *p;
 
@@ -45,7 +45,7 @@ void setWidgetCatchKey(widget_t * widget, int key)
 	p->key = key;
 }
 
-void drawWidgetCatchkey(widget_t * widget)
+void catchKey_draw(widget_t * widget)
 {
 	widget_catchkey_t *p;
 	char *name;
@@ -65,9 +65,9 @@ void drawWidgetCatchkey(widget_t * widget)
 	}
 
 	if (p->active) {
-		drawFont(name, widget->x, widget->y, COLOR_RED);
+		font_draw(name, widget->x, widget->y, COLOR_RED);
 	} else {
-		drawFont(name, widget->x, widget->y, COLOR_WHITE);
+		font_draw(name, widget->x, widget->y, COLOR_WHITE);
 	}
 }
 
@@ -93,7 +93,7 @@ static int getPessAnyKey()
 	return WIDGET_CATCHKEY_NOKEY;
 }
 
-void eventWidgetCatchkey(widget_t * widget)
+void catchKey_event(widget_t * widget)
 {
 	widget_catchkey_t *p;
 	int x, y;
@@ -103,9 +103,9 @@ void eventWidgetCatchkey(widget_t * widget)
 
 	p = (widget_catchkey_t *) widget->private_data;
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
-	if (isMouseClicked()) {
+	if (interface_is_mouse_clicket()) {
 		if (x >= widget->x && x <= widget->x + WIDGET_CATCHKEY_WIDTH &&
 		    y >= widget->y && y <= widget->y + WIDGET_CATCHKEY_HEIGHT) {
 			p->active = TRUE;
@@ -126,7 +126,7 @@ void eventWidgetCatchkey(widget_t * widget)
 	}
 }
 
-void destroyWidgetCatchkey(widget_t * widget)
+void catchKey_destroy(widget_t * widget)
 {
 	widget_catchkey_t *p;
 
@@ -136,5 +136,5 @@ void destroyWidgetCatchkey(widget_t * widget)
 	p = (widget_catchkey_t *) widget->private_data;
 
 	free(p);
-	destroyWidget(widget);
+	widget_destroy(widget);
 }

@@ -14,7 +14,7 @@ static list_t *listStorage;
 
 static bool_t isImageDataInit = FALSE;
 
-bool_t isImageInicialized()
+bool_t image_is_inicialized()
 {
 	return isImageDataInit;
 }
@@ -22,13 +22,13 @@ bool_t isImageInicialized()
 /*
  * Inicializuje globalny zoznam obrazkov
  */
-void initImageData()
+void image_init()
 {
-	assert(isInterfaceInicialized() == TRUE);
+	assert(interface_is_inicialized() == TRUE);
 
 	DEBUG_MSG(_("Initializing image database\n"));
 
-	listStorage = newStorage();
+	listStorage = storage_new();
 	isImageDataInit = TRUE;
 }
 
@@ -65,7 +65,7 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 
 
 #ifndef SUPPORT_OPENGL
-image_t *newImage(SDL_Surface * surface)
+image_t *image_new(SDL_Surface * surface)
 {
 	image_t *new;
 
@@ -96,11 +96,11 @@ unsigned int closestpoweroftwo(unsigned int i)
 }
 
 /* convert from SDL_Surface to image_t
- * WARNING: newImage is indestructive to surface, caller is responsible for freeing surface
- * surface is not needed for image_t after execution of newImage
+ * WARNING: image_new is indestructive to surface, caller is responsible for freeing surface
+ * surface is not needed for image_t after execution of image_new
  */
 
-image_t* newImage(SDL_Surface *surface)
+image_t* image_new(SDL_Surface *surface)
 {
 	image_t *new;
 	Uint32 rmask, gmask, bmask, amask;
@@ -151,7 +151,7 @@ image_t* newImage(SDL_Surface *surface)
 }
 #endif
 
-void destroyImage(image_t * p)
+void image_destroy(image_t * p)
 {
 	assert(p != NULL);
 
@@ -172,7 +172,7 @@ void destroyImage(image_t * p)
  * *name - nazov obrazku ( pouzije sa ako vyhadavaci retazec v zazanem )
  * alpha - 0 - nema alpha kanal | 1 - ma alpha kanal
  */
-image_t *addImageData(char *file, int alpha, char *name, char *group)
+image_t *image_add(char *file, int alpha, char *name, char *group)
 {
 	SDL_Surface *surface;
 	image_t *new;
@@ -182,9 +182,9 @@ image_t *addImageData(char *file, int alpha, char *name, char *group)
 	assert(group != NULL);
 
 	surface = loadImage(file, alpha);
-	new = newImage(surface);
+	new = image_new(surface);
 
-	addItemToStorage(listStorage, group, name, new);
+	storage_add(listStorage, group, name, new);
 
 	DEBUG_MSG(_("Loading image %s\n"), file);
 
@@ -195,37 +195,37 @@ image_t *addImageData(char *file, int alpha, char *name, char *group)
  * Vrati odkaz na image_data v globalnom zozname obrazkov
  * a nazvom *s
  */
-image_t *getImage(char *group, char *name)
+image_t *image_get(char *group, char *name)
 {
 	assert(group != NULL);
 	assert(name != NULL);
 
-	return getItemFromStorage(listStorage, group, name);
+	return storage_get(listStorage, group, name);
 }
 
-void delImage(char *group, char *name)
+void image_del(char *group, char *name)
 {
 	assert(group != NULL);
 	assert(name != NULL);
 
-	delItemFromStorage(listStorage, group, name, destroyImage);
+	storage_del(listStorage, group, name, image_destroy);
 }
 
-void delAllImageInGroup(char *group)
+void image_del_all_image_in_group(char *group)
 {
 	assert(group != NULL);
 
-	delAllItemFromStorage(listStorage, group, destroyImage);
+	storage_del_all(listStorage, group, image_destroy);
 }
 
 #ifndef SUPPORT_OPENGL
-void drawImage(image_t * p, int x, int y, int px, int py, int w, int h)
+void image_draw(image_t * p, int x, int y, int px, int py, int w, int h)
 {
 	static SDL_Surface *screen = NULL;
 	SDL_Rect dst_rect, src_rect;
 
 	if (screen == NULL) {
-		screen = getSDL_Screen();
+		screen = interface_get_screen();
 	}
 
 	dst_rect.x = x;
@@ -244,7 +244,7 @@ void drawImage(image_t * p, int x, int y, int px, int py, int w, int h)
 /*
  * Draws image on screen at [x,y], with width w and height h, top-left corner on image is at [px,py]
  */
-void drawImage(image_t *image, int x,int y, int px, int py, int w, int h)
+void image_draw(image_t *image, int x,int y, int px, int py, int w, int h)
 {
 	/* x -coordinate of left border xx- coordinate of right border,
 	 * y -coordinate of top border yy- coordinate of bottom border,
@@ -291,10 +291,10 @@ void drawImage(image_t *image, int x,int y, int px, int py, int w, int h)
 /*
  * Odstrani zoznam obrazkov z pamate
  */
-void quitImageData()
+void image_quit()
 {
 	DEBUG_MSG(_("Quitting image database\n"));
 
-	destroyStorage(listStorage, destroyImage);
+	storage_destroy(listStorage, image_destroy);
 	isImageDataInit = FALSE;
 }

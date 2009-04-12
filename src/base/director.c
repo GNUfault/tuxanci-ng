@@ -15,7 +15,7 @@ typedef struct director_struct {
 	list_t *list;
 } director_t;
 
-director_t *loadDirector(char *s)
+director_t *director_load(char *s)
 {
 	director_t *new;
 	DIR *dir;
@@ -27,7 +27,7 @@ director_t *loadDirector(char *s)
 	new = malloc(sizeof(director_t));
 	memset(new, 0, sizeof(director_t));
 
-	new->list = newList();
+	new->list = list_new();
 
 #ifndef __WIN32__
 	if (s[0] == '/')
@@ -53,18 +53,18 @@ director_t *loadDirector(char *s)
 	}
 
 	while ((item = readdir(dir)) != NULL)
-		addList(new->list, strdup(item->d_name));
+		list_add(new->list, strdup(item->d_name));
 
 	closedir(dir);
 
 	return new;
 }
 
-void destroyDirector(director_t * p)
+void director_destroy(director_t * p)
 {
 	assert(p != NULL);
 
-	destroyListItem(p->list, free);
+	list_destroy_item(p->list, free);
 	free(p->path);
 	free(p);
 }

@@ -32,7 +32,7 @@ static void action_saveTux(space_t * space, tux_t * tux, textFile_t * textFile)
 			 tux->shot[GUN_LASSER], tux->shot[GUN_MINE],
 			 tux->shot[GUN_BOMBBALL], tux->bonus_time, tux->pickup_time);
 
-	addList(textFile->text, strdup(str));
+	list_add(textFile->text, strdup(str));
 }
 
 static void
@@ -45,7 +45,7 @@ action_saveShot(space_t * space, shot_t * shot, textFile_t * textFile)
 			 shot->position, shot->gun, shot->author_id,
 			 shot->isCanKillAuthor);
 
-	addList(textFile->text, strdup(str));
+	list_add(textFile->text, strdup(str));
 }
 
 static void
@@ -57,7 +57,7 @@ action_saveItem(space_t * space, item_t * item, textFile_t * textFile)
 			 item->id, item->type, item->x, item->y,
 			 item->count, item->frame, item->author_id);
 
-	addList(textFile->text, strdup(str));
+	list_add(textFile->text, strdup(str));
 }
 
 static void saveContextArenaToTextFile(textFile_t * textFile, arena_t * arena)
@@ -65,37 +65,37 @@ static void saveContextArenaToTextFile(textFile_t * textFile, arena_t * arena)
 	char str[STR_PROTO_SIZE];
 
 	sprintf(str, "ARENA %s %d %d",
-			getArenaNetName(getChoiceArena()),
+			arenaFile_get_net_name(choiceArena_get()),
 			arena->countRound, arena->max_countRound);
 
-	addList(textFile->text, strdup(str));
+	list_add(textFile->text, strdup(str));
 
-	actionSpace(arena->spaceTux, action_saveTux, textFile);
-	actionSpace(arena->spaceShot, action_saveShot, textFile);
-	actionSpace(arena->spaceItem, action_saveItem, textFile);
+	space_action(arena->spaceTux, action_saveTux, textFile);
+	space_action(arena->spaceShot, action_saveShot, textFile);
+	space_action(arena->spaceItem, action_saveItem, textFile);
 }
 
-void saveArena(char *filename, arena_t * arena)
+void save_arena(char *filename, arena_t * arena)
 {
 	textFile_t *textFile;
 	char path[STR_PATH_SIZE];
 
-	sprintf(path, "%s/%s.sav", getHomeDirector(), filename);
+	sprintf(path, "%s/%s.sav", homeDirector_get(), filename);
 
 	DEBUG_MSG(_("Saving game to: \"%s\"\n"), path);
 
-	textFile = newTextFile(path);
+	textFile = textFile_new(path);
 
 	if (textFile != NULL) {
 		saveContextArenaToTextFile(textFile, arena);
-		saveTextFile(textFile);
-		destroyTextFile(textFile);
+		textFile_save(textFile);
+		textFile_destroy(textFile);
 	} else {
 		fprintf(stderr, _("I was unable to save: \"%s\"\n"), path);
 	}
 }
 
-static arena_t *loadArenaFromLine(char *line)
+static arena_t *load_arenaFromLine(char *line)
 {
 	char cmd[STR_SIZE];
 	char name[STR_SIZE];
@@ -105,9 +105,9 @@ static arena_t *loadArenaFromLine(char *line)
 
 	sscanf(line, "%s %s %d %d", cmd, name, &countRound, &max_countRound);
 
-	setWorldArena(getArenaFileFormNetName(name));
+	word_set_arena(arenaFile_get_file_format_net_name(name));
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 	arena->max_countRound = max_countRound;
 	arena->countRound = countRound;
 
@@ -130,26 +130,26 @@ static void loadTuxFromLine(char *line, arena_t * arena)
 		   name, &myGun, &myBonus, &gun1, &gun2, &gun3, &gun4, &gun5, &gun6,
 		   &gun7, &time1, &time2);
 
-	tux = newTux();
-	replaceTuxID(tux, id);
-	addObjectToSpace(arena->spaceTux, tux);
+	tux = tux_new();
+	tux_replace_id(tux, id);
+	space_add(arena->spaceTux, tux);
 
 	tux->control = control;
 
 	if (tux->control == TUX_CONTROL_KEYBOARD_RIGHT) {
-		setControlTux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
+		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 	}
 
 	if (tux->control == TUX_CONTROL_KEYBOARD_LEFT) {
-		setControlTux(tux, TUX_CONTROL_KEYBOARD_LEFT);
+		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 	}
 
 	if (tux->control == TUX_CONTROL_AI) {
-		loadModule("libmodAI");
-		setControlTux(tux, TUX_CONTROL_KEYBOARD_LEFT);
+		module_load("libmodAI");
+		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 	}
 
-	moveObjectInSpace(arena->spaceTux, tux, x, y);
+	space_move_object(arena->spaceTux, tux, x, y);
 	tux->status = status;
 	tux->position = position;
 	tux->frame = frame;
@@ -178,17 +178,17 @@ static void loadShotFromLine(char *line, arena_t * arena)
 		   cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id,
 		   &isCanKillAuthor);
 
-	shot = newShot(x, y, px, py, gun, author_id);
+	shot = shot_new(x, y, px, py, gun, author_id);
 
-	replaceShotID(shot, shot_id);
+	shot_replace_id(shot, shot_id);
 	shot->isCanKillAuthor = isCanKillAuthor;
 	shot->position = position;
 
 	if (shot->gun == GUN_LASSER) {
-		transformOnlyLasser(shot);
+		shot_transform_lasser(shot);
 	}
 
-	addObjectToSpace(arena->spaceShot, shot);
+	space_add(arena->spaceShot, shot);
 }
 
 static void loadItemFromLine(char *line, arena_t * arena)
@@ -200,13 +200,13 @@ static void loadItemFromLine(char *line, arena_t * arena)
 	sscanf(line, "%s %d %d %d %d %d %d %d %d",
 		   cmd, &id, &type, &x, &y, &count, &frame, &author_id, &check_id);
 
-	item = newItem(x, y, type, author_id);
+	item = item_new(x, y, type, author_id);
 
-	replaceItemID(item, id);
+	item_replace_id(item, id);
 	item->count = count;
 	item->frame = frame;
 
-	addObjectToSpace(arena->spaceItem, item);
+	space_add(arena->spaceItem, item);
 }
 
 static arena_t *loadContextArenaFromTextFile(textFile_t * textFile)
@@ -222,7 +222,7 @@ static arena_t *loadContextArenaFromTextFile(textFile_t * textFile)
 		line = (char *) textFile->text->list[i];
 
 		if (strncmp(line, "ARENA", 5) == 0) {
-			arena = loadArenaFromLine(line);
+			arena = load_arenaFromLine(line);
 		}
 
 		if (strncmp(line, "TUX", 3) == 0) {
@@ -241,20 +241,20 @@ static arena_t *loadContextArenaFromTextFile(textFile_t * textFile)
 	return arena;
 }
 
-void loadArena(char *filename)
+void load_arena(char *filename)
 {
 	textFile_t *textFile;
 	char path[STR_PATH_SIZE];
 
-	sprintf(path, "%s/%s", getHomeDirector(), filename);
+	sprintf(path, "%s/%s", homeDirector_get(), filename);
 
 	DEBUG_MSG(_("Loadig game from file: \"%s\"\n"), path);
 
-	textFile = loadTextFile(path);
+	textFile = textFile_load(path);
 
 	if (textFile != NULL) {
 		loadContextArenaFromTextFile(textFile);
-		destroyTextFile(textFile);
+		textFile_destroy(textFile);
 	} else {
 		fprintf(stderr, _("Unable to load save: \"%s\"\n"), path);
 	}

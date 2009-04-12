@@ -47,54 +47,54 @@ static arenaFile_t *currentArena;
 
 static void hotkey_escape()
 {
-	setScreen("gameType");
+	screen_set("gameType");
 }
 
-void startScreenChoiceArena()
+void screen_startChoiceArena()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenChoiceArena()
+void choiceArena_draw()
 {
 	int i;
 
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
-	drawWidgetButton(button_play);
-	drawWidgetButton(button_back);
-	if (show_map_buttons.next) { drawWidgetButton(button_next); }
-	if (show_map_buttons.prev) { drawWidgetButton(button_prev); }
+	button_draw(button_play);
+	button_draw(button_back);
+	if (show_map_buttons.next) { button_draw(button_next); }
+	if (show_map_buttons.prev) { button_draw(button_prev); }
 
 	for (i = show_map_buttons.min ; i < show_map_buttons.max; i++) {
-		drawWidgetButtonimage((widget_t*)listAllWidgetButtonimage->list[i]);
+		buttonImage_draw((widget_t*)listAllWidgetButtonimage->list[i]);
 	}
 }
 
-void eventScreenChoiceArena()
+void choiceArena_event()
 {
 	int i;
 
-	eventWidgetButton(button_play);
-	eventWidgetButton(button_back);
-	if (show_map_buttons.next) { eventWidgetButton(button_next); }
-	if (show_map_buttons.prev) { eventWidgetButton(button_prev); }
+	button_event(button_play);
+	button_event(button_back);
+	if (show_map_buttons.next) { button_event(button_next); }
+	if (show_map_buttons.prev) { button_event(button_prev); }
 
 	for (i = show_map_buttons.min ; i < show_map_buttons.max; i++) {
-		eventWidgetButtonimage((widget_t*)listAllWidgetButtonimage->list[i]);
+		buttonImage_event((widget_t*)listAllWidgetButtonimage->list[i]);
 	}
 }
 
 void stopScreenChoiceArena()
 {
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
-static void eventWidgetButtonImage(void *p)
+static void button_eventImage(void *p)
 {
 	widget_t *buttonimage;
 	int i;
@@ -107,30 +107,30 @@ static void eventWidgetButtonImage(void *p)
 		this = (widget_t *) (listAllWidgetButtonimage->list[i]);
 
 		if (buttonimage == this) {
-			setWidgetButtonimageActive(this, TRUE);
-			currentArena = getArenaFile(i);
+			buttonImage_set_active(this, TRUE);
+			currentArena = arenaFile_get(i);
 		} else {
-			setWidgetButtonimageActive(this, FALSE);
+			buttonImage_set_active(this, FALSE);
 		}
 	}
 }
 
-arenaFile_t *getChoiceArena()
+arenaFile_t *choiceArena_get()
 {
 	return currentArena;
 }
 
-void setChoiceArena(arenaFile_t * arenaFile)
+void choiceArena_set(arenaFile_t * arenaFile)
 {
 	widget_t *widget_buttonimage;
 	int id;
 
-	id = getArenaFileID(arenaFile);
+	id = arenaFile_get_id(arenaFile);
 	currentArena = arenaFile;
 
 	if (id >= 0) {
 		widget_buttonimage = (widget_t *) listAllWidgetButtonimage->list[id];
-		setWidgetButtonimageActive(widget_buttonimage, TRUE);
+		buttonImage_set_active(widget_buttonimage, TRUE);
 	}
 }
 
@@ -141,11 +141,11 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_play) {
-		setScreen("world");
+		screen_set("world");
 	}
 
 	if (button == button_back) {
-		setScreen("gameType");
+		screen_set("gameType");
 	}
 	if (button == button_next) {
 		if (show_map_buttons.next) {
@@ -168,42 +168,42 @@ static void eventWidget(void *p)
 static void activateHandledMapButtonGroup(void) {
 	int min = handled_map_button_group * 6;
 	min = min < 0 ? 0 : min;
-	min = min <= getArenaCount() ? min : getArenaCount();
-	int max = min+6 <= getArenaCount() ? min+6 : getArenaCount();
+	min = min <= arenaFile_get_count() ? min : arenaFile_get_count();
+	int max = min+6 <= arenaFile_get_count() ? min+6 : arenaFile_get_count();
 
 	if (min) { show_map_buttons.prev = 1; }
 	else { show_map_buttons.prev = 0; }
-	if (max < getArenaCount()) { show_map_buttons.next = 1; }
+	if (max < arenaFile_get_count()) { show_map_buttons.next = 1; }
 	else { show_map_buttons.next = 0; }
 	show_map_buttons.min = min;
 	show_map_buttons.max = max;
 }
 
-void initScreenChoiceArena()
+void choiceArena_init()
 {
 	image_t *image;
 	int i;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
-	button_back = newWidgetButton(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
-	button_play = newWidgetButton(_("play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
+	button_back = button_new(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
+	button_play = button_new(_("play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
 
-	button_prev = newWidgetButton(_("prev maps"), 250, WINDOW_SIZE_Y - 100, eventWidget);
-	button_next = newWidgetButton(_("next maps"), WINDOW_SIZE_X-350, WINDOW_SIZE_Y - 100, eventWidget);
+	button_prev = button_new(_("prev maps"), 250, WINDOW_SIZE_Y - 100, eventWidget);
+	button_next = button_new(_("next maps"), WINDOW_SIZE_X-350, WINDOW_SIZE_Y - 100, eventWidget);
 
-	listAllWidgetButtonimage = newList();
+	listAllWidgetButtonimage = list_new();
 	currentArena = NULL;
 
-	for (i = 0; i < getArenaCount(); i++) {
+	for (i = 0; i < arenaFile_get_count(); i++) {
 		widget_t *widget_buttonimage;
 		arenaFile_t *arenaFile;
 		int x, y;
 
-		arenaFile = getArenaFile(i);
-		//image = addImageData(getArenaImage(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);
-		image = loadImageFromArena(arenaFile,  getArenaImage(arenaFile),
+		arenaFile = arenaFile_get(i);
+		//image = image_add(arenaFile_get_image(i), IMAGE_NO_ALPHA, "none", IMAGE_GROUP_BASE);
+		image = arenaFile_load_image(arenaFile,  arenaFile_get_image(arenaFile),
 					   IMAGE_GROUP_BASE, "none", IMAGE_NO_ALPHA);
 
 		// only 6 map buttons can be shown at once;
@@ -214,32 +214,32 @@ void initScreenChoiceArena()
 		x = 100 + 200 * (pos - 3 * (pos / 3));
 		y = 150 + 200 * (pos / 3);
 
-		widget_buttonimage = newWidgetButtonimage(image, x, y, eventWidgetButtonImage);
+		widget_buttonimage = buttonImage_new(image, x, y, button_eventImage);
 /*
 		if( i == choiceArenaId )
 		{
 			widget_buttonimage->active = 1;
 		}
 */
-		addList(listAllWidgetButtonimage, widget_buttonimage);
+		list_add(listAllWidgetButtonimage, widget_buttonimage);
 		handled_map_button_group = 0;
 		activateHandledMapButtonGroup();
 	}
 
-	registerScreen( newScreen("chiceArena", startScreenChoiceArena,
-			eventScreenChoiceArena, drawScreenChoiceArena,
+	screen_register( screen_new("chiceArena", screen_startChoiceArena,
+			choiceArena_event, choiceArena_draw,
 			stopScreenChoiceArena));
 }
 
-void quitScreenChoiceArena()
+void choiceArena_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetButton(button_play);
-	destroyWidgetButton(button_back);
+	button_destroy(button_play);
+	button_destroy(button_back);
 
-	destroyWidgetButton(button_next);
-	destroyWidgetButton(button_prev);
+	button_destroy(button_next);
+	button_destroy(button_prev);
 
-	destroyListItem(listAllWidgetButtonimage, destroyWidgetButtonimage);
+	list_destroy_item(listAllWidgetButtonimage, buttonImage_destroy);
 }

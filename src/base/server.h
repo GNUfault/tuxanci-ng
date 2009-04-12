@@ -47,16 +47,16 @@ typedef struct client_struct {
 	list_t *listSeesShot;
 } client_t;
 
-extern int initServer(char *ip4, int port4, char *ip6, int port6);
-extern time_t getUpdateServer();
-extern client_t *newAnyClient();
-extern void destroyAnyClient(client_t * p);
-extern list_t *getListServerClient();
-extern int getServerMaxClients();
-extern void setServerTimer();
-extern void setServerMaxClients(int n);
-extern void sendClient(client_t * p, char *msg);
-extern void eventServer();
-extern void quitServer();
+extern int server_init(char *ip4, int port4, char *ip6, int port6);
+extern time_t server_get_update();
+extern client_t *server_new_any_client();
+extern void server_destroy_any_client(client_t * p);
+extern list_t *server_get_list_clients();
+extern int server_get_max_clients();
+extern void server_set_time();
+extern void server_set_max_clients(int n);
+extern void server_send_client(client_t * p, char *msg);
+extern void server_event();
+extern void server_quit();
 
 #endif

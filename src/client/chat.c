@@ -33,13 +33,13 @@ static bool_t receivedNewMsg;
 
 static void hotkey_chat_enter();
 static void hotkey_chat_enter();
-static void eventChatDisable();
+static void chat_eventDisable();
 
 static void hotkey_chat_esc()
 {
 	//printf("*** hotkey_chat_esc\n");
-	//unregisterHotKey(SDLK_ESCAPE);
-	eventChatDisable();
+	//unhotKey_register(SDLK_ESCAPE);
+	chat_eventDisable();
 }
 
 static void hotkey_chat_enter()
@@ -52,23 +52,23 @@ static void hotkey_chat_enter()
 	chat_active = TRUE;
 	receivedNewMsg = FALSE;
 
-	disableHotKey(SDLK_RETURN);
-	disableHotKey(SDLK_p);
-	registerHotKey(SDLK_ESCAPE, hotkey_chat_esc);
+	hotKey_disable(SDLK_RETURN);
+	hotKey_disable(SDLK_p);
+	hotKey_register(SDLK_ESCAPE, hotkey_chat_esc);
 
-	enableKeyboardBuffer();
-	clearKeyboardBuffer();
+	interface_enable_keyboard_buffer();
+	keyboardBuffer_clear();
 }
 
-void initChat()
+void chat_init()
 {
-	g_chat = addImageData("chat.png", IMAGE_NO_ALPHA, "chat", IMAGE_GROUP_USER);
+	g_chat = image_add("chat.png", IMAGE_NO_ALPHA, "chat", IMAGE_GROUP_USER);
 
-	listText = newList();
+	listText = list_new();
 	strcpy(line, "");
 	chat_active = FALSE;
 
-	registerHotKey(SDLK_RETURN, hotkey_chat_enter);
+	hotKey_register(SDLK_RETURN, hotkey_chat_enter);
 
 	receivedNewMsg = FALSE;
 	line_time = 0;
@@ -76,7 +76,7 @@ void initChat()
 	timeBlick = 0;
 }
 
-void drawChat()
+void chat_draw()
 {
 	char str[STR_SIZE];
 	int i;
@@ -85,7 +85,7 @@ void drawChat()
 		return;
 	}
 
-	drawImage(g_chat, CHAT_LOCATION_X, CHAT_LOCATION_Y,
+	image_draw(g_chat, CHAT_LOCATION_X, CHAT_LOCATION_Y,
 			  0, 0, CHAT_SIZE_X, CHAT_SIZE_Y);
 
 	for (i = 0; i < listText->count; i++) {
@@ -93,7 +93,7 @@ void drawChat()
 
 		s = (char *) listText->list[i];
 
-		drawFontMaxSize(s, CHAT_LOCATION_X + 5, CHAT_LOCATION_Y + 5 + i * 20,
+		font_drawMaxSize(s, CHAT_LOCATION_X + 5, CHAT_LOCATION_Y + 5 + i * 20,
 				   CHAT_SIZE_X - 10, 20, COLOR_WHITE);
 	}
 
@@ -109,7 +109,7 @@ void drawChat()
 		timeBlick = 0;
 	}
 
-	drawFont(str, CHAT_LOCATION_X + 5, (CHAT_LOCATION_Y + 5) + (CHAT_MAX_LINES * 20), COLOR_WHITE);
+	font_draw(str, CHAT_LOCATION_X + 5, (CHAT_LOCATION_Y + 5) + (CHAT_MAX_LINES * 20), COLOR_WHITE);
 }
 
 static void processMessageKey(SDL_keysym keysym)
@@ -122,7 +122,7 @@ static void processMessageKey(SDL_keysym keysym)
 		line_atime++;
 
 	len = strlen(line);
-	getTextSize(line, &w, &h);
+	font_text_size(line, &w, &h);
 
 	if (w > CHAT_SIZE_X - 40) {
 		return;
@@ -160,42 +160,42 @@ static void processMessageKey(SDL_keysym keysym)
 
 static void sendNewMessage()
 {
-	if (getNetTypeGame() == NET_GAME_TYPE_CLIENT) {
+	if (netMultiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		proto_send_chat_client(line);
 	}
 
-	if (getNetTypeGame() == NET_GAME_TYPE_SERVER) {
+	if (netMultiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		char out[STR_PROTO_SIZE];
 
 		snprintf(out, STR_PROTO_SIZE, "chat %s:%s\n",
-				 getControlTux(TUX_CONTROL_KEYBOARD_RIGHT)->name, line);
+				 word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name, line);
 
 		proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
 	}
 }
 
-static void eventChatDisable()
+static void chat_eventDisable()
 {
 	chat_active = FALSE;
 	memset(line, '\0', STR_SIZE);
 
-	enableHotKey(SDLK_RETURN);
-	enableHotKey(SDLK_p);
-	unregisterHotKey(SDLK_ESCAPE);
+	hotKey_enable(SDLK_RETURN);
+	hotKey_enable(SDLK_p);
+	unhotKey_register(SDLK_ESCAPE);
 
-	disableKeyboardBuffer();
-	clearKeyboardBuffer();
+	interface_disable_keyboard_buffer();
+	keyboardBuffer_clear();
 }
 
-static void eventChatEnable()
+static void chat_eventEnable()
 {
 	/* The chat window is displayed. It is needed to process all keys in the buffer
 	 * but when ENTER is pressed the chat row is sent to the server
 	 */
 
-	while (isAnyKeyInKeyboardBuffer() == TRUE) {
+	while (keyboardBuffer_is_any_key() == TRUE) {
 		SDL_keysym key;
-		key = popKeyFromKeyboardBuffer();
+		key = keyboardBuffer_pop();
 
 		if (key.sym == SDLK_RETURN) {
 			if (strcmp(line, "") != 0) {
@@ -205,10 +205,10 @@ static void eventChatEnable()
 				continue;		/* continue with other keys */
 			} else {
 				/* the chat row is empty - it is needed to turn off the chat window */
-				//eventChatDisable();
+				//chat_eventDisable();
 				/* turn off key catching into the buffer and clear the buffer */
-				//disableKeyboardBuffer();
-				//clearKeyboardBuffer();
+				//interface_disable_keyboard_buffer();
+				//keyboardBuffer_clear();
 			}
 		}
 
@@ -219,29 +219,29 @@ static void eventChatEnable()
 /**
  * Processing of chat 'events'
  */
-void eventChat()
+void chat_event()
 {
-	if (isChatActive()) {
-		eventChatEnable();
+	if (chat_is_active()) {
+		chat_eventEnable();
 	}
 }
 
-bool_t isChatActive()
+bool_t chat_is_active()
 {
 	return chat_active;
 }
 
-bool_t isRecivedNewMsg()
+bool_t chat_is_recived_new_msg()
 {
 	return receivedNewMsg;
 }
 
-void addToChat(char *s)
+void chat_add(char *s)
 {
-	addList(listText, strdup(s));
+	list_add(listText, strdup(s));
 
 	if (listText->count > CHAT_MAX_LINES) {
-		delListItem(listText, 0, free);
+		list_del_item(listText, 0, free);
 	}
 
 	if (chat_active == FALSE) {
@@ -249,10 +249,10 @@ void addToChat(char *s)
 	}
 }
 
-void quitChat()
+void chat_quit()
 {
 	assert(listText != NULL);
 
-	//unregisterHotKey(SDLK_RETURN);
-	destroyListItem(listText, free);
+	//unhotKey_register(SDLK_RETURN);
+	list_destroy_item(listText, free);
 }

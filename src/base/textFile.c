@@ -9,7 +9,7 @@
 #include "main.h"
 #include "textFile.h"
 
-textFile_t *newTextFile(char *s)
+textFile_t *textFile_new(char *s)
 {
 	textFile_t *new;
 	char path[STR_PATH_SIZE];
@@ -26,7 +26,7 @@ textFile_t *newTextFile(char *s)
 
 	new = malloc(sizeof(textFile_t));
 	new->file = strdup(path);
-	new->text = newList();
+	new->text = list_new();
 
 	return new;
 }
@@ -56,7 +56,7 @@ static void createLine(list_t * list, char *p, int len)
 		memset(line, 0, (length_line + 1) * sizeof(char));
 		strncpy(line, begin_line, length_line);
 
-		addList(list, line);
+		list_add(list, line);
 		len -= (length_line + 1);
 
 		begin_line = end_line + 1;
@@ -68,7 +68,7 @@ static void createLine(list_t * list, char *p, int len)
  * Nacita subor *s a vrati ho f
  * formatovany v type textFile_t*
  */
-textFile_t *loadTextFile(char *s)
+textFile_t *textFile_load(char *s)
 {
 	FILE *file;
 	textFile_t *ret;
@@ -99,7 +99,7 @@ textFile_t *loadTextFile(char *s)
 
 	fclose(file);
 
-	ret = newTextFile(s);
+	ret = textFile_new(s);
 	createLine(ret->text, p, file_length);
 
 	free(p);
@@ -111,7 +111,7 @@ textFile_t *loadTextFile(char *s)
  * Zobrazi text ulozeny v *p
  * do stdout
  */
-void printTextFile(textFile_t * p)
+void textFile_print(textFile_t * p)
 {
 	int i;
 
@@ -124,7 +124,7 @@ void printTextFile(textFile_t * p)
 	}
 }
 
-void saveTextFile(textFile_t * p)
+void textFile_save(textFile_t * p)
 {
 	int i;
 	FILE *file;
@@ -144,11 +144,11 @@ void saveTextFile(textFile_t * p)
  * Uvolni text ulozeny v type textFile_t*
  * z pamate.
  */
-void destroyTextFile(textFile_t * p)
+void textFile_destroy(textFile_t * p)
 {
 	assert(p != NULL);
 
 	free(p->file);
-	destroyListItem(p->text, free);
+	list_destroy_item(p->text, free);
 	free(p);
 }

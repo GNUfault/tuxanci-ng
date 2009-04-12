@@ -16,7 +16,7 @@ static list_t *listLayer;
 
 static bool_t isLayerInit = FALSE;
 
-bool_t isLayerInicialized()
+bool_t layer_is_inicialized()
 {
 	return isLayerInit;
 }
@@ -24,9 +24,9 @@ bool_t isLayerInicialized()
 /*
  * Initializes global list of the layers
  */
-void initLayer()
+void layer_init()
 {
-	listLayer = newList();
+	listLayer = list_new();
 	isLayerInit = TRUE;
 }
 
@@ -63,24 +63,24 @@ void addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int pla
 
 	// here we are sure, that we want to insert it somewhere else than the begining
 	for (i = 0; i < listLayer->count; i++) {
-		actual = getList(listLayer, i);
+		actual = list_get(listLayer, i);
 
 		actual_value = actual->layer*WINDOW_SIZE_Y + actual->y + actual->h;
 
 		if (actual_value > new_value) {
-			insList(listLayer, i, new);
+			list_ins(listLayer, i, new);
 			return;
 		};
 	};
 
-	addList(listLayer, new);
+	list_add(listLayer, new);
 }
 
 /*
  * Draws all items onto the screen according to the layer and coordinate Y+H
  * After drawing frees the list
  */
-void drawLayer()
+void layer_draw_all()
 {
 	layer_t *this;
 	int i;
@@ -88,23 +88,23 @@ void drawLayer()
 	for (i = 0; i < listLayer->count; i++) {
 		this = (layer_t *) listLayer->list[i];
 
-		drawImage(this->image, this->x, this->y, this->px, this->py, this->w, this->h);
+		image_draw(this->image, this->x, this->y, this->px, this->py, this->w, this->h);
 	}
 
 	//printf("listLayer->count = %d\n", listLayer->count);
 
-	destroyListItem(listLayer, free);
-	listLayer = newList();
+	list_destroy_item(listLayer, free);
+	listLayer = list_new();
 }
 
-void drawLayerCenter(int x, int y)
+void layer_draw_center(int x, int y)
 {
 	layer_t *this;
 	int screen_x, screen_y;
 	int i;
 	//int count = 0;
 
-	getCenterScreen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	arena_get_center_screen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
 	for (i = 0; i < listLayer->count; i++) {
 		this = (layer_t *) listLayer->list[i];
@@ -117,7 +117,7 @@ void drawLayerCenter(int x, int y)
 		}
 		//count++;
 
-		drawImage(this->image, this->x - screen_x, this->y - screen_y,
+		image_draw(this->image, this->x - screen_x, this->y - screen_y,
 				  this->px, this->py, this->w, this->h);
 
 		//printf("%d %d\n", this->x - screen_x, this->y - screen_y);
@@ -125,11 +125,11 @@ void drawLayerCenter(int x, int y)
 
 	//printf("count = %d\n", count);
 
-	destroyListItem(listLayer, free);
-	listLayer = newList();
+	list_destroy_item(listLayer, free);
+	listLayer = list_new();
 }
 
-void drawLayerSplit(int local_x, int local_y, int x, int y, int w, int h)
+void layer_draw_slpit(int local_x, int local_y, int x, int y, int w, int h)
 {
 	layer_t *this;
 	int i;
@@ -173,7 +173,7 @@ void drawLayerSplit(int local_x, int local_y, int x, int y, int w, int h)
 			this->h -= (local_y + (this->y - y) + this->h) - (local_y + h);
 		}
 
-		drawImage(this->image, local_x + (this->x - x), local_y + (this->y - y),
+		image_draw(this->image, local_x + (this->x - x), local_y + (this->y - y),
 				       this->px, this->py, this->w, this->h);
 
 		//printf("%d %d\n", this->x - screen_x, this->y - screen_y);
@@ -181,21 +181,21 @@ void drawLayerSplit(int local_x, int local_y, int x, int y, int w, int h)
 
 	//printf("count = %d\n", count);
 
-	destroyListItem(listLayer, free);
-	listLayer = newList();
+	list_destroy_item(listLayer, free);
+	listLayer = list_new();
 }
 
-void flushLayer()
+void layer_flush()
 {
-	destroyListItem(listLayer, free);
-	listLayer = newList();
+	list_destroy_item(listLayer, free);
+	listLayer = list_new();
 }
 
 /*
  * Delete list of layers from memory
  */
-void quitLayer()
+void layer_quit()
 {
-	destroyListItem(listLayer, free);
+	list_destroy_item(listLayer, free);
 	isLayerInit = FALSE;
 }

@@ -17,15 +17,15 @@
    } music_t;
  */
 
-extern bool_t isMusicInicialized();
-extern void initMusic();
-extern void addMusic(char *file, char *name, char *group);
-extern void stopMusic();
-extern void playMusic(char *name, char *group);
-extern void setMusicActive(bool_t n);
-extern bool_t isMusicActive();
-extern char *getCurrentMusic();
-extern void delAllMusicInGroup(char *group);
-extern void quitMusic();
+extern bool_t music_is_inicialized();
+extern void music_init();
+extern void music_add(char *file, char *name, char *group);
+extern void music_stop();
+extern void music_play(char *name, char *group);
+extern void music_set_active(bool_t n);
+extern bool_t music_is_active();
+extern char *music_get_current();
+extern void music_del_all_in_group(char *group);
+extern void music_quit();
 #    endif
 #endif

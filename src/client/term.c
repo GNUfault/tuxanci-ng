@@ -18,12 +18,12 @@ static bool_t activeTerm;
 static my_time_t lastActive;
 static my_time_t lastRefresh;
 
-void initTerm()
+void term_init()
 {
-	listText = newList();
+	listText = list_new();
 
 	activeTerm = FALSE;
-	lastActive = getMyTime();
+	lastActive = timer_get_current_time();
 	lastRefresh = lastActive;
 }
 
@@ -87,24 +87,24 @@ static void action_refreshTerm(space_t * space, tux_t * tux, void *p)
 			getStrGun(tux->gun), tux->shot[tux->gun], getStrBonus(tux->bonus)
 		);
 
-	addList(listText, strdup(str));
+	list_add(listText, strdup(str));
 }
 
 static void refreshTerm()
 {
 	arena_t *arena;
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 
-	destroyListItem(listText, free);
-	listText = newList();
+	list_destroy_item(listText, free);
+	listText = list_new();
 
-	actionSpace(arena->spaceTux, action_refreshTerm, NULL);
+	space_action(arena->spaceTux, action_refreshTerm, NULL);
 
 	//printf("refresh term..\n");
 }
 
-void drawTerm()
+void term_draw()
 {
 	int i;
 
@@ -116,7 +116,7 @@ void drawTerm()
 		char *line;
 
 		line = (char *) listText->list[i];
-		drawFont(line, 10, 10 + i * 20, COLOR_WHITE);
+		font_draw(line, 10, 10 + i * 20, COLOR_WHITE);
 	}
 }
 
@@ -129,14 +129,14 @@ static void switchTerm()
 	}
 }
 
-void eventTerm()
+void term_event()
 {
 	my_time_t currentTime;
 	Uint8 *mapa;
 
 	mapa = SDL_GetKeyState(NULL);
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	if (currentTime - lastRefresh > TERM_REFRESH_TIME_INTERVAL) {
 		lastRefresh = currentTime;
@@ -151,8 +151,8 @@ void eventTerm()
 	}
 }
 
-void quitTerm()
+void term_quit()
 {
 	assert(listText != NULL);
-	destroyListItem(listText, free);
+	list_destroy_item(listText, free);
 }

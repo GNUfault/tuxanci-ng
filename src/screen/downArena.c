@@ -53,8 +53,8 @@ static int countSendMsg;
 static void setStatusString(char *s)
 {
 	printf("status -> %s\n", s);
-	destroyWidgetLabel(label_status);
-	label_status = newWidgetLabel(s, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+	label_destroy(label_status);
+	label_status = label_new(s, WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 }
 
 static void connectToDownServer()
@@ -62,38 +62,38 @@ static void connectToDownServer()
 	char status[STR_SIZE];
 	char msg[STR_PROTO_SIZE];
 
-	sock_server_tcp = connectTcpSocket(getSettingIP(), getSettingPort());
+	sock_server_tcp = sock_tcp_connect(publicServer_get_settingIP(), publicServer_get_settingPort());
 
 	if( sock_server_tcp == NULL )
 	{
-		sprintf(status, "I do not connect to %s %d TCP down server", getSettingIP(), getSettingPort());
+		sprintf(status, "I do not connect to %s %d TCP down server", publicServer_get_settingIP(), publicServer_get_settingPort());
 		setStatusString(status);
 		return;
 	}
 
-	setTcpSockNonBlock(sock_server_tcp);
+	sock_tcp_set_non_block(sock_server_tcp);
 
-	recvBuffer = newBuffer(DOWN_ARENA_BUFFER_SIZE);
-	sendBuffer = newBuffer(DOWN_ARENA_BUFFER_SIZE);
+	recvBuffer = buffer_new(DOWN_ARENA_BUFFER_SIZE);
+	sendBuffer = buffer_new(DOWN_ARENA_BUFFER_SIZE);
 	status_tcp_socket = DOWN_SERVER_STATUS_OK;
 
 	file = NULL;
 	countSendMsg = 0;
-	timeSendMsg = getMyTime();
+	timeSendMsg = timer_get_current_time();
 
 	sprintf(msg, "GETARENA %s\n", arenaNetName);
 
-	addBuffer(sendBuffer, msg, strlen(msg));
+	buffer_append(sendBuffer, msg, strlen(msg));
 
-	sprintf(status, "Connect to %s %d TCP down server", getSettingIP(), getSettingPort());
+	sprintf(status, "Connect to %s %d TCP down server", publicServer_get_settingIP(), publicServer_get_settingPort());
 	setStatusString(status);
 }
 
 static void closeConnectFromDownServer()
 {
-	closeTcpSocket(sock_server_tcp);
-	destroyBuffer(recvBuffer);
-	destroyBuffer(sendBuffer);
+	sock_tcp_close(sock_server_tcp);
+	buffer_destroy(recvBuffer);
+	buffer_destroy(sendBuffer);
 	sock_server_tcp = NULL;
 	recvBuffer = NULL;
 	sendBuffer = NULL;
@@ -106,52 +106,52 @@ static void sendStatusToGameServer()
 	if( countSendMsg > DOWN_ARENA_MAX_SEND_MSG_STATUS )
 	{
 		char status[STR_SIZE];
-		sprintf(status, "Game server %s %d is down", getSettingIP(), getSettingPort());
+		sprintf(status, "Game server %s %d is down", publicServer_get_settingIP(), publicServer_get_settingPort());
 		setStatusString(status);
 		return;
 	}
 
-	timeSendMsg = getMyTime();
+	timeSendMsg = timer_get_current_time();
 	countSendMsg++;
 	printf("countSendMsg = %d\n", countSendMsg++);
 
-	if( writeUdpSocket(sock_server_udp, sock_server_udp, msg, strlen(msg)) < 0 )
+	if( sock_udp_write(sock_server_udp, sock_server_udp, msg, strlen(msg)) < 0 )
 	{
 		char status[STR_SIZE];
-		sprintf(status, "I do not send message to %s %d UDP game server", getSettingIP(), getSettingPort());
+		sprintf(status, "I do not send message to %s %d UDP game server", publicServer_get_settingIP(), publicServer_get_settingPort());
 		setStatusString(status);
 	}
 }
 
-void startScreenDownArena()
+void downArena_start()
 {
 	char status[STR_SIZE];
 
 	strcpy(str_status, "none");
 	memset(arenaNetName, 0, STR_SIZE);
 
-	sock_server_udp = connectUdpSocket(getSettingIP(), getSettingPort());
+	sock_server_udp = sock_udp_connect(publicServer_get_settingIP(), publicServer_get_settingPort());
 
 	if (sock_server_udp == NULL)
 	{
-		sprintf(status, "I do not connect to %s %d UDP game server", getSettingIP(), getSettingPort());
+		sprintf(status, "I do not connect to %s %d UDP game server", publicServer_get_settingIP(), publicServer_get_settingPort());
 		setStatusString(status);
 		return;
 	}
 
-	setUdpSockNonBlock(sock_server_udp);
+	sock_udp_set_non_block(sock_server_udp);
 
-	sprintf(status, "Connect to %s %d UDP game server", getSettingIP(), getSettingPort());
+	sprintf(status, "Connect to %s %d UDP game server", publicServer_get_settingIP(), publicServer_get_settingPort());
 	setStatusString(status);
 
 	sendStatusToGameServer();
 }
 
-void drawScreenDownArena()
+void downArena_draw()
 {
-	drawWidgetImage(image_backgorund);
-	drawWidgetLabel(label_status);
-	drawWidgetButton(button_back);
+	wid_image_draw(image_backgorund);
+	label_draw(label_status);
+	button_draw(button_back);
 }
 
 static void proto_ok(char *line)
@@ -160,7 +160,7 @@ static void proto_ok(char *line)
 	fileSize = atoi(line + 3);
 	fileOffset = 0;
 
-	sprintf(path, "%s/%s.zip", getHomeDirector(), arenaNetName);
+	sprintf(path, "%s/%s.zip", homeDirector_get(), arenaNetName);
 	//printf("path = %s\n", path);
 	file = fopen(path, "wb");
 }
@@ -191,9 +191,9 @@ static int downArenaFile()
 	void *data;
 	int len;
 
-	len = getBufferSize(recvBuffer);
-	data = getBufferData(recvBuffer);
-	cutBuffer(recvBuffer, len);
+	len = buffer_get_size(recvBuffer);
+	data = buffer_get_data(recvBuffer);
+	buffer_cut(recvBuffer, len);
 
 	fwrite(data, len, 1, file);
 	fileOffset += len;
@@ -212,14 +212,14 @@ static int eventRecvBuffer()
 
 	memset(buffer, 0, STR_PROTO_SIZE);
 
-	ret = readTcpSocket(sock_server_tcp, buffer, STR_PROTO_SIZE - 1);
-	//if (ret <= 0) printf("readTcpSocket = %d\n", ret);
+	ret = sock_tcp_read(sock_server_tcp, buffer, STR_PROTO_SIZE - 1);
+	//if (ret <= 0) printf("sock_tcp_read = %d\n", ret);
 
 	if (ret < 0) {
 		return -1;
 	}
 
-	if (addBuffer(recvBuffer, buffer, ret) < 0) {
+	if (buffer_append(recvBuffer, buffer, ret) < 0) {
 		char status[STR_SIZE];
 		sprintf(status, "Error -- recv buffer is full");
 		setStatusString(status);
@@ -227,7 +227,7 @@ static int eventRecvBuffer()
 		return -1;
 	}
 
-	if (file == NULL && getBufferLine(recvBuffer, line, STR_PROTO_SIZE) >= 0) {
+	if (file == NULL && buffer_get_line(recvBuffer, line, STR_PROTO_SIZE) >= 0) {
 		eventProto(line);
 		return ret;
 	}
@@ -245,21 +245,21 @@ static int eventSendBuffer()
 	int len;
 	int res;
 
-	len = getBufferSize(sendBuffer);
+	len = buffer_get_size(sendBuffer);
 
 	if (len == 0) {
 		return -1;
 	}
 
-	data = getBufferData(sendBuffer);
+	data = buffer_get_data(sendBuffer);
 
-	res = writeTcpSocket(sock_server_tcp, data, len);
+	res = sock_tcp_write(sock_server_tcp, data, len);
 
 	if (res < 0) {
 		return -1;
 	}
 
-	cutBuffer(sendBuffer, res);
+	buffer_cut(sendBuffer, res);
 	return res;
 }
 
@@ -277,12 +277,12 @@ static void readArenaFromStatus()
 		offset_end = strstr(offset_begin, "\n");
 
 		if (offset_end != NULL) {
-			closeUdpSocket(sock_server_udp);
+			sock_udp_close(sock_server_udp);
 			sock_server_udp = NULL;
 			strncpy(arenaNetName, offset_begin, offset_end - offset_begin);
 
-			if (getArenaFileFormNetName(arenaNetName) != NULL) {
-				setScreen("world");
+			if (arenaFile_get_file_format_net_name(arenaNetName) != NULL) {
+				screen_set("world");
 				return;
 			}
 
@@ -295,19 +295,19 @@ static void readArenaFromStatus()
 
 static void eventStatus()
 {
-	if( getMyTime() - timeSendMsg > DOWN_ARENA_MAX_TIEMOUT_LIMIT )
+	if( timer_get_current_time() - timeSendMsg > DOWN_ARENA_MAX_TIEMOUT_LIMIT )
 	{
 		sendStatusToGameServer();
 	}
 
-	if( readUdpSocket(sock_server_udp, sock_server_udp, str_status, STR_PROTO_SIZE - 1) > 0 )
+	if( sock_udp_read(sock_server_udp, sock_server_udp, str_status, STR_PROTO_SIZE - 1) > 0 )
 	{
 		//printf("str_status = %s\n", str_status);
 		readArenaFromStatus();
 	}
 }
 
-void eventScreenDownArena()
+void downArena_event()
 {
 	int i;
 
@@ -331,14 +331,14 @@ void eventScreenDownArena()
 		fclose(file);
 		file = NULL;
 		closeConnectFromDownServer();
-		loadArenaFile(path);
-		setScreen("world");
+		arenaFile_load(path);
+		screen_set("world");
 	}
 
-	eventWidgetButton(button_back);
+	button_event(button_back);
 }
 
-void stopScreenDownArena()
+void downArena_stop()
 {
 	if (file != NULL) {
 		unlink(path);
@@ -349,7 +349,7 @@ void stopScreenDownArena()
 	}
 
 	if (sock_server_udp != NULL) {
-		closeUdpSocket(sock_server_udp);
+		sock_udp_close(sock_server_udp);
 	}
 
 }
@@ -361,31 +361,31 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_back) {
-		setScreen("mainMenu");
+		screen_set("mainMenu");
 	}
 }
 
-void initScreenDownArena()
+void downArena_init()
 {
 	image_t *image;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
 	button_back =
-		newWidgetButton(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
+		button_new(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
 				WINDOW_SIZE_Y - 80, eventWidget);
 
 	label_status =
-		newWidgetLabel("none", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
+		label_new("none", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 
-	registerScreen( newScreen("downArena", startScreenDownArena, eventScreenDownArena,
-			drawScreenDownArena, stopScreenDownArena));
+	screen_register( screen_new("downArena", downArena_start, downArena_event,
+			downArena_draw, downArena_stop));
 }
 
-void quitScreenDownArena()
+void downArena_quit()
 {
-	destroyWidgetImage(image_backgorund);
-	destroyWidgetButton(button_back);
-	destroyWidgetLabel(label_status);
+	wid_image_destroy(image_backgorund);
+	button_destroy(button_back);
+	label_destroy(label_status);
 }

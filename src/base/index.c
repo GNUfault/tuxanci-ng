@@ -10,7 +10,7 @@
 
 #define DEBUG_INDEX
 
-static index_item_t *newIndexItem(int key, void *data)
+static index_item_t *index_item_new(int key, void *data)
 {
 	index_item_t *new;
 
@@ -70,17 +70,17 @@ static void checkList(list_t * list)
 }
 #endif
 
-static void destroyIndexItem(index_item_t * p)
+static void index_item_destroy(index_item_t * p)
 {
 	free(p);
 }
 
-list_t *newIndex()
+list_t *index_new()
 {
-	return newList();
+	return list_new();
 }
 
-void addToIndex(list_t * list, int key, void *data)
+void index_add(list_t * list, int key, void *data)
 {
 #ifdef DEBUG_INDEX
 	int count = 0;
@@ -91,7 +91,7 @@ void addToIndex(list_t * list, int key, void *data)
 	int min, max, point;
 	int len;
 
-	item = newIndexItem(key, data);
+	item = index_item_new(key, data);
 	len = list->count;
 
 	min = 0;
@@ -111,7 +111,7 @@ void addToIndex(list_t * list, int key, void *data)
 #endif
 
 		if (max < 0) {
-			insList(list, 0, item);
+			list_ins(list, 0, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
 #endif
@@ -119,7 +119,7 @@ void addToIndex(list_t * list, int key, void *data)
 		}
 
 		if (min >= len) {
-			addList(list, item);
+			list_add(list, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
 #endif
@@ -134,7 +134,7 @@ void addToIndex(list_t * list, int key, void *data)
 
 */
 		if (min > max) {
-			insList(list, point, item);
+			list_ins(list, point, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
 #endif
@@ -195,7 +195,7 @@ static int getOffsetFromIndex(list_t * list, int key)
 	}
 }
 
-void *getFromIndex(list_t * list, int key)
+void *index_get(list_t * list, int key)
 {
 	int offset;
 
@@ -211,18 +211,18 @@ void *getFromIndex(list_t * list, int key)
 	return NULL;
 }
 
-void delFromIndex(list_t * list, int key)
+void index_del(list_t * list, int key)
 {
 	int offset;
 
 	offset = getOffsetFromIndex(list, key);
 
 	if (offset != -1) {
-		delListItem(list, offset, destroyIndexItem);
+		list_del_item(list, offset, index_item_destroy);
 	}
 }
 
-void delFromIndexWithObject(list_t * list, int key, void *f)
+void index_del_with_object(list_t * list, int key, void *f)
 {
 	int offset;
 
@@ -237,11 +237,11 @@ void delFromIndexWithObject(list_t * list, int key, void *f)
 		fce = f;
 		fce(this);
 
-		delListItem(list, offset, destroyIndexItem);
+		list_del_item(list, offset, index_item_destroy);
 	}
 }
 
-void actionIndexWithObject(list_t * list, void *f)
+void index_action(list_t * list, void *f)
 {
 	int i;
 
@@ -256,13 +256,13 @@ void actionIndexWithObject(list_t * list, void *f)
 	}
 }
 
-void destroyIndex(list_t * list)
+void index_destroy(list_t * list)
 {
-	destroyListItem(list, destroyIndexItem);
+	list_destroy_item(list, index_item_destroy);
 }
 
-void destroyIndexWithObject(list_t * list, void *f)
+void index_destroyWithObject(list_t * list, void *f)
 {
-	actionIndexWithObject(list, f);
-	destroyListItem(list, destroyIndexItem);
+	index_action(list, f);
+	list_destroy_item(list, index_item_destroy);
 }

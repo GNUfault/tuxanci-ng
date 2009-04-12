@@ -10,19 +10,19 @@ static int fontSize;
 
 static bool_t isFontInit = FALSE;
 
-bool_t isFontInicialized()
+bool_t font_is_inicialized()
 {
 	return isFontInit;
 }
 
-void initFont()
+void font_init()
 {
 	char *arg[] = {":lang=he:outline=true:style=Book", "family", "style", "weight", "file", NULL};
 	char *font_file;
 	font_config_t *font_list;
 	int res;
 
-	assert(isInterfaceInicialized() == TRUE);
+	assert(interface_is_inicialized() == TRUE);
 
 	res = fontconfig_init();
 
@@ -69,7 +69,7 @@ void initFont()
 /*
  * Zobrazi text *string na suradnicu x y s farbou RGB
  */
-void drawFont(char *string, int x, int y, int r, int g, int b)
+void font_draw(char *string, int x, int y, int r, int g, int b)
 {
 	SDL_Surface *text;
 	image_t *image;
@@ -83,13 +83,13 @@ void drawFont(char *string, int x, int y, int r, int g, int b)
 
 	// because if string=="" TTF_RenderUTF8_Blended returns NULL
 	if( text != NULL ){
-		image = newImage(text);
-		drawImage(image, x, y, 0, 0, image->w, image->h);
-		destroyImage(image);
+		image = image_new(text);
+		image_draw(image, x, y, 0, 0, image->w, image->h);
+		image_destroy(image);
 	};
 }
 
-void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
+void font_drawMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
 {
 	SDL_Rect src_rect, dst_rect;
 	SDL_Surface *text;
@@ -121,22 +121,22 @@ void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
 	dst_rect.x = x;
 	dst_rect.y = y;
 
-	i = newImage(text);
+	i = image_new(text);
 
 	//posibly broken
-	drawImage(i, x, y, 0, 0, my_w, my_h);
-	destroyImage(i);
+	image_draw(i, x, y, 0, 0, my_w, my_h);
+	image_destroy(i);
 }
 
 /*
  * Vrati velkost daneho fontu.
  */
-int getFontSize()
+int font_get_size()
 {
 	return fontSize;
 }
 
-void getTextSize(char *s, int *w, int *h)
+void font_text_size(char *s, int *w, int *h)
 {
 	assert(s != NULL);
 	assert(w != NULL);
@@ -148,7 +148,7 @@ void getTextSize(char *s, int *w, int *h)
 /*
  * Uvolni font z pamete.
  */
-void quitFont()
+void font_quit()
 {
 	TTF_CloseFont(g_font);
 	TTF_Quit();

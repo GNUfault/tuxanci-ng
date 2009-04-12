@@ -6,7 +6,7 @@
 
 #include "buffer.h"
 
-buffer_t *newBuffer(int n)
+buffer_t *buffer_new(int n)
 {
 	buffer_t *new;
 
@@ -19,17 +19,17 @@ buffer_t *newBuffer(int n)
 	return new;
 }
 
-void *getBufferData(buffer_t * p)
+void *buffer_get_data(buffer_t * p)
 {
 	return p->data;
 }
 
-int getBufferSize(buffer_t * p)
+int buffer_get_size(buffer_t * p)
 {
 	return p->size;
 }
 
-int addBuffer(buffer_t * p, char *data, int len)
+int buffer_append(buffer_t * p, char *data, int len)
 {
 	assert(p != NULL);
 	assert(data != NULL);
@@ -44,7 +44,7 @@ int addBuffer(buffer_t * p, char *data, int len)
 	return -1;
 }
 
-int cutBuffer(buffer_t * p, int len)
+int buffer_cut(buffer_t * p, int len)
 {
 	assert(p != NULL);
 	assert(len >= 0);
@@ -58,7 +58,7 @@ int cutBuffer(buffer_t * p, int len)
 	return -1;
 }
 
-int getBufferCount(buffer_t * p)
+int buffer_count_line(buffer_t * p)
 {
 	char *begin;
 	char *end;
@@ -82,7 +82,7 @@ int getBufferCount(buffer_t * p)
 	return count;
 }
 
-int getBufferLine(buffer_t * p, char *line, int len)
+int buffer_get_line(buffer_t * p, char *line, int len)
 {
 	char *end;
 	int ret_len;
@@ -105,12 +105,12 @@ int getBufferLine(buffer_t * p, char *line, int len)
 	memset(line, 0, len);
 	memcpy(line, p->data, ret_len);
 
-	cutBuffer(p, ret_len);
+	buffer_cut(p, ret_len);
 
 	return ret_len;
 }
 
-int getBufferDataLen(buffer_t * p, char *line, int len)
+int buffer_get_data_len(buffer_t * p, char *line, int len)
 {
 	assert(p != NULL);
 	assert(line != NULL);
@@ -121,12 +121,12 @@ int getBufferDataLen(buffer_t * p, char *line, int len)
 	}
 
 	memcpy(line, p->data, len);
-	cutBuffer(p, len);
+	buffer_cut(p, len);
 
 	return len;
 }
 
-void destroyBuffer(buffer_t * p)
+void buffer_destroy(buffer_t * p)
 {
 	assert(p != NULL);
 

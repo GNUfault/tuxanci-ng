@@ -17,11 +17,11 @@ typedef struct widget_catchkey_struct {
 	void (*fce_event) (void *p);
 } widget_catchkey_t;
 
-extern widget_t *newWidgetCatchkey(int key, int x, int y, void *event);
-extern int getWidgetCatchKey(widget_t * p);
-extern void setWidgetCatchKey(widget_t * p, int key);
-extern void drawWidgetCatchkey(widget_t * p);
-extern void eventWidgetCatchkey(widget_t * p);
-extern void destroyWidgetCatchkey(widget_t * p);
+extern widget_t *catchKey_new(int key, int x, int y, void *event);
+extern int catchKey_get(widget_t * p);
+extern void catchKey_set(widget_t * p, int key);
+extern void catchKey_draw(widget_t * p);
+extern void catchKey_event(widget_t * p);
+extern void catchKey_destroy(widget_t * p);
 
 #endif

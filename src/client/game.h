@@ -3,7 +3,7 @@
 
 #    define GAME_H
 
-extern void quitGame();
-extern void startGame();
+extern void game_quit();
+extern void game_start();
 
 #endif

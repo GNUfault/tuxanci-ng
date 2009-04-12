@@ -74,57 +74,57 @@ static server_t *server_getcurr();
 
 static void hotkey_escape()
 {
-	setScreen("gameType");
+	screen_set("gameType");
 }
 
-void startScreenBrowser()
+void browser_start()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 
 	LoadServers();
 }
 
-void drawScreenBrowser()
+void browser_draw()
 {
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
-	drawWidgetLabel(label_server);
-	drawWidgetLabel(label_version);
-	drawWidgetLabel(label_address);
-	drawWidgetLabel(label_arena);
-	drawWidgetLabel(label_players);
-	drawWidgetLabel(label_ping);
+	label_draw(label_server);
+	label_draw(label_version);
+	label_draw(label_address);
+	label_draw(label_arena);
+	label_draw(label_players);
+	label_draw(label_ping);
 
-	drawWidgetSelect(select_server);
+	select_draw(select_server);
 
-	drawWidgetButton(button_play);
-	drawWidgetButton(button_back);
-	drawWidgetButton(button_refresh);
+	button_draw(button_play);
+	button_draw(button_back);
+	button_draw(button_refresh);
 }
 
-void eventScreenBrowser()
+void browser_event()
 {
-	eventWidgetSelect(select_server);
+	select_event(select_server);
 
-	eventWidgetButton(button_play);
-	eventWidgetButton(button_back);
-	eventWidgetButton(button_refresh);
+	button_event(button_play);
+	button_event(button_back);
+	button_event(button_refresh);
 }
 
-void stopScreenBrowser()
+void browser_stop()
 {
 	unsigned i = 0;
 	server_t *server;
 
-	//destroyListItem(select_server->list, free);
-	//select_server->list = newList();
-	removeAllFromWidgetSelect(select_server);
+	//list_destroy_item(select_server->list, free);
+	//select_server->list = list_new();
+	select_remove_all(select_server);
 
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 
 	while (1) {
 		i = 0;
@@ -175,14 +175,14 @@ static void eventWidget(void *p)
 		char *address = (char *) inet_ntoa(srv);
 
 		setSettingGameType(NET_GAME_TYPE_CLIENT);
-		setSettingIP(address);
-		setSettingPort(server->port);
+		gameType_set_ip(address);
+		gameType_set_port(server->port);
 
-		setScreen("world");
+		screen_set("world");
 	}
 
 	if (button == button_back) {
-		setScreen("gameType");
+		screen_set("gameType");
 	}
 
 	if (button == button_refresh) {
@@ -197,7 +197,7 @@ server_t *server_getcurr()
 
 	for (server = server_list.next; server != &server_list;
 		 server = server->next) {
-		if (i == getWidgetSelectIndex(select_server))
+		if (i == select_get_index(select_server))
 			return server;
 
 		i++;
@@ -437,7 +437,7 @@ static int LoadServers()
 	struct sockaddr_in server;
 	char *master_server_ip;
 
-	master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
+	master_server_ip = gns_resolv(NET_MASTER_SERVER_DOMAIN);
 
 	//printf("master_server_ip = %s\n", master_server_ip);
 
@@ -590,7 +590,7 @@ static int LoadServers()
 			memcpy(list + 83, buf, strlen(buf));
 		}
 
-		addToWidgetSelect(select_server, list);
+		select_add(select_server, list);
 
 		// add into list
 		ctx->next = &server_list;
@@ -610,10 +610,10 @@ static int LoadServers()
 static int RefreshServers()
 {
 /*
-	destroyListItem(select_server->list, free);
-	select_server->list = newList();
+	list_destroy_item(select_server->list, free);
+	select_server->list = list_new();
 */
-	removeAllFromWidgetSelect(select_server);
+	select_remove_all(select_server);
 
 	struct in_addr srv;
 
@@ -672,60 +672,60 @@ static int RefreshServers()
 			memcpy(list + 83, buf, strlen(buf));
 		}
 
-		addToWidgetSelect(select_server, list);
+		select_add(select_server, list);
 
 	}
 
 	return 1;
 }
 
-void initScreenBrowser()
+void browser_init()
 {
 	image_t *image;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
 	button_back =
-		newWidgetButton(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
+		button_new(_("back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
 	button_play =
-		newWidgetButton(_("Play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100,
+		button_new(_("Play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100,
 						eventWidget);
 	button_refresh =
-		newWidgetButton(_("Refresh"), WINDOW_SIZE_X / 2 - 50,
+		button_new(_("Refresh"), WINDOW_SIZE_X / 2 - 50,
 						WINDOW_SIZE_Y - 100, eventWidget);
 
-	label_server = newWidgetLabel(_("server"), 120, 145, WIDGET_LABEL_LEFT);
-	label_version = newWidgetLabel(_("version"), 290, 145, WIDGET_LABEL_LEFT);
-	label_address = newWidgetLabel(_("IP"), 400, 145, WIDGET_LABEL_LEFT);
-	label_arena = newWidgetLabel(_("arena"), 550, 145, WIDGET_LABEL_LEFT);
-	label_players = newWidgetLabel(_("clients"), 645, 145, WIDGET_LABEL_LEFT);
-	label_ping = newWidgetLabel(_("ping"), 720, 145, WIDGET_LABEL_LEFT);
+	label_server = label_new(_("server"), 120, 145, WIDGET_LABEL_LEFT);
+	label_version = label_new(_("version"), 290, 145, WIDGET_LABEL_LEFT);
+	label_address = label_new(_("IP"), 400, 145, WIDGET_LABEL_LEFT);
+	label_arena = label_new(_("arena"), 550, 145, WIDGET_LABEL_LEFT);
+	label_players = label_new(_("clients"), 645, 145, WIDGET_LABEL_LEFT);
+	label_ping = label_new(_("ping"), 720, 145, WIDGET_LABEL_LEFT);
 
-	select_server = newWidgetSelect(50, label_server->y + 40, eventWidget);
+	select_server = select_new(50, label_server->y + 40, eventWidget);
 
-	registerScreen(newScreen
-				   ("browser", startScreenBrowser, eventScreenBrowser,
-					drawScreenBrowser, stopScreenBrowser));
+	screen_register(screen_new
+				   ("browser", browser_start, browser_event,
+					browser_draw, browser_stop));
 
 	server_list.next = &server_list;
 	server_list.prev = &server_list;
 }
 
-void quitScreenBrowser()
+void browser_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetButton(button_play);
-	destroyWidgetButton(button_back);
-	destroyWidgetButton(button_refresh);
+	button_destroy(button_play);
+	button_destroy(button_back);
+	button_destroy(button_refresh);
 
-	destroyWidgetLabel(label_server);
-	destroyWidgetLabel(label_version);
-	destroyWidgetLabel(label_address);
-	destroyWidgetLabel(label_arena);
-	destroyWidgetLabel(label_players);
-	destroyWidgetLabel(label_ping);
+	label_destroy(label_server);
+	label_destroy(label_version);
+	label_destroy(label_address);
+	label_destroy(label_arena);
+	label_destroy(label_players);
+	label_destroy(label_ping);
 
-	destroyWidgetSelect(select_server);
+	select_destroy(select_server);
 }

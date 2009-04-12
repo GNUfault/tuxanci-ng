@@ -8,8 +8,8 @@
 #    define LOG_WRN		3
 #    define LOG_ERR		4
 
-extern int initLog(char *name);
-extern void addToLog(int type, char *msg);
-extern void quitLog();
+extern int log_init(char *name);
+extern void log_add(int type, char *msg);
+extern void log_quit();
 
 #endif

@@ -8,13 +8,13 @@
 
 #    define WORLD_COUNT_ROUND_UNLIMITED	-1
 
-extern char *getSetting(char *env, char *param, char *default_val);
-extern void countRoundInc();
-extern int initPublicServer();
-extern arenaFile_t *getChoiceArena();
+extern char *publicServer_get_setting(char *env, char *param, char *default_val);
+extern void word_inc_round();
+extern int publicServer_init();
+extern arenaFile_t *choiceArena_get();
 extern void eventPublicServer();
 extern void my_handler_quit(int n);
-extern void quitPublicServer();
-extern int startPublicServer();
+extern void publicServer_quit();
+extern int publicServer_start();
 
 #endif

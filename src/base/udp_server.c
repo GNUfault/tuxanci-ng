@@ -46,13 +46,13 @@
 static sock_udp_t *sock_server_udp;
 static sock_udp_t *sock_server_udp_second;
 
-client_t *newUdpClient(sock_udp_t * sock_udp)
+client_t *serverUdp_new_client(sock_udp_t * sock_udp)
 {
 	client_t *new;
 
 	assert(sock_udp != NULL);
 
-	new = newAnyClient();
+	new = server_new_any_client();
 	new->type = CLIENT_TYPE_UDP;
 	new->socket_udp = sock_udp;
 
@@ -60,40 +60,40 @@ client_t *newUdpClient(sock_udp_t * sock_udp)
 	char str_log[STR_LOG_SIZE];
 	char str_ip[STR_IP_SIZE];
 
-	getSockUdpIp(sock_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, _("New client \"%s\" on port \"%d\" connected"), str_ip, getSockUdpPort(sock_udp));
-	addToLog(LOG_INF, str_log);
+	sock_udp_get_ip(sock_udp, str_ip, STR_IP_SIZE);
+	sprintf(str_log, _("New client \"%s\" on port \"%d\" connected"), str_ip, sock_udp_get_port(sock_udp));
+	log_add(LOG_INF, str_log);
 #endif
 
 	return new;
 }
 
-void destroyUdpClient(client_t * p)
+void serverUdp_destroy_client(client_t * p)
 {
-	eventMsgInCheckFront(p);
+	checkFront_event(p);
 
 #ifdef PUBLIC_SERVER
 	char str_log[STR_LOG_SIZE];
 	char str_ip[STR_IP_SIZE];
 
-	getSockUdpIp(p->socket_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, _("Client \"%s\" on port \"%d\" disconnected"), str_ip, getSockUdpPort(p->socket_udp));
-	addToLog(LOG_INF, str_log);
+	sock_udp_get_ip(p->socket_udp, str_ip, STR_IP_SIZE);
+	sprintf(str_log, _("Client \"%s\" on port \"%d\" disconnected"), str_ip, sock_udp_get_port(p->socket_udp));
+	log_add(LOG_INF, str_log);
 #endif
 
-	destroySockUdp(p->socket_udp);
+	sock_udp_destroy(p->socket_udp);
 
-	destroyAnyClient(p);
+	server_destroy_any_client(p);
 }
 
-int initUdpServer(char *ip4, int port4, char *ip6, int port6)
+int serverUdp_init(char *ip4, int port4, char *ip6, int port6)
 {
 	int ret;
 
 	ret = 0;
 
 	if (ip4 != NULL) {
-		sock_server_udp = bindUdpSocket(ip4, port4);
+		sock_server_udp = sock_udp_bind(ip4, port4);
 
 		if (sock_server_udp != NULL) {
 			ret++;
@@ -104,7 +104,7 @@ int initUdpServer(char *ip4, int port4, char *ip6, int port6)
 	}
 
 	if (ip6 != NULL) {
-		sock_server_udp_second = bindUdpSocket(ip6, port6);
+		sock_server_udp_second = sock_udp_bind(ip6, port6);
 
 		if (sock_server_udp_second != NULL) {
 			ret++;
@@ -124,10 +124,10 @@ static void eventCreateNewUdpClient(sock_udp_t * socket_udp)
 
 	assert(socket_udp != NULL);
 
-	listClient = getListServerClient();
+	listClient = server_get_list_clients();
 
-	client = newUdpClient(socket_udp);
-	addList(listClient, client);
+	client = serverUdp_new_client(socket_udp);
+	list_add(listClient, client);
 }
 
 static client_t *findUdpClient(sock_udp_t * sock_udp)
@@ -136,8 +136,8 @@ static client_t *findUdpClient(sock_udp_t * sock_udp)
 	int port;
 	int i;
 
-	port = getSockUdpPort(sock_udp);
-	listClient = getListServerClient();
+	port = sock_udp_get_port(sock_udp);
+	listClient = server_get_list_clients();
 
 	for (i = 0; i < listClient->count; i++) {
 		client_t *client;
@@ -145,7 +145,7 @@ static client_t *findUdpClient(sock_udp_t * sock_udp)
 		client = (client_t *) listClient->list[i];
 
 		if (client->type == CLIENT_TYPE_UDP &&
-		    getSockUdpPort(client->socket_udp) == port) {
+		    sock_udp_get_port(client->socket_udp) == port) {
 			return client;
 		}
 	}
@@ -153,7 +153,7 @@ static client_t *findUdpClient(sock_udp_t * sock_udp)
 	return NULL;
 }
 
-static void eventClientUdpSelect(sock_udp_t * sock_server)
+static void client_eventUdpSelect(sock_udp_t * sock_server)
 {
 	sock_udp_t *sock_client;
 	client_t *client;
@@ -163,12 +163,12 @@ static void eventClientUdpSelect(sock_udp_t * sock_server)
 
 	assert(sock_server != NULL);
 
-	sock_client = newSockUdp();
+	sock_client = sock_udp_new();
 	isCreateNewClient = FALSE;
 
 	memset(listRecvMsg, 0, STR_SIZE);
 
-	ret = readUdpSocket(sock_server, sock_client, listRecvMsg, STR_SIZE - 1);
+	ret = sock_udp_read(sock_server, sock_client, listRecvMsg, STR_SIZE - 1);
 
 	client = findUdpClient(sock_client);
 
@@ -184,7 +184,7 @@ static void eventClientUdpSelect(sock_udp_t * sock_server)
 	}
 
 	if (isCreateNewClient == FALSE) {
-		destroySockUdp(sock_client);
+		sock_udp_destroy(sock_client);
 	}
 
 	if (ret <= 0) {
@@ -193,36 +193,36 @@ static void eventClientUdpSelect(sock_udp_t * sock_server)
 	}
 
 	//printf("add packet >>%s<<\n", listRecvMsg);
-	addList(client->listRecvMsg, strdup(listRecvMsg));
+	list_add(client->listRecvMsg, strdup(listRecvMsg));
 }
 
-void setServerUdpSelect()
+void serverUdp_set_select()
 {
 	if (sock_server_udp != NULL) {
-		addSockToSelectRead(sock_server_udp->sock);
+		select_add_sock_for_read(sock_server_udp->sock);
 	}
 
 	if (sock_server_udp_second != NULL) {
-		addSockToSelectRead(sock_server_udp_second->sock);
+		select_add_sock_for_read(sock_server_udp_second->sock);
 	}
 }
 
-int selectServerUdpSocket()
+int serverUdp_select_sock()
 {
 	int count;
 
 	count = 0;
 
 	if (sock_server_udp != NULL) {
-		if (isChangeSockInSelectRead(sock_server_udp->sock)) {
-			eventClientUdpSelect(sock_server_udp);
+		if (select_is_change_sock_for_read(sock_server_udp->sock)) {
+			client_eventUdpSelect(sock_server_udp);
 			count++;
 		}
 	}
 
 	if (sock_server_udp_second != NULL) {
-		if (isChangeSockInSelectRead(sock_server_udp_second->sock)) {
-			eventClientUdpSelect(sock_server_udp_second);
+		if (select_is_change_sock_for_read(sock_server_udp_second->sock)) {
+			client_eventUdpSelect(sock_server_udp_second);
 			count++;
 		}
 	}
@@ -230,16 +230,16 @@ int selectServerUdpSocket()
 	return count;
 }
 
-void quitUdpServer()
+void serverUdp_quit()
 {
 	if (sock_server_udp != NULL) {
-		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp));
-		closeUdpSocket(sock_server_udp);
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), sock_udp_get_port(sock_server_udp));
+		sock_udp_close(sock_server_udp);
 	}
 
 	if (sock_server_udp_second != NULL) {
-		DEBUG_MSG(_("Closing port: \"%d\"\n"), getSockUdpPort(sock_server_udp_second));
-		closeUdpSocket(sock_server_udp_second);
+		DEBUG_MSG(_("Closing port: \"%d\"\n"), sock_udp_get_port(sock_server_udp_second));
+		sock_udp_close(sock_server_udp_second);
 	}
 
 	DEBUG_MSG(_("Quitting UDP\n"));

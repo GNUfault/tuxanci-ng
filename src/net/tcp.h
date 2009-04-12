@@ -31,17 +31,17 @@ typedef struct struct_sock_tcp_t {
 #    endif
 } sock_tcp_t;
 
-extern sock_tcp_t *newSockTcp(void);
-extern void destroySockTcp(sock_tcp_t * p);
-extern sock_tcp_t *bindTcpSocket(char *addresss, int port);
-extern sock_tcp_t *getTcpNewClient(sock_tcp_t * p);
-extern void getSockTcpIp(sock_tcp_t * p, char *str_ip, int len);
-extern int getSockTcpPort(sock_tcp_t * p);
-extern sock_tcp_t *connectTcpSocket(char *ip, int port);
-extern int disableNagle(sock_tcp_t * p);
-extern int setTcpSockNonBlock(sock_tcp_t * p);
-extern int readTcpSocket(sock_tcp_t * p, void *address, int len);
-extern int writeTcpSocket(sock_tcp_t * p, void *address, int len);
-extern void closeTcpSocket(sock_tcp_t * p);
+extern sock_tcp_t *sock_tcp_new(void);
+extern void sock_tcp_destroy(sock_tcp_t * p);
+extern sock_tcp_t *sock_tcp_bind(char *addresss, int port);
+extern sock_tcp_t *sock_tcp_accept(sock_tcp_t * p);
+extern void sock_tcp_get_ip(sock_tcp_t * p, char *str_ip, int len);
+extern int sock_tcp_get_port(sock_tcp_t * p);
+extern sock_tcp_t *sock_tcp_connect(char *ip, int port);
+extern int sock_tcp_diable_nagle(sock_tcp_t * p);
+extern int sock_tcp_set_non_block(sock_tcp_t * p);
+extern int sock_tcp_read(sock_tcp_t * p, void *address, int len);
+extern int sock_tcp_write(sock_tcp_t * p, void *address, int len);
+extern void sock_tcp_close(sock_tcp_t * p);
 
 #endif

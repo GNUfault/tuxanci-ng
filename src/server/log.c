@@ -11,7 +11,7 @@
 
 static FILE *logFile;
 
-int initLog(char *name)
+int log_init(char *name)
 {
 	logFile = fopen(name, "a");
 
@@ -22,12 +22,12 @@ int initLog(char *name)
 
 	DEBUG_MSG(_("I use logfile: \"%s\")\n"), name);
 
-	addToLog(LOG_INF, "open log file");
+	log_add(LOG_INF, "open log file");
 
 	return 0;
 }
 
-void addToLog(int type, char *msg)
+void log_add(int type, char *msg)
 {
 	char str[STR_LOG_SIZE];
 	struct tm *tm_struct;
@@ -65,8 +65,8 @@ void addToLog(int type, char *msg)
 	fflush(logFile);
 }
 
-void quitLog()
+void log_quit()
 {
-	addToLog(LOG_INF, "close log file");
+	log_add(LOG_INF, "close log file");
 	fclose(logFile);
 }

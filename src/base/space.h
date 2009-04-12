@@ -25,30 +25,30 @@ typedef struct space_struct {
 	void (*setStatus) (void *p, int x, int y, int w, int h);
 } space_t;
 
-extern space_t *newSpace(int w, int h, int segW, int segH,
+extern space_t *space_new(int w, int h, int segW, int segH,
 						 void (*getStatus) (void *p, int *id, int *x, int *y,
 											int *w, int *h),
 						 void (*setStatus) (void *p, int x, int y, int w,
 											int h));
 
-extern int getSpaceCount(space_t * p);
-extern void *getItemFromSpace(space_t * p, int offset);
-extern void addObjectToSpace(space_t * p, void *item);
-extern void getObjectFromSpace(space_t * p, int x, int y, int w, int h,
+extern int space_get_count(space_t * p);
+extern void *space_get_item(space_t * p, int offset);
+extern void space_add(space_t * p, void *item);
+extern void space_get_object(space_t * p, int x, int y, int w, int h,
 							   list_t * list);
-extern void *getObjectFromSpaceWithID(space_t * p, int id);
-extern int isConflictWithObjectFromSpace(space_t * p, int x, int y, int w,
+extern void *space_get_object_id(space_t * p, int id);
+extern int space_is_conflict_with_object(space_t * p, int x, int y, int w,
 										 int h);
-extern int isConflictWithObjectFromSpaceBut(space_t * p, int x, int y, int w,
+extern int space_is_conflict_with_object_but(space_t * p, int x, int y, int w,
 											int h, void *but);
-extern void delObjectFromSpace(space_t * p, void *item);
-extern void delObjectFromSpaceWithObject(space_t * p, void *item, void *f);
-extern void moveObjectInSpace(space_t * p, void *item, int move_x, int move_y);
-extern void printSpace(space_t * p);
-extern void actionSpace(space_t * space, void *f, void *p);
-extern void actionSpaceFromLocation(space_t * space, void *f, void *p, int x,
+extern void space_del(space_t * p, void *item);
+extern void space_del_with_item(space_t * p, void *item, void *f);
+extern void space_move_object(space_t * p, void *item, int move_x, int move_y);
+extern void space_print(space_t * p);
+extern void space_action(space_t * space, void *f, void *p);
+extern void space_action_from_location(space_t * space, void *f, void *p, int x,
 									int y, int w, int h);
-extern void destroySpace(space_t * p);
-extern void destroySpaceWithObject(space_t * p, void *f);
+extern void space_destroy(space_t * p);
+extern void space_destroy_with_item(space_t * p, void *f);
 
 #endif

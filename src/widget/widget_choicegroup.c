@@ -9,7 +9,7 @@
 #include "widget.h"
 #include "widget_choicegroup.h"
 
-widget_t *newWidgetChoicegroup(int x, int y, bool_t status, list_t * list, void (*fce_event) (void *))
+widget_t *choiceGroup_new(int x, int y, bool_t status, list_t * list, void (*fce_event) (void *))
 {
 	widget_choicegroup_t *new;
 	widget_t *widget;
@@ -20,14 +20,14 @@ widget_t *newWidgetChoicegroup(int x, int y, bool_t status, list_t * list, void 
 	new->fce_event = fce_event;
 	new->list = list;
 
-	widget = newWidget(WIDGET_TYPE_CHOICE, x, y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, new);
+	widget = widget_new(WIDGET_TYPE_CHOICE, x, y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, new);
 
-	addList(new->list, widget);
+	list_add(new->list, widget);
 
 	return widget;
 }
 
-void drawWidgetChoicegroup(widget_t * widget)
+void choiceGroup_draw(widget_t * widget)
 {
 	widget_choicegroup_t *p;
 	static image_t *g_choicegroup = NULL;
@@ -39,10 +39,10 @@ void drawWidgetChoicegroup(widget_t * widget)
 
 	p = (widget_choicegroup_t *) widget->private_data;
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
 	if (g_choicegroup == NULL) {
-		g_choicegroup = addImageData("choice.png", IMAGE_ALPHA, "choicegroup", IMAGE_GROUP_BASE);
+		g_choicegroup = image_add("choice.png", IMAGE_ALPHA, "choicegroup", IMAGE_GROUP_BASE);
 	}
 
 	if (p->status == TRUE) {
@@ -51,11 +51,11 @@ void drawWidgetChoicegroup(widget_t * widget)
 		offset = WIDGET_CHOICEGROUP_WIDTH;
 	}
 
-	drawImage(g_choicegroup, widget->x, widget->y, offset, 0,
+	image_draw(g_choicegroup, widget->x, widget->y, offset, 0,
 		  WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT);
 }
 
-void setWidgetChoiceActive(widget_t * widget)
+void choiceGroup_set_active(widget_t * widget)
 {
 	widget_choicegroup_t *p;
 	int i;
@@ -82,7 +82,7 @@ void setWidgetChoiceActive(widget_t * widget)
 	}
 }
 
-bool_t getWidgetChoiceStatus(widget_t * widget)
+bool_t choiceGroup_get_status(widget_t * widget)
 {
 	widget_choicegroup_t *p;
 
@@ -94,7 +94,7 @@ bool_t getWidgetChoiceStatus(widget_t * widget)
 	return p->status;
 }
 
-void setWidgetChoiceStatus(widget_t * widget, bool_t status)
+void choiceGroup_set_status(widget_t * widget, bool_t status)
 {
 	widget_choicegroup_t *p;
 
@@ -105,7 +105,7 @@ void setWidgetChoiceStatus(widget_t * widget, bool_t status)
 	p->status = status;
 }
 
-void eventWidgetChoicegroup(widget_t * widget)
+void choiceGroup_event(widget_t * widget)
 {
 	widget_choicegroup_t *p;
 	int x, y;
@@ -120,16 +120,16 @@ void eventWidgetChoicegroup(widget_t * widget)
 		return;
 	}
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
 	if (x >= widget->x && x <= widget->x + WIDGET_CHOICEGROUP_WIDTH &&
 	    y >= widget->y && y <= widget->y + WIDGET_CHOICEGROUP_HEIGHT &&
-		isMouseClicked()) {
-		setWidgetChoiceActive(widget);
+		interface_is_mouse_clicket()) {
+		choiceGroup_set_active(widget);
 	}
 }
 
-void destroyWidgetChoicegroup(widget_t * widget)
+void choiceGroup_destroy(widget_t * widget)
 {
 	widget_choicegroup_t *p;
 	int my_index;
@@ -138,10 +138,10 @@ void destroyWidgetChoicegroup(widget_t * widget)
 	assert(widget->type == WIDGET_TYPE_CHOICE);
 
 	p = (widget_choicegroup_t *) widget->private_data;
-	my_index = searchListItem(p->list, widget);
+	my_index = list_search(p->list, widget);
 	assert(my_index != -1);
-	delList(p->list, my_index);
+	list_del(p->list, my_index);
 
 	free(p);
-	destroyWidget(widget);
+	widget_destroy(widget);
 }

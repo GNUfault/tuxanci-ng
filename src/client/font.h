@@ -17,13 +17,13 @@
 #    define COLOR_YELLOW	255, 255, 0
 #    define FONT_SIZE	16
 
-extern bool_t isFontInicialized();
-extern void initFont();
-extern void drawFont(char *s, int x, int y, int r, int g, int b);
-extern void drawFontMaxSize(char *s, int x, int y, int w, int h, int r, int g,
+extern bool_t font_is_inicialized();
+extern void font_init();
+extern void font_draw(char *s, int x, int y, int r, int g, int b);
+extern void font_drawMaxSize(char *s, int x, int y, int w, int h, int r, int g,
 							int b);
-extern int getFontSize();
-extern void getTextSize(char *s, int *w, int *h);
-extern void quitFont();
+extern int font_get_size();
+extern void font_text_size(char *s, int *w, int *h);
+extern void font_quit();
 
 #endif

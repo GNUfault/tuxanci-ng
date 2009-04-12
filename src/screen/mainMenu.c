@@ -34,41 +34,41 @@ static widget_t *button_end;
 
 static void hotkey_escape()
 {
-	quitGame();
+	game_quit();
 }
 
-void startScreenMainMenu()
+void mainMenu_start()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenMainMenu()
+void mainMenu_draw()
 {
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
-	drawWidgetButton(button_play);
-	drawWidgetButton(button_setting);
-	drawWidgetButton(button_table);
-	drawWidgetButton(button_credits);
-	drawWidgetButton(button_end);
+	button_draw(button_play);
+	button_draw(button_setting);
+	button_draw(button_table);
+	button_draw(button_credits);
+	button_draw(button_end);
 }
 
-void eventScreenMainMenu()
+void mainMenu_event()
 {
-	eventWidgetButton(button_play);
-	eventWidgetButton(button_setting);
-	eventWidgetButton(button_table);
-	eventWidgetButton(button_credits);
-	eventWidgetButton(button_end);
+	button_event(button_play);
+	button_event(button_setting);
+	button_event(button_table);
+	button_event(button_credits);
+	button_event(button_end);
 }
 
-void stopScreenMainMenu()
+void mainMenu_stop()
 {
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -78,56 +78,56 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_play) {
-		setScreen("gameType");
+		screen_set("gameType");
 	}
 
 	if (button == button_setting) {
-		setScreen("setting");
+		screen_set("setting");
 	}
 
 	if (button == button_table) {
-		setScreen("table");
+		screen_set("table");
 	}
 
 	if (button == button_credits) {
-		setScreen("credits");
+		screen_set("credits");
 	}
 
 	if (button == button_end) {
-		quitGame();
+		game_quit();
 	}
 }
 
-void initScreenMainMenu()
+void mainMenu_init()
 {
 	image_t *image;
 
 	image =
-		addImageData("screen_main.png", IMAGE_NO_ALPHA, "screen_main",
+		image_add("screen_main.png", IMAGE_NO_ALPHA, "screen_main",
 					 IMAGE_GROUP_BASE);
-	image_backgorund = newWidgetImage(0, 0, image);
+	image_backgorund = wid_image_new(0, 0, image);
 
-	button_play = newWidgetButton(_("Start game"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 200, eventWidget);
-	button_setting = newWidgetButton(_("Settings"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 250, eventWidget);
-	button_table = newWidgetButton(_("Highscore"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 300, eventWidget);
-	button_credits = newWidgetButton(_("Credits"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 350, eventWidget);
-	button_end = newWidgetButton(_("Quit game"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 400, eventWidget);
+	button_play = button_new(_("Start game"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 200, eventWidget);
+	button_setting = button_new(_("Settings"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 250, eventWidget);
+	button_table = button_new(_("Highscore"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 300, eventWidget);
+	button_credits = button_new(_("Credits"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 350, eventWidget);
+	button_end = button_new(_("Quit game"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2, 400, eventWidget);
 
 #ifndef NO_SOUND
-	addMusic("menu.ogg", "menu", MUSIC_GROUP_BASE);
+	music_add("menu.ogg", "menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerScreen( newScreen("mainMenu", startScreenMainMenu, eventScreenMainMenu,
-			drawScreenMainMenu, stopScreenMainMenu));
+	screen_register( screen_new("mainMenu", mainMenu_start, mainMenu_event,
+			mainMenu_draw, mainMenu_stop));
 }
 
-void quitScreenMainMenu()
+void mainMenu_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetButton(button_play);
-	destroyWidgetButton(button_setting);
-	destroyWidgetButton(button_table);
-	destroyWidgetButton(button_credits);
-	destroyWidgetButton(button_end);
+	button_destroy(button_play);
+	button_destroy(button_setting);
+	button_destroy(button_table);
+	button_destroy(button_credits);
+	button_destroy(button_end);
 }

@@ -12,11 +12,11 @@
 #    define DOWN_ARENA_MAX_TIEMOUT_LIMIT	500
 #    define DOWN_ARENA_COUNT_READ_SOCKET	100
 
-extern void startScreenDownArena();
-extern void drawScreenDownArena();
-extern void eventScreenDownArena();
-extern void stopScreenDownArena();
-extern void initScreenDownArena();
-extern void quitScreenDownArena();
+extern void downArena_start();
+extern void downArena_draw();
+extern void downArena_event();
+extern void downArena_stop();
+extern void downArena_init();
+extern void downArena_quit();
 
 #endif

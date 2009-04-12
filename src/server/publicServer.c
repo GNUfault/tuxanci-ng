@@ -47,13 +47,13 @@ extern int errno;
 
 #define	__PACKED__ __attribute__ ((__packed__))
 
-void countRoundInc()
+void word_inc_round()
 {
 }
 
-char *getSetting(char *env, char *param, char *default_val)
+char *publicServer_get_setting(char *env, char *param, char *default_val)
 {
-	return getParamElse(param, getServerConfigFileValue(env, default_val));
+	return getParamElse(param, server_configFile_get_value(env, default_val));
 }
 
 static int registerPublicServer()
@@ -68,7 +68,7 @@ static int registerPublicServer()
 	struct sockaddr_in server;
 	char *master_server_ip;
 
-	master_server_ip = getIPFormDNS(NET_MASTER_SERVER_DOMAIN);
+	master_server_ip = gns_resolv(NET_MASTER_SERVER_DOMAIN);
 
 	//printf("master_server_ip = %s\n", master_server_ip);
 
@@ -161,7 +161,7 @@ static int registerPublicServer()
 	register_head *head = (register_head *) str;
 
 	head->cmd = 'p';
-	head->port = atoi(getSetting("PORT4", "--port4", "6800"));
+	head->port = atoi(publicServer_get_setting("PORT4", "--port4", "6800"));
 	head->ip = 0;				// TODO
 
 	/* send request for server list */
@@ -186,7 +186,7 @@ static int registerPublicServer()
 	return 0;
 }
 
-static int initPublicServerNetwork()
+static int publicServer_initNetwork()
 {
 	char ip4[STR_IP_SIZE];
 	char ip6[STR_IP_SIZE];
@@ -197,8 +197,8 @@ static int initPublicServerNetwork()
 
 	ret = -1;
 
-	strcpy(ip4, getSetting("IP4", "--ip4", "none"));
-	strcpy(ip6, getSetting("IP6", "--ip6", "none"));
+	strcpy(ip4, publicServer_get_setting("IP4", "--ip4", "none"));
+	strcpy(ip6, publicServer_get_setting("IP6", "--ip6", "none"));
 
 	p_ip4 = ip4;
 
@@ -212,68 +212,68 @@ static int initPublicServerNetwork()
 		p_ip6 = NULL;
 	}
 
-	port4 = atoi(getSetting("PORT4", "--port4", "6800"));
-	port6 = atoi(getSetting("PORT6", "--port6", "6800"));
+	port4 = atoi(publicServer_get_setting("PORT4", "--port4", "6800"));
+	port6 = atoi(publicServer_get_setting("PORT6", "--port6", "6800"));
 
 	//ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
 
-	ret = initNetMuliplayerForGameServer(p_ip4, port4, p_ip6, port6);
+	ret = netMultiplayer_init_for_game_server(p_ip4, port4, p_ip6, port6);
 
 	return ret;
 }
 
-static void loadArena()
+static void load_arena()
 {
-	choice_arenaFile = getArenaFileFormNetName(getSetting("ARENA", "--arena", "FAGN"));
+	choice_arenaFile = arenaFile_get_file_format_net_name(publicServer_get_setting("ARENA", "--arena", "FAGN"));
 
 	if (choice_arenaFile == NULL) {
-		fprintf(stderr, _("I dont load arena %s!\n"), getSetting("ARENA", "--arena", "FAGN"));
+		fprintf(stderr, _("I dont load arena %s!\n"), publicServer_get_setting("ARENA", "--arena", "FAGN"));
 		exit(-1);
 	}
 
-	arena = getArena(choice_arenaFile);
+	arena = arenaFile_get_arena(choice_arenaFile);
 
-	setCurrentArena(arena);
+	arena_set_current(arena);
 }
 
-int initPublicServer()
+int publicServer_init()
 {
 	int ret;
 	int i;
 
-	initListID();
-	initModule();
-	initArenaFile();
-	initTux();
-	initItem();
-	initShot();
-	initServerConfigFile();
+	id_init_list();
+	module_init();
+	arenaFile_init();
+	tux_init();
+	item_init();
+	shot_init();
+	server_configFile_init();
 
-	ret = initLog(getSetting("LOG_FILE", "--log-file", "/tmp/tuxanci-server.log"));
+	ret = log_init(publicServer_get_setting("LOG_FILE", "--log-file", "/tmp/tuxanci-server.log"));
 
 	if (ret < 0) {
 		fprintf(stderr, _("I was unable to open config file!\n"));
 		return -1;
 	}
 
-	initHighScore(getSetting("SCORE_FILE", "--score-file", "/tmp/highscore.txt"));
+	highScore_init(publicServer_get_setting("SCORE_FILE", "--score-file", "/tmp/highscore.txt"));
 
-	loadArena();
+	load_arena();
 
-	for (i = 0; i < atoi(getSetting("ITEM", "--item", "10")); i++) {
-		addNewItem(arena->spaceItem, ID_UNKNOWN);
+	for (i = 0; i < atoi(publicServer_get_setting("ITEM", "--item", "10")); i++) {
+		item_add_new_item(arena->spaceItem, ID_UNKNOWN);
 	}
 
 	isSignalEnd = FALSE;
 
-	ret = initPublicServerNetwork();
+	ret = publicServer_initNetwork();
 
 	if (ret < 0) {
 		printf(_("Unable to initialize network socket!\n"));
 		return -1;
 	}
 
-	setServerMaxClients(atoi (getSetting("MAX_CLIENTS", "--max-clients", "32")));
+	server_set_max_clients(atoi (publicServer_get_setting("MAX_CLIENTS", "--max-clients", "32")));
 
 	if (registerPublicServer() < 0) {
 		printf(_("Unable to contact MasterServer!)\n"));
@@ -282,7 +282,7 @@ int initPublicServer()
 	return 0;
 }
 
-arenaFile_t *getChoiceArena()
+arenaFile_t *choiceArena_get()
 {
 	return choice_arenaFile;
 }
@@ -292,26 +292,26 @@ void eventPublicServer()
 	static my_time_t lastActive = 0;
 	my_time_t interval;
 
-	eventNetMultiplayer();
+	netMultiplayer_event();
 
 	if (isSignalEnd == TRUE) {
-		quitPublicServer();
+		publicServer_quit();
 	}
 
 	if (lastActive == 0) {
-		lastActive = getMyTime();
+		lastActive = timer_get_current_time();
 	}
 
-	interval = getMyTime() - lastActive;
+	interval = timer_get_current_time() - lastActive;
 
 	if (interval < 50) {
 		return;
 	}
 	//printf("interval = %d\n", interval);
 
-	lastActive = getMyTime();
+	lastActive = timer_get_current_time();
 
-	eventArena(arena);
+	arena_event(arena);
 }
 
 void my_handler_quit(int n)
@@ -321,36 +321,36 @@ void my_handler_quit(int n)
 	isSignalEnd = TRUE;
 }
 
-void quitPublicServer()
+void publicServer_quit()
 {
 	DEBUG_MSG(_("Quitting public server\n"));
 
-	quitNetMultiplayer();
-	destroyArena(arena);
+	netMultiplayer_quit();
+	arena_destroy(arena);
 
-	quitTux();
-	quitItem();
-	quitShot();
+	tux_quit();
+	item_quiy();
+	shot_quit();
 
-	quitArenaFile();
-	quitServerConfigFile();
-	quitModule();
-	quitListID();
-	quitHighScore();
-	quitLog();
+	arenaFile_quit();
+	server_configFile_quit();
+	module_quit();
+	id_quit_list();
+	highScore_quit();
+	log_quit();
 
 	exit(0);
 }
 
-int startPublicServer()
+int publicServer_start()
 {
 #ifndef __WIN32__
 	signal(SIGINT, my_handler_quit);
 	signal(SIGTERM, my_handler_quit);
 	signal(SIGQUIT, my_handler_quit);
 #endif
-	if (initPublicServer() < 0) {
-		quitPublicServer();
+	if (publicServer_init() < 0) {
+		publicServer_quit();
 		return -1;
 	}
 

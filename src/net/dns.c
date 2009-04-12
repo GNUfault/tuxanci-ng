@@ -12,7 +12,7 @@
 
 #include "main.h"
 
-char *getIPFormDNS(char *domain)
+char *gns_resolv(char *domain)
 {
 	struct hostent *host;
 

@@ -46,15 +46,15 @@ typedef struct image_struct
 } image_t;
 #endif
 
-extern bool_t isImageInicialized();
-extern void initImageData();
-extern image_t* newImage(SDL_Surface *surface);
-extern void destroyImage(image_t * p);
-extern image_t *addImageData(char *file, int alpha, char *name, char *group);
-extern image_t *getImage(char *group, char *name);
-extern void delImage(char *group, char *name);
-extern void delAllImageInGroup(char *group);
-extern void drawImage(image_t * p, int x, int y, int px, int py, int w, int h);
-extern void quitImageData();
+extern bool_t image_is_inicialized();
+extern void image_init();
+extern image_t* image_new(SDL_Surface *surface);
+extern void image_destroy(image_t * p);
+extern image_t *image_add(char *file, int alpha, char *name, char *group);
+extern image_t *image_get(char *group, char *name);
+extern void image_del(char *group, char *name);
+extern void image_del_all_image_in_group(char *group);
+extern void image_draw(image_t * p, int x, int y, int px, int py, int w, int h);
+extern void image_quit();
 
 #endif

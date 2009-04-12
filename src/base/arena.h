@@ -38,21 +38,21 @@ typedef struct arena_struct {
 
 } arena_t;
 
-extern void setCurrentArena(arena_t * p);
-extern arena_t *getCurrentArena();
-extern void initArena();
-extern void quitArena();
-extern arena_t *newArena(int w, int h);
-extern int conflictSpace(int x1, int y1, int w1, int h1, int x2, int y2,
+extern void arena_set_current(arena_t * p);
+extern arena_t *arena_get_current();
+extern void arena_init();
+extern void arena_quit();
+extern arena_t *arena_new(int w, int h);
+extern int arena_conflict_space(int x1, int y1, int w1, int h1, int x2, int y2,
 						 int w2, int h2);
-extern int isFreeSpace(arena_t * arena, int x, int y, int w, int h);
-extern void findFreeSpace(arena_t * arena, int *x, int *y, int w, int h);
-extern void getCenterScreen(int *screen_x, int *screen_y, int x, int y,
+extern int arena__is_free_space(arena_t * arena, int x, int y, int w, int h);
+extern void arena_find_free_space(arena_t * arena, int *x, int *y, int w, int h);
+extern void arena_get_center_screen(int *screen_x, int *screen_y, int x, int y,
 							int screen_size_x, int screen_size_y);
 #    ifndef PUBLIC_SERVER
-extern void drawArena(arena_t * arena);
+extern void arena_draw(arena_t * arena);
 #    endif
-extern void eventArena(arena_t * arena);
-extern void destroyArena(arena_t * p);
+extern void arena_event(arena_t * arena);
+extern void arena_destroy(arena_t * p);
 
 #endif

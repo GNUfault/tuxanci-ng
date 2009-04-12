@@ -22,13 +22,13 @@ typedef struct {
 	int end;					/* ukazatel na konec bufferu (tj. odkud se odebiraji klavesy) */
 } keyboardBuffer_t;
 
-extern void initKeyboardBuffer(int size);
-extern void clearKeyboardBuffer();
-extern bool_t pushKeyToKeyboardBuffer(SDL_keysym key);
-extern SDL_keysym popKeyFromKeyboardBuffer();
-extern int getKeyboardBufferSize();
-extern int KeyboardBufferCount();
-extern bool_t isAnyKeyInKeyboardBuffer();
-extern void quitKeyboardBuffer();
+extern void keyboardBuffer_init(int size);
+extern void keyboardBuffer_clear();
+extern bool_t keyboardBuffer_push(SDL_keysym key);
+extern SDL_keysym keyboardBuffer_pop();
+extern int keyboardBuffer_get_size();
+extern int keyboardBuffer_get_count();
+extern bool_t keyboardBuffer_is_any_key();
+extern void keyboardBuffer_quit();
 
 #endif							/* KEYBOARDBUFFER_H_ */

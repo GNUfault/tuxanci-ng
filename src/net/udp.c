@@ -35,7 +35,7 @@ static int getProto(char *str)
 	return -1;
 }
 
-sock_udp_t *newSockUdp(void)
+sock_udp_t *sock_udp_new(void)
 {
 	sock_udp_t *new;
 
@@ -45,20 +45,20 @@ sock_udp_t *newSockUdp(void)
 	return new;
 }
 
-void destroySockUdp(sock_udp_t * p)
+void sock_udp_destroy(sock_udp_t * p)
 {
 	assert(p != NULL);
 	free(p);
 }
 
-sock_udp_t *bindUdpSocket(char *address, int port)
+sock_udp_t *sock_udp_bind(char *address, int port)
 {
 	sock_udp_t *new;
 	int res = -1;				// no warninng
 
 	assert(port > 0 && port < 65535);
 
-	new = newSockUdp();
+	new = sock_udp_new();
 	new->proto = getProto(address);
 
 	assert(new != NULL);
@@ -75,7 +75,7 @@ sock_udp_t *bindUdpSocket(char *address, int port)
 
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create socket when binding!\n"));
-		destroySockUdp(new);
+		sock_udp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -103,7 +103,7 @@ sock_udp_t *bindUdpSocket(char *address, int port)
 
 	if (res < 0) {
 		fprintf(stderr, _("Unable to set socket %s %d!\n"), address, port);
-		destroySockUdp(new);
+		sock_udp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -113,14 +113,14 @@ sock_udp_t *bindUdpSocket(char *address, int port)
 	return new;
 }
 
-sock_udp_t *connectUdpSocket(char *address, int port)
+sock_udp_t *sock_udp_connect(char *address, int port)
 {
 	sock_udp_t *new;
 
 	assert(address != NULL);
 	assert(port > 0 && port < 65536);
 
-	new = newSockUdp();
+	new = sock_udp_new();
 	new->proto = getProto(address);
 
 	assert(new != NULL);
@@ -137,7 +137,7 @@ sock_udp_t *connectUdpSocket(char *address, int port)
 
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create socket when connecting!\n"));
-		destroySockUdp(new);
+		sock_udp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -161,7 +161,7 @@ sock_udp_t *connectUdpSocket(char *address, int port)
 	return new;
 }
 
-int setUdpSockNonBlock(sock_udp_t * p)
+int sock_udp_set_non_block(sock_udp_t * p)
 {
 	/* Set to nonblocking socket mode */
 #ifndef __WIN32__
@@ -183,7 +183,7 @@ int setUdpSockNonBlock(sock_udp_t * p)
 	return 0;
 }
 
-int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
+int sock_udp_read(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 {
 	int addrlen;
 	int size = -1;				// no warninng
@@ -222,10 +222,10 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	if (size < 0) {
 		char str_ip[STR_IP_SIZE];
 
-		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
+		sock_udp_get_ip(dst, str_ip, STR_IP_SIZE);
 
 		fprintf(stderr, _("Unable to read form socket %d %s %d!\n"), size,
-				str_ip, getSockUdpPort(dst));
+				str_ip, sock_udp_get_port(dst));
 
 #ifdef __WIN32__
 		WSACleanup();
@@ -236,7 +236,7 @@ int readUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	return size;
 }
 
-int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
+int sock_udp_write(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 {
 	int addrlen;
 	int size = -1;				// no warninng
@@ -263,10 +263,10 @@ int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	if (size < 0) {
 		char str_ip[STR_IP_SIZE];
 
-		getSockUdpIp(dst, str_ip, STR_IP_SIZE);
+		sock_udp_get_ip(dst, str_ip, STR_IP_SIZE);
 
 		fprintf(stderr, _("Unable to write on socket %d %s %d %d!\n"), size,
-				str_ip, getSockUdpPort(dst), dst->proto);
+				str_ip, sock_udp_get_port(dst), dst->proto);
 
 		//assert(0);
 #ifdef __WIN32__
@@ -278,7 +278,7 @@ int writeUdpSocket(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	return size;
 }
 
-void getSockUdpIp(sock_udp_t * p, char *str_ip, int len)
+void sock_udp_get_ip(sock_udp_t * p, char *str_ip, int len)
 {
 	assert(p != NULL);
 	assert(str_ip != NULL);
@@ -299,7 +299,7 @@ void getSockUdpIp(sock_udp_t * p, char *str_ip, int len)
 #endif
 }
 
-int getSockUdpPort(sock_udp_t * p)
+int sock_udp_get_port(sock_udp_t * p)
 {
 	assert(p != NULL);
 
@@ -318,7 +318,7 @@ int getSockUdpPort(sock_udp_t * p)
 }
 
 
-void closeUdpSocket(sock_udp_t * p)
+void sock_udp_close(sock_udp_t * p)
 {
 	assert(p != NULL);
 
@@ -328,7 +328,7 @@ void closeUdpSocket(sock_udp_t * p)
 	closesocket(p->sock);
 	//WSACleanup();  //kdyz ukoncime socket dobre neni treba cleanup
 #endif
-	destroySockUdp(p);
+	sock_udp_destroy(p);
 }
 
 #if 0
@@ -369,34 +369,34 @@ int main(int argc, char *argv[])
 	if (strcmp(argv[1], "s") == 0) {
 		sock_udp_t *cli;
 
-		//sock = bindUdpSocket("::1", atoi(argv[2]), PROTO_UDPv6 );
-		sock = bindUdpSocket("127.0.0.1", atoi(argv[2]), PROTO_UDPv4);
+		//sock = sock_udp_bind("::1", atoi(argv[2]), PROTO_UDPv6 );
+		sock = sock_udp_bind("127.0.0.1", atoi(argv[2]), PROTO_UDPv4);
 
-		//cli = newSockUdp(PROTO_UDPv6);
-		cli = newSockUdp(PROTO_UDPv4);
+		//cli = sock_udp_new(PROTO_UDPv6);
+		cli = sock_udp_new(PROTO_UDPv4);
 
 		while (1) {
 			while (myWait(sock) == 0);
 
 			memset(buf, 0, BUFSIZE);
-			ret = readUdpSocket(sock, cli, buf, BUFSIZE);
-			writeUdpSocket(sock, cli, buf, ret);
+			ret = sock_udp_read(sock, cli, buf, BUFSIZE);
+			sock_udp_write(sock, cli, buf, ret);
 		}
 	}
 
 	if (strcmp(argv[1], "c") == 0) {
-		//sock = connectUdpSocket("::1", atoi(argv[2]), PROTO_UDPv6);
-		sock = connectUdpSocket("127.0.0.1", atoi(argv[2]), PROTO_UDPv4);
+		//sock = sock_udp_connect("::1", atoi(argv[2]), PROTO_UDPv6);
+		sock = sock_udp_connect("127.0.0.1", atoi(argv[2]), PROTO_UDPv4);
 
 		strcpy(buf, "Hello world !\n");
-		writeUdpSocket(sock, sock, buf, strlen(buf));
+		sock_udp_write(sock, sock, buf, strlen(buf));
 
 		memset(buf, 0, BUFSIZE);
-		readUdpSocket(sock, sock, buf, BUFSIZE);
+		sock_udp_read(sock, sock, buf, BUFSIZE);
 
 		printf("buf = %s", buf);
 		//while(1)sleep(1);
-		closeUdpSocket(sock);
+		sock_udp_close(sock);
 	}
 
 	return 0;

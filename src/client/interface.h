@@ -33,16 +33,16 @@
 // velikost klavesoveho bufferu (ve znacich)
 #    define KEYBOARD_BUFFER_SIZE 256
 
-extern bool_t isInterfaceInicialized();
-extern void enableKeyboardBuffer();
-extern void disableKeyboardBuffer();
-extern int initSDL();
-extern SDL_Surface *getSDL_Screen();
-extern void getMousePosition(int *x, int *y);
-extern int isMouseClicked();
-extern int isPressAnyKey();
-extern void interfaceRefresh();
-extern void eventSDL();
-extern void quitSDL();
+extern bool_t interface_is_inicialized();
+extern void interface_enable_keyboard_buffer();
+extern void interface_disable_keyboard_buffer();
+extern int interface_init();
+extern SDL_Surface *interface_get_screen();
+extern void interface_get_mouse_position(int *x, int *y);
+extern int interface_is_mouse_clicket();
+extern int interface_is_press_any_key();
+extern void interface_refresh();
+extern void interface_event();
+extern void interface_quit();
 
 #endif

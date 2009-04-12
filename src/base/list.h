@@ -11,16 +11,16 @@ typedef struct list_str {
 	int alloc;
 } list_t;
 
-extern list_t *newList();
-extern list_t *cloneList(list_t * p);
-extern list_t *cloneListItem(list_t * p, void *f);
-extern void addList(list_t * p, void *item);
-extern void insList(list_t * p, int n, void *item);
-extern void *getList(list_t * p, int n);
-extern int searchListItem(list_t * p, void *n);
-extern void delList(list_t * p, int n);
-extern void delListItem(list_t * p, int n, void *f);
-extern void listDoEmpty(list_t * p);
-extern void destroyList(list_t * p);
-extern void destroyListItem(list_t * p, void *f);
+extern list_t *list_new();
+extern list_t *list_clone(list_t * p);
+extern list_t *list_clone_item(list_t * p, void *f);
+extern void list_add(list_t * p, void *item);
+extern void list_ins(list_t * p, int n, void *item);
+extern void *list_get(list_t * p, int n);
+extern int list_search(list_t * p, void *n);
+extern void list_del(list_t * p, int n);
+extern void list_del_item(list_t * p, int n, void *f);
+extern void list_do_empty(list_t * p);
+extern void list_destroy(list_t * p);
+extern void list_destroy_item(list_t * p, void *f);
 #endif

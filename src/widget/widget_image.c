@@ -11,17 +11,17 @@
 #include "widget.h"
 #include "widget_image.h"
 
-widget_t *newWidgetImage(int x, int y, image_t * image)
+widget_t *wid_image_new(int x, int y, image_t * image)
 {
 	widget_image_t *new;
 
 	new = malloc(sizeof(widget_image_t));
 	new->image = image;
 
-	return newWidget(WIDGET_TYPE_IMAGE, x, y, image->w, image->h, new);
+	return widget_new(WIDGET_TYPE_IMAGE, x, y, image->w, image->h, new);
 }
 
-void drawWidgetImage(widget_t * widget)
+void wid_image_draw(widget_t * widget)
 {
 	widget_image_t *p;
 
@@ -29,16 +29,16 @@ void drawWidgetImage(widget_t * widget)
 	assert(widget->type == WIDGET_TYPE_IMAGE);
 
 	p = (widget_image_t *) widget->private_data;
-	drawImage(p->image, widget->x, widget->y, 0, 0, p->image->w, p->image->h);
+	image_draw(p->image, widget->x, widget->y, 0, 0, p->image->w, p->image->h);
 }
 
-void eventWidgetImage(widget_t * widget)
+void wid_image_event(widget_t * widget)
 {
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_IMAGE);
 }
 
-void destroyWidgetImage(widget_t * widget)
+void wid_image_destroy(widget_t * widget)
 {
 	widget_image_t *p;
 
@@ -48,5 +48,5 @@ void destroyWidgetImage(widget_t * widget)
 	p = (widget_image_t *) widget->private_data;
 
 	free(p);
-	destroyWidget(widget);
+	widget_destroy(widget);
 }

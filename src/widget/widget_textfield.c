@@ -12,7 +12,7 @@
 
 //#define ZZEEXX86_READKEY
 
-widget_t *newWidgetTextfield(char *text, int filter, int x, int y)
+widget_t *textField_new(char *text, int filter, int x, int y)
 {
 	widget_textfield_t *new;
 
@@ -25,9 +25,9 @@ widget_t *newWidgetTextfield(char *text, int filter, int x, int y)
 	new->atime = 0;
 	new->active = FALSE;
 	new->filter = filter;
-	getTextSize(text, &new->w, &new->h);
+	font_text_size(text, &new->w, &new->h);
 
-	return newWidget(WIDGET_TYPE_TEXTFILED, x, y,
+	return widget_new(WIDGET_TYPE_TEXTFILED, x, y,
 			 WIDGET_TEXTFIELD_WIDTH, WIDGET_TEXTFIELD_HEIGHT, new);
 }
 
@@ -43,17 +43,17 @@ static void drawBackground(widget_t * widget)
 	p = (widget_textfield_t *) widget->private_data;
 
 	if (g_textfield0 == NULL) {
-		g_textfield0 = addImageData("textfield0.png", IMAGE_ALPHA, "textfiled0", IMAGE_GROUP_BASE);
+		g_textfield0 = image_add("textfield0.png", IMAGE_ALPHA, "textfiled0", IMAGE_GROUP_BASE);
 	}
 
 	if (g_textfield1 == NULL) {
-		g_textfield1 = addImageData("textfield1.png", IMAGE_ALPHA, "textfiled1", IMAGE_GROUP_BASE);
+		g_textfield1 = image_add("textfield1.png", IMAGE_ALPHA, "textfiled1", IMAGE_GROUP_BASE);
 	}
 
 	if (p->active) {
-		drawImage(g_textfield1, widget->x, widget->y, 0, 0, g_textfield1->w, g_textfield1->h);
+		image_draw(g_textfield1, widget->x, widget->y, 0, 0, g_textfield1->w, g_textfield1->h);
 	} else {
-		drawImage(g_textfield0, widget->x, widget->y, 0, 0, g_textfield0->w, g_textfield0->h);
+		image_draw(g_textfield0, widget->x, widget->y, 0, 0, g_textfield0->w, g_textfield0->h);
 	}
 }
 
@@ -81,14 +81,14 @@ static void drawText(widget_t * widget)
 		p->timeBlick = 0;
 	}
 
-	//drawFont(str, p->x+WIDGET_TEXTFIELD_TEXT_OFFSET_X, p->y+p->h/2, COLOR_WHITE);
+	//font_draw(str, p->x+WIDGET_TEXTFIELD_TEXT_OFFSET_X, p->y+p->h/2, COLOR_WHITE);
 	//printf("p->y: %d\nheight: %d\n p->h: %d\n", p->y, WIDGET_TEXTFIELD_HEIGHT, p->h);
 
-	drawFont(str, widget->x + WIDGET_TEXTFIELD_TEXT_OFFSET_X,
+	font_draw(str, widget->x + WIDGET_TEXTFIELD_TEXT_OFFSET_X,
 		      widget->y + WIDGET_TEXTFIELD_HEIGHT / 2 - p->h / 2, COLOR_WHITE);
 }
 
-void drawWidgetTextfield(widget_t * widget)
+void textField_draw(widget_t * widget)
 {
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_TEXTFILED);
@@ -97,7 +97,7 @@ void drawWidgetTextfield(widget_t * widget)
 	drawText(widget);
 }
 
-void setWidgetTextFiledText(widget_t * widget, char *text)
+void textField_set_text(widget_t * widget, char *text)
 {
 	widget_textfield_t *p;
 
@@ -108,10 +108,10 @@ void setWidgetTextFiledText(widget_t * widget, char *text)
 
 	memset(p->text, 0, STR_SIZE);
 	strcpy(p->text, text);
-	getTextSize(text, &p->w, &p->h);
+	font_text_size(text, &p->w, &p->h);
 }
 
-char *getTextFromWidgetTextfield(widget_t * widget)
+char *textField_get_text(widget_t * widget)
 {
 	widget_textfield_t *p;
 
@@ -177,7 +177,7 @@ static void checkText(widget_textfield_t * p)
 		}
 	}
 
-	getTextSize(p->text, &p->w, &p->h);
+	font_text_size(p->text, &p->w, &p->h);
 }
 
 #ifdef ZZEEXX86_READKEY
@@ -204,7 +204,7 @@ static void readKey(widget_textfield_t * p)
 		if (len > 0) {
 			p->time = 0;
 			p->text[len - 1] = '\0';
-			getTextSize(p->text, &p->w, &p->h);
+			font_text_size(p->text, &p->w, &p->h);
 		}
 
 		return;
@@ -406,7 +406,7 @@ static void readKey(widget_textfield_t * p)
 }
 #endif
 
-void eventWidgetTextfield(widget_t * widget)
+void textField_event(widget_t * widget)
 {
 	widget_textfield_t *p;
 	int x, y;
@@ -416,9 +416,9 @@ void eventWidgetTextfield(widget_t * widget)
 
 	p = (widget_textfield_t *) widget->private_data;
 
-	getMousePosition(&x, &y);
+	interface_get_mouse_position(&x, &y);
 
-	if (isMouseClicked()) {
+	if (interface_is_mouse_clicket()) {
 		if (x >= widget->x && x <= widget->x + WIDGET_TEXTFIELD_WIDTH &&
 		    y >= widget->y && y <= widget->y + WIDGET_TEXTFIELD_HEIGHT) {
 			p->active = TRUE;
@@ -430,7 +430,7 @@ void eventWidgetTextfield(widget_t * widget)
 	readKey(p);
 }
 
-void destroyWidgetTextfield(widget_t * widget)
+void textField_destroy(widget_t * widget)
 {
 	widget_textfield_t *p;
 
@@ -440,5 +440,5 @@ void destroyWidgetTextfield(widget_t * widget)
 	p = (widget_textfield_t *) widget->private_data;
 
 	free(p);
-	destroyWidget(widget);
+	widget_destroy(widget);
 }

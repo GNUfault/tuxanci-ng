@@ -32,7 +32,7 @@ static void prepareConfigFile(textFile_t * ts)
 	}
 }
 
-void initServerConfigFile()
+void server_configFile_init()
 {
 	char *configFile;
 
@@ -40,7 +40,7 @@ void initServerConfigFile()
 	printf(_("Loading configuration from: \"%s\"\n"),
 		   getParamElse("--config-file", SERVER_CONFIG));
 
-	serverTextFile = loadTextFile(configFile);
+	serverTextFile = textFile_load(configFile);
 
 	if (serverTextFile == NULL) {
 		fprintf(stderr,
@@ -68,7 +68,7 @@ static char *findValue(char *s)
 	return NULL;
 }
 
-char *getServerConfigFileValue(char *env, char *s)
+char *server_configFile_get_value(char *env, char *s)
 {
 	int i;
 	int len;
@@ -92,9 +92,9 @@ char *getServerConfigFileValue(char *env, char *s)
 	return s;
 }
 
-void quitServerConfigFile()
+void server_configFile_quit()
 {
 	if (serverTextFile != NULL) {
-		destroyTextFile(serverTextFile);
+		textFile_destroy(serverTextFile);
 	}
 }

@@ -12,7 +12,7 @@ static bool_t isAudioInit = FALSE;
 /*
  * Returns state of audio
  */
-bool_t isAudioInicialized()
+bool_t audio_is_inicialized()
 {
 	return isAudioInit;
 }
@@ -20,7 +20,7 @@ bool_t isAudioInicialized()
 /*
  * Initialize audio
  */
-void initAudio()
+void audio_init()
 {
 	if (isParamFlag("--no-audio")) {
 		return;
@@ -49,7 +49,7 @@ void initAudio()
 /*
  * Quit audio
  */
-void quitAudio()
+void audio_quit()
 {
 	Mix_CloseAudio();
 	isAudioInit = TRUE;

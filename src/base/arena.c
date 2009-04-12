@@ -43,12 +43,12 @@ static int isTuxNear(tux_t * tux1, tux_t * tux2)
 }
 #endif
 
-void setCurrentArena(arena_t * p)
+void arena_set_current(arena_t * p)
 {
 	currentArena = p;
 }
 
-arena_t *getCurrentArena()
+arena_t *arena_get_current()
 {
 	return currentArena;
 }
@@ -63,7 +63,7 @@ void hotkey_splitArena()
 }
 
 #ifndef PUBLIC_SERVER
-void initArena()
+void arena_init()
 {
 	splitType = SCREEN_SPLIT_VERTICAL;
 
@@ -77,16 +77,16 @@ void initArena()
 		printf("SCREEN_SPLIT_HORIZONTAL\n");
 	}
 
-	registerHotKey(SDLK_F3, hotkey_splitArena);
+	hotKey_register(SDLK_F3, hotkey_splitArena);
 }
 
-void quitArena()
+void arena_quit()
 {
-	unregisterHotKey(SDLK_F3);
+	unhotKey_register(SDLK_F3);
 }
 #endif
 
-arena_t *newArena(int w, int h)
+arena_t *arena_new(int w, int h)
 {
 	arena_t *new;
 	int zone_w, zone_h;
@@ -101,7 +101,7 @@ arena_t *newArena(int w, int h)
 	new->w = w;
 	new->h = h;
 
-	new->listTimer = newList();
+	new->listTimer = list_new();
 
 	if (w > 800 || h > 600) {
 		zone_w = 320;
@@ -111,9 +111,9 @@ arena_t *newArena(int w, int h)
 		zone_h = 60;
 	}
 
-	new->spaceTux = newSpace(w, h, zone_w, zone_h, getStatusTux, setStatusTux);
-	new->spaceItem = newSpace(w, h, zone_w, zone_h, getStatusItem, setStatusItem);
-	new->spaceShot = newSpace(w, h, zone_w, zone_h, getStatusShot, setStatusShot);
+	new->spaceTux = space_new(w, h, zone_w, zone_h, tux_get_status, tux_set_status);
+	new->spaceItem = space_new(w, h, zone_w, zone_h, item_get_status, item_set_status);
+	new->spaceShot = space_new(w, h, zone_w, zone_h, shot_get_status, shot_set_status);
 
 	new->countRound = 0;
 	new->max_countRound = 0;
@@ -122,36 +122,36 @@ arena_t *newArena(int w, int h)
 }
 
 int
-conflictSpace(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+arena_conflict_space(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
 	return (x1 < x2 + w2 && x2 < x1 + w1 && y1 < y2 + h2 && y2 < y1 + h1);
 }
 
-int isFreeSpace(arena_t * arena, int x, int y, int w, int h)
+int arena__is_free_space(arena_t * arena, int x, int y, int w, int h)
 {
 	if (x < 0 || y < 0 || x + w > arena->w || y + h > arena->h) {
 		return 0;
 	}
 
-	if (isConflictWithObjectFromSpace(arena->spaceTux, x, y, w, h))
+	if (space_is_conflict_with_object(arena->spaceTux, x, y, w, h))
 		return 0;
 
-	if (isConflictWithObjectFromSpace(arena->spaceShot, x, y, w, h))
+	if (space_is_conflict_with_object(arena->spaceShot, x, y, w, h))
 		return 0;
 
-	if (isConflictWithObjectFromSpace(arena->spaceItem, x, y, w, h))
+	if (space_is_conflict_with_object(arena->spaceItem, x, y, w, h))
 		return 0;
 
-	if (isConflictWithObjectFromSpace(arena->spaceShot, x, y, w, h))
+	if (space_is_conflict_with_object(arena->spaceShot, x, y, w, h))
 		return 0;
 
-	if (isConflictModule(x, y, w, h))
+	if (module_is_conflict(x, y, w, h))
 		return 0;
 
 	return 1;
 }
 
-void findFreeSpace(arena_t * arena, int *x, int *y, int w, int h)
+void arena_find_free_space(arena_t * arena, int *x, int *y, int w, int h)
 {
 	int z_x;
 	int z_y;
@@ -162,17 +162,17 @@ void findFreeSpace(arena_t * arena, int *x, int *y, int w, int h)
 	do {
 		z_x = random() % (arena->w - w);
 		z_y = random() % (arena->h - h);
-	} while (isFreeSpace(arena, z_x, z_y, w, h) == 0);
+	} while (arena__is_free_space(arena, z_x, z_y, w, h) == 0);
 
 	*x = z_x;
 	*y = z_y;
 }
 
-void getCenterScreen(int *screen_x, int *screen_y, int x, int y, int screen_size_x, int screen_size_y)
+void arena_get_center_screen(int *screen_x, int *screen_y, int x, int y, int screen_size_x, int screen_size_y)
 {
 	arena_t *arena;
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 
 	*screen_x = x - screen_size_x / 2;
 	*screen_y = y - screen_size_y / 2;
@@ -220,28 +220,28 @@ static void drawBackground(arena_t * arena, int screen_x, int screen_y)
 	}
 }
 
-static void action_drawTux(space_t * space, tux_t * tux, void *p)
+static void action_tux_draw(space_t * space, tux_t * tux, void *p)
 {
-	drawTux(tux);
+	tux_draw(tux);
 }
 
-static void action_drawItem(space_t * space, item_t * item, void *p)
+static void action_item_draw(space_t * space, item_t * item, void *p)
 {
-	drawItem(item);
+	item_draw(item);
 }
 
-static void action_drawShot(space_t * space, shot_t * shot, void *p)
+static void action_shot_draw(space_t * space, shot_t * shot, void *p)
 {
-	drawShot(shot);
+	shot_draw(shot);
 }
 
 static void drawObjects(arena_t * arena, int screen_x, int screen_y)
 {
-	actionSpaceFromLocation(arena->spaceTux, action_drawTux, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
-	actionSpaceFromLocation(arena->spaceItem, action_drawItem, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
-	actionSpaceFromLocation(arena->spaceShot, action_drawShot, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	space_action_from_location(arena->spaceTux, action_tux_draw, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	space_action_from_location(arena->spaceItem, action_item_draw, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	space_action_from_location(arena->spaceShot, action_shot_draw, NULL, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
-	drawModule(screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	module_draw(screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 }
 
 static void drawSplitArenaForTux(arena_t * arena, tux_t * tux, int location_x, int location_y)
@@ -250,10 +250,10 @@ static void drawSplitArenaForTux(arena_t * arena, tux_t * tux, int location_x, i
 
 	switch (splitType) {
 		case SCREEN_SPLIT_HORIZONTAL:
-			getCenterScreen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X, WINDOW_SIZE_Y / 2);
+			arena_get_center_screen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X, WINDOW_SIZE_Y / 2);
 			break;
 		case SCREEN_SPLIT_VERTICAL:
-			getCenterScreen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X / 2, WINDOW_SIZE_Y);
+			arena_get_center_screen(&screen_x, &screen_y, tux->x, tux->y, WINDOW_SIZE_X / 2, WINDOW_SIZE_Y);
 			break;
 		default:
 			screen_x = -1;
@@ -267,10 +267,10 @@ static void drawSplitArenaForTux(arena_t * arena, tux_t * tux, int location_x, i
 
 	switch (splitType) {
 		case SCREEN_SPLIT_HORIZONTAL:
-			drawLayerSplit(location_x, location_y, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y / 2);
+			layer_draw_slpit(location_x, location_y, screen_x, screen_y, WINDOW_SIZE_X, WINDOW_SIZE_Y / 2);
 			break;
 		case SCREEN_SPLIT_VERTICAL:
-			drawLayerSplit(location_x, location_y, screen_x, screen_y, WINDOW_SIZE_X / 2, WINDOW_SIZE_Y);
+			layer_draw_slpit(location_x, location_y, screen_x, screen_y, WINDOW_SIZE_X / 2, WINDOW_SIZE_Y);
 			break;
 		default:
 			screen_x = -1;
@@ -284,7 +284,7 @@ void drawSplitArena(arena_t * arena)
 {
 	tux_t *tux = NULL;
 
-	tux = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
+	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 	if (tux != NULL) {
 		switch (splitType) {
@@ -297,7 +297,7 @@ void drawSplitArena(arena_t * arena)
 		}
 	}
 
-	tux = getControlTux(TUX_CONTROL_KEYBOARD_LEFT);
+	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 	if (tux != NULL) {
 		drawSplitArenaForTux(arena, tux, 0, 0);
@@ -308,10 +308,10 @@ void drawCenterArena(arena_t * arena, int x, int y)
 {
 	int screen_x, screen_y;
 
-	getCenterScreen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
+	arena_get_center_screen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 	drawBackground(arena, screen_x, screen_y);
 	drawObjects(arena, screen_x, screen_y);
-	drawLayerCenter(x, y);
+	layer_draw_center(x, y);
 }
 
 void drawSimpleArena(arena_t * arena)
@@ -319,7 +319,7 @@ void drawSimpleArena(arena_t * arena)
 	int screen_x, screen_y;
 	tux_t *tux = NULL;
 
-	tux = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
+	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 	if (tux == NULL) {
 		return;
@@ -330,18 +330,18 @@ void drawSimpleArena(arena_t * arena)
 
 	drawBackground(arena, screen_x, screen_y);
 	drawObjects(arena, screen_x, screen_y);
-	drawLayer(tux->x, tux->y);
+	layer_draw_all(tux->x, tux->y);
 }
 
-void drawArena(arena_t * arena)
+void arena_draw(arena_t * arena)
 {
 	if (isBigArena(arena) &&
-	    getNetTypeGame() == NET_GAME_TYPE_NONE && !isSettingAI()) {
+	    netMultiplayer_get_game_type() == NET_GAME_TYPE_NONE && !setting_is_ai()) {
 		tux_t *tux1;
 		tux_t *tux2;
 
-		tux1 = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
-		tux2 = getControlTux(TUX_CONTROL_KEYBOARD_LEFT);
+		tux1 = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+		tux2 = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 		if (isTuxNear(tux1, tux2)) {
 			drawCenterArena(arena, (tux1->x + tux2->x) / 2, (tux1->y + tux2->y) / 2);
@@ -355,7 +355,7 @@ void drawArena(arena_t * arena)
 	if (isBigArena(arena)) {
 		tux_t *tux = NULL;
 
-		tux = getControlTux(TUX_CONTROL_KEYBOARD_RIGHT);
+		tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 		if (tux == NULL) {
 			return;
@@ -372,35 +372,35 @@ void drawArena(arena_t * arena)
 
 static void action_tux(space_t * space, tux_t * tux, void *p)
 {
-	eventTux(tux);
+	tux_event(tux);
 }
 
-void eventArena(arena_t * arena)
+void arena_event(arena_t * arena)
 {
 	int i;
 
 	for (i = 0; i < 8; i++) {
-		checkShotIsInTuxScreen(arena);
+		shot_check_is_tux_screen(arena);
 
-		eventConflictShotWithItem(arena);
-		eventConflictTuxWithShot(arena);
-		eventModule();
+		item_event_conglicts_shot_with_item(arena);
+		tux_conflict_woth_shot(arena);
+		module_event();
 
-		eventMoveListShot(arena);
+		shot_event_move_list(arena);
 	}
 
-	eventListItem(arena->spaceItem);
+	item_event(arena->spaceItem);
 
-	actionSpace(arena->spaceTux, action_tux, NULL);
+	space_action(arena->spaceTux, action_tux, NULL);
 
-	eventTimer(arena->listTimer);
+	timer_event(arena->listTimer);
 }
 
-void destroyArena(arena_t * p)
+void arena_destroy(arena_t * p)
 {
-	destroySpaceWithObject(p->spaceTux, destroyTux);
-	destroySpaceWithObject(p->spaceItem, destroyItem);
-	destroySpaceWithObject(p->spaceShot, destroyShot);
-	destroyTimer(p->listTimer);
+	space_destroy_with_item(p->spaceTux, tux_destroy);
+	space_destroy_with_item(p->spaceItem, item_destroy);
+	space_destroy_with_item(p->spaceShot, shot_destroy);
+	timer_destroy(p->listTimer);
 	free(p);
 }

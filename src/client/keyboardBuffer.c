@@ -23,7 +23,7 @@ static SDL_keysym emptyKey;
 /*
  * Key buffer initializes. The parameter sets the number of keys.
  */
-void initKeyboardBuffer(int size)
+void keyboardBuffer_init(int size)
 {
 	assert(size > 0);
 	assert(keyboardBuffer == NULL);
@@ -47,7 +47,7 @@ void initKeyboardBuffer(int size)
 /*
  * Empty the buffer
  */
-void clearKeyboardBuffer()
+void keyboardBuffer_clear()
 {
 	assert(keyboardBuffer != NULL);
 
@@ -61,7 +61,7 @@ void clearKeyboardBuffer()
  * Adds key to the end of the buffer. If the buffer is overrun,
  * an error is printed to stderr and the key is dropped.
  */
-bool_t pushKeyToKeyboardBuffer(SDL_keysym key)
+bool_t keyboardBuffer_push(SDL_keysym key)
 {
 	assert(keyboardBuffer != NULL);
 
@@ -86,7 +86,7 @@ bool_t pushKeyToKeyboardBuffer(SDL_keysym key)
  * Takes out first key from the buffer and returns it. If the buffer is empty,
  * an error is printed to stderr and SDLK_UNKNOWN is returned.
  */
-SDL_keysym popKeyFromKeyboardBuffer()
+SDL_keysym keyboardBuffer_pop()
 {
 	assert(keyboardBuffer != NULL);
 
@@ -112,7 +112,7 @@ SDL_keysym popKeyFromKeyboardBuffer()
 /*
  * The buffer size
  */
-int getKeyboardBufferSize()
+int keyboardBuffer_get_size()
 {
 	assert(keyboardBuffer != NULL);
 	return keyboardBuffer->size;
@@ -121,23 +121,23 @@ int getKeyboardBufferSize()
 /*
  * Number of keys in the buffer
  */
-int KeyboardBufferCount()
+int keyboardBuffer_get_count()
 {
 	assert(keyboardBuffer != NULL);
 	return keyboardBuffer->count;
 }
 
 
-bool_t isAnyKeyInKeyboardBuffer()
+bool_t keyboardBuffer_is_any_key()
 {
-	return KeyboardBufferCount() > 0 ? TRUE : FALSE;
+	return keyboardBuffer_get_count() > 0 ? TRUE : FALSE;
 }
 
 /*
  * Frees the buffer. If it is not empty, information
  * about filling is prined to stderr first.
  */
-void quitKeyboardBuffer()
+void keyboardBuffer_quit()
 {
 	assert(keyboardBuffer != NULL);
 

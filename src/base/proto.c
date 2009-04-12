@@ -44,7 +44,7 @@ void proto_send_error_server(int type, client_t * client, int errorcode)
 
 	snprintf(msg, STR_PROTO_SIZE, "error %d\n", errorcode);
 
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -67,16 +67,16 @@ void proto_recv_error_client(char *msg)
 
 	switch (errorcode) {
 		case PROTO_ERROR_CODE_BAD_VERSION:
-			setMsgToAnalyze(_("Version of your client isn't supported by the server."));
-			setWorldEnd();
+			analyze_set_msg(_("Version of your client isn't supported by the server."));
+			word_do_end();
 			break;
 		case PROTO_ERROR_CODE_TIMEOUT:
-			setMsgToAnalyze(_("The timeout of ping from server is out"));
-			setWorldEnd();
+			analyze_set_msg(_("The timeout of ping from server is out"));
+			word_do_end();
 			break;
 		case PROTO_ERROR_LIMIT_MAX_CLIENT:
-			setMsgToAnalyze(_("The maximum amount of connected players has been exceeded!"));
-			setWorldEnd();
+			analyze_set_msg(_("The maximum amount of connected players has been exceeded!"));
+			word_do_end();
 			break;
 	}
 }
@@ -93,7 +93,7 @@ void proto_send_hello_client(char *name)
 		 getParamElse("--version", TUXANCI_VERSION), name);
 
 	printf("-> %s", msg);
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif
@@ -112,12 +112,12 @@ static void sendInfoCreateClient(client_t * client)
 
 	assert(client != NULL);
 
-	listClient = getListServerClient();
+	listClient = server_get_list_clients();
 
 	proto_send_init_server(PROTO_SEND_ONE, client, client);
 
 #ifndef PUBLIC_SERVER
-	proto_send_newtux_server(PROTO_SEND_ONE, client, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT));
+	proto_send_newtux_server(PROTO_SEND_ONE, client, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
 #endif
 
 	for (i = 0; i < listClient->count; i++) {
@@ -135,11 +135,11 @@ static void sendInfoCreateClient(client_t * client)
 		}
 	}
 
-	actionSpace(getCurrentArena()->spaceItem, action_sendItem, client);
+	space_action(arena_get_current()->spaceItem, action_sendItem, client);
 /*
-	for( i = 0 ; i < getCurrentArena()->spaceItem->listIndex->count; i++)
+	for( i = 0 ; i < arena_get_current()->spaceItem->listIndex->count; i++)
 	{
-		thisItem = (item_t *) getCurrentArena()->spaceItem->list->list[i];
+		thisItem = (item_t *) arena_get_current()->spaceItem->list->list[i];
 		proto_send_additem_server(PROTO_SEND_ONE, client, thisItem);
 	}
 */
@@ -155,9 +155,9 @@ void proto_recv_hello_server(client_t * client, char *msg)
 
 	assert(client != NULL);
 
-	if (getSpaceCount(getCurrentArena()->spaceTux) + 1 > getServerMaxClients()) {
+	if (space_get_count(arena_get_current()->spaceTux) + 1 > server_get_max_clients()) {
 		proto_send_error_server(PROTO_SEND_ONE, client, PROTO_ERROR_LIMIT_MAX_CLIENT);
-		eventMsgInCheckFront(client);
+		checkFront_event(client);
 		client->status = NET_STATUS_ZOMBIE;
 		return;
 	}
@@ -167,7 +167,7 @@ void proto_recv_hello_server(client_t * client, char *msg)
 
 #ifdef PUBLIC_SERVER
 	if (supportVersion == NULL) {
-		supportVersion = getSetting("SUPPORT_CLIENTS", "--support-clients", TUXANCI_VERSION);
+		supportVersion = publicServer_get_setting("SUPPORT_CLIENTS", "--support-clients", TUXANCI_VERSION);
 	}
 #endif
 
@@ -185,22 +185,22 @@ void proto_recv_hello_server(client_t * client, char *msg)
 
 	if (strstr(supportVersion, version) == NULL) {
 		proto_send_error_server(PROTO_SEND_ONE, client, PROTO_ERROR_CODE_BAD_VERSION);
-		eventMsgInCheckFront(client);
+		checkFront_event(client);
 		client->status = NET_STATUS_ZOMBIE;
 		return;
 	}
 
-	client->tux = newTux();
+	client->tux = tux_new();
 	client->tux->control = TUX_CONTROL_NET;
 	client->tux->client = client;
 
-	addObjectToSpace(getCurrentArena()->spaceTux, client->tux);
+	space_add(arena_get_current()->spaceTux, client->tux);
 
 	if (strlen(name) > STR_NAME_SIZE - 1) {
 		name[STR_NAME_SIZE - 1] = '\0';
 	}
 
-	tuxSetName(client->tux, name);
+	tux_set_name(client->tux, name);
 	sendInfoCreateClient(client);
 }
 
@@ -219,14 +219,14 @@ void proto_send_status_server(int type, client_t * client)
 #endif
 
 #ifdef PUBLIC_SERVER
-	name = getSetting("NAME", "--name", "noname");
+	name = publicServer_get_setting("NAME", "--name", "noname");
 #endif
 
 	version = TUXANCI_VERSION;
-	clients = getCurrentArena()->spaceTux->listIndex->count;
-	maxclients = getServerMaxClients();
-	uptime = (unsigned int) getUpdateServer();
-	arena = getArenaNetName(getChoiceArena());
+	clients = arena_get_current()->spaceTux->listIndex->count;
+	maxclients = server_get_max_clients();
+	uptime = (unsigned int) server_get_update();
+	arena = arenaFile_get_net_name(choiceArena_get());
 
 	snprintf(msg, STR_PROTO_SIZE,
 		"name: %s\n"
@@ -236,7 +236,7 @@ void proto_send_status_server(int type, client_t * client)
 		"uptime: %d\n"
 		"arena: %s\n", name, version, clients, maxclients, uptime, arena);
 
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 	//proto_send(type, client, msg);
 }
 
@@ -257,7 +257,7 @@ void proto_send_listscore_server(int type, client_t * client, int max)
 	strcpy(msg, "");
 
 	for (i = 0; i < max; i++) {
-		str = getTableItem(i);
+		str = highScore_get_table(i);
 
 		if (str == NULL) {
 			break;
@@ -268,7 +268,7 @@ void proto_send_listscore_server(int type, client_t * client, int max)
 	}
 
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 	free(msg);
 }
 
@@ -298,7 +298,7 @@ void proto_send_check_client(int id)
 	char msg[STR_PROTO_SIZE];
 
 	snprintf(msg, STR_PROTO_SIZE, "check %d\n", id);
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif
@@ -317,7 +317,7 @@ void proto_recv_check_server(client_t * client, char *msg)
 		return;
 	}
 
-	delMsgInCheckFront(client->listSendMsg, id);
+	checkFront_del_msg(client->listSendMsg, id);
 }
 
 void proto_send_init_server(int type, client_t * client, client_t * client2)
@@ -331,17 +331,17 @@ void proto_send_init_server(int type, client_t * client, client_t * client2)
 	count = WORLD_COUNT_ROUND_UNLIMITED;
 
 #ifndef PUBLIC_SERVER
-	getSettingCountRound(&count);
+	publicServer_get_settingCountRound(&count);
 #endif
 
-	check_id = getNewIDcount(0);
+	check_id = id_get_newcount(0);
 
 	snprintf(msg, STR_PROTO_SIZE, "init %d %d %d %d %s %d\n",
 		 client2->tux->id, client2->tux->x, client2->tux->y,
-		 count, getArenaNetName(getChoiceArena()), check_id);
+		 count, arenaFile_get_net_name(choiceArena_get()), check_id);
 
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -368,25 +368,25 @@ void proto_recv_init_client(char *msg)
 
 	proto_send_check_client(check_id);
 
-	if (getCurrentArena() != NULL) {
+	if (arena_get_current() != NULL) {
 		return;
 	}
 
-	setWorldArena(getArenaFileFormNetName(arena_name));
+	word_set_arena(arenaFile_get_file_format_net_name(arena_name));
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 	arena->max_countRound = n;
 
-	tux = newTux();
-	replaceTuxID(tux, id);
+	tux = tux_new();
+	tux_replace_id(tux, id);
 	tux->x = x;
 	tux->y = y;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
-	setControlTux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
+	word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 
-	getSettingNameRight(tux->name);
+	publicServer_get_settingNameRight(tux->name);
 
-	addObjectToSpace(arena->spaceTux, tux);
+	space_add(arena->spaceTux, tux);
 }
 
 #endif
@@ -399,7 +399,7 @@ proto_send_event_server(int type, client_t * client, tux_t * tux, int action)
 	snprintf(msg, STR_PROTO_SIZE, "event %d %d\n", tux->id, action);
 
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -419,11 +419,11 @@ void proto_recv_event_client(char *msg)
 		return;
 	}
 
-	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
+	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
 	if (tux != NULL) {
-		actionTux(tux, action);
-		addToRadar(tux->id, tux->x, tux->y, RADAR_TYPE_TUX);
+		tux_action(tux, action);
+		radar_add(tux->id, tux->x, tux->y, RADAR_TYPE_TUX);
 	}
 }
 
@@ -437,7 +437,7 @@ void proto_send_event_client(int action)
 
 	snprintf(msg, STR_PROTO_SIZE, "event %d\n", action);
 
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif
@@ -465,7 +465,7 @@ void proto_recv_event_server(client_t * client, char *msg)
 
 	refreshLastMove(client->protect);
 
-	actionTux(client->tux, action);
+	tux_action(client->tux, action);
 }
 
 void proto_send_newtux_server(int type, client_t * client, tux_t * tux)
@@ -479,7 +479,7 @@ void proto_send_newtux_server(int type, client_t * client, tux_t * tux)
 		x = TUX_LOCATE_UNKNOWN;
 		y = TUX_LOCATE_UNKNOWN;
 	} else {
-		getTuxProportion(tux, &x, &y, NULL, NULL);
+		tux_get_proportion(tux, &x, &y, NULL, NULL);
 	}
 
 	snprintf(msg, STR_PROTO_SIZE, "newtux %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d\n",
@@ -491,7 +491,7 @@ void proto_send_newtux_server(int type, client_t * client, tux_t * tux)
 			 tux->shot[GUN_BOMBBALL], tux->bonus_time, tux->pickup_time);
 
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE,
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE,
 					CHECK_FRONT_ID_NONE);
 }
 
@@ -510,7 +510,7 @@ void proto_recv_newtux_client(char *msg)
 
 	assert(msg != NULL);
 
-	if (getCurrentArena() == NULL) {
+	if (arena_get_current() == NULL) {
 		return;
 	}
 
@@ -524,31 +524,31 @@ void proto_recv_newtux_client(char *msg)
 		return;
 	}
 
-	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
+	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
 	if (tux != NULL) {
 		assert(tux->id == id);
 	}
 
 	if (tux == NULL) {
-		tux = newTux();
-		replaceTuxID(tux, id);
+		tux = tux_new();
+		tux_replace_id(tux, id);
 		tux->control = TUX_CONTROL_NET;
-		addObjectToSpace(getCurrentArena()->spaceTux, tux);
+		space_add(arena_get_current()->spaceTux, tux);
 	}
 
 	if (tux->control == TUX_CONTROL_KEYBOARD_RIGHT &&
 	    x == TUX_LOCATE_UNKNOWN && y == TUX_LOCATE_UNKNOWN) {
-		getTuxProportion(tux, &x, &y, NULL, NULL);
+		tux_get_proportion(tux, &x, &y, NULL, NULL);
 	}
 
-	addToRadar(id, x, y, RADAR_TYPE_TUX);
+	radar_add(id, x, y, RADAR_TYPE_TUX);
 
 	if (tux->bonus == BONUS_HIDDEN) {
-		delFromRadar(id);
+		radar_del(id);
 	}
 
-	moveObjectInSpace(getCurrentArena()->spaceTux, tux, x, y);
+	space_move_object(arena_get_current()->spaceTux, tux, x, y);
 	tux->status = status;
 	tux->position = position;
 	tux->frame = frame;
@@ -578,7 +578,7 @@ void proto_send_kill_server(int type, client_t * client, tux_t * tux)
 	snprintf(msg, STR_PROTO_SIZE, "kill %d\n", tux->id);
 
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -598,10 +598,10 @@ void proto_recv_kill_client(char *msg)
 		return;
 	}
 
-	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
+	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
 	if (tux != NULL) {
-		eventTuxIsDead(tux);
+		tux_event_tux_is_dead(tux);
 	}
 }
 
@@ -612,11 +612,11 @@ void proto_send_del_server(int type, client_t * client, int id)
 	char msg[STR_PROTO_SIZE];
 	int check_id;
 
-	check_id = getNewIDcount(0);
+	check_id = id_get_newcount(0);
 
 	snprintf(msg, STR_PROTO_SIZE, "del %d %d\n", id, check_id);
 
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
 	//proto_check(type, client, msg, check_id);
 }
 
@@ -630,12 +630,12 @@ void timer_delShot(void *p)
 	assert( p != NULL );
 	id = (int *)(p);
 
-	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, *id);
+	shot = space_get_object_id(arena_get_current()->spaceShot, *id);
 
 	if( shot != NULL )
 	{
-		delFromRadar(shot->id);
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+		radar_del(shot->id);
+		space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
 	}
 
 	free(p);
@@ -660,30 +660,30 @@ void proto_recv_del_client(char *msg)
 
 	proto_send_check_client(check_id);
 
-	tux = getObjectFromSpaceWithID(getCurrentArena()->spaceTux, id);
+	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
 	if (tux != NULL) {
-		delFromRadar(id);
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceTux, tux, destroyTux);
+		radar_del(id);
+		space_del_with_item(arena_get_current()->spaceTux, tux, tux_destroy);
 		return;
 	}
 
-	shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, id);
+	shot = space_get_object_id(arena_get_current()->spaceShot, id);
 
 	if (shot != NULL) {
 		//printf("delete shot..\n");
-		//delFromRadar(id);
-		//delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
-		addTaskToTimer(getCurrentArena()->listTimer, TIMER_ONE, timer_delShot, newInt(id), 50);
+		//radar_del(id);
+		//space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
+		timer_add_task(arena_get_current()->listTimer, TIMER_ONE, timer_delShot, newInt(id), 50);
 		return;
 	}
 
-	item = getObjectFromSpaceWithID(getCurrentArena()->spaceItem, id);
+	item = space_get_object_id(arena_get_current()->spaceItem, id);
 
 	if (item != NULL) {
 		//printf("delete item..\n");
-		delFromRadar(id);
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceItem, item, destroyItem);
+		radar_del(id);
+		space_del_with_item(arena_get_current()->spaceItem, item, item_destroy);
 		return;
 	}
 }
@@ -697,14 +697,14 @@ void proto_send_additem_server(int type, client_t * client, item_t * p)
 
 	assert(p != NULL);
 
-	check_id = getNewIDcount(0);
+	check_id = id_get_newcount(0);
 
 	snprintf(msg, STR_PROTO_SIZE, "additem %d %d %d %d %d %d %d %d\n",
 		 p->id, p->type, p->x, p->y, p->count, p->frame, p->author_id, check_id);
 
 	//proto_send(type, client, msg);
 	//proto_check(type, client, msg, check_id);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_CHECK, check_id);
 }
 
 #ifndef PUBLIC_SERVER
@@ -718,7 +718,7 @@ void proto_recv_additem_client(char *msg)
 
 	assert(msg != NULL);
 
-	if (getCurrentArena() == NULL) {
+	if (arena_get_current() == NULL) {
 		return;
 	}
 
@@ -732,22 +732,22 @@ void proto_recv_additem_client(char *msg)
 	proto_send_check_client(check_id);
 
 	if ((item =
-		 getObjectFromSpaceWithID(getCurrentArena()->spaceItem, id)) != NULL) {
+		 space_get_object_id(arena_get_current()->spaceItem, id)) != NULL) {
 		return;
 	}
 
 	if (type != ITEM_MINE && type != ITEM_EXPLOSION &&
 	    type != ITEM_BIG_EXPLOSION) {
-		addToRadar(id, x, y, RADAR_TYPE_ITEM);
+		radar_add(id, x, y, RADAR_TYPE_ITEM);
 	}
 
-	item = newItem(x, y, type, author_id);
+	item = item_new(x, y, type, author_id);
 
-	replaceItemID(item, id);
+	item_replace_id(item, id);
 	item->count = count;
 	item->frame = frame;
 
-	addObjectToSpace(getCurrentArena()->spaceItem, item);
+	space_add(arena_get_current()->spaceItem, item);
 }
 
 #endif
@@ -764,7 +764,7 @@ void proto_send_shot_server(int type, client_t * client, shot_t * p)
 
 	//proto_send(type, client, msg);
 	//proto_check(type, client, msg, check_id);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -786,22 +786,22 @@ void proto_recv_shot_client(char *msg)
 		return;
 	}
 
-	if ((shot = getObjectFromSpaceWithID(getCurrentArena()->spaceShot, shot_id)) != NULL) {
-		delObjectFromSpaceWithObject(getCurrentArena()->spaceShot, shot, destroyShot);
+	if ((shot = space_get_object_id(arena_get_current()->spaceShot, shot_id)) != NULL) {
+		space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
 		//return;
 	}
 
-	shot = newShot(x, y, px, py, gun, author_id);
+	shot = shot_new(x, y, px, py, gun, author_id);
 
-	replaceShotID(shot, shot_id);
+	shot_replace_id(shot, shot_id);
 	shot->isCanKillAuthor = isCanKillAuthor;
 	shot->position = position;
 
 	if (shot->gun == GUN_LASSER) {
-		transformOnlyLasser(shot);
+		shot_transform_lasser(shot);
 	}
 
-	addObjectToSpace(getCurrentArena()->spaceShot, shot);
+	space_add(arena_get_current()->spaceShot, shot);
 }
 
 #endif
@@ -812,7 +812,7 @@ void proto_send_chat_client(char *s)
 {
 	char msg[STR_PROTO_SIZE];
 	snprintf(msg, STR_PROTO_SIZE, "chat %s\n", s);
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif
@@ -836,7 +836,7 @@ void proto_recv_chat_server(client_t * client, char *msg)
 
 void proto_send_chat_server(int type, client_t * client, char *msg)
 {
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 
 #ifndef PUBLIC_SERVER
 	proto_recv_chat_client(msg);
@@ -854,7 +854,7 @@ void proto_recv_chat_client(char *msg)
 	len = strlen(msg);
 	msg[len - 1] = '\0';
 
-	addToChat(msg + 5);
+	chat_add(msg + 5);
 }
 
 #endif
@@ -871,14 +871,14 @@ void proto_send_module_client(char *msg)
 	strcat(out, msg);
 	strcat(out, "\n");
 */
-	sendServer(out);
+	client_send(out);
 }
 
 #endif
 
 void proto_recv_module_server(client_t * client, char *msg)
 {
-	recvMsgModule(msg + 7);
+	module_recv_msg(msg + 7);
 }
 
 void proto_send_module_server(int type, client_t * client, char *msg)
@@ -892,14 +892,14 @@ void proto_send_module_server(int type, client_t * client, char *msg)
 	strcat(out, "\n");
 */
 
-	protoSendClient(type, client, out, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, out, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
 
 void proto_recv_module_client(char *msg)
 {
-	recvMsgModule(msg + 7);
+	module_recv_msg(msg + 7);
 }
 
 #endif
@@ -910,7 +910,7 @@ void proto_send_ping_client()
 {
 	char msg[STR_PROTO_SIZE];
 	snprintf(msg, STR_PROTO_SIZE, "ping\n");
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif
@@ -924,7 +924,7 @@ void proto_send_ping_server(int type, client_t * client)
 	char msg[STR_PROTO_SIZE];
 	snprintf(msg, STR_PROTO_SIZE, "ping\n");
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -946,7 +946,7 @@ void proto_send_echo_server(int type, client_t * client, char *s)
 
 	snprintf(msg, STR_PROTO_SIZE, "echo%s", s);
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 void proto_send_end_server(int type, client_t * client)
@@ -955,7 +955,7 @@ void proto_send_end_server(int type, client_t * client)
 
 	snprintf(msg, STR_PROTO_SIZE, "end\n");
 	//proto_send(type, client, msg);
-	protoSendClient(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
+	sendMsg_to_client(type, client, msg, CHECK_FRONT_TYPE_SIMPLE, CHECK_FRONT_ID_NONE);
 }
 
 #ifndef PUBLIC_SERVER
@@ -964,7 +964,7 @@ void proto_recv_end_client(char *msg)
 {
 	assert(msg != NULL);
 
-	setWorldEnd();
+	word_do_end();
 }
 
 #endif
@@ -976,7 +976,7 @@ void proto_send_end_client()
 	char msg[STR_PROTO_SIZE];
 
 	snprintf(msg, STR_PROTO_SIZE, "end\n");
-	sendServer(msg);
+	client_send(msg);
 }
 
 #endif

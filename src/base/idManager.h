@@ -8,13 +8,13 @@
 #    endif
 #    include "list.h"
 
-extern void initListID();
-extern int isRegisterID(int id);
-extern int getNewIDcount(int count);
-extern int getNewID();
-extern void incID(int id);
-extern void delID(int id);
-extern void replaceID(int old_id, int new_id);
-extern void quitListID();
+extern void id_init_list();
+extern int id_is_register(int id);
+extern int id_get_newcount(int count);
+extern int id_get_new();
+extern void id_inc(int id);
+extern void id_del(int id);
+extern void id_replace(int old_id, int new_id);
+extern void id_quit_list();
 
 #endif

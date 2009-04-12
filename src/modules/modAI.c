@@ -67,20 +67,20 @@ void forkAlternative(list_t * list, alternative_t * p, int w, int h)
 
 	switch (p->route) {
 	case TUX_UP:
-		addList(list, cloneAlternative(p, TUX_RIGHT, x + (w + 5), y));
-		addList(list, cloneAlternative(p, TUX_LEFT, x - (w + 5), y));
+		list_add(list, cloneAlternative(p, TUX_RIGHT, x + (w + 5), y));
+		list_add(list, cloneAlternative(p, TUX_LEFT, x - (w + 5), y));
 		break;
 	case TUX_RIGHT:
-		addList(list, cloneAlternative(p, TUX_UP, x, y - (h + 5)));
-		addList(list, cloneAlternative(p, TUX_DOWN, x, y + (h + 5)));
+		list_add(list, cloneAlternative(p, TUX_UP, x, y - (h + 5)));
+		list_add(list, cloneAlternative(p, TUX_DOWN, x, y + (h + 5)));
 		break;
 	case TUX_LEFT:
-		addList(list, cloneAlternative(p, TUX_UP, x, y - (h + 5)));
-		addList(list, cloneAlternative(p, TUX_DOWN, x, y + (h + 5)));
+		list_add(list, cloneAlternative(p, TUX_UP, x, y - (h + 5)));
+		list_add(list, cloneAlternative(p, TUX_DOWN, x, y + (h + 5)));
 		break;
 	case TUX_DOWN:
-		addList(list, cloneAlternative(p, TUX_RIGHT, x + (w + 5), y));
-		addList(list, cloneAlternative(p, TUX_LEFT, x - (w + 5), y));
+		list_add(list, cloneAlternative(p, TUX_RIGHT, x + (w + 5), y));
+		list_add(list, cloneAlternative(p, TUX_LEFT, x - (w + 5), y));
 		break;
 	}
 
@@ -138,10 +138,10 @@ tux_t *findOtherTux(space_t * space)
 {
 	int i;
 
-	for (i = 0; i < getSpaceCount(space); i++) {
+	for (i = 0; i < space_get_count(space); i++) {
 		tux_t *thisTux;
 
-		thisTux = getItemFromSpace(space, i);
+		thisTux = space_get_item(space, i);
 
 		if (thisTux->control != TUX_CONTROL_AI) {
 			return thisTux;
@@ -158,31 +158,31 @@ static void shotTux(arena_t * arena, tux_t * tux_ai, tux_t * tux_rival)
 	int x_rival, y_rival;
 	int w, h;
 
-	export_fce->fce_getTuxProportion(tux_ai, &x_ai, &y_ai, &w, &h);
-	export_fce->fce_getTuxProportion(tux_rival, &x_rival, &y_rival, &w, &h);
+	export_fce->fce_tux_get_proportion(tux_ai, &x_ai, &y_ai, &w, &h);
+	export_fce->fce_tux_get_proportion(tux_rival, &x_rival, &y_rival, &w, &h);
 
 	if (y_rival < y_ai && x_rival > x_ai && x_rival < x_ai + limit) {
-		export_fce->fce_actionTux(tux_ai, TUX_UP);
-		export_fce->fce_actionTux(tux_ai, TUX_SHOT);
+		export_fce->fce_tux_action(tux_ai, TUX_UP);
+		export_fce->fce_tux_action(tux_ai, TUX_SHOT);
 	}
 
 	if (x_rival > x_ai && y_rival > y_ai && y_rival < y_ai + limit) {
-		export_fce->fce_actionTux(tux_ai, TUX_RIGHT);
-		export_fce->fce_actionTux(tux_ai, TUX_SHOT);
+		export_fce->fce_tux_action(tux_ai, TUX_RIGHT);
+		export_fce->fce_tux_action(tux_ai, TUX_SHOT);
 	}
 
 	if (x_rival < x_ai && y_rival > y_ai && y_rival < y_ai + limit) {
-		export_fce->fce_actionTux(tux_ai, TUX_LEFT);
-		export_fce->fce_actionTux(tux_ai, TUX_SHOT);
+		export_fce->fce_tux_action(tux_ai, TUX_LEFT);
+		export_fce->fce_tux_action(tux_ai, TUX_SHOT);
 	}
 
 	if (y_rival > y_ai && x_rival > x_ai && x_rival < x_ai + limit) {
-		export_fce->fce_actionTux(tux_ai, TUX_DOWN);
-		export_fce->fce_actionTux(tux_ai, TUX_SHOT);
+		export_fce->fce_tux_action(tux_ai, TUX_DOWN);
+		export_fce->fce_tux_action(tux_ai, TUX_SHOT);
 	}
 }
 
-static void eventTuxAI(tux_t * tux)
+static void tux_eventAI(tux_t * tux)
 {
 	arena_t *arena;
 	tux_t *rivalTux;
@@ -200,10 +200,10 @@ static void eventTuxAI(tux_t * tux)
 	int countLimit = 0;
 	int countDo = 0;
 
-	export_fce->fce_getTuxProportion(tux, &x, &y, &w, &h);
+	export_fce->fce_tux_get_proportion(tux, &x, &y, &w, &h);
 	//printf("tux AI %d %d\n", x, y);
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
 	rivalTux = findOtherTux(arena->spaceTux);
 
@@ -211,19 +211,19 @@ static void eventTuxAI(tux_t * tux)
 		return;
 	}
 
-	listAlternative = newList();
-	listDst = newList();
-	listFork = newList();
+	listAlternative = list_new();
+	listDst = list_new();
+	listFork = list_new();
 
 	shotTux(arena, tux, rivalTux);
 
-	export_fce->fce_getTuxProportion(rivalTux, &rival_x, &rival_y, NULL, NULL);
+	export_fce->fce_tux_get_proportion(rivalTux, &rival_x, &rival_y, NULL, NULL);
 	//printf("tux rival %d %d\n", rival_x, rival_y);
 
-	addList(listAlternative, newAlternative(TUX_UP, x, y - (h + 10)));
-	addList(listAlternative, newAlternative(TUX_RIGHT, x + (w + 10), y));
-	addList(listAlternative, newAlternative(TUX_LEFT, x - (w + 10), y));
-	addList(listAlternative, newAlternative(TUX_DOWN, x, y + (h + 10)));
+	list_add(listAlternative, newAlternative(TUX_UP, x, y - (h + 10)));
+	list_add(listAlternative, newAlternative(TUX_RIGHT, x + (w + 10), y));
+	list_add(listAlternative, newAlternative(TUX_LEFT, x - (w + 10), y));
+	list_add(listAlternative, newAlternative(TUX_DOWN, x, y + (h + 10)));
 
 	my_index = -1;
 	while (1) {
@@ -237,10 +237,10 @@ static void eventTuxAI(tux_t * tux)
 			//printf("listFork->count = %d\n", listFork->count);
 
 			for (j = 0; j < listFork->count; j++) {
-				addList(listAlternative, listFork->list[j]);
+				list_add(listAlternative, listFork->list[j]);
 			}
 
-			listDoEmpty(listFork);
+			list_do_empty(listFork);
 
 			my_index = 0;
 		}
@@ -255,7 +255,7 @@ static void eventTuxAI(tux_t * tux)
 			break;
 
 		if (this->step > 100) {
-			delListItem(listAlternative, my_index, destroyAlternative);
+			list_del_item(listAlternative, my_index, destroyAlternative);
 			countLimit++;
 			my_index--;
 			continue;
@@ -263,27 +263,27 @@ static void eventTuxAI(tux_t * tux)
 
 		moveAlternative(this, w * 2);
 
-		if (export_fce->fce_isFreeSpace(arena, this->x, this->y, w, h) == 1) {
+		if (export_fce->fce_arena__is_free_space(arena, this->x, this->y, w, h) == 1) {
 			forkAlternative(listFork, this, 2 * w, 2 * h);
 			countFork++;
 			continue;
 		}
 
 		if (export_fce->
-			fce_conflictSpace(this->x, this->y, w, h, rival_x, rival_y, w,
+			fce_arena_conflict_space(this->x, this->y, w, h, rival_x, rival_y, w,
 							  h)) {
 			//printf("this->step = %d\n", this->step);
 
-			delList(listAlternative, my_index);
-			addList(listDst, this);
+			list_del(listAlternative, my_index);
+			list_add(listDst, this);
 			my_index--;
 			//continue;
 			break;
 		}
 
-		if (export_fce->fce_isFreeSpace(arena, this->x, this->y, w, h) == 0) {
+		if (export_fce->fce_arena__is_free_space(arena, this->x, this->y, w, h) == 0) {
 			//forkAlternative(listFork, this, w*2, h*2);
-			delListItem(listAlternative, my_index, destroyAlternative);
+			list_del_item(listAlternative, my_index, destroyAlternative);
 			my_index--;
 			countDel++;
 
@@ -309,12 +309,12 @@ static void eventTuxAI(tux_t * tux)
 	}
 
 	if (recRoute != 0) {
-		export_fce->fce_actionTux(tux, recRoute);
+		export_fce->fce_tux_action(tux, recRoute);
 	}
 
-	destroyListItem(listFork, destroyAlternative);
-	destroyListItem(listAlternative, destroyAlternative);
-	destroyListItem(listDst, destroyAlternative);
+	list_destroy_item(listFork, destroyAlternative);
+	list_destroy_item(listAlternative, destroyAlternative);
+	list_destroy_item(listDst, destroyAlternative);
 /*
 	printf("countFork = %d\n", countFork);
 	printf("countDel = %d\n", countDel);
@@ -326,7 +326,7 @@ static void eventTuxAI(tux_t * tux)
 static void action_tuxAI(space_t * space, tux_t * tux, void *p)
 {
 	if (tux->control == TUX_CONTROL_AI && tux->status == TUX_STATUS_ALIVE) {
-		eventTuxAI(tux);
+		tux_eventAI(tux);
 	}
 }
 
@@ -339,19 +339,19 @@ int event()
 	//int i;
 
 	if (lastEvent == 0) {
-		lastEvent = export_fce->fce_getMyTime();
+		lastEvent = export_fce->fce_timer_get_current_time();
 	}
 
-	curentTime = export_fce->fce_getMyTime();
+	curentTime = export_fce->fce_timer_get_current_time();
 
 	if (curentTime - lastEvent < 25) {
 		return 0;
 	}
 
-	lastEvent = export_fce->fce_getMyTime();
+	lastEvent = export_fce->fce_timer_get_current_time();
 	//printf("event AI\n");
 
-	arena = export_fce->fce_getCurrentArena();
+	arena = export_fce->fce_arena_get_current();
 
 	if (arena == NULL) {
 		return 0;
@@ -359,7 +359,7 @@ int event()
 
 	countTuxAI = 0;
 
-	actionSpace(arena->spaceTux, action_tuxAI, NULL);
+	space_action(arena->spaceTux, action_tuxAI, NULL);
 /*
 	for( i = 0 ; i < arena->spaceTux->list->count ; i++ )
 	{
@@ -370,7 +370,7 @@ int event()
 		if( thisTux->control == TUX_CONTROL_AI &&
 		    thisTux->status == TUX_STATUS_ALIVE )
 		{
-			eventTux(thisTux);
+			tux_event(thisTux);
 			countTuxAI = 0;
 		}
 	}

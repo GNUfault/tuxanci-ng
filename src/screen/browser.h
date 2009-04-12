@@ -23,11 +23,11 @@ typedef struct server_context {
 } server_t;
 
 
-extern void startScreenBrowser();
-extern void drawScreenBrowser();
-extern void eventScreenBrowser();
-extern void stopScreenBrowser();
-extern void initScreenBrowser();
-extern void quitScreenBrowser();
+extern void browser_start();
+extern void browser_draw();
+extern void browser_event();
+extern void browser_stop();
+extern void browser_init();
+extern void browser_quit();
 
 #endif

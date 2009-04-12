@@ -46,7 +46,7 @@ static void eventWidget(void *p)
 	button = (widget_t *) p;
 
 	if (button == widgetButtonSave) {
-		saveArena(getTextFromWidgetTextfield(widgetTextFieldName), getCurrentArena());
+		save_arena(textField_get_text(widgetTextFieldName), arena_get_current());
 		switchTerm();
 	}
 
@@ -60,45 +60,45 @@ static void hotkey_saveDialog()
 	switchTerm();
 }
 
-void initSaveDialog()
+void saveDialog_init()
 {
 	activeSaveDialog = FALSE;
 
-	g_background = getImage(IMAGE_GROUP_BASE, "screen_main");
+	g_background = image_get(IMAGE_GROUP_BASE, "screen_main");
 
-	widgetLabelMsg = newWidgetLabel("name", SAVE_DIALOG_LOCATIN_X + 20,
+	widgetLabelMsg = label_new("name", SAVE_DIALOG_LOCATIN_X + 20,
 						SAVE_DIALOG_LOCATIN_Y + 20,
 						WIDGET_LABEL_LEFT);
 
-	widgetTextFieldName = newWidgetTextfield("noname", WIDGET_TEXTFIELD_FILTER_ALPHANUM,
+	widgetTextFieldName = textField_new("noname", WIDGET_TEXTFIELD_FILTER_ALPHANUM,
 							widgetLabelMsg->x +
 							widgetLabelMsg->w + 10,
 							 widgetLabelMsg->y);
 
-	widgetButtonSave = newWidgetButton("Save", SAVE_DIALOG_LOCATIN_X + 20,
+	widgetButtonSave = button_new("Save", SAVE_DIALOG_LOCATIN_X + 20,
 						SAVE_DIALOG_LOCATIN_Y + 60,
 						eventWidget);
 
-	widgetButtonBack = newWidgetButton("Back", SAVE_DIALOG_LOCATIN_X + 20 +
+	widgetButtonBack = button_new("Back", SAVE_DIALOG_LOCATIN_X + 20 +
 						WIDGET_BUTTON_WIDTH + 20,
 						SAVE_DIALOG_LOCATIN_Y + 60,
 						eventWidget);
 
-	registerHotKey(SDLK_F2, hotkey_saveDialog);
+	hotKey_register(SDLK_F2, hotkey_saveDialog);
 }
 
-bool_t isSaveDialogActive()
+bool_t saveDialog_is_active()
 {
 	return activeSaveDialog;
 }
 
-void drawSaveDialog()
+void saveDialog_draw()
 {
 	if (activeSaveDialog == FALSE) {
 		return;
 	}
 
-	drawImage(g_background,
+	image_draw(g_background,
 		SAVE_DIALOG_LOCATIN_X,
 		SAVE_DIALOG_LOCATIN_Y,
 		SAVE_DIALOG_LOCATIN_X,
@@ -106,30 +106,30 @@ void drawSaveDialog()
 		SAVE_DIALOG_SIZE_X,
 		SAVE_DIALOG_SIZE_Y);
 
-	drawWidgetLabel(widgetLabelMsg);
-	drawWidgetTextfield(widgetTextFieldName);
-	drawWidgetButton(widgetButtonSave);
-	drawWidgetButton(widgetButtonBack);
+	label_draw(widgetLabelMsg);
+	textField_draw(widgetTextFieldName);
+	button_draw(widgetButtonSave);
+	button_draw(widgetButtonBack);
 }
 
-void eventSaveDialog()
+void saveDialog_event()
 {
 	if (activeSaveDialog == FALSE) {
 		return;
 	}
 
-	eventWidgetTextfield(widgetTextFieldName);
-	eventWidgetButton(widgetButtonSave);
-	eventWidgetButton(widgetButtonBack);
+	textField_event(widgetTextFieldName);
+	button_event(widgetButtonSave);
+	button_event(widgetButtonBack);
 
 }
 
-void quitSaveDialog()
+void saveDialog_quit()
 {
-	unregisterHotKey(SDLK_F2);
+	unhotKey_register(SDLK_F2);
 
-	destroyWidgetLabel(widgetLabelMsg);
-	destroyWidgetTextfield(widgetTextFieldName);
-	destroyWidgetButton(widgetButtonSave);
-	destroyWidgetButton(widgetButtonBack);
+	label_destroy(widgetLabelMsg);
+	textField_destroy(widgetTextFieldName);
+	button_destroy(widgetButtonSave);
+	button_destroy(widgetButtonBack);
 }

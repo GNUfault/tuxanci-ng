@@ -40,7 +40,7 @@ static void destroyRadarItem(radar_item_t * p)
 	free(p);
 }
 
-void addToRadar(int id, int x, int y, int type)
+void radar_add(int id, int x, int y, int type)
 {
 	int i;
 
@@ -57,10 +57,10 @@ void addToRadar(int id, int x, int y, int type)
 		}
 	}
 
-	addList(listRadar, newRadarItem(id, x, y, type));
+	list_add(listRadar, newRadarItem(id, x, y, type));
 }
 
-void delFromRadar(int id)
+void radar_del(int id)
 {
 	int i;
 
@@ -70,26 +70,26 @@ void delFromRadar(int id)
 		thisRadarItem = (radar_item_t *) listRadar->list[i];
 
 		if (thisRadarItem->id == id) {
-			delListItem(listRadar, i, destroyRadarItem);
+			list_del_item(listRadar, i, destroyRadarItem);
 			return;
 		}
 	}
 }
 
-void initRadar()
+void radar_init()
 {
-	assert(isImageInicialized() == TRUE);
-	assert(isInterfaceInicialized() == TRUE);
+	assert(image_is_inicialized() == TRUE);
+	assert(interface_is_inicialized() == TRUE);
 
-	g_radar = addImageData("radar.png", IMAGE_NO_ALPHA, "radar", IMAGE_GROUP_USER);
-	listRadar = newList();
+	g_radar = image_add("radar.png", IMAGE_NO_ALPHA, "radar", IMAGE_GROUP_USER);
+	listRadar = list_new();
 }
 
-void drawRadar(arena_t * arena)
+void radar_draw(arena_t * arena)
 {
 	int i;
 
-	drawImage(g_radar, RADAR_LOCATION_X, RADAR_LOCATION_Y, 0, 0, RADAR_SIZE_X + 2, RADAR_SIZE_Y + 2);
+	image_draw(g_radar, RADAR_LOCATION_X, RADAR_LOCATION_Y, 0, 0, RADAR_SIZE_X + 2, RADAR_SIZE_Y + 2);
 
 	for (i = 0; i < listRadar->count; i++) {
 		radar_item_t *thisRadarItem;
@@ -102,13 +102,13 @@ void drawRadar(arena_t * arena)
 		y = (((float) RADAR_SIZE_Y) / ((float) arena->h)) * ((float) thisRadarItem->y);
 
 		if (x >= 0 && x <= RADAR_SIZE_X && y >= 0 && y <= RADAR_SIZE_Y) {
-			drawImage(g_radar, RADAR_LOCATION_X + 1 + x, RADAR_LOCATION_Y + 1 + y,
+			image_draw(g_radar, RADAR_LOCATION_X + 1 + x, RADAR_LOCATION_Y + 1 + y,
 				  2 * thisRadarItem->type, RADAR_SIZE_Y + 2, 2, 2);
 		}
 	}
 }
 
-void quitRadar()
+void radar_quit()
 {
-	destroyListItem(listRadar, destroyRadarItem);
+	list_destroy_item(listRadar, destroyRadarItem);
 }

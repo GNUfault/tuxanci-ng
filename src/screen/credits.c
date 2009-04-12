@@ -31,26 +31,26 @@ static int creditExists;
 
 static void hotkey_escape()
 {
-	setScreen("mainMenu");
+	screen_set("mainMenu");
 }
 
-void startScreenCredits()
+void scredits_start()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 	offset = 0;
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenCredits()
+void scredits_draw()
 {
 	int i;
 
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
-	drawWidgetButton(button_back);
+	button_draw(button_back);
 
 	for (i = 0; i < listWidgetLabel->count; i++) {
 		int z;
@@ -63,7 +63,7 @@ void drawScreenCredits()
 		this->y += offset;
 
 		if (this->y > SCREEN_CREDITS_OFFSET_MIN && this->y < SCREEN_CREDITS_OFFSET_MAX) {
-			drawWidgetLabel(this);
+			label_draw(this);
 		}
 
 		this->y = z;
@@ -71,9 +71,9 @@ void drawScreenCredits()
 
 }
 
-void eventScreenCredits()
+void scredits_event()
 {
-	eventWidgetButton(button_back);
+	button_event(button_back);
 
 	offset -= SCREEN_CREDITS_OFFSET_SPEED;
 
@@ -84,9 +84,9 @@ void eventScreenCredits()
 	//printf("offset = %d\n", offset);
 }
 
-void stopScreenCredits()
+void scredits_stop()
 {
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -96,26 +96,26 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_back) {
-		setScreen("mainMenu");
+		screen_set("mainMenu");
 	}
 }
 
-void initScreenCredits()
+void scredits_init()
 {
 	image_t *image;
 	int i;
 
-	image = getImage(IMAGE_GROUP_BASE, "screen_main");
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_get(IMAGE_GROUP_BASE, "screen_main");
+	image_backgorund = wid_image_new(0, 0, image);
 
-	button_back = newWidgetButton(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
+	button_back = button_new(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
 						 WINDOW_SIZE_Y - 80, eventWidget);
 
-	listWidgetLabel = newList();
+	listWidgetLabel = list_new();
 
 	if (tryExistFile(PATH_DOC SCREEN_CREDITS_FILE) == 0) {
 		creditExists = 1;
-		textFile = loadTextFile(PATH_DOC SCREEN_CREDITS_FILE);
+		textFile = textFile_load(PATH_DOC SCREEN_CREDITS_FILE);
 
 		for (i = 0; i < textFile->text->count; i++) {
 			widget_t *label;
@@ -123,11 +123,11 @@ void initScreenCredits()
 
 			line = (char *) textFile->text->list[i];
 
-			label = newWidgetLabel(line, WINDOW_SIZE_X / 2 - WINDOW_SIZE_X / 4,
+			label = label_new(line, WINDOW_SIZE_X / 2 - WINDOW_SIZE_X / 4,
 						(WINDOW_SIZE_Y - 100) + i * 20,
 						 WIDGET_LABEL_LEFT);
 
-			addList(listWidgetLabel, label);
+			list_add(listWidgetLabel, label);
 		}
 	} else {
 		for (i = 0; i < 5; i++) {
@@ -138,26 +138,26 @@ void initScreenCredits()
 			sprintf(line, _("Credit file not found... %s/%s"), PATH_DOC,
 					SCREEN_CREDITS_FILE);
 
-			label = newWidgetLabel(line, WINDOW_SIZE_X / 2,
+			label = label_new(line, WINDOW_SIZE_X / 2,
 						(WINDOW_SIZE_Y - 100) + i * 20,
 						WIDGET_LABEL_CENTER);
 
-			addList(listWidgetLabel, label);
+			list_add(listWidgetLabel, label);
 		}
 	}
 
-	registerScreen(newScreen ("credits", startScreenCredits, eventScreenCredits,
-				drawScreenCredits, stopScreenCredits));
+	screen_register(screen_new ("credits", scredits_start, scredits_event,
+				scredits_draw, scredits_stop));
 }
 
-void quitScreenCredits()
+void scredits_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetButton(button_back);
-	destroyListItem(listWidgetLabel, destroyWidgetLabel);
+	button_destroy(button_back);
+	list_destroy_item(listWidgetLabel, label_destroy);
 
 	if (creditExists) {
-		destroyTextFile(textFile);
+		textFile_destroy(textFile);
 	}
 }

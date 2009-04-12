@@ -19,9 +19,9 @@
 #    define PANEL_SHOT_EMPTY	1
 #    define PANEL_SHOT_LINE		2
 
-extern bool_t isPanelInicialized();
-extern void initPanel();
-extern void drawPanel(tux_t * tux_right, tux_t * tux_left);
-extern void quitPanel();
+extern bool_t panel_is_inicialized();
+extern void panel_init();
+extern void panel_draw(tux_t * tux_right, tux_t * tux_left);
+extern void panel_quit();
 
 #endif

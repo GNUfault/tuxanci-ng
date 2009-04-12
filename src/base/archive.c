@@ -10,7 +10,7 @@
 #define ARCHIVE_BUFFER_SIZE	4096
 #define STR_TMP_FILE_NAME	4096
 
-char *extractFileFromArchive(char *archive, char *filename)
+char *archive_extract_file(char *archive, char *filename)
 {
 	char name[STR_TMP_FILE_NAME];
 	char buf[ARCHIVE_BUFFER_SIZE];
@@ -68,7 +68,7 @@ char *extractFileFromArchive(char *archive, char *filename)
 	return strdup(name);
 }
 
-void deleteExtractFile(char *s)
+void archive_delete_file(char *s)
 {
 	unlink(s);
 	free(s);

@@ -24,8 +24,8 @@ typedef struct layer_str {
 	image_t *image;				//dane surfrace
 } layer_t;
 
-extern bool_t isLayerInicialized();
-extern void initLayer();
+extern bool_t layer_is_inicialized();
+extern void layer_init();
 
 /*
  * Add image to queue for rendering
@@ -43,11 +43,11 @@ extern void addLayer(image_t * img,
 /*
  * Draws queue on the screen
  */
-extern void drawLayer();
-extern void drawLayerCenter(int x, int y);
-extern void drawLayerSplit(int local_x, int local_y, int x, int y, int w,
+extern void layer_draw_all();
+extern void layer_draw_center(int x, int y);
+extern void layer_draw_slpit(int local_x, int local_y, int x, int y, int w,
 						   int h);
-extern void flushLayer();
-extern void quitLayer();
+extern void layer_flush();
+extern void layer_quit();
 
 #endif

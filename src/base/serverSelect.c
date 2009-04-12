@@ -25,7 +25,7 @@ static fd_set readfds;
 static fd_set writefds;
 static int max_fd;
 
-void restartSelect()
+void select_restart()
 {
 #ifndef PUBLIC_SERVER
 	tv.tv_sec = 0;
@@ -42,9 +42,9 @@ void restartSelect()
 	max_fd = 0;
 }
 
-void addSockToSelectRead(int sock)
+void select_add_sock_for_read(int sock)
 {
-	//printf("addSockToSelectRead %d\n", sock);
+	//printf("select_add_sock_for_read %d\n", sock);
 
 	FD_SET(sock, &readfds);
 
@@ -53,9 +53,9 @@ void addSockToSelectRead(int sock)
 	}
 }
 
-void addSockToSelectWrite(int sock)
+void select_add_sock_for_write(int sock)
 {
-	//printf("addSockToSelectWrite %d\n", sock);
+	//printf("select_add_sock_for_write %d\n", sock);
 
 	FD_SET(sock, &writefds);
 
@@ -64,17 +64,17 @@ void addSockToSelectWrite(int sock)
 	}
 }
 
-int actionSelect()
+int select_action()
 {
 	int ret;
 
 #ifdef PUBLIC_SERVER
 	list_t *listClient;
-	listClient = getListServerClient();
+	listClient = server_get_list_clients();
 
 	if (listClient->count == 0) {
 		ret = select(max_fd + 1, &readfds, &writefds, (fd_set *) NULL, NULL);
-		setServerTimer();
+		server_set_time();
 	} else {
 		ret = select(max_fd + 1, &readfds, &writefds, (fd_set *) NULL, &tv);
 	}
@@ -87,24 +87,24 @@ int actionSelect()
 	return ret;
 }
 
-int isChangeSockInSelectRead(int sock)
+int select_is_change_sock_for_read(int sock)
 {
 	int ret;
 
 	ret = FD_ISSET(sock, &readfds);
 
-	//printf("isChangeSockInSelect %d -> %d\n", sock, ret);
+	//printf("select_is_change_sock %d -> %d\n", sock, ret);
 
 	return ret;
 }
 
-int isChangeSockInSelectWrite(int sock)
+int select_is_change_sock_for_write(int sock)
 {
 	int ret;
 
 	ret = FD_ISSET(sock, &writefds);
 
-	//printf("isChangeSockInSelect %d -> %d\n", sock, ret);
+	//printf("select_is_change_sock %d -> %d\n", sock, ret);
 
 	return ret;
 }

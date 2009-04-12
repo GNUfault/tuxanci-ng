@@ -12,12 +12,12 @@
 
 static list_t *listStorage;
 static bool_t isSoundInit = FALSE;
-static bool_t var_isSoundActive = TRUE;
+static bool_t var_sound_is_active = TRUE;
 
 /*
  * Return status of sound
  */
-bool_t isSoundInicialized()
+bool_t sound_is_inicialized()
 {
 	return isSoundInit;
 }
@@ -25,22 +25,22 @@ bool_t isSoundInicialized()
 /*
  * Initialize sound
  */
-void initSound()
+void sound_init()
 {
-	if (isAudioInicialized() == FALSE) {
+	if (audio_is_inicialized() == FALSE) {
 		isSoundInit = FALSE;
 		return;
 	}
 
-	listStorage = newStorage();
+	listStorage = storage_new();
 	isSoundInit = TRUE;
-	var_isSoundActive = TRUE;
+	var_sound_is_active = TRUE;
 
 	if (isParamFlag("--no-sound"))
-		setSoundActive(FALSE);
+		sound_set_active(FALSE);
 
 	if (isParamFlag("--sound"))
-		setSoundActive(TRUE);
+		sound_set_active(TRUE);
 
 	DEBUG_MSG(_("Initializing sound\n"));
 
@@ -90,7 +90,7 @@ static void destroySound(void *p)
 /*
  * Add sound to list
  */
-void addSound(char *file, char *name, char *group)
+void sound_add(char *file, char *name, char *group)
 {
 	Mix_Chunk *new;
 
@@ -102,45 +102,45 @@ void addSound(char *file, char *name, char *group)
 	assert(group != NULL);
 
 	new = loadMixSound(file);
-	addItemToStorage(listStorage, group, name, new);
+	storage_add(listStorage, group, name, new);
 }
 
 /*
  * Start playback file from list
  */
-void playSound(char *name, char *group)
+void sound_play(char *name, char *group)
 {
-	if (isSoundInit == FALSE || var_isSoundActive == FALSE)
+	if (isSoundInit == FALSE || var_sound_is_active == FALSE)
 		return;
 
-	playMixSound(getItemFromStorage(listStorage, group, name));
+	playMixSound(storage_get(listStorage, group, name));
 }
 
 /*
  * Set if sound is active True/False
  */
-void setSoundActive(bool_t n)
+void sound_set_active(bool_t n)
 {
-	var_isSoundActive = n;
+	var_sound_is_active = n;
 }
 
 /*
  * Return state of sound
  */
-bool_t isSoundActive()
+bool_t sound_is_active()
 {
-	return var_isSoundActive;
+	return var_sound_is_active;
 }
 
 /*
  * Quit all sound stuff
  */
-void quitSound()
+void sound_quit()
 {
 	if (isSoundInit == FALSE)
 		return;
 
-	destroyStorage(listStorage, destroySound);
+	storage_destroy(listStorage, destroySound);
 	isSoundInit = FALSE;
 
 	DEBUG_MSG(_("Quitting sound\n"));

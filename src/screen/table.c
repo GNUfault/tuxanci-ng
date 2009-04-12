@@ -34,53 +34,53 @@ static textFile_t *textFile;
 
 static void hotkey_escape()
 {
-	setScreen("mainMenu");
+	screen_set("mainMenu");
 }
 
-void startScreenTable()
+void table_start()
 {
 #ifndef NO_SOUND
-	playMusic("menu", MUSIC_GROUP_BASE);
+	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
-	registerHotKey(SDLK_ESCAPE, hotkey_escape);
+	hotKey_register(SDLK_ESCAPE, hotkey_escape);
 }
 
-void drawScreenTable()
+void table_draw()
 {
 	int i;
 
-	drawWidgetImage(image_backgorund);
+	wid_image_draw(image_backgorund);
 
-	drawWidgetButton(button_back);
+	button_draw(button_back);
 
 	for (i = 0; i < listWidgetLabelNumer->count; i++) {
 		widget_t *this;
 		this = (widget_t *) listWidgetLabelNumer->list[i];
-		drawWidgetLabel(this);
+		label_draw(this);
 	}
 
 	for (i = 0; i < listWidgetLabelName->count; i++) {
 		widget_t *this;
 		this = (widget_t *) listWidgetLabelName->list[i];
-		drawWidgetLabel(this);
+		label_draw(this);
 	}
 
 	for (i = 0; i < listWidgetLabelScore->count; i++) {
 		widget_t *this;
 		this = (widget_t *) listWidgetLabelScore->list[i];
-		drawWidgetLabel(this);
+		label_draw(this);
 	}
 }
 
-void eventScreenTable()
+void table_event()
 {
-	eventWidgetButton(button_back);
+	button_event(button_back);
 }
 
-void stopScreenTable()
+void table_stop()
 {
-	unregisterHotKey(SDLK_ESCAPE);
+	unhotKey_register(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -90,7 +90,7 @@ static void eventWidget(void *p)
 	button = (widget_t *) (p);
 
 	if (button == button_back) {
-		setScreen("mainMenu");
+		screen_set("mainMenu");
 	}
 }
 
@@ -107,14 +107,14 @@ static void setWidgetLabel()
 	if (listWidgetLabelNumer != NULL ||
 	    listWidgetLabelName != NULL ||
 	    listWidgetLabelScore != NULL) {
-		destroyListItem(listWidgetLabelNumer, destroyWidgetLabel);
-		destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-		destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+		list_destroy_item(listWidgetLabelNumer, label_destroy);
+		list_destroy_item(listWidgetLabelName, label_destroy);
+		list_destroy_item(listWidgetLabelScore, label_destroy);
 	}
 
-	listWidgetLabelNumer = newList();
-	listWidgetLabelName = newList();
-	listWidgetLabelScore = newList();
+	listWidgetLabelNumer = list_new();
+	listWidgetLabelName = list_new();
+	listWidgetLabelScore = list_new();
 
 	for (i = 0; i < SCREEN_TABLE_MAX_PLAYERS; i++) {
 		widget_t *label;
@@ -128,14 +128,14 @@ static void setWidgetLabel()
 		sscanf(line, "%s %s", name, score);
 		sprintf(num, "%2d)", i + 1);
 
-		label = newWidgetLabel(num, WINDOW_SIZE_X / 2 - 100, 200 + i * 20, WIDGET_LABEL_LEFT);
-		addList(listWidgetLabelNumer, label);
+		label = label_new(num, WINDOW_SIZE_X / 2 - 100, 200 + i * 20, WIDGET_LABEL_LEFT);
+		list_add(listWidgetLabelNumer, label);
 
-		label = newWidgetLabel(name, WINDOW_SIZE_X / 2, 200 + i * 20, WIDGET_LABEL_CENTER);
-		addList(listWidgetLabelName, label);
+		label = label_new(name, WINDOW_SIZE_X / 2, 200 + i * 20, WIDGET_LABEL_CENTER);
+		list_add(listWidgetLabelName, label);
 
-		label = newWidgetLabel(score, WINDOW_SIZE_X / 2 + 80, 200 + i * 20, WIDGET_LABEL_LEFT);
-		addList(listWidgetLabelScore, label);
+		label = label_new(score, WINDOW_SIZE_X / 2 + 80, 200 + i * 20, WIDGET_LABEL_LEFT);
+		list_add(listWidgetLabelScore, label);
 	}
 }
 
@@ -144,13 +144,13 @@ static void loadHighscoreFile()
 	char path[STR_PATH_SIZE];
 	int i;
 
-	sprintf(path, "%s/" SCREEN_TABLE_FILE_HIGHSCORE_NAME, getHomeDirector());
-	textFile = loadTextFile(path);
+	sprintf(path, "%s/" SCREEN_TABLE_FILE_HIGHSCORE_NAME, homeDirector_get());
+	textFile = textFile_load(path);
 
 	if (textFile == NULL) {
 		fprintf(stderr, _("I am unable to load: \"%s\"!\n"), path);
 		fprintf(stderr, _("Creating: \"%s\"\n"), path);
-		textFile = newTextFile(path);
+		textFile = textFile_new(path);
 	} else {
 		return;
 	}
@@ -161,13 +161,13 @@ static void loadHighscoreFile()
 	}
 
 	for (i = 0; i < SCREEN_TABLE_MAX_PLAYERS; i++) {
-		addList(textFile->text, strdup("no_name 0"));
+		list_add(textFile->text, strdup("no_name 0"));
 	}
 
-	saveTextFile(textFile);
+	textFile_save(textFile);
 }
 
-int addPlayerInHighScore(char *name, int score)
+int table_add(char *name, int score)
 {
 	int i;
 
@@ -183,8 +183,8 @@ int addPlayerInHighScore(char *name, int score)
 			char new[STR_SIZE];
 
 			sprintf(new, "%s %d", name, score);
-			insList(textFile->text, i, strdup(new));
-			delListItem(textFile->text, SCREEN_TABLE_MAX_PLAYERS, free);
+			list_ins(textFile->text, i, strdup(new));
+			list_del_item(textFile->text, SCREEN_TABLE_MAX_PLAYERS, free);
 			setWidgetLabel();
 
 			return 0;
@@ -194,14 +194,14 @@ int addPlayerInHighScore(char *name, int score)
 	return -1;
 }
 
-void initScreenTable()
+void table_init()
 {
 	image_t *image;
 
-	image = addImageData("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
-	image_backgorund = newWidgetImage(0, 0, image);
+	image = image_add("screen_table.png", IMAGE_NO_ALPHA, "screen_table", IMAGE_GROUP_BASE);
+	image_backgorund = wid_image_new(0, 0, image);
 
-	button_back = newWidgetButton(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
+	button_back = button_new(_("back"), WINDOW_SIZE_X / 2 - WIDGET_BUTTON_WIDTH / 2,
 						 WINDOW_SIZE_Y - 100, eventWidget);
 
 	loadHighscoreFile();
@@ -210,20 +210,20 @@ void initScreenTable()
 	listWidgetLabelScore = NULL;
 	setWidgetLabel();
 
-	registerScreen(newScreen("table", startScreenTable, eventScreenTable, drawScreenTable, stopScreenTable));
+	screen_register(screen_new("table", table_start, table_event, table_draw, table_stop));
 }
 
-void quitScreenTable()
+void table_quit()
 {
-	destroyWidgetImage(image_backgorund);
+	wid_image_destroy(image_backgorund);
 
-	destroyWidgetButton(button_back);
-	destroyListItem(listWidgetLabelNumer, destroyWidgetLabel);
-	destroyListItem(listWidgetLabelName, destroyWidgetLabel);
-	destroyListItem(listWidgetLabelScore, destroyWidgetLabel);
+	button_destroy(button_back);
+	list_destroy_item(listWidgetLabelNumer, label_destroy);
+	list_destroy_item(listWidgetLabelName, label_destroy);
+	list_destroy_item(listWidgetLabelScore, label_destroy);
 
 	if (textFile != NULL) {
-		saveTextFile(textFile);
-		destroyTextFile(textFile);
+		textFile_save(textFile);
+		textFile_destroy(textFile);
 	}
 }

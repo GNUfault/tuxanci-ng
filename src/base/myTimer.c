@@ -18,24 +18,24 @@
 
 static struct timeval my_start = {.tv_sec = 0,.tv_usec = 0 };
 
-list_t *newTimer()
+list_t *timer_new()
 {
-	return newList();
+	return list_new();
 }
 
-void restartTimer()
+void timer_restart()
 {
 	gettimeofday(&my_start, NULL);
 }
 
 
-my_time_t getMyTime()
+my_time_t timer_get_current_time()
 {
 	struct timeval now;
 	my_time_t ticks;
 
 	if (my_start.tv_sec == 0 && my_start.tv_usec == 0)
-		restartTimer();
+		timer_restart();
 
 	gettimeofday(&now, NULL);
 	ticks = (now.tv_sec - my_start.tv_sec) * 1000 + (now.tv_usec - my_start.tv_usec) / 1000;
@@ -44,7 +44,7 @@ my_time_t getMyTime()
 	return ticks;
 }
 
-my_time_t getMyTimeMicro()
+my_time_t timer_get_current_timeMicro()
 {
 	static struct timeval my_micro_start = {.tv_sec = 0,.tv_usec = 0 };
 	struct timeval now;
@@ -60,7 +60,7 @@ my_time_t getMyTimeMicro()
 	return ticks;
 }
 
-my_timer_t *newTimerItem(int type, void (*fce) (void *p), void *arg,
+my_timer_t *timer_newItem(int type, void (*fce) (void *p), void *arg,
 						my_time_t my_time)
 {
 	static int new_id = 0;
@@ -74,35 +74,35 @@ my_timer_t *newTimerItem(int type, void (*fce) (void *p), void *arg,
 	new->type = type;
 	new->fce = fce;
 	new->arg = arg;
-	new->createTime = getMyTime();
+	new->createTime = timer_get_current_time();
 	new->time = my_time;
 
 	return new;
 }
 
-static void destroyTimerItem(my_timer_t * p)
+static void timer_destroyItem(my_timer_t * p)
 {
 	assert(p != NULL);
 	free(p);
 }
 
-int addTaskToTimer(list_t * listTimer, int type, void (*fce) (void *p), void *arg, my_time_t my_time)
+int timer_add_task(list_t * listTimer, int type, void (*fce) (void *p), void *arg, my_time_t my_time)
 {
 	my_timer_t *new;
 
-	new = newTimerItem(type, fce, arg, my_time);
-	addList(listTimer, new);
+	new = timer_newItem(type, fce, arg, my_time);
+	list_add(listTimer, new);
 
 	return new->id;
 }
 
-void eventTimer(list_t * listTimer)
+void timer_event(list_t * listTimer)
 {
 	int i;
 	my_timer_t *thisTimer;
 	my_time_t currentTime;
 
-	currentTime = getMyTime();
+	currentTime = timer_get_current_time();
 
 	for (i = 0; i < listTimer->count; i++) {
 		thisTimer = (my_timer_t *) listTimer->list[i];
@@ -112,14 +112,14 @@ void eventTimer(list_t * listTimer)
 			case TIMER_ONE:
 				if (currentTime >= thisTimer->createTime + thisTimer->time) {
 					thisTimer->fce(thisTimer->arg);
-					delListItem(listTimer, i, free);
+					list_del_item(listTimer, i, free);
 					i--;
 				}
 				break;
 			case TIMER_PERIODIC:
 				if (currentTime >= thisTimer->createTime + thisTimer->time) {
 					thisTimer->fce(thisTimer->arg);
-					thisTimer->createTime = getMyTime();
+					thisTimer->createTime = timer_get_current_time();
 				}
 				break;
 			default:
@@ -129,7 +129,7 @@ void eventTimer(list_t * listTimer)
 	}
 }
 
-void delTimer(list_t * listTimer, int id)
+void timer_del(list_t * listTimer, int id)
 {
 	my_timer_t *thisTimer;
 	int i;
@@ -140,7 +140,7 @@ void delTimer(list_t * listTimer, int id)
 		assert(thisTimer != NULL);
 
 		if (thisTimer->id == (unsigned)id) {
-			delListItem(listTimer, i, free);
+			list_del_item(listTimer, i, free);
 			return;
 		}
 	}
@@ -148,7 +148,7 @@ void delTimer(list_t * listTimer, int id)
 }
 
 
-void destroyTimer(list_t * listTimer)
+void timer_destroy(list_t * listTimer)
 {
-	destroyListItem(listTimer, destroyTimerItem);
+	list_destroy_item(listTimer, timer_destroyItem);
 }

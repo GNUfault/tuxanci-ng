@@ -5,12 +5,12 @@
 #    include "main.h"
 #    include "list.h"
 
-extern list_t *newStorage();
-extern void addItemToStorage(list_t * list, char *group, char *name,
+extern list_t *storage_new();
+extern void storage_add(list_t * list, char *group, char *name,
 							 void *data);
-extern void *getItemFromStorage(list_t * list, char *group, char *name);
-extern void delItemFromStorage(list_t * list, char *group, char *name,
+extern void *storage_get(list_t * list, char *group, char *name);
+extern void storage_del(list_t * list, char *group, char *name,
 							   void *f);
-extern void delAllItemFromStorage(list_t * list, char *group, void *f);
-extern void destroyStorage(list_t * p, void *f);
+extern void storage_del_all(list_t * list, char *group, void *f);
+extern void storage_destroy(list_t * p, void *f);
 #endif

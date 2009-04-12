@@ -4,7 +4,7 @@
 
 #    include "main.h"
 
-extern bool_t isAudioInicialized();
-extern void initAudio();
-extern void quitAudio();
+extern bool_t audio_is_inicialized();
+extern void audio_init();
+extern void audio_quit();
 #endif

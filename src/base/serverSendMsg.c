@@ -20,7 +20,7 @@ static void addMsgClient(client_t * p, char *msg, int type, int id)
 	assert(msg != NULL);
 
 	if (p->status != NET_STATUS_ZOMBIE) {
-		addMsgInCheckFront(p->listSendMsg, msg, type, id);
+		checkFront_add_msg(p->listSendMsg, msg, type, id);
 	}
 }
 
@@ -32,7 +32,7 @@ static void addMsgAllClientBut(char *msg, client_t * p, int type, int id)
 
 	assert(msg != NULL);
 
-	listClient = getListServerClient();
+	listClient = server_get_list_clients();
 
 	for (i = 0; i < listClient->count; i++) {
 		thisClient = (client_t *) listClient->list[i];
@@ -60,7 +60,7 @@ static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
 
 	assert(msg != NULL);
 
-	arena = getCurrentArena();
+	arena = arena_get_current();
 	space = arena->spaceTux;
 
 	x = tux->x - WINDOW_SIZE_X;
@@ -81,9 +81,9 @@ static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
 	if (h + y >= arena->h)
 		h = arena->h - (y + 1);
 
-	listHelp = newList();
+	listHelp = list_new();
 
-	getObjectFromSpace(space, x, y, w, h, listHelp);
+	space_get_object(space, x, y, w, h, listHelp);
 	//printf("%d %d %d %d %d\n", x, y, w, h, listHelp->count);
 
 	for (i = 0; i < listHelp->count; i++) {
@@ -103,10 +103,10 @@ static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
 		}
 	}
 
-	destroyList(listHelp);
+	list_destroy(listHelp);
 }
 
-void protoSendClient(int type, client_t * client, char *msg, int type2, int id)
+void sendMsg_to_client(int type, client_t * client, char *msg, int type2, int id)
 {
 	assert(msg != NULL);
 
@@ -128,7 +128,7 @@ void protoSendClient(int type, client_t * client, char *msg, int type2, int id)
 			if (client != NULL) {
 				addMsgAllClientSeesTux(msg, client->tux, type2, id);
 			} else {
-				addMsgAllClientSeesTux(msg, getControlTux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
+				addMsgAllClientSeesTux(msg, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
 			}
 	#endif
 	#ifdef PUBLIC_SERVER

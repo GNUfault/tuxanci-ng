@@ -11,9 +11,9 @@
 
 #    define CLIENT_BUFFER_LIMIT	4096
 
-extern int initClient(char *ip, int port);
-extern void sendServer(char *msg);
-extern void eventClient();
-extern void quitClient();
+extern int client_init(char *ip, int port);
+extern void client_send(char *msg);
+extern void client_event();
+extern void client_quit();
 
 #endif

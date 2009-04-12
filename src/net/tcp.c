@@ -25,7 +25,7 @@
 
 #include "tcp.h"
 
-sock_tcp_t *newSockTcp(void)
+sock_tcp_t *sock_tcp_new(void)
 {
 	sock_tcp_t *new;
 
@@ -35,7 +35,7 @@ sock_tcp_t *newSockTcp(void)
 	return new;
 }
 
-void destroySockTcp(sock_tcp_t * p)
+void sock_tcp_destroy(sock_tcp_t * p)
 {
 	assert(p != NULL);
 	free(p);
@@ -50,7 +50,7 @@ static int getProto(char *str)
 	return -1;
 }
 
-sock_tcp_t *bindTcpSocket(char *address, int port)
+sock_tcp_t *sock_tcp_bind(char *address, int port)
 {
 	sock_tcp_t *new;
 	unsigned long param_setsock = 1;
@@ -59,7 +59,7 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 
 	assert(port > 0 && port < 65535);
 
-	new = newSockTcp();
+	new = sock_tcp_new();
 	new->proto = getProto(address);
 	ret = -1;					// no Warnings
 
@@ -77,7 +77,7 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create socket when connecting!\n"));
-		destroySockTcp(new);
+		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -117,7 +117,7 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 
 	if (ret < 0) {
 		fprintf(stderr, _("Unable to bint to port: %d\n"), port);
-		destroySockTcp(new);
+		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -129,7 +129,7 @@ sock_tcp_t *bindTcpSocket(char *address, int port)
 	return new;
 }
 
-sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
+sock_tcp_t *sock_tcp_accept(sock_tcp_t * p)
 {
 	sock_tcp_t *new;
 	int client_len;
@@ -137,7 +137,7 @@ sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
 	assert(p != NULL);
 	assert(p->sock >= 0);
 
-	new = newSockTcp();
+	new = sock_tcp_new();
 	new->proto = p->proto;
 
 	if (new->proto == PROTO_TCPv4) {
@@ -161,7 +161,7 @@ sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
 
 	if (new->sock < 0) {
 		//printf("XXX\n");
-		destroySockTcp(new);
+		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -171,7 +171,7 @@ sock_tcp_t *getTcpNewClient(sock_tcp_t * p)
 	return new;
 }
 
-void getSockTcpIp(sock_tcp_t * p, char *str_ip, int len)
+void sock_tcp_get_ip(sock_tcp_t * p, char *str_ip, int len)
 {
 	assert(p != NULL);
 	assert(str_ip != NULL);
@@ -197,7 +197,7 @@ void getSockTcpIp(sock_tcp_t * p, char *str_ip, int len)
 #endif // SUPPORT_IPv6
 }
 
-int getSockTcpPort(sock_tcp_t * p)
+int sock_tcp_get_port(sock_tcp_t * p)
 {
 	assert(p != NULL);
 
@@ -215,7 +215,7 @@ int getSockTcpPort(sock_tcp_t * p)
 	return -1;
 }
 
-sock_tcp_t *connectTcpSocket(char *ip, int port)
+sock_tcp_t *sock_tcp_connect(char *ip, int port)
 {
 	sock_tcp_t *new;
 	int len;
@@ -224,7 +224,7 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 	assert(ip != NULL);
 	assert(port > 0 && port < 65535);
 
-	new = newSockTcp();
+	new = sock_tcp_new();
 	new->proto = getProto(ip);
 	ret = -1;					// no Warnnings
 
@@ -240,7 +240,7 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 
 	if (new->sock < 0) {
 		fprintf(stderr, _("Unable to create TCP socket!\n"));
-		destroySockTcp(new);
+		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -270,7 +270,7 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 	if (ret < 0) {
 		fprintf(stderr, "Unable to connect on: \"%s\" port: \"%d\"\n", ip,
 				port);
-		destroySockTcp(new);
+		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
 #endif
@@ -281,7 +281,7 @@ sock_tcp_t *connectTcpSocket(char *ip, int port)
 	return new;
 }
 
-int disableNagle(sock_tcp_t * p)
+int sock_tcp_diable_nagle(sock_tcp_t * p)
 {
 	int flag = 1;
 
@@ -304,7 +304,7 @@ int disableNagle(sock_tcp_t * p)
 	return result;
 }
 
-int setTcpSockNonBlock(sock_tcp_t * p)
+int sock_tcp_set_non_block(sock_tcp_t * p)
 {
 	/* Set to nonblocking socket mode */
 #ifndef __WIN32__
@@ -313,10 +313,10 @@ int setTcpSockNonBlock(sock_tcp_t * p)
 	oldFlag = fcntl(p->sock, F_GETFL, 0);
 
 	if (fcntl(p->sock, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
-		//printf("error setTcpSockNonBlock\n");
+		//printf("error sock_tcp_set_non_block\n");
 		return -1;
 	}
-	//printf("setTcpSockNonBlock OK\n");
+	//printf("sock_tcp_set_non_block OK\n");
 #else
 	unsigned long arg = 1;
 	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
@@ -328,7 +328,7 @@ int setTcpSockNonBlock(sock_tcp_t * p)
 	return 0;
 }
 
-int readTcpSocket(sock_tcp_t * p, void *address, int len)
+int sock_tcp_read(sock_tcp_t * p, void *address, int len)
 {
 	assert(p != NULL);
 	assert(address != NULL);
@@ -336,7 +336,7 @@ int readTcpSocket(sock_tcp_t * p, void *address, int len)
 	return read(p->sock, address, len);
 }
 
-int writeTcpSocket(sock_tcp_t * p, void *address, int len)
+int sock_tcp_write(sock_tcp_t * p, void *address, int len)
 {
 	assert(p != NULL);
 	assert(address != NULL);
@@ -344,12 +344,12 @@ int writeTcpSocket(sock_tcp_t * p, void *address, int len)
 	return write(p->sock, address, len);
 }
 
-void closeTcpSocket(sock_tcp_t * p)
+void sock_tcp_close(sock_tcp_t * p)
 {
 	assert(p != NULL);
 
 	close(p->sock);
-	destroySockTcp(p);
+	sock_tcp_destroy(p);
 #ifdef __WIN32__
 	WSACleanup();
 #endif

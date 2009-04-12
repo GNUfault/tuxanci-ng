@@ -7,10 +7,10 @@
 
 #    include "main.h"
 
-extern void initPauza();
-extern void drawPauza();
-extern void eventPauza();
-extern bool_t isPauzeActive();
-extern void quitPauza();
+extern void pauza_init();
+extern void pauza_draw();
+extern void pauza_event();
+extern bool_t pauza_is_active();
+extern void pauza_quit();
 
 #endif
