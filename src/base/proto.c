@@ -68,15 +68,15 @@ void proto_recv_error_client(char *msg)
 	switch (errorcode) {
 		case PROTO_ERROR_CODE_BAD_VERSION:
 			analyze_set_msg(_("Version of your client isn't supported by the server."));
-			word_do_end();
+			world_do_end();
 			break;
 		case PROTO_ERROR_CODE_TIMEOUT:
 			analyze_set_msg(_("The timeout of ping from server is out"));
-			word_do_end();
+			world_do_end();
 			break;
 		case PROTO_ERROR_LIMIT_MAX_CLIENT:
 			analyze_set_msg(_("The maximum amount of connected players has been exceeded!"));
-			word_do_end();
+			world_do_end();
 			break;
 	}
 }
@@ -117,7 +117,7 @@ static void sendInfoCreateClient(client_t * client)
 	proto_send_init_server(PROTO_SEND_ONE, client, client);
 
 #ifndef PUBLIC_SERVER
-	proto_send_newtux_server(PROTO_SEND_ONE, client, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
+	proto_send_newtux_server(PROTO_SEND_ONE, client, world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
 #endif
 
 	for (i = 0; i < listClient->count; i++) {
@@ -372,7 +372,7 @@ void proto_recv_init_client(char *msg)
 		return;
 	}
 
-	word_set_arena(arena_file_get_file_format_net_name(arena_name));
+	world_set_arena(arena_file_get_file_format_net_name(arena_name));
 
 	arena = arena_get_current();
 	arena->max_countRound = n;
@@ -382,9 +382,9 @@ void proto_recv_init_client(char *msg)
 	tux->x = x;
 	tux->y = y;
 	tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
-	word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
+	world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 
-	public_server_get_settingNameRight(tux->name);
+	public_server_get_setting_name_right(tux->name);
 
 	space_add(arena->spaceTux, tux);
 }
@@ -964,7 +964,7 @@ void proto_recv_end_client(char *msg)
 {
 	assert(msg != NULL);
 
-	word_do_end();
+	world_do_end();
 }
 
 #endif

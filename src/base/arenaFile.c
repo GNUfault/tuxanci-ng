@@ -189,7 +189,7 @@ int arena_file_get_count()
 	return listArenaFile->count;
 }
 
-static char *arena_file_get_arenaStatus(textFile_t * ts, char *s)
+static char *arena_file_get_status(textFile_t * ts, char *s)
 {
 	int len;
 	int i;
@@ -212,7 +212,7 @@ char *arena_file_get_name(arenaFile_t * arenaFile)
 {
 	char *ret;
 
-	ret = arena_file_get_arenaStatus(arenaFile->map, "name");
+	ret = arena_file_get_status(arenaFile->map, "name");
 	return (ret != NULL ? ret : "arena_no_name");
 }
 
@@ -220,7 +220,7 @@ char *arena_file_get_net_name(arenaFile_t * arenaFile)
 {
 	char *ret;
 
-	ret = arena_file_get_arenaStatus(arenaFile->map, "netName");
+	ret = arena_file_get_status(arenaFile->map, "netName");
 	return (ret != NULL ? ret : "arena_no_net_name");
 }
 
@@ -242,7 +242,7 @@ arenaFile_t *arena_file_get_file_format_net_name(char *s)
 
 char *arena_file_get_image(arenaFile_t * arenaFile)
 {
-	return arena_file_get_arenaStatus(arenaFile->map, "screen");
+	return arena_file_get_status(arenaFile->map, "screen");
 }
 
 arenaFile_t *arena_file_get(int n)

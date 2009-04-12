@@ -126,7 +126,7 @@ void save_dialog_event()
 
 void save_dialog_quit()
 {
-	unhot_key_register(SDLK_F2);
+	hot_key_unregister(SDLK_F2);
 
 	label_destroy(widgetLabelMsg);
 	text_field_destroy(widgetTextFieldName);

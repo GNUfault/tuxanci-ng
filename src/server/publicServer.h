@@ -9,7 +9,7 @@
 #    define WORLD_COUNT_ROUND_UNLIMITED	-1
 
 extern char *public_server_get_setting(char *env, char *param, char *default_val);
-extern void word_inc_round();
+extern void world_inc_round();
 extern int public_server_init();
 extern arenaFile_t *choice_arena_get();
 extern void eventPublicServer();

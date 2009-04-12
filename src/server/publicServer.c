@@ -47,7 +47,7 @@ extern int errno;
 
 #define	__PACKED__ __attribute__ ((__packed__))
 
-void word_inc_round()
+void world_inc_round()
 {
 }
 

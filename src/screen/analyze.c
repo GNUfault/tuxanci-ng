@@ -94,7 +94,7 @@ void analyze_stop()
 	label_destroy(widgetLabelMsg);
 	widgetLabelMsg = label_new("", WINDOW_SIZE_X / 2, 250, WIDGET_LABEL_CENTER);
 
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)

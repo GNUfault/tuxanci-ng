@@ -7,7 +7,7 @@
 
 extern void hot_key_init();
 extern void hot_key_register(SDLKey key, void (*handler) ());
-extern void unhot_key_register(SDLKey key);
+extern void hot_key_unregister(SDLKey key);
 extern void hot_key_enable(SDLKey key);
 extern void hot_key_disable(SDLKey key);
 extern void hot_key_event();

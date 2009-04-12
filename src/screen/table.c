@@ -80,7 +80,7 @@ void table_event()
 
 void table_stop()
 {
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)

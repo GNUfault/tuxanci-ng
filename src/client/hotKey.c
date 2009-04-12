@@ -71,7 +71,7 @@ void hot_key_register(SDLKey key, void (*handler) ())
 	list_ins(listHotKey, 0, hotkey);
 }
 
-void unhot_key_register(SDLKey key)
+void hot_key_unregister(SDLKey key)
 {
 	hotKey_t *hotkey;
 	int my_index;

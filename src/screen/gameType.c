@@ -177,7 +177,7 @@ void game_type_event()
 
 void stopScreenGameType()
 {
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)

@@ -48,7 +48,7 @@ list_t *check_front_new()
 	return list_new();
 }
 
-void check_front_add_msg(list_t * list, char *msg, int type, int id)
+void check_front_msg_add(list_t * list, char *msg, int type, int id)
 {
 	if (type == CHECK_FRONT_TYPE_CHECK)
 		id_inc(id);

@@ -82,7 +82,7 @@ void arena_init()
 
 void arena_quit()
 {
-	unhot_key_register(SDLK_F3);
+	hot_key_unregister(SDLK_F3);
 }
 #endif
 
@@ -284,7 +284,7 @@ void drawSplitArena(arena_t * arena)
 {
 	tux_t *tux = NULL;
 
-	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+	tux = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 	if (tux != NULL) {
 		switch (splitType) {
@@ -297,7 +297,7 @@ void drawSplitArena(arena_t * arena)
 		}
 	}
 
-	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
+	tux = world_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 	if (tux != NULL) {
 		drawSplitArenaForTux(arena, tux, 0, 0);
@@ -319,7 +319,7 @@ void drawSimpleArena(arena_t * arena)
 	int screen_x, screen_y;
 	tux_t *tux = NULL;
 
-	tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+	tux = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 	if (tux == NULL) {
 		return;
@@ -340,8 +340,8 @@ void arena_draw(arena_t * arena)
 		tux_t *tux1;
 		tux_t *tux2;
 
-		tux1 = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
-		tux2 = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
+		tux1 = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+		tux2 = world_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 		if (isTuxNear(tux1, tux2)) {
 			drawCenterArena(arena, (tux1->x + tux2->x) / 2, (tux1->y + tux2->y) / 2);
@@ -355,7 +355,7 @@ void arena_draw(arena_t * arena)
 	if (isBigArena(arena)) {
 		tux_t *tux = NULL;
 
-		tux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+		tux = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 		if (tux == NULL) {
 			return;

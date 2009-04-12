@@ -105,7 +105,7 @@ static arena_t *load_arenaFromLine(char *line)
 
 	sscanf(line, "%s %s %d %d", cmd, name, &countRound, &max_countRound);
 
-	word_set_arena(arena_file_get_file_format_net_name(name));
+	world_set_arena(arena_file_get_file_format_net_name(name));
 
 	arena = arena_get_current();
 	arena->max_countRound = max_countRound;
@@ -137,16 +137,16 @@ static void loadTuxFromLine(char *line, arena_t * arena)
 	tux->control = control;
 
 	if (tux->control == TUX_CONTROL_KEYBOARD_RIGHT) {
-		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
+		world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 	}
 
 	if (tux->control == TUX_CONTROL_KEYBOARD_LEFT) {
-		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
+		world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 	}
 
 	if (tux->control == TUX_CONTROL_AI) {
 		module_load("libmodAI");
-		word_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
+		world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 	}
 
 	space_move_object(arena->spaceTux, tux, x, y);

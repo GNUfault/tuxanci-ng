@@ -124,7 +124,7 @@ void browser_stop()
 	//select_server->list = list_new();
 	select_remove_all(select_server);
 
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 
 	while (1) {
 		i = 0;

@@ -12,7 +12,7 @@
 extern void setting_init();
 extern void setting_draw();
 extern void setting_event();
-extern void public_server_get_settingNameRight(char *s);
+extern void public_server_get_setting_name_right(char *s);
 extern void public_server_get_settingNameLeft(char *s);
 extern void public_server_get_settingCountRound(int *n);
 extern bool_t setting_is_ai();

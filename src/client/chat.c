@@ -38,7 +38,7 @@ static void chat_eventDisable();
 static void hotkey_chat_esc()
 {
 	//printf("*** hotkey_chat_esc\n");
-	//unhot_key_register(SDLK_ESCAPE);
+	//hot_key_unregister(SDLK_ESCAPE);
 	chat_eventDisable();
 }
 
@@ -168,7 +168,7 @@ static void sendNewMessage()
 		char out[STR_PROTO_SIZE];
 
 		snprintf(out, STR_PROTO_SIZE, "chat %s:%s\n",
-				 word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name, line);
+				 world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name, line);
 
 		proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
 	}
@@ -181,7 +181,7 @@ static void chat_eventDisable()
 
 	hot_key_enable(SDLK_RETURN);
 	hot_key_enable(SDLK_p);
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 
 	interface_disable_keyboard_buffer();
 	keyboard_buffer_clear();
@@ -253,6 +253,6 @@ void chat_quit()
 {
 	assert(listText != NULL);
 
-	//unhot_key_register(SDLK_RETURN);
+	//hot_key_unregister(SDLK_RETURN);
 	list_destroy_item(listText, free);
 }

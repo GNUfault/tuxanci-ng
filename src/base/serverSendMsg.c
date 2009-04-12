@@ -20,7 +20,7 @@ static void addMsgClient(client_t * p, char *msg, int type, int id)
 	assert(msg != NULL);
 
 	if (p->status != NET_STATUS_ZOMBIE) {
-		check_front_add_msg(p->listSendMsg, msg, type, id);
+		check_front_msg_add(p->listSendMsg, msg, type, id);
 	}
 }
 
@@ -128,7 +128,7 @@ void send_msg_to_client(int type, client_t * client, char *msg, int type2, int i
 			if (client != NULL) {
 				addMsgAllClientSeesTux(msg, client->tux, type2, id);
 			} else {
-				addMsgAllClientSeesTux(msg, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
+				addMsgAllClientSeesTux(msg, world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
 			}
 	#endif
 	#ifdef PUBLIC_SERVER

@@ -61,7 +61,7 @@ static void initGame()
 	item_init();
 	shot_init();
 	panel_init();
-	word_init();
+	world_init();
 
 	main_menu_init();
 	analyze_init();
@@ -98,7 +98,7 @@ void game_quit()
 	tux_quit();
 	shot_quit();
 	panel_quit();
-	word_quit();
+	world_quit();
 	image_quit();
 #ifndef NO_SOUND
 	sound_quit();

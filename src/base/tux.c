@@ -362,7 +362,7 @@ static void tux_event_tux_is_deadWIthShot(tux_t * tux, shot_t * shot)
 
 	}
 
-	word_inc_round();
+	world_inc_round();
 	tux_event_tux_is_dead(tux);
 }
 
@@ -660,7 +660,7 @@ void tux_event(tux_t * tux)
 	arena = arena_get_current();
 
 #ifndef PUBLIC_SERVER
-	word_tux_control(tux);
+	world_tux_control(tux);
 #endif
 	pickUpGun(tux);
 	eventBonus(tux);

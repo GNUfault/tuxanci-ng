@@ -181,7 +181,7 @@ void setting_event()
 
 void stopScreenSetting()
 {
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 }
 
 static void eventWidget(void *p)
@@ -434,7 +434,7 @@ void setting_init()
 #endif
 }
 
-void public_server_get_settingNameRight(char *s)
+void public_server_get_setting_name_right(char *s)
 {
 	strcpy(s, text_field_get_text(textfield_name_player1));
 }

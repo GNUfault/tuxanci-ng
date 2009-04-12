@@ -58,5 +58,5 @@ bool_t pauza_is_active()
 
 void pauza_quit()
 {
-	unhot_key_register(SDLK_p);
+	hot_key_unregister(SDLK_p);
 }

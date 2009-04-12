@@ -191,7 +191,7 @@ static void eventPeriodicSyncClient(void *p_nothink)
 	int i;
 
 #ifndef PUBLIC_SERVER
-	proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, NULL, word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
+	proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, NULL, world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
 #endif
 
 	for (i = 0; i < listClient->count; i++) {

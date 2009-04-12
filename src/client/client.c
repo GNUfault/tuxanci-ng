@@ -125,7 +125,7 @@ int client_init(char *ip, int port)
 		return -1;
 	}
 
-	public_server_get_settingNameRight(name);
+	public_server_get_setting_name_right(name);
 	proto_send_hello_client(name);
 
 	return 0;
@@ -135,7 +135,7 @@ static void errorWithServer()
 {
 	fprintf(stderr, _("Server did not respond!\n"));
 	analyze_set_msg(_("Server is not running or being blocked. I was unable to connect."));
-	word_do_end();
+	world_do_end();
 }
 
 void client_send(char *msg)

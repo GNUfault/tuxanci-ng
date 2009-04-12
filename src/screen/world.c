@@ -53,7 +53,7 @@ static bool_t isEndWorld;
 static tux_t *tuxWithControlRightKeyboard;
 static tux_t *tuxWithControlLeftKeyboard;
 
-bool_t word_is_inicialized()
+bool_t world_is_inicialized()
 {
 	return isScreenWorldInit;
 }
@@ -67,11 +67,11 @@ void setGameType()
 
 	if (ret != 0) {
 		fprintf(stderr, _("Network initialization error!\n"));
-		word_do_end();
+		world_do_end();
 	}
 }
 
-void word_set_arena(arenaFile_t * arenaFile)
+void world_set_arena(arenaFile_t * arenaFile)
 {
 	arena = arena_file_get_arena(arenaFile);
 
@@ -80,7 +80,7 @@ void word_set_arena(arenaFile_t * arenaFile)
 #endif
 }
 
-void word_do_end()
+void world_do_end()
 {
 	isEndWorld = TRUE;
 }
@@ -88,12 +88,12 @@ void word_do_end()
 static void timer_endArena()
 {
 	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
-		word_do_end();
+		world_do_end();
 		return;
 	}
 }
 
-void word_inc_round()
+void world_inc_round()
 {
 	if (arena->max_countRound == WORLD_COUNT_ROUND_UNLIMITED ||
 		arena->countRound >= arena->max_countRound) {
@@ -129,14 +129,14 @@ void prepareArena()
 
 	switch (net_multiplayer_get_game_type()) {
 	case NET_GAME_TYPE_NONE:
-		word_set_arena(choice_arena_get());
+		world_set_arena(choice_arena_get());
 		item_add_new_item(arena->spaceItem, ID_UNKNOWN);
 		public_server_get_settingCountRound(&arena->max_countRound);
 
 		tux = tux_new();
 		tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 		tuxWithControlRightKeyboard = tux;
-		public_server_get_settingNameRight(name);
+		public_server_get_setting_name_right(name);
 		tux_set_name(tux, name);
 		space_add(arena->spaceTux, tux);
 
@@ -159,14 +159,14 @@ void prepareArena()
 		break;
 
 	case NET_GAME_TYPE_SERVER:
-		word_set_arena(choice_arena_get());
+		world_set_arena(choice_arena_get());
 		item_add_new_item(arena->spaceItem, ID_UNKNOWN);
 		public_server_get_settingCountRound(&arena->max_countRound);
 
 		tux = tux_new();
 		tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 		tuxWithControlRightKeyboard = tux;
-		public_server_get_settingNameRight(name);
+		public_server_get_setting_name_right(name);
 		tux_set_name(tux, name);
 		space_add(arena->spaceTux, tux);
 		break;
@@ -176,7 +176,7 @@ void prepareArena()
 	}
 }
 
-void word_draw()
+void world_draw()
 {
 	if (arena != NULL) {
 		arena_draw(arena);
@@ -391,7 +391,7 @@ static void eventEnd()
 	}
 }
 
-tux_t *word_get_control_tux(int control_type)
+tux_t *world_get_control_tux(int control_type)
 {
 	switch (control_type) {
 		case TUX_CONTROL_KEYBOARD_RIGHT:
@@ -405,7 +405,7 @@ tux_t *word_get_control_tux(int control_type)
 	return NULL;
 }
 
-void word_set_control_tux(tux_t * tux, int control_type)
+void world_set_control_tux(tux_t * tux, int control_type)
 {
 	switch (control_type) {
 		case TUX_CONTROL_KEYBOARD_RIGHT:
@@ -417,7 +417,7 @@ void word_set_control_tux(tux_t * tux, int control_type)
 	}
 }
 
-void word_tux_control(tux_t * p)
+void world_tux_control(tux_t * p)
 {
 	assert(p != NULL);
 
@@ -444,7 +444,7 @@ void word_tux_control(tux_t * p)
 	}
 }
 
-void word_event()
+void world_event()
 {
 	tux_t *thisTux;
 
@@ -461,11 +461,11 @@ void word_event()
 		//module_event();
 	}
 
-	thisTux = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+	thisTux = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
 
 	radar_add(thisTux->id, thisTux->x, thisTux->y, RADAR_TYPE_YOU);
 
-	thisTux = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
+	thisTux = world_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 	if (thisTux != NULL) {
 		radar_add(thisTux->id, thisTux->x, thisTux->y, RADAR_TYPE_TUX);
@@ -481,7 +481,7 @@ void word_event()
 
 static void hotkey_escape()
 {
-	word_do_end();
+	world_do_end();
 }
 
 void startWorld()
@@ -526,8 +526,8 @@ static void setTable()
 		return;
 	}
 
-	tuxRight = word_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
-	tuxLeft = word_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
+	tuxRight = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT);
+	tuxLeft = world_get_control_tux(TUX_CONTROL_KEYBOARD_LEFT);
 
 	if (tuxRight->score > tuxLeft->score) {
 		table_add(tuxRight->name, tuxRight->score);
@@ -545,7 +545,7 @@ void stoptWorld()
 		setAnalyze();
 	}
 
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 	arena_quit();
 
 	net_multiplayer_quit();
@@ -573,7 +573,7 @@ void stoptWorld()
 	id_quit_list();
 }
 
-void word_init()
+void world_init()
 {
 	assert(image_is_inicialized() == TRUE);
 	assert(tux_is_inicialized() == TRUE);
@@ -582,7 +582,7 @@ void word_init()
 	assert(screen_is_inicialized() == TRUE);
 
 	screen_register(screen_new
-				   ("world", startWorld, word_event, word_draw, stoptWorld));
+				   ("world", startWorld, world_event, world_draw, stoptWorld));
 
 #ifndef NO_SOUND
 	sound_add("dead.ogg", "dead", SOUND_GROUP_BASE);
@@ -602,7 +602,7 @@ void word_init()
 	isScreenWorldInit = TRUE;
 }
 
-void word_quit()
+void world_quit()
 {
 	DEBUG_MSG(_("Quitting screen world\n"));
 	isScreenWorldInit = FALSE;

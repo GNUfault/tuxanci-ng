@@ -91,7 +91,7 @@ void choice_arena_event()
 
 void stopScreenChoiceArena()
 {
-	unhot_key_register(SDLK_ESCAPE);
+	hot_key_unregister(SDLK_ESCAPE);
 }
 
 static void button_eventImage(void *p)
