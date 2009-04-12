@@ -49,6 +49,8 @@ src_configure() {
 
 	mycmakeargs="${mycmakeargs}
 		-DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
+		-DCMAKE_INSTALL_ICONDIR=/usr/share/pixmaps/
+		-DCMAKE_INSTALL_DESKTOPDIR=/usr/share/applications/
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
 		-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
 		-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/${PF}
@@ -60,11 +62,6 @@ src_configure() {
 
 src_install() {
 	cmake-utils_src_install
-
-	if ! use dedicated; then
-		doicon data/${PN}.svg
-		domenu data/${PN}.desktop
-	fi
 
 	prepgamesdirs
 }

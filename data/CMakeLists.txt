@@ -14,5 +14,9 @@ ADD_SUBDIRECTORY ( sound )
 IF ( NOT Server )
 	INSTALL ( FILES tuxanci.svg
 		DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
+	INSTALL ( FILES tuxanci.svg
+		DESTINATION ${CMAKE_INSTALL_ICONDIR}/ }
+	INSTALL ( FILES tuxanci.desktop
+		DESTINATION ${CMAKE_INSTALL_DESKTOPDIR}/ }
 ENDIF ( NOT Server )
 ###############################################################################
