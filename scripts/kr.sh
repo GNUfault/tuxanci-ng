@@ -1,4 +1,6 @@
 #!/bin/sh
+PWD=$(pwd)
+[[ ${PWD/*\//} = scripts ]] && pushd .. > /dev/null || pushd . > /dev/null
 
 if [ ! "$1" ]; then
 	echo "Help:  this script indents code according to the K&R standard"
