@@ -96,6 +96,7 @@ SET ( CPACK_SOURCE_IGNORE_FILES
 	".git"
 	"build/"
 	"packaging/"
+	"scripts/"
 	"tuxanci.1"
 )
 SET ( CPACK_SOURCE_STRIP_FILES "" )
