@@ -127,15 +127,15 @@ static void processMessageKey(SDL_keysym keysym)
 	len = strlen(line);
 	font_text_size(line, &w, &h);
 
-	if (w > CHAT_SIZE_X - 40) {
-		return;
-	}
-
 	/* processing of backspace */
 	if (keysym.sym == SDLK_BACKSPACE && len > 0) {
 		line[len - 1] = '\0';
 		return;
 	}
+
+	/* end of line */
+	if (w > CHAT_SIZE_X - 20)
+		return;
 
 	/* processing of printable chars but not letters */
 	if ((keysym.sym >= SDLK_SPACE && keysym.sym <= SDLK_AT)
