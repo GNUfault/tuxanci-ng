@@ -143,13 +143,21 @@ static void processMessageKey(SDL_keysym keysym)
 		/* here would be much better to put 'strcat' as 'line' is expected
 		 * to be full of '0' up to its end
 		 */
-		line[len] = keysym.sym;
+		char c = keysym.sym;
+
+		/* TODO: should correspond with ASCII table */
+		if (keysym.mod & KMOD_RSHIFT)
+			c --;
+
+		line[len] = c;
+		return;
 	}
 
 	/* processing of letters */
 	if (keysym.sym >= SDLK_a && keysym.sym <= SDLK_z) {
 		char c = keysym.sym;
-		if (keysym.mod == KMOD_SHIFT) {
+
+		if (keysym.mod & KMOD_SHIFT) {
 			c = toupper(c);
 		}
 		/* here would be much better to put 'strcat' as 'line' is expected

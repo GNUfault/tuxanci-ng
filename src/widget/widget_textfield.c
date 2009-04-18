@@ -181,7 +181,7 @@ static void checkText(widget_textfield_t * p)
 }
 
 
-static void readKey(widget_textfield_t *p)
+static void readKey (widget_textfield_t *p)
 {
 	int len;
 	int i;
@@ -219,7 +219,7 @@ static void readKey(widget_textfield_t *p)
 
 		char c = '\0';
 
-		/* printf("name %s\n", name); */
+		/* printf("name %s : %d\n", name, k.sym); */
 
 		switch (strlen (name)) {
 			case 1:
@@ -230,9 +230,9 @@ static void readKey(widget_textfield_t *p)
 				break;
 		}
 
-		if (!strcmp (name, "space"))
+		if (k.sym == SDLK_SPACE || k.sym == SDLK_TAB)
 			c = ' ';
-		else if (!strcmp (name, "backspace") && len > 0 ) {
+		else if (k.sym == SDLK_BACKSPACE && len > 0 ) {
 			p->text[len-1] = '\0';
 			checkText (p);
 			break;
@@ -258,6 +258,41 @@ static void readKey(widget_textfield_t *p)
 			if (!m)
 				p->text[len] -= 32;
 		}
+
+/*
+		switch (k.sym) {
+			case SDLK_PLUS:
+				p->text[len] = '1';
+				break;
+			case SDLK_WORLD_76:
+				p->text[len] = '2';
+				break;
+			case SDLK_WORLD_25:
+				p->text[len] = '3';
+				break;
+			case SDLK_WORLD_72:
+				p->text[len] = '4';
+				break;
+			case SDLK_WORLD_88:
+				p->text[len] = '5';
+				break;
+			case SDLK_WORLD_30:
+				p->text[len] = '6';
+				break;
+			case SDLK_WORLD_93:
+				p->text[len] = '7';
+				break;
+			case SDLK_WORLD_65:
+				p->text[len] = '8';
+				break;
+			case SDLK_WORLD_77:
+				p->text[len] = '9';
+				break;
+			case SDLK_WORLD_73:
+				p->text[len] = '0';
+				break;
+		}
+*/
 
 		checkText (p);
 		len ++;
