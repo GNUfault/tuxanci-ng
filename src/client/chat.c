@@ -68,7 +68,10 @@ void chat_init()
 	strcpy(line, "");
 	chat_active = FALSE;
 
-	hot_key_register(SDLK_RETURN, hotkey_chat_enter);
+	if( net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE )
+	{
+		hot_key_register(SDLK_RETURN, hotkey_chat_enter);
+	}
 
 	receivedNewMsg = FALSE;
 	line_time = 0;
@@ -253,6 +256,10 @@ void chat_quit()
 {
 	assert(listText != NULL);
 
-	//hot_key_unregister(SDLK_RETURN);
+	if( net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE )
+	{
+		hot_key_unregister(SDLK_RETURN);
+	}
+
 	list_destroy_item(listText, free);
 }
