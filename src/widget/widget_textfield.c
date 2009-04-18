@@ -10,7 +10,7 @@
 #include "widget.h"
 #include "widget_textfield.h"
 
-//#define ZZEEXX86_READKEY
+#include "keyboardBuffer.h"
 
 widget_t *text_field_new(char *text, int filter, int x, int y)
 {
@@ -180,133 +180,9 @@ static void checkText(widget_textfield_t * p)
 	font_text_size(p->text, &p->w, &p->h);
 }
 
-#ifdef ZZEEXX86_READKEY
-static void readKey(widget_textfield_t * p)
+
+static void readKey(widget_textfield_t *p)
 {
-	Uint8 *mapa;
-	int len;
-	int i;
-
-	//printf("readKey w=%d\n", p->w);
-
-	if (p->active == FALSE) {
-		return;
-	}
-
-	if (p->atime < 100)
-		p->atime++;
-
-	mapa = SDL_GetKeyState(NULL);
-	len = strlen(p->text);
-
-	// mazanie posledneho klavesu
-	if (mapa[SDLK_BACKSPACE] == SDL_PRESSED) {
-		if (len > 0) {
-			p->time = 0;
-			p->text[len - 1] = '\0';
-			font_text_size(p->text, &p->w, &p->h);
-		}
-
-		return;
-	}
-
-	if (p->w > WIDGET_TEXTFIELD_WIDTH - 40) {
-		return;
-	}
-	// klavesy abecedy
-	for (i = SDLK_SPACE /*SDLK_a */ ; i <= SDLK_z; i++) {
-		//if(width<TEXTFIELD_SIZE_X-20 && mapa[i]==SDL_PRESSED)
-		if (mapa[i] == SDL_PRESSED && len < STR_SIZE) {
-			if (i == SDLK_SPACE) {
-				strcat(p->text, " ");
-				checkText(p);
-				return;
-			}
-
-			const char *c = (const char *) SDL_GetKeyName(i);
-
-			if (len) {
-				if (p->text[len - 1] == *c) {
-					p->time++;
-
-					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
-						if (p->atime < 3)
-							return;
-					}
-				} else
-					p->time = 0;
-			}
-
-			p->atime = 0;
-
-			strcat(p->text, c);
-			checkText(p);
-
-			if (mapa[SDLK_LSHIFT] == SDL_PRESSED ||
-				mapa[SDLK_RSHIFT] == SDL_PRESSED) {
-				p->text[strlen(p->text) - 1] -= 32;
-				checkText(p);
-				return;
-			}
-		}
-	}
-
-	// aby ve jmene bulanka fungovaly take cislice alfanumericke klavesnice
-	for (i = SDLK_0; i <= SDLK_9; i++) {
-		if (mapa[i] == SDL_PRESSED && len < STR_SIZE) {
-			const char *c = (const char *) SDL_GetKeyName(i);
-
-			if (len) {
-				if (p->text[len - 1] == *c) {
-					p->time++;
-
-					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
-						if (p->atime < 3)
-							return;
-					}
-				} else
-					p->time = 0;
-			}
-
-			p->atime = 0;
-
-			strcat(p->text, c);
-			checkText(p);
-			return;
-		}
-	}
-
-	// aby ve jmene bulanka fungovaly take cislice napsane na numericke klavesnici
-	for (i = SDLK_KP0; i <= SDLK_KP9; i++) {
-		if (mapa[i] == SDL_PRESSED && len < STR_SIZE) {
-			const char *c = (const char *) SDL_GetKeyName(i) + 1;
-
-			if (len) {
-				if (p->text[len - 1] == *c) {
-					p->time++;
-
-					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
-						if (p->atime < 3)
-							return;
-					}
-				} else
-					p->time = 0;
-			}
-
-			p->atime = 0;
-
-			strncat(p->text, c, 1);	// napr. "[4]"
-			checkText(p);
-			return;
-		}
-	}
-}
-#endif
-
-#ifndef ZZEEXX86_READKEY
-static void readKey(widget_textfield_t * p)
-{
-	Uint8 *mapa;
 	int len;
 	int i;
 
@@ -325,86 +201,68 @@ static void readKey(widget_textfield_t * p)
 		'/', '?'
 	};
 
-	if (p->active == FALSE) {
+	if (p->active == FALSE)
 		return;
-	}
 
-	if (p->atime < 100)
-		p->atime++;
+	len = strlen (p->text);
 
-	mapa = SDL_GetKeyState(NULL);
-	len = strlen(p->text);
+	for (i = 0; keyboard_buffer_is_any_key(); i ++) {
+		SDL_keysym k = keyboard_buffer_pop ();
 
-	for (i = SDLK_FIRST; i <= SDLK_F15; i++) {
-		if (mapa[i] == SDL_PRESSED && len < STR_SIZE) {
-			char *name = (char *) SDL_GetKeyName(i);
-			char c = '\0';
+		char *name = (char *) SDL_GetKeyName (k.sym);
 
-			if (name == NULL)
-				continue;
-			//printf("name %s\n", name);
+		if (name == NULL)
+			continue;
 
-			if (strlen(name) == 1)
+		if (len >= STR_SIZE)
+			break;
+
+		char c = '\0';
+
+		/* printf("name %s\n", name); */
+
+		switch (strlen (name)) {
+			case 1:
 				c = name[0];
-
-			if (strlen(name) == 3)
+				break;
+			case 3:
 				c = name[1];
-
-			if (strcmp(name, "space") == 0)
-				c = ' ';
-
-
-			if (strcmp(name, "backspace") == 0 && len > 0) {
-				p->time = 0;
-				p->text[len - 1] = '\0';
-				checkText(p);
-				return;
-			}
-
-			if (c == '\0' || p->w > WIDGET_TEXTFIELD_WIDTH - 40) {
-				continue;
-			}
-
-			if (len > 0) {
-				if (p->text[len - 1] == c) {
-					p->time++;
-
-					if (p->time < WIDGET_TEXTFIELD_TIME_MULTIPLE) {
-						if (p->atime < 3)
-							return;
-					}
-				} else {
-					p->time = 0;
-				}
-			}
-
-			p->atime = 0;
-
-			p->text[len] = c;
-
-			if (mapa[SDLK_LSHIFT] == SDL_PRESSED || mapa[SDLK_RSHIFT] == SDL_PRESSED) {
-				int j;
-
-				for (j = 0; j < len_shift_map; j += 2) {
-					if (c == shift_map[j]) {
-						p->text[len] = shift_map[j + 1];
-					}
-				}
-
-				checkText(p);
-				return;
-			}
-
-			if (mapa[SDLK_LSHIFT] == SDL_PRESSED || mapa[SDLK_RSHIFT] == SDL_PRESSED) {
-				p->text[len] -= 32;
-			}
-
-			checkText(p);
-			return;
+				break;
 		}
+
+		if (!strcmp (name, "space"))
+			c = ' ';
+		else if (!strcmp (name, "backspace") && len > 0 ) {
+			p->text[len-1] = '\0';
+			checkText (p);
+			break;
+		}
+
+		if (c == '\0' || p->w > WIDGET_TEXTFIELD_WIDTH - 40)
+			continue;
+
+		p->text[len] = c;
+
+		if (k.mod & KMOD_SHIFT) {
+			int n;
+			int m = 0;
+
+			for (n = 0; n < len_shift_map; n += 2) {
+				if (c == shift_map[n]) {
+					p->text[len] = shift_map[n+1];
+					m ++;
+					break;
+				}
+			}
+
+			if (!m)
+				p->text[len] -= 32;
+		}
+
+		checkText (p);
+		len ++;
 	}
 }
-#endif
 
 void text_field_event(widget_t * widget)
 {
@@ -422,6 +280,8 @@ void text_field_event(widget_t * widget)
 		if (x >= widget->x && x <= widget->x + WIDGET_TEXTFIELD_WIDTH &&
 		    y >= widget->y && y <= widget->y + WIDGET_TEXTFIELD_HEIGHT) {
 			p->active = TRUE;
+			interface_enable_keyboard_buffer();
+			keyboard_buffer_clear();
 		} else {
 			p->active = FALSE;
 		}
