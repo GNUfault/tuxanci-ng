@@ -71,7 +71,7 @@ void setGameType()
 	}
 }
 
-void world_set_arena(arenaFile_t * arenaFile)
+void world_set_arena(arenaFile_t *arenaFile)
 {
 	arena = arena_file_get_arena(arenaFile);
 
@@ -193,7 +193,7 @@ void world_draw()
 	save_dialog_draw();
 }
 
-static void netAction(tux_t * tux, int action)
+static void netAction(tux_t *tux, int action)
 {
 	if (public_server_get_settingGameType() == NET_GAME_TYPE_SERVER) {
 		proto_send_event_server(PROTO_SEND_ALL_SEES_TUX, NULL, tux, action);
@@ -204,7 +204,7 @@ static void netAction(tux_t * tux, int action)
 	}
 }
 
-static void control_keyboard_right(tux_t * tux)
+static void control_keyboard_right(tux_t *tux)
 {
 	static int lastKey = 0;
 	int countKey;
@@ -232,14 +232,12 @@ static void control_keyboard_right(tux_t * tux)
 		&& tux->isCanSwitchGun == TRUE) {
 		netAction(tux, TUX_SWITCH_GUN);
 		tux_action(tux, TUX_SWITCH_GUN);
-		return;
 	}
 
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_RIGHT_SHOOT)] == SDL_PRESSED
 		&& tux->isCanShot == TRUE) {
 		netAction(tux, TUX_SHOT);
 		tux_action(tux, TUX_SHOT);
-		return;
 	}
 
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_RIGHT_MOVE_UP)] == SDL_PRESSED) {
@@ -248,9 +246,9 @@ static void control_keyboard_right(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_RIGHT_MOVE_UP);
+
 		netAction(tux, TUX_UP);
 		tux_action(tux, TUX_UP);
-		return;
 
 	  tuUp:;
 	}
@@ -261,12 +259,11 @@ static void control_keyboard_right(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT);
+
 		netAction(tux, TUX_RIGHT);
 		tux_action(tux, TUX_RIGHT);
-		return;
 
 	  tuRight:;
-
 	}
 
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT)] == SDL_PRESSED) {
@@ -275,9 +272,9 @@ static void control_keyboard_right(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT);
+
 		netAction(tux, TUX_LEFT);
 		tux_action(tux, TUX_LEFT);
-		return;
 
 	  tuLeft:;
 	}
@@ -288,15 +285,15 @@ static void control_keyboard_right(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN);
+
 		netAction(tux, TUX_DOWN);
 		tux_action(tux, TUX_DOWN);
-		return;
 
 	  tuDown:;
 	}
 }
 
-static void control_keyboard_left(tux_t * tux)
+static void control_keyboard_left(tux_t *tux)
 {
 	static int lastKey = 0;
 	int countKey;
@@ -323,14 +320,12 @@ static void control_keyboard_left(tux_t * tux)
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_LEFT_SWITCH_WEAPON)] == SDL_PRESSED) {
 		if (tux->isCanSwitchGun == TRUE) {
 			tux_action(tux, TUX_SWITCH_GUN);
-			return;
 		}
 	}
 
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_LEFT_SHOOT)] == SDL_PRESSED
 		&& tux->isCanShot == TRUE) {
 		tux_action(tux, TUX_SHOT);
-		return;
 	}
 
 	if (mapa[(SDLKey) key_table_get_key(KEY_TUX_LEFT_MOVE_UP)] == SDL_PRESSED) {
@@ -339,8 +334,8 @@ static void control_keyboard_left(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_LEFT_MOVE_UP);
+
 		tux_action(tux, TUX_UP);
-		return;
 
 	  tuUp:;
 	}
@@ -351,8 +346,8 @@ static void control_keyboard_left(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT);
+
 		tux_action(tux, TUX_RIGHT);
-		return;
 
 	  tuRight:;
 
@@ -364,8 +359,8 @@ static void control_keyboard_left(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT);
+
 		tux_action(tux, TUX_LEFT);
-		return;
 
 	  tuLeft:;
 	}
@@ -376,8 +371,8 @@ static void control_keyboard_left(tux_t * tux)
 
 		if (countKey == 1)
 			lastKey = key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN);
+
 		tux_action(tux, TUX_DOWN);
-		return;
 
 	  tuDown:;
 	}
@@ -581,8 +576,7 @@ void world_init()
 	assert(panel_is_inicialized() == TRUE);
 	assert(screen_is_inicialized() == TRUE);
 
-	screen_register(screen_new
-				   ("world", startWorld, world_event, world_draw, stoptWorld));
+	screen_register(screen_new("world", startWorld, world_event, world_draw, stoptWorld));
 
 #ifndef NO_SOUND
 	sound_add("dead.ogg", "dead", SOUND_GROUP_BASE);

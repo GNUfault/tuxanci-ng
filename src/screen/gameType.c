@@ -188,6 +188,7 @@ static void eventWidget(void *p)
 
 	if (button == button_back) {
 		screen_set("mainMenu");
+		return;
 	}
 
 	if (button == button_play) {
@@ -200,16 +201,17 @@ static void eventWidget(void *p)
 			return;
 		}
 
-		if (public_server_get_settingGameType() == NET_GAME_TYPE_CLIENT) {
+		if (public_server_get_settingGameType() == NET_GAME_TYPE_CLIENT)
 			screen_set("downArena");
-			//screen_set("world");
-		} else {
+		else
 			screen_set("chiceArena");
-		}
+
+		return;
 	}
 
 	if (button == button_browser) {
 		screen_set("browser");
+		return;
 	}
 }
 

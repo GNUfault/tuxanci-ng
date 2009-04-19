@@ -25,6 +25,7 @@
 #include "net_multiplayer.h"
 
 #include "udp.h"
+#include "dns.h"
 
 static int getProto(char *str)
 {
@@ -45,7 +46,7 @@ sock_udp_t *sock_udp_new(void)
 	return new;
 }
 
-void sock_udp_destroy(sock_udp_t * p)
+void sock_udp_destroy(sock_udp_t *p)
 {
 	assert(p != NULL);
 	free(p);
@@ -144,6 +145,11 @@ sock_udp_t *sock_udp_connect(char *address, int port)
 		return NULL;
 	}
 
+	char *domain = gns_resolv (address);
+
+	if (domain)
+		address = domain;
+
 	memset(&(new->sockAddr), 0, sizeof(new->sockAddr));
 
 	if (new->proto == PROTO_UDPv4) {
@@ -158,10 +164,13 @@ sock_udp_t *sock_udp_connect(char *address, int port)
 		inet_pton(AF_INET6, address, &(new->sockAddr6.sin6_addr));
 	}
 #endif
+	if (domain)
+		free (domain);
+
 	return new;
 }
 
-int sock_udp_set_non_block(sock_udp_t * p)
+int sock_udp_set_non_block(sock_udp_t *p)
 {
 	/* Set to nonblocking socket mode */
 #ifndef __WIN32__
@@ -183,7 +192,7 @@ int sock_udp_set_non_block(sock_udp_t * p)
 	return 0;
 }
 
-int sock_udp_read(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
+int sock_udp_read(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 {
 	int addrlen;
 	int size = -1;				// no warninng
@@ -236,7 +245,7 @@ int sock_udp_read(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	return size;
 }
 
-int sock_udp_write(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
+int sock_udp_write(sock_udp_t *src, sock_udp_t *dst, void *address, int len)
 {
 	int addrlen;
 	int size = -1;				// no warninng
@@ -278,7 +287,7 @@ int sock_udp_write(sock_udp_t * src, sock_udp_t * dst, void *address, int len)
 	return size;
 }
 
-void sock_udp_get_ip(sock_udp_t * p, char *str_ip, int len)
+void sock_udp_get_ip(sock_udp_t *p, char *str_ip, int len)
 {
 	assert(p != NULL);
 	assert(str_ip != NULL);
@@ -299,7 +308,7 @@ void sock_udp_get_ip(sock_udp_t * p, char *str_ip, int len)
 #endif
 }
 
-int sock_udp_get_port(sock_udp_t * p)
+int sock_udp_get_port(sock_udp_t *p)
 {
 	assert(p != NULL);
 
@@ -318,7 +327,7 @@ int sock_udp_get_port(sock_udp_t * p)
 }
 
 
-void sock_udp_close(sock_udp_t * p)
+void sock_udp_close(sock_udp_t *p)
 {
 	assert(p != NULL);
 
@@ -333,7 +342,7 @@ void sock_udp_close(sock_udp_t * p)
 
 #if 0
 
-static int myWait(sock_udp_t * p)
+static int myWait(sock_udp_t *p)
 {
 	fd_set readfds;
 	fd_set errorfds;

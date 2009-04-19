@@ -56,7 +56,97 @@ char *public_server_get_setting(char *env, char *param, char *default_val)
 	return getParamElse(param, server_configFile_get_value(env, default_val));
 }
 
-static int registerPublicServer()
+
+#ifndef __WIN32__
+void daemonize ()
+{
+	int i, lockfd;
+  	char pid[16];
+	char spid[64];
+
+	int ipid = getpid ();
+
+  	/* detach if asked */
+  	if (ipid == 1)
+		return;				/* already a daemon */
+
+    	/* fork to guarantee we are not process group leader */
+    	i = fork ();
+
+    	if (i < 0)
+      		exit (1);			/* fork error */
+    	if (i > 0)
+      		exit (0);			/* parent exits */
+
+    	/* child (daemon) continues */
+    	setsid ();				/* obtain a new process group */
+	ipid = getpid ()+1;
+
+	printf ("> started with pid -> %d\n", ipid);
+    	/* fork again so we become process group leader 
+     	 * and cannot regain a controlling tty 
+     	 */
+    	i = fork ();
+
+    	if (i < 0)
+      		exit (1);			/* fork error */
+    	else if (i > 0)
+		exit (0);			/* parent exits */
+
+    	/* close all fds */
+    	for (i = getdtablesize (); i >= 0; --i)
+      		close (i);			/* close all descriptors */
+
+    	/* close parent fds and send output to fds 0, 1 and 2 to bitbucket */
+    	i = open ("/dev/null", O_RDWR);
+
+    	if (i < 0)
+      		exit (1);
+
+    	dup (i);
+    	dup (i);				/* handle standart I/O */
+
+	sprintf (spid, "/tmp/tuxanci-server-%d.pid", ipid);
+
+  	/* create local lock */
+  	lockfd = open (spid, O_RDWR | O_CREAT, 0640);
+
+  	if (lockfd < 0) {
+    		perror ("lock: open");
+    		exit (1);
+  	}
+	#ifndef __CYGWIN__
+	/* lock the file */
+	if (lockf (lockfd, F_TLOCK, 0) < 0) {
+		perror ("lock: lockf");
+		printf ("> tuxanci-server is already running.\n");
+		exit (0);
+	}
+	#else
+	/* lock the file */
+	{
+	struct flock lock;
+		lock.l_type = F_RDLCK;
+		lock.l_start = 0;
+		lock.l_whence = SEEK_SET;
+		lock.l_len = 0;
+		
+		if (fcntl (lockfd, F_SETLK, &lock) < 0) {
+			printf ("> tuxanci-server is already running.\n");
+			exit (0);
+		}
+	}
+	#endif
+	/* write to pid to lockfile */
+	snprintf (pid, 16, "%d\n", getpid ());
+	write (lockfd, pid, strlen (pid));
+
+	/* restrict created files to 0750 */
+	umask (027);
+}
+#endif
+
+static int public_server_register()
 {
 #ifndef __WIN32
 	int s;
@@ -275,7 +365,7 @@ int public_server_init()
 
 	server_set_max_clients(atoi (public_server_get_setting("MAX_CLIENTS", "--max-clients", "32")));
 
-	if (registerPublicServer() < 0) {
+	if (public_server_register() < 0) {
 		printf(_("Unable to contact MasterServer!)\n"));
 	}
 
@@ -287,7 +377,7 @@ arenaFile_t *choice_arena_get()
 	return choice_arenaFile;
 }
 
-void eventPublicServer()
+void public_server_event()
 {
 	static my_time_t lastActive = 0;
 	my_time_t interval;
@@ -354,9 +444,13 @@ int public_server_start()
 		return -1;
 	}
 
-	while (1) {
-		eventPublicServer();
-	}
+	char *s = public_server_get_setting("DAEMON", "--daemon", "none");
+
+	if (atoi(s))
+		daemonize();
+
+	for (;;)
+		public_server_event();
 
 	return 0;
 }
