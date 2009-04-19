@@ -56,10 +56,9 @@ char *public_server_get_setting(char *env, char *param, char *default_val)
 	return getParamElse(param, server_configFile_get_value(env, default_val));
 }
 
-
-#ifndef __WIN32__
 void daemonize ()
 {
+#ifndef __WIN32__
 	int i, lockfd;
   	char pid[16];
 	char spid[64];
@@ -143,8 +142,8 @@ void daemonize ()
 
 	/* restrict created files to 0750 */
 	umask (027);
-}
 #endif
+}
 
 static int public_server_register()
 {
