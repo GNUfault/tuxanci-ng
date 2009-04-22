@@ -116,7 +116,7 @@ char *text_field_get_text(widget_t *widget)
 
 static void checkText(widget_textfield_t *p, unsigned len)
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < len; i++) {
 		char c;
@@ -231,7 +231,7 @@ static void readKey (widget_textfield_t *p)
 		p->text[len] = c;
 
 		if (k.mod & KMOD_SHIFT) {
-			int n;
+			unsigned int n;
 			int m = 0;
 
 			for (n = 0; n < sizeof (shift_map); n += 2) {

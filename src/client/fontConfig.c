@@ -113,6 +113,7 @@ int fontconfig_quit()
 	return 0;
 }
 
+#ifdef TEST_FONT_CONFIG
 int fc_test_main(int argc, char **argv)
 {
 	char *arg[] = {":lang=he:outline=true", "family", "style", "weight", "file", NULL};
@@ -134,3 +135,4 @@ int fc_test_main(int argc, char **argv)
 
 	return 0;
 }
+#endif
