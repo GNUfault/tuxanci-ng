@@ -162,6 +162,8 @@ static void delZombieCLient(void *p_nothink)
 	my_time_t currentTime;
 	int i;
 
+	UNUSET(p_nothink);
+
 	currentTime = timer_get_current_time();
 
 	for (i = 0; i < listClient->count; i++) {
@@ -190,6 +192,8 @@ static void eventPeriodicSyncClient(void *p_nothink)
 	tux_t *thisTux;
 	int i;
 
+	UNUSET(p_nothink);
+
 #ifndef PUBLIC_SERVER
 	proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, NULL, world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT));
 #endif
@@ -209,6 +213,8 @@ static void eventPeriodicSyncClient(void *p_nothink)
 
 static void eventSendPingClients(void *p_nothink)
 {
+	UNUSET(p_nothink);
+	
 	proto_send_ping_server(PROTO_SEND_ALL, NULL);
 }
 

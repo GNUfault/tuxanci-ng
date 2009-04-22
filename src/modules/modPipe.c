@@ -221,6 +221,9 @@ int init(export_fce_t * p)
 
 static void action_drawpipe(space_t * space, pipe_t * pipe, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	drawPipe(pipe);
 }
 
@@ -296,6 +299,8 @@ static void action_eventpipe(space_t * space, pipe_t * pipe, shot_t * shot)
 	arena_t *arena;
 	tux_t *author;
 
+	UNUSET(space);
+
 	arena = export_fce->fce_arena_get_current();
 
 	author = space_get_object_id(arena->spaceTux, shot->author_id);
@@ -365,7 +370,7 @@ void cmdArena(char *line)
 
 void recvMsg(char *msg)
 {
-
+	UNUSET(msg);
 }
 
 int destroy()

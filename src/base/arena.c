@@ -222,16 +222,25 @@ static void drawBackground(arena_t * arena, int screen_x, int screen_y)
 
 static void action_tux_draw(space_t * space, tux_t * tux, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	tux_draw(tux);
 }
 
 static void action_item_draw(space_t * space, item_t * item, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	item_draw(item);
 }
 
 static void action_shot_draw(space_t * space, shot_t * shot, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	shot_draw(shot);
 }
 
@@ -372,6 +381,9 @@ void arena_draw(arena_t * arena)
 
 static void action_tux(space_t * space, tux_t * tux, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	tux_event(tux);
 }
 

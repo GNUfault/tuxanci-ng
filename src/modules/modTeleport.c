@@ -249,9 +249,11 @@ int init(export_fce_t * p)
 
 #ifndef PUBLIC_SERVER
 
-static void
-action_drawteleport(space_t * space, teleport_t * teleport, void *p)
+static void action_drawteleport(space_t * space, teleport_t * teleport, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	drawTeleport(teleport);
 }
 
@@ -268,11 +270,12 @@ int draw(int x, int y, int w, int h)
 }
 #endif
 
-static void
-action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
+static void action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
 {
 	arena_t *arena;
 	tux_t *author;
+
+	UNUSET(space);
 
 	arena = export_fce->fce_arena_get_current();
 
@@ -286,23 +289,26 @@ action_eventteleportshot(space_t * space, teleport_t * teleport, shot_t * shot)
 	moveShotFromTeleport(shot, teleport, spaceTeleport);
 }
 
-static void
-action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceTeleport)
+static void action_eventshot(space_t * space, shot_t * shot, space_t * p_spaceTeleport)
 {
+	UNUSET(space);
+
 	space_action_from_location(p_spaceTeleport, action_eventteleportshot, shot,
 							shot->x, shot->y, shot->w, shot->h);
 }
 
-static void
-action_eventteleporttux(space_t * space, teleport_t * teleport, tux_t * tux)
+static void action_eventteleporttux(space_t * space, teleport_t * teleport, tux_t * tux)
 {
+	UNUSET(space);
+
 	teleportTux(tux, teleport);
 }
 
-static void
-action_eventtux(space_t * space, tux_t * tux, space_t * p_spaceTeleport)
+static void action_eventtux(space_t * space, tux_t * tux, space_t * p_spaceTeleport)
 {
 	int x, y, w, h;
+
+	UNUSET(space);
 
 	export_fce->fce_tux_get_proportion(tux, &x, &y, &w, &h);
 
@@ -330,6 +336,11 @@ int event()
 
 int isConflict(int x, int y, int w, int h)
 {
+	UNUSET(x);
+	UNUSET(y);
+	UNUSET(w);
+	UNUSET(h);
+
 	if (spaceTeleport == NULL) {
 		return 0;
 	}
@@ -345,6 +356,7 @@ void cmdArena(char *line)
 
 void recvMsg(char *msg)
 {
+	UNUSET(msg);
 }
 
 int destroy()

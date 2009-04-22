@@ -262,6 +262,8 @@ static void action_moveShot(space_t * space, shot_t * shot, void *p)
 	int new_x, new_y;
 	arena_t *arena;
 
+	UNUSET(p);
+
 	arena = arena_get_current();
 
 	new_x = shot->x + shot->px;
@@ -295,6 +297,8 @@ static int isValueInList(list_t * list, int x)
 
 static void action_check(space_t * space, shot_t * shot, client_t * client)
 {
+	UNUSET(space);
+
 	if (isValueInList(client->listSeesShot, shot->id) == 0) {
 	    list_add(client->listSeesShot, newInt(shot->id));
 	    proto_send_shot_server(PROTO_SEND_ONE, client, shot);

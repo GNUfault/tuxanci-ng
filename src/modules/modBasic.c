@@ -35,6 +35,11 @@ int init(export_fce_t * p)
 
 int draw(int x, int y, int w, int h)
 {
+	UNUSET(x);
+	UNUSET(y);
+	UNUSET(w);
+	UNUSET(h);
+
 	printf("Drawing Basic module.\n");
 	return 0;
 }

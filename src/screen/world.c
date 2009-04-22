@@ -500,6 +500,9 @@ void startWorld()
 
 static void action_analyze(space_t * space, tux_t * tux, void *p)
 {
+	UNUSET(space);
+	UNUSET(p);
+
 	analyze_add(tux->name, tux->score);
 }
 

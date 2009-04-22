@@ -38,6 +38,9 @@ bool_t interface_is_inicialized()
 static Uint32 TimerCallback(Uint32 interval, void *param)
 {
 	SDL_Event event;
+
+	UNUSET(param);
+
 	event.type = SDL_USEREVENT;
 	event.user.code = USR_EVT_TIMER;
 	event.user.data1 = NULL;
