@@ -5,31 +5,105 @@
 ###
 VERSION=0.21.99
 PREFIX=/usr/local
-PREFIX_BIN=$PREFIX/bin
-PREFIX_DATA=$PREFIX/share/tuxanci
-PREFIX_DOC=$PREFIX/share/doc/tuxanci-$VERSION
+PREFIX_BIN=${PREFIX}/bin
+PREFIX_LIB=${PREFIX}/lib/tuxanci
+PREFIX_DATA=${PREFIX}/share/tuxanci
+PREFIX_DOC=${PREFIX}/share/doc/tuxanci-${VERSION}
+PREFIX_CONF=/etc
+PREFIX_LOCALE=${PREFIX}/share/locale
+PREFIX_FONT=${PREFIX_DATA}/font
 DESTDIR=
 DEBUG=1
+SERVER=0
+CLIENT=1
+AUDIO=1
+OPENGL=1
+GETTEXT=1
 
 ###
 # Predefined functions
 ###
 help() {
 	echo "Supported options are:"
-	echo "--help			print this help and exit"
-	echo "--prefix=<path>		final path for the game [/usr/local]"
-	echo "--prefix-bin=<path>	will hold all binaries [$prefix/bin]"
-	echo "--prefix-data=<path>	data path [$prefix/share/tuxanci]"
-	echo "--prefix-doc=<path>	documentation path [$prefix/share/doc/tuxanci-$VERSION]"
-	echo "--destdir=<path>		useful option for packagers
-	echo "--enable-debug		debugging mode (default, recommended)"
-	echo "--disable-debug		enables optimization and quiet output"
+	echo "--help                    print this help and exit"
+	echo "--prefix=<path>           final path for the game [/usr/local]"
+	echo "--prefix-bin=<path>       path for binaries [\$prefix/bin]"
+	echo "--prefix-lib=<path>       path for the modules [\$prefix/lib/tuxanci]"
+	echo "--prefix-data=<path>      data path [\$prefix/share/tuxanci]"
+	echo "--prefix-doc=<path>       documentation path [\$prefix/share/doc/tuxanci-${VERSION}]"
+	echo "--prefix-conf=<path>      configuration files path [/etc]"
+	echo "--prefix-locale=<path>    locale path [\$prefix/share/locale]"
+	echo "--prefix-font=<path>      fonts path [\$prefix/share/tuxanci/font]"
+	echo "--destdir=<path>          useful option for packagers"
 	echo ""
+	echo "--disable-debug           enables optimization and quiet output [default: no]"
+	echo "--enable-server           build server [default: no]"
+	echo "--enable-client           build client [default: yes]"
+	echo "--enable-audio            build with audio facility [default: yes]"
+	echo "--enable-opengl           build with 3D acceleration [default: yes]"
+	echo ""
+	echo "--without-gettext         English only version"
+}
+
+check_pkg() {
+	lib="$1"
+	[ "$2" ] && lib="${lib} $2"
+	[ "$3" ] && lib="${lib} $3"
+	if [ "`pkg-config --exists --print-errors "${lib}" | grep "No package '$1' found"`" != "" ]; then
+		echo "no"
+		echo "Error: Cannot find ${lib}"
+		exit 1
+	else
+		echo "yes"
+	fi
+}
+
+cmpver() {
+	##
+	# 0: equal
+	# 1: newer
+	# 2: older
+	##
+
+	v1=`echo $1 | sed -e "s/\./ /g"`
+	v2=`echo $2 | sed -e "s/\./ /g"`
+
+	# major
+	j1=`echo $v1 | awk '{ print $1 }'`
+	j2=`echo $v2 | awk '{ print $1 }'`
+	if [ $j1 -lt $j2 ]; then
+		echo 1 && exit
+	elif [ $j1 -gt $j2 ]; then
+		echo 2 && exit
+	fi      
+
+	# minor
+	n1=`echo $v1 | awk '{ print $2 }'`
+	n2=`echo $v2 | awk '{ print $2 }'`
+	if [ $n1 -lt $n2 ]; then
+		echo 1 && exit
+	elif [ $n1 -gt $n2 ]; then
+		echo 2 && exit
+	fi
+
+	# patch
+	p1=`echo $v1 | awk '{ print $3 }'`
+	p2=`echo $v2 | awk '{ print $3 }'`
+	if [ $p1 -lt $p2 ]; then
+		echo 1 && exit
+	elif [ $p1 -gt $p2 ]; then
+		echo 2 && exit
+	fi
+
+	# default
+	echo 0 && exit
 }
 
 ###
 # Parse options
 ###
+echo "==> Parsing options"
+
 while [ $# -gt 0 ]; do
 	case $1 in
 		--help)
@@ -69,4 +143,47 @@ done
 ###
 # Check for dependencies
 ###
+echo "==> Checking for dependencies for building"
 
+# cmake
+printf "Checking for cmake >= 2.6.0... "
+cmakebin=`which cmake`
+if [ "${cmakebin}" == "" ]; then
+	echo "no"
+	echo "Error: Cannot find cmake"
+	exit 1
+else
+	cmakeversion=`${cmakebin} --version | sed -e "s/-patch//" | awk '{ print $3, $4 }' | sed -e "s/ /./"`
+	cmakestatus=`cmpver "2.6.0" ${cmakeversion}`
+	if [ ${cmakestatus} == 1 ] || [ ${cmakestatus} == 0 ]; then
+		echo "yes"
+	else
+		echo "no"
+		echo "Error: Cannot find cmake"
+		exit 1
+	fi
+fi
+
+
+echo "==> Checking for dependencies for running"
+
+# SDL/OpenGL
+if [ ${CLIENT} == true ]; then
+	printf "Checking for SDL... "
+	check_pkg "sdl"
+fi
+
+# libzip
+printf "Checking for libzip... "
+check_pkg "libzip"
+
+# gettext
+#if [ ${GETTEXT} == true ]; then
+	#printf "Checking for gettext... "
+	#echo ""
+#fi
+
+
+echo "==> Creating Makefile"
+
+echo "==> Configuring successfully finished!"
