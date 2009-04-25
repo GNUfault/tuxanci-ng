@@ -1,0 +1,38 @@
+~~~ Developer's Handbook ~~~
+* Basic rules
+- always discuss your problem with other developers or with maintainer of the appropriate section
+- be present on developer's IRC
+- try not to break the code in master
+- if you do one large thing that surely will break the code, create your own branch
+- this Handbook is maintained by xHire - if you want to add or modify something, ask him first!
+
+* Directories
+- client/	client code; mainly using SDL
+- server/	server code; mustn't use SDL
+- base/		code in common for client and server; doesn't use SDL
+- widget/	GUI code
+- screen/	code for designing each one screen of GUI
+- audio/	code that handles audio - sounds and music
+- modules/	code of all modules
+- net/		code that operates networking
+
+* Filenames
+- keep letters small
+- if you need more words in a filename, then use this character for separating them: _
+
+* Identificators
+- if you need more words in an identificator, then use this character for separating them: _
+- don't use global variables
+
+* Translation strings
+- keep them clear and following standard scheme
+- if a filename is to be mentioned, don't use any quotes and try to situate it to the end of the string
+
+* Code style
+- you can use kr.sh script for basic orientation, but think with your head and correct all bull shits
+- at the end of each file leave one empty line
+
+* Writing a module
+
+* Creating a package
+- let us know and we will tell you everything :c)
