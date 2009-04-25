@@ -1,12 +1,13 @@
-
 #ifndef MUSIC_H
-#    define MUSIC_H
-#    ifndef NO_SOUND
-#        include <SDL_mixer.h>
-#        include "main.h"
+#define MUSIC_H
 
-#        define MUSIC_GROUP_BASE "base"
-#        define MUSIC_GROUP_USER "user"
+#ifndef NO_SOUND
+
+#include <SDL_mixer.h>
+#include "main.h"
+
+#define MUSIC_GROUP_BASE "base"
+#define MUSIC_GROUP_USER "user"
 
 /*
    typedef struct music_struct
@@ -27,5 +28,6 @@ extern bool_t music_is_active();
 extern char *music_get_current();
 extern void music_del_all_in_group(char *group);
 extern void music_quit();
-#    endif
-#endif
+
+#endif /* NO_SOUND */
+#endif /* MUSIC_H */

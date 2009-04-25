@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <assert.h>
 #include <SDL_mixer.h>
@@ -10,7 +9,7 @@
 static bool_t isAudioInit = FALSE;
 
 /*
- * Returns state of audio
+ * Return status of audio
  */
 bool_t audio_is_inicialized()
 {
@@ -26,33 +25,31 @@ void audio_init()
 		return;
 	}
 
+	DEBUG_MSG(_("[Debug] Initializing audio\n"));
+
 	if (SDL_Init(SDL_INIT_AUDIO) == -1) {
-		fprintf(stderr, _("Error! Unable to initialize audio: %s\n"), SDL_GetError());
+		fprintf(stderr, _("[Error] Unable to initialize audio: %s\n"), SDL_GetError());
 		return;
 	}
 
-	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
-	{
-		fprintf(stderr, _("Unable to create proper audio settings: %s\n"),
-				Mix_GetError());
+	if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024) == -1) {
+		fprintf(stderr, _("[Error] Unable to create proper audio settings: %s\n"), Mix_GetError());
 		return;
 	}
 
 	Mix_AllocateChannels(16);
 	Mix_Volume(-1, MIX_MAX_VOLUME);
 
-	DEBUG_MSG(_("Initializing audio\n"));
-
 	isAudioInit = TRUE;
 }
 
 /*
- * Quit audio
+ * Shutdown audio
  */
 void audio_quit()
 {
+	DEBUG_MSG(_("[Debug] Shutting down audio\n"));
+
 	Mix_CloseAudio();
 	isAudioInit = TRUE;
-
-	DEBUG_MSG(_("Quitting audio\n"));
 }

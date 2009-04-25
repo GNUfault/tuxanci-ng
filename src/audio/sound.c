@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -32,18 +31,17 @@ void sound_init()
 		return;
 	}
 
+	DEBUG_MSG(_("[Debug] Initializing sound\n"));
+
 	listStorage = storage_new();
 	isSoundInit = TRUE;
 	var_sound_is_active = TRUE;
 
-	if (isParamFlag("--no-sound"))
+	if (isParamFlag("--no-sound")) {
 		sound_set_active(FALSE);
-
-	if (isParamFlag("--sound"))
+	} else if (isParamFlag("--sound")) {
 		sound_set_active(TRUE);
-
-	DEBUG_MSG(_("Initializing sound\n"));
-
+	}
 }
 
 /*
@@ -54,14 +52,14 @@ static Mix_Chunk *loadMixSound(char *file)
 	Mix_Chunk *new;
 	char str[STR_PATH_SIZE];
 
-	DEBUG_MSG(_("Loading sound file: %s\n"), file);
+	DEBUG_MSG(_("[Debug] Loading sound [%s]\n"), file);
 
 	sprintf(str, PATH_SOUND "%s", file);
 	accessExistFile(str);
 	new = Mix_LoadWAV(str);
 
 	if (new == NULL) {
-		fprintf(stderr, _("Unable to load sound from file %s with error: %s\n"), str, Mix_GetError());
+		fprintf(stderr, _("[Error] Unable to load sound [%s]: %s\n"), str, Mix_GetError());
 		return NULL;
 	}
 
@@ -71,10 +69,10 @@ static Mix_Chunk *loadMixSound(char *file)
 /*
  * Play sound with mixer
  */
-static void playMixSound(Mix_Chunk * p)
+static void playMixSound(Mix_Chunk *p)
 {
 	if (Mix_PlayChannel(-1, p, 0) == -1) {
-		fprintf(stderr, _("Unable to play sound with error: %s\n"), Mix_GetError());
+		fprintf(stderr, _("[Error] Unable to play sound: %s\n"), Mix_GetError());
 		return;
 	}
 }
@@ -88,14 +86,15 @@ static void destroySound(void *p)
 }
 
 /*
- * Add sound to list
+ * Add a sound to list
  */
 void sound_add(char *file, char *name, char *group)
 {
 	Mix_Chunk *new;
 
-	if (isSoundInit == FALSE)
+	if (isSoundInit == FALSE) {
 		return;
+	}
 
 	assert(file != NULL);
 	assert(name != NULL);
@@ -106,18 +105,19 @@ void sound_add(char *file, char *name, char *group)
 }
 
 /*
- * Start playback file from list
+ * Start playing a sound from a file from the list
  */
 void sound_play(char *name, char *group)
 {
-	if (isSoundInit == FALSE || var_sound_is_active == FALSE)
+	if (isSoundInit == FALSE || var_sound_is_active == FALSE) {
 		return;
+	}
 
 	playMixSound(storage_get(listStorage, group, name));
 }
 
 /*
- * Set if sound is active True/False
+ * Set sound status to active/inactive (true/false)
  */
 void sound_set_active(bool_t n)
 {
@@ -125,7 +125,7 @@ void sound_set_active(bool_t n)
 }
 
 /*
- * Return state of sound
+ * Return status of sound
  */
 bool_t sound_is_active()
 {
@@ -133,15 +133,16 @@ bool_t sound_is_active()
 }
 
 /*
- * Quit all sound stuff
+ * Shutdown sound
  */
 void sound_quit()
 {
-	if (isSoundInit == FALSE)
+	if (isSoundInit == FALSE) {
 		return;
+	}
+
+	DEBUG_MSG(_("[Debug] Shutting down sound\n"));
 
 	storage_destroy(listStorage, destroySound);
 	isSoundInit = FALSE;
-
-	DEBUG_MSG(_("Quitting sound\n"));
 }
