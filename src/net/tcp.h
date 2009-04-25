@@ -36,7 +36,7 @@ extern sock_tcp_t *sock_tcp_accept(sock_tcp_t *p);
 extern void sock_tcp_get_ip(sock_tcp_t *p, char *str_ip, int len);
 extern int sock_tcp_get_port(sock_tcp_t *p);
 extern sock_tcp_t *sock_tcp_connect(char *ip, int port);
-extern int sock_tcp_diable_nagle(sock_tcp_t *p);
+extern int sock_tcp_disable_nagle(sock_tcp_t *p);
 extern int sock_tcp_set_non_block(sock_tcp_t *p);
 extern int sock_tcp_read(sock_tcp_t *p, void *address, int len);
 extern int sock_tcp_write(sock_tcp_t *p, void *address, int len);

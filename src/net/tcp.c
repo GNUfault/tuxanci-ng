@@ -273,7 +273,7 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 	return new;
 }
 
-int sock_tcp_diable_nagle(sock_tcp_t *p)
+int sock_tcp_disable_nagle(sock_tcp_t *p)
 {
 	int flag = 1;
 	int result;

@@ -11,7 +11,7 @@
 #include <string.h>
 #include "main.h"
 
-char *gns_resolv(char *domain)
+char *dns_resolv(char *domain)
 {
 	struct hostent *host;
 

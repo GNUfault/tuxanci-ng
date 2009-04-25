@@ -143,7 +143,7 @@ sock_udp_t *sock_udp_connect(char *address, int port)
 		return NULL;
 	}
 
-	char *domain = gns_resolv(address);
+	char *domain = dns_resolv(address);
 
 	if (domain) {
 		address = domain;

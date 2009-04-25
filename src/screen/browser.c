@@ -436,7 +436,7 @@ static int LoadServers()
 	struct sockaddr_in server;
 	char *master_server_ip;
 
-	master_server_ip = gns_resolv(NET_MASTER_SERVER_DOMAIN);
+	master_server_ip = dns_resolv(NET_MASTER_SERVER_DOMAIN);
 
 	//printf("master_server_ip = %s\n", master_server_ip);
 
