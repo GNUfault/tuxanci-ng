@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,10 +14,11 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <fcntl.h>
-#else
+#else /* __WIN32__ */
 #include <windows.h>
 #include <wininet.h>
-#endif // __WIN32__
+#endif /* __WIN32__ */
+
 #include <unistd.h>
 #include <assert.h>
 
@@ -34,7 +34,7 @@ sock_tcp_t *sock_tcp_new(void)
 	return new;
 }
 
-void sock_tcp_destroy(sock_tcp_t * p)
+void sock_tcp_destroy(sock_tcp_t *p)
 {
 	assert(p != NULL);
 	free(p);
@@ -42,10 +42,12 @@ void sock_tcp_destroy(sock_tcp_t * p)
 
 static int getProto(char *str)
 {
-	if( strstr(str, ".") != NULL  )return PROTO_TCPv4;
-	if( strstr(str, ":") != NULL  )return PROTO_TCPv6;
+	if (strstr(str, ".") != NULL)
+		return PROTO_TCPv4;
+	if (strstr(str, ":") != NULL)
+		return PROTO_TCPv6;
 
-	assert( ! "Protocol not detected !" );
+	assert(!_("[Error] Network protocol not detected"));
 	return -1;
 }
 
@@ -60,14 +62,13 @@ sock_tcp_t *sock_tcp_bind(char *address, int port)
 
 	new = sock_tcp_new();
 	new->proto = getProto(address);
-	ret = -1;					// no Warnings
+	ret = -1;	/* no warnings */
 
 	assert(new != NULL);
 
 	if (new->proto == PROTO_TCPv4) {
 		new->sock = socket(AF_INET, SOCK_STREAM, 0);
 	}
-
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		new->sock = socket(AF_INET6, SOCK_STREAM, 0);
@@ -75,7 +76,7 @@ sock_tcp_t *sock_tcp_bind(char *address, int port)
 #endif
 
 	if (new->sock < 0) {
-		fprintf(stderr, _("Unable to create socket when connecting!\n"));
+		fprintf(stderr, _("[Error] Unable to create TCP socket\n"));
 		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -83,8 +84,7 @@ sock_tcp_t *sock_tcp_bind(char *address, int port)
 		return NULL;
 	}
 
-	setsockopt(new->sock, SOL_SOCKET, SO_REUSEADDR, (char *) &param_setsock,
-			   sizeof(param_setsock));
+	setsockopt(new->sock, SOL_SOCKET, SO_REUSEADDR, (char *) &param_setsock, sizeof(param_setsock));
 
 	if (new->proto == PROTO_TCPv4) {
 		new->sockAddr.sin_family = AF_INET;
@@ -101,21 +101,21 @@ sock_tcp_t *sock_tcp_bind(char *address, int port)
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		new->sockAddr6.sin6_family = AF_INET6;
-		//new->sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+		/*new->sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);*/
 #ifndef __WIN32__
 		inet_pton(AF_INET6, address, &(new->sockAddr6.sin6_addr));
-#else
+#else /* __WIN32__ */
 		new->sockAddr6.sin6_addr.s_addr = inet_addr(address);
-#endif
+#endif /* __WIN32__ */
 		new->sockAddr6.sin6_port = htons(port);
 
 		len = sizeof(new->sockAddr6);
 		ret = bind(new->sock, (struct sockaddr *) &new->sockAddr6, len);
 	}
-#endif
+#endif /* SUPPORT_IPv6 */
 
 	if (ret < 0) {
-		fprintf(stderr, _("Unable to bint to port: %d\n"), port);
+		fprintf(stderr, _("[Error] Unable to bind to TCP port [%d]\n"), port);
 		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -128,7 +128,7 @@ sock_tcp_t *sock_tcp_bind(char *address, int port)
 	return new;
 }
 
-sock_tcp_t *sock_tcp_accept(sock_tcp_t * p)
+sock_tcp_t *sock_tcp_accept(sock_tcp_t *p)
 {
 	sock_tcp_t *new;
 	int client_len;
@@ -142,24 +142,23 @@ sock_tcp_t *sock_tcp_accept(sock_tcp_t * p)
 	if (new->proto == PROTO_TCPv4) {
 		client_len = sizeof(new->sockAddr);
 #ifndef __WIN32__
-		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (socklen_t *) & client_len);
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (socklen_t *) &client_len);
 #else
-		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (long *) & client_len);
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr, (long *) &client_len);
 #endif
 	}
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		client_len = sizeof(new->sockAddr6);
 #ifndef __WIN32__
-		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (socklen_t *) & client_len);
-#else
-		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (long *) & client_len);
-#endif
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (socklen_t *) &client_len);
+#else /* __WIN32__ */
+		new->sock = accept(p->sock, (struct sockaddr *) &new->sockAddr6, (long *) &client_len);
+#endif /* __WIN32__ */
 	}
-#endif
+#endif /* SUPPORT_IPv6 */
 
 	if (new->sock < 0) {
-		//printf("XXX\n");
 		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -170,11 +169,10 @@ sock_tcp_t *sock_tcp_accept(sock_tcp_t * p)
 	return new;
 }
 
-void sock_tcp_get_ip(sock_tcp_t * p, char *str_ip, int len)
+void sock_tcp_get_ip(sock_tcp_t *p, char *str_ip, int len)
 {
 	assert(p != NULL);
 	assert(str_ip != NULL);
-
 
 	if (p->proto == PROTO_TCPv4) {
 #ifndef __WIN32__
@@ -182,21 +180,20 @@ void sock_tcp_get_ip(sock_tcp_t * p, char *str_ip, int len)
 #else
 		strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));
 #endif
-		//printf("strcpy(str_ip, inet_ntoa(p->sockAddr.sin_addr));\n");
 	}
 #ifdef SUPPORT_IPv6
 	if (p->proto == PROTO_TCPv6) {
 #ifndef __WIN32__
 		inet_ntop(AF_INET6, &(p->sockAddr6.sin6_addr), str_ip, len);
-#else
-		// not tested
+#else /* __WIN32__ */
+		/* NOT TESTED */
 		strcpy(str_ip, inet_ntoa(p->sockAddr6.sin6_addr));
-#endif // __WIN32__
+#endif /* __WIN32__ */
 	}
-#endif // SUPPORT_IPv6
+#endif /* SUPPORT_IPv6 */
 }
 
-int sock_tcp_get_port(sock_tcp_t * p)
+int sock_tcp_get_port(sock_tcp_t *p)
 {
 	assert(p != NULL);
 
@@ -209,7 +206,7 @@ int sock_tcp_get_port(sock_tcp_t * p)
 	}
 #endif
 
-	assert(!_("Bad IP proto!"));
+	assert(!_("[Error] Bad IP protocol"));
 
 	return -1;
 }
@@ -225,12 +222,11 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 
 	new = sock_tcp_new();
 	new->proto = getProto(ip);
-	ret = -1;					// no Warnnings
+	ret = -1;	/* no warnings */
 
 	if (new->proto == PROTO_TCPv4) {
 		new->sock = socket(AF_INET, SOCK_STREAM, 0);
 	}
-
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		new->sock = socket(AF_INET6, SOCK_STREAM, 0);
@@ -238,7 +234,7 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 #endif
 
 	if (new->sock < 0) {
-		fprintf(stderr, _("Unable to create TCP socket!\n"));
+		fprintf(stderr, _("[Error] Unable to create TCP socket for connecting\n"));
 		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -254,7 +250,6 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 		len = sizeof(new->sockAddr);
 		ret = connect(new->sock, (struct sockaddr *) &new->sockAddr, len);
 	}
-
 #ifdef SUPPORT_IPv6
 	if (new->proto == PROTO_TCPv6) {
 		new->sockAddr6.sin6_family = AF_INET6;
@@ -267,8 +262,7 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 #endif
 
 	if (ret < 0) {
-		fprintf(stderr, "Unable to connect on: \"%s\" port: \"%d\"\n", ip,
-				port);
+		fprintf(stderr, "[Error] Unable to connect to [%s]:%d\n", ip, port);
 		sock_tcp_destroy(new);
 #ifdef __WIN32__
 		WSACleanup();
@@ -276,49 +270,37 @@ sock_tcp_t *sock_tcp_connect(char *ip, int port)
 		return NULL;
 	}
 
-
 	return new;
 }
 
-int sock_tcp_diable_nagle(sock_tcp_t * p)
+int sock_tcp_diable_nagle(sock_tcp_t *p)
 {
 	int flag = 1;
-
 	int result;
 
-	result = setsockopt(p->sock,	/* socket affected */
-			   IPPROTO_TCP,	/* set option at TCP level */
-			   TCP_NODELAY,	/* name of option */
-			   (char *) &flag,	/* the cast is historical cruft */
-			   sizeof(int));	/* length of option value */
-
-#if 0
-	if (result < 0) {
-		printf("disabled nagle error\n");
-	} else {
-		printf("disabled nagle OK\n");
-	}
-#endif
+	result = setsockopt(p->sock,		/* affected socket */
+			    IPPROTO_TCP,	/* set option at TCP level */
+			    TCP_NODELAY,	/* name of the option */
+			    (char *) &flag,	/* the cast is a historical cruft */
+			    sizeof(int));	/* length of the option value */
 
 	return result;
 }
 
-int sock_tcp_set_non_block(sock_tcp_t * p)
+int sock_tcp_set_non_block(sock_tcp_t *p)
 {
-	/* Set to nonblocking socket mode */
+	/* set to nonblocking socket mode */
 #ifndef __WIN32__
 	int oldFlag;
 
 	oldFlag = fcntl(p->sock, F_GETFL, 0);
 
 	if (fcntl(p->sock, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
-		//printf("error sock_tcp_set_non_block\n");
 		return -1;
 	}
-	//printf("sock_tcp_set_non_block OK\n");
 #else
 	unsigned long arg = 1;
-	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
+	/* operation is FIONBIO; parameter is a pointer on non-zero number */
 	if (ioctlsocket(p->sock, FIONBIO, &arg) == SOCKET_ERROR) {
 		WSACleanup();
 		return -1;
@@ -327,7 +309,7 @@ int sock_tcp_set_non_block(sock_tcp_t * p)
 	return 0;
 }
 
-int sock_tcp_read(sock_tcp_t * p, void *address, int len)
+int sock_tcp_read(sock_tcp_t *p, void *address, int len)
 {
 	assert(p != NULL);
 	assert(address != NULL);
@@ -335,7 +317,7 @@ int sock_tcp_read(sock_tcp_t * p, void *address, int len)
 	return read(p->sock, address, len);
 }
 
-int sock_tcp_write(sock_tcp_t * p, void *address, int len)
+int sock_tcp_write(sock_tcp_t *p, void *address, int len)
 {
 	assert(p != NULL);
 	assert(address != NULL);
@@ -343,7 +325,7 @@ int sock_tcp_write(sock_tcp_t * p, void *address, int len)
 	return write(p->sock, address, len);
 }
 
-void sock_tcp_close(sock_tcp_t * p)
+void sock_tcp_close(sock_tcp_t *p)
 {
 	assert(p != NULL);
 
