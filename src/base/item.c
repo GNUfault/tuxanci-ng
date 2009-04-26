@@ -351,10 +351,6 @@ static void mineExplosion(space_t * spaceItem, item_t * item)
 
 static void action_item(space_t * space, item_t * item, int *isDel)
 {
-	arena_t *arena;
-
-	arena = arena_get_current();
-
 	switch (item->type) {
 		case ITEM_MINE:
 			if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)

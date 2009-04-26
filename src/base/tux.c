@@ -398,20 +398,17 @@ static void bombBallExplosion(shot_t * shot)
 	space_add(arena_get_current()->spaceItem, item);
 
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
-		proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+		//proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
 
-	space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
+	//space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
+
 }
 
 static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
 {
-	arena_t *arena;
-
 	UNUSED(space);
-	
-	arena = arena_get_current();
 
 	if (tux->status == TUX_STATUS_ALIVE) {
 		if (shot->author_id == tux->id && shot->isCanKillAuthor == FALSE) {
@@ -426,6 +423,7 @@ static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
 		if (shot->gun == GUN_BOMBBALL) {
 			if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 				bombBallExplosion(shot);
+				shot->del = TRUE;
 			}
 
 			return;
@@ -436,18 +434,26 @@ static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
 		}
 	}
 
+	shot->del = TRUE;
+/*
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 	}
 
 	space_del_with_item(arena->spaceShot, shot, shot_destroy);
+*/
 }
 
 static void action_shot(space_t * space, shot_t * shot, space_t * spaceTux)
 {
-	UNUSED(space);
-
 	space_action_from_location(spaceTux, action_tux, shot, shot->x, shot->y, shot->w, shot->h);
+
+	if (shot->del == TRUE) {
+		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+			proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+
+		space_del_with_item(space, shot, shot_destroy);
+	}
 }
 
 void tux_conflict_woth_shot(arena_t * arena)
