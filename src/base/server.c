@@ -87,7 +87,11 @@ static proto_cmd_server_t *findCmdProto(client_t * client, char *msg)
 		thisCmd = &proto_cmd_list[i];
 
 		if (len >= thisCmd->len && strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
-			if (thisCmd->tux && client->tux == NULL) {
+			if (thisCmd->tux == 1 && client->tux == NULL) {
+				return NULL;
+			}
+
+			if (thisCmd->tux == 0 && client->tux != NULL) {
 				return NULL;
 			}
 
@@ -206,8 +210,8 @@ static void eventPeriodicSyncClient(void *p_nothink)
 			continue;
 		}
 
-		//proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, thisClientSend, thisTux);
-		proto_send_newtux_server(PROTO_SEND_BUT, thisClientSend, thisTux);
+		proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, thisClientSend, thisTux);
+		//proto_send_newtux_server(PROTO_SEND_BUT, thisClientSend, thisTux);
 	}
 }
 
