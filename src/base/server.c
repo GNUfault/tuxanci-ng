@@ -87,13 +87,9 @@ static proto_cmd_server_t *findCmdProto(client_t * client, char *msg)
 		thisCmd = &proto_cmd_list[i];
 
 		if (len >= thisCmd->len && strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
-			if (thisCmd->tux == 1 && client->tux == NULL) {
+			if ((thisCmd->tux == 1 && client->tux == NULL) ||
+					(thisCmd->tux == 0 && client->tux != NULL))
 				return NULL;
-			}
-
-			if (thisCmd->tux == 0 && client->tux != NULL) {
-				return NULL;
-			}
 
 			return thisCmd;
 		}
