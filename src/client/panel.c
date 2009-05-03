@@ -49,7 +49,7 @@ void panel_init()
 	isPanelInit = TRUE;
 }
 
-static void drawScore(tux_t * tux_right, tux_t * tux_left)
+static void drawScore(tux_t *tux_left, tux_t *tux_right)
 {
 	char strScoreLine[STR_SIZE];
 	int w, h;
