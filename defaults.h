@@ -47,7 +47,7 @@
 #endif
 
 
-#define 	DEFAULT_PORT			2200
+#define 	DEFAULT_PORT			6800
 
 #define		DEFAULT_REFRESH_INTERVAL	60
 

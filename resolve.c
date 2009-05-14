@@ -268,11 +268,8 @@ unsigned init_resolve ()
 	server_list.socket = 0;
 	server_list.state = SERVER_STATE_ONLINE;
 
-	/** PRESET server 1 */
-	server_add (NET_IPV4_TO_ADDR (87, 236, 195, 16), 2200);
-
-	/** PRESET server 2 */
-	server_add (NET_IPV4_TO_ADDR (82, 113, 40, 8), 2200);
+	/** PRESET server */
+	//server_add (NET_IPV4_TO_ADDR (87, 236, 195, 16), 6800);
 
 	pthread_t thread;
 	pthread_create(&thread, NULL, &thread_server_update, NULL);
