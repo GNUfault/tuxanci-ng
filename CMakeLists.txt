@@ -14,7 +14,7 @@
 ###############################################################################
 # DEFAULT OPTIONS
 ###############################################################################
-OPTION (WITH_SERVER		"Build the server instead of client"		OFF)
+OPTION (BUILD_SERVER		"Build the server instead of client"		OFF)
 OPTION (ENABLE_IPV6		"Build with the ipv6 support"				ON)
 OPTION (WITH_AUDIO		"Build with audio enabled"					ON)
 OPTION (ENABLE_DEBUG	"Build debug features"						OFF)
@@ -39,11 +39,11 @@ SET ( LIB_INSTALL_DIR "${CMAKE_LIB_PATH}" )
 # BASIC PROJECT VALUES
 ###############################################################################
 PROJECT ( tuxanci C )
-IF ( WITH_SERVER )
+IF ( BUILD_SERVER )
 	SET ( APPNAME "tuxanci-server")
-ELSE ( WITH_SERVER )
+ELSE ( BUILD_SERVER )
 	SET ( APPNAME "tuxanci" )
-ENDIF ( WITH_SERVER )
+ENDIF ( BUILD_SERVER )
 MESSAGE ( "<******************************>" )
 MESSAGE ( "Configure for ${APPNAME} Started" )
 MESSAGE ( "<******************************>" )
@@ -127,19 +127,19 @@ INCLUDE_DIRECTORIES ( ${WORKDIR}/net )
 ###############################################################################
 # CLIENT STUFF
 ###############################################################################
-IF ( NOT WITH_SERVER )
+IF ( NOT BUILD_SERVER )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/client )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/screen )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/widget )
-ENDIF ( NOT WITH_SERVER )
+ENDIF ( NOT BUILD_SERVER )
 ###############################################################################
 # SERVER STUFF (Basicly overriding default client values)
 ###############################################################################
-IF ( WITH_SERVER )
+IF ( BUILD_SERVER )
 	ADD_DEFINITIONS ( -DPUBLIC_SERVER )
 	ADD_DEFINITIONS ( -DNO_SOUND )
 	INCLUDE_DIRECTORIES ( ${WORKDIR}/server )
-ENDIF ( WITH_SERVER )
+ENDIF ( BUILD_SERVER )
 ###############################################################################
 # APPLE QUIRKS
 ###############################################################################
@@ -153,7 +153,7 @@ ENDIF ( Apple )
 ###############################################################################
 MESSAGE ( STATUS "<Locating ZIP library>" )
 FIND_PACKAGE ( ZIP REQUIRED )
-IF ( NOT WITH_SERVER )
+IF ( NOT BUILD_SERVER )
 	MESSAGE ( STATUS "<Locating Fontconfig>" )
 	FIND_PACKAGE ( Fontconfig REQUIRED )
 	IF ( WITH_OPENGL )
@@ -175,7 +175,7 @@ IF ( NOT WITH_SERVER )
 		${SDLTTF_INCLUDE_DIR}
 		${SDLIMAGE_INCLUDE_DIR}
 	)
-ENDIF ( NOT WITH_SERVER )
+ENDIF ( NOT BUILD_SERVER )
 ###############################################################################
 # GETTEXT SUPPORT
 ###############################################################################

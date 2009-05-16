@@ -3,9 +3,9 @@
 ###############################################################################
 # LINKING ( for binary )
 ###############################################################################
-IF ( WITH_SERVER )
+IF ( BUILD_SERVER )
 	LINK_LIBRARIES (  ${ZIP_LIBRARIES} ${CMAKE_DL_LIBS} )
-ELSE ( WITH_SERVER )
+ELSE ( BUILD_SERVER )
 	IF ( WITH_OPENGL )
 		LINK_LIBRARIES ( ${OPENGL_LIBRARIES} )
 	ENDIF ( WITH_OPENGL )
@@ -17,7 +17,7 @@ ELSE ( WITH_SERVER )
 		${SDLTTF_LIBRARY} )
 	ENDIF ( WITH_AUDIO )
 	LINK_LIBRARIES ( ${FONTCONFIG_LIBRARIES} SDLmain )
-ENDIF ( WITH_SERVER )
+ENDIF ( BUILD_SERVER )
 
 ###############################################################################
 # SOURCE SPECIFICATION
@@ -93,7 +93,7 @@ ENDIF ( ENABLE_IPV6 )
 ###############################################################################
 # AUDIO CHECK
 ###############################################################################
-IF ( NOT WITH_SERVER )
+IF ( NOT BUILD_SERVER )
 	IF ( WITH_AUDIO )
 		MESSAGE ( STATUS "<Building with audio as requested>" )
 		SET ( SRC_compile ${SRC_base} ${SRC_client} ${SRC_audio} )
@@ -101,7 +101,7 @@ IF ( NOT WITH_SERVER )
 	ELSE ( WITH_AUDIO )
 		ADD_DEFINITIONS ( -DNO_SOUND )
 	ENDIF ( WITH_AUDIO )
-ENDIF ( NOT WITH_SERVER )
+ENDIF ( NOT BUILD_SERVER )
 ###############################################################################
 # OPENGL CHECK
 ###############################################################################
@@ -115,17 +115,17 @@ ADD_SUBDIRECTORY ( modules )
 ###############################################################################
 # SERVER COMPILATION
 ###############################################################################
-IF ( WITH_SERVER )
+IF ( BUILD_SERVER )
 	MESSAGE ( STATUS "<Building server as requested>" )
 	SET ( SRC_compile ${SRC_base} ${SRC_server} )
 	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
-ELSE ( WITH_SERVER )
+ELSE ( BUILD_SERVER )
 ###############################################################################
 # CLIENT COMPILATION
 ###############################################################################
 	MESSAGE ( STATUS "<Building client as requested>" )
 	ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
-ENDIF ( WITH_SERVER )
+ENDIF ( BUILD_SERVER )
 ################################################################################
 # INSTALLATION OF BINARY
 ################################################################################
