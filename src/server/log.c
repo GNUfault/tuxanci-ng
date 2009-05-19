@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,13 +15,13 @@ int log_init(char *name)
 	logFile = fopen(name, "a");
 
 	if (logFile == NULL) {
-		fprintf(stderr, _("Opening logfile \"%s\" failed!\n"), name);
+		fprintf(stderr, _("[Error] Unable to open log file [%s]\n"), name);
 		return -1;
 	}
 
-	DEBUG_MSG(_("I use logfile: \"%s\")\n"), name);
+	DEBUG_MSG(_("[Debug] Using log file [%s]\n"), name);
 
-	log_add(LOG_INF, "open log file");
+	log_add(LOG_INF, "Logging started");
 
 	return 0;
 }
@@ -39,23 +38,23 @@ void log_add(int type, char *msg)
 
 	switch (type) {
 	case LOG_INF:
-		str_type = "INF";
+		str_type = "INFO";
 		break;
 	case LOG_DBG:
-		str_type = "DBG";
+		str_type = "DEBUG";
 		break;
 	case LOG_WRN:
-		str_type = "WRN";
+		str_type = "WARN";
 		break;
 	case LOG_ERR:
-		str_type = "ERR";
+		str_type = "ERROR";
 		break;
 	default:
-		assert(!_("Really bad log value!"));
+		assert(!_("[Error] Unknown type of the logging string"));
 		break;
 	}
 
-	sprintf(str, "(%02d-%02d-%02d %02d:%02d:%02d) %s %s\n",
+	sprintf(str, "[%02d-%02d-%02d %02d:%02d:%02d] [%s] %s\n",
 			1900 + tm_struct->tm_year, tm_struct->tm_mon, tm_struct->tm_mday,
 			tm_struct->tm_hour, tm_struct->tm_min, tm_struct->tm_sec,
 			str_type, msg);
@@ -67,6 +66,6 @@ void log_add(int type, char *msg)
 
 void log_quit()
 {
-	log_add(LOG_INF, "close log file");
+	log_add(LOG_INF, "Logging finished");
 	fclose(logFile);
 }

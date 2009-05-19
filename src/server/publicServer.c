@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,14 +5,14 @@
 #include <signal.h>
 #include <time.h>
 
-#ifndef __WIN32
-#    include <sys/socket.h>
-#    include <sys/select.h>
-#    include <arpa/inet.h>
-#else
-#    include <windows.h>
-#    include <wininet.h>
-#endif
+#ifndef __WIN32__
+#include <sys/socket.h>
+#include <sys/select.h>
+#include <arpa/inet.h>
+#else /* __WIN32__ */
+#include <windows.h>
+#include <wininet.h>
+#endif /* __WIN32__ */
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -56,72 +55,77 @@ char *public_server_get_setting(char *env, char *param, char *default_val)
 	return getParamElse(param, server_configFile_get_value(env, default_val));
 }
 
-void daemonize ()
+void daemonize()
 {
 #ifndef __WIN32__
-	int i, lockfd;
-  	char pid[16];
+	int i, lockfd, ipid;
+	char pid[16];
 	char spid[64];
 
-	int ipid = getpid ();
+	ipid = getpid();
 
-  	/* detach if asked */
-  	if (ipid == 1)
+	/* detach if asked */
+	if (ipid == 1) {
 		return;				/* already a daemon */
+	}
 
-    	/* fork to guarantee we are not process group leader */
-    	i = fork ();
+	/* fork to guarantee we are not process group leader */
+	i = fork();
 
-    	if (i < 0)
-      		exit (1);			/* fork error */
-    	if (i > 0)
-      		exit (0);			/* parent exits */
+	if (i < 0) {
+		exit(1);			/* fork error */
+	} else if (i > 0) {
+		exit(0);			/* parent exits */
+	}
 
-    	/* child (daemon) continues */
-    	setsid ();				/* obtain a new process group */
-	ipid = getpid ()+1;
+	/* child (daemon) continues */
+	setsid();				/* obtain a new process group */
+	ipid = getpid() + 1;
 
-	printf ("> started with pid -> %d\n", ipid);
-    	/* fork again so we become process group leader 
-     	 * and cannot regain a controlling tty 
-     	 */
-    	i = fork ();
+	printf("The Tuxanci game server started with PID %d\n", ipid);
+	/* fork again so we become process group leader 
+	 * and cannot regain a controlling tty 
+	 */
+	i = fork();
 
-    	if (i < 0)
-      		exit (1);			/* fork error */
-    	else if (i > 0)
-		exit (0);			/* parent exits */
+	if (i < 0) {
+		exit(1);			/* fork error */
+	} else if (i > 0) {
+		exit(0);			/* parent exits */
+	}
 
-    	/* close all fds */
-    	for (i = getdtablesize (); i >= 0; --i)
-      		close (i);			/* close all descriptors */
+	/* close all fds (descriptors) */
+	for (i = getdtablesize(); i >= 0; --i) {
+		close(i);
+	}
 
-    	/* close parent fds and send output to fds 0, 1 and 2 to bitbucket */
-    	i = open ("/dev/null", O_RDWR);
+	/* close parent fds and send output to fds 0, 1 and 2 to bitbucket */
+	i = open("/dev/null", O_RDWR);
 
-    	if (i < 0)
-      		exit (1);
+	if (i < 0) {
+		exit(1);
+	}
 
-    	dup (i);
-    	dup (i);				/* handle standart I/O */
+	dup(i);
+	dup(i);					/* handle standart I/O */
 
-	sprintf (spid, "/tmp/tuxanci-server-%d.pid", ipid);
+	sprintf(spid, "/tmp/tuxanci-server.pid");
 
-  	/* create local lock */
-  	lockfd = open (spid, O_RDWR | O_CREAT, 0640);
+	/* create local lock */
+	lockfd = open(spid, O_RDWR | O_CREAT, 0640);
 
-  	if (lockfd < 0) {
-    		perror ("lock: open");
-    		exit (1);
-  	}
+	if (lockfd < 0) {
+		perror("[Error] Lock: open\n");
+		exit(1);
+	}
 	#ifndef __CYGWIN__
 	/* lock the file */
-	if (lockf (lockfd, F_TLOCK, 0) < 0) {
-		perror ("lock: lockf");
-		printf ("> tuxanci-server is already running.\n");
-		exit (0);
+	if (lockf(lockfd, F_TLOCK, 0) < 0) {
+		perror("[Error] Lock: lockf\n");
+		printf("[Warning] The Tuxanci game server is already running\n");
+		exit(0);
 	}
-	#else
+	#else /* __CYGWIN__ */
 	/* lock the file */
 	{
 	struct flock lock;
@@ -130,39 +134,37 @@ void daemonize ()
 		lock.l_whence = SEEK_SET;
 		lock.l_len = 0;
 		
-		if (fcntl (lockfd, F_SETLK, &lock) < 0) {
-			printf ("> tuxanci-server is already running.\n");
-			exit (0);
+		if (fcntl(lockfd, F_SETLK, &lock) < 0) {
+			printf("[Warning] The Tuxanci game server is already running\n");
+			exit(0);
 		}
 	}
-	#endif
+	#endif /* __CYGWIN__ */
+
 	/* write to pid to lockfile */
-	snprintf (pid, 16, "%d\n", getpid ());
-	write (lockfd, pid, strlen (pid));
+	snprintf(pid, 16, "%d\n", getpid());
+	write(lockfd, pid, strlen(pid));
 
 	/* restrict created files to 0750 */
-	umask (027);
-#endif
+	umask(027);
+#endif /* __WIN32__ */
 }
 
 static int public_server_register()
 {
-#ifndef __WIN32
+#ifndef __WIN32__
 	int s;
-#else
+#else /* __WIN32__ */
 	SOCKET s;
-#endif
+#endif /* __WIN32__ */
 
-	/* TODO: dodelat TCP makro */
+	/* TODO: TCP macro */
 	struct sockaddr_in server;
 	char *master_server_ip;
 
 	master_server_ip = dns_resolv(NET_MASTER_SERVER_DOMAIN);
 
-	//printf("master_server_ip = %s\n", master_server_ip);
-
-	if (master_server_ip == NULL)	// master server is down
-	{
+	if (master_server_ip == NULL) {		/* master server is down? */
 		return -1;
 	}
 
@@ -185,25 +187,25 @@ static int public_server_register()
 	if (fcntl(s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
 		return -1;
 	}
-#else
+#else /* __WIN32__ */
 	unsigned long arg = 1;
 	// Operation is  FIONBIO. Parameter is pointer on non-zero number.
 	if (ioctlsocket(s, FIONBIO, &arg) == SOCKET_ERROR) {
 		WSACleanup();
 		return -1;
 	}
-#endif
+#endif /* __WIN32__ */
 
 	if (connect(s, (struct sockaddr *) &server, sizeof(server)) == -1) {
 #ifndef __WIN32__
 		if (errno != EINPROGRESS)
 			return -1;
-#else
+#else /* __WIN32__ */
 		if (WSAGetLastError() != WSAEWOULDBLOCK) {
 			WSACleanup();
 			return -1;
 		}
-#endif
+#endif /* __WIN32__ */
 	}
 
 	struct timeval tv;
@@ -218,11 +220,11 @@ static int public_server_register()
 
 	int ret = select(s + 1, NULL, &myset, NULL, &tv);
 
-	if (ret == -1)
+	if (ret == -1) {
 		return -1;
-
-	if (ret == 0)
+	} else if (ret == 0) {
 		return -1;
+	}
 
 	FD_ZERO(&myset);
 	FD_SET(s, &myset);
@@ -232,12 +234,11 @@ static int public_server_register()
 
 	ret = select(s + 1, NULL, &myset, NULL, &tv);
 
-	if (ret == -1)
+	if (ret == -1) {
 		return -1;
-
-	if (ret == 0)
+	} else if (ret == 0) {
 		return -1;
-
+	}
 
 	typedef struct {
 		unsigned char cmd;
@@ -251,7 +252,7 @@ static int public_server_register()
 
 	head->cmd = 'p';
 	head->port = atoi(public_server_get_setting("PORT4", "--port4", "6800"));
-	head->ip = 0;				// TODO
+	head->ip = 0;				/* TODO */
 
 	/* send request for server list */
 	int r = send(s, str, 9, 0);
@@ -259,18 +260,18 @@ static int public_server_register()
 	free(str);
 
 	if (r == -1) {
-#ifndef __WIN32
+#ifndef __WIN32__
 		close(s);
-#else
+#else /* __WIN32__ */
 		closesocket(s);
-#endif
+#endif /* __WIN32__ */
 		return -1;
 	}
-#ifndef __WIN32
+#ifndef __WIN32__
 	close(s);
-#else
+#else /* __WIN32__ */
 	closesocket(s);
-#endif
+#endif /* __WIN32__ */
 
 	return 0;
 }
@@ -304,7 +305,7 @@ static int public_server_initNetwork()
 	port4 = atoi(public_server_get_setting("PORT4", "--port4", "6800"));
 	port6 = atoi(public_server_get_setting("PORT6", "--port6", "6800"));
 
-	//ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);
+	/*ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);*/
 
 	ret = net_multiplayer_init_for_game_server(p_ip4, port4, p_ip6, port6);
 
@@ -316,7 +317,8 @@ static void load_arena()
 	choice_arenaFile = arena_file_get_file_format_net_name(public_server_get_setting("ARENA", "--arena", "FAGN"));
 
 	if (choice_arenaFile == NULL) {
-		fprintf(stderr, _("I dont load arena %s!\n"), public_server_get_setting("ARENA", "--arena", "FAGN"));
+		fprintf(stderr, _("[Error] Unable to load arena [%s]\n"), public_server_get_setting("ARENA", "--arena", "FAGN"));
+		/* TODO: Why not to log it? */
 		exit(-1);
 	}
 
@@ -341,7 +343,7 @@ int public_server_init()
 	ret = log_init(public_server_get_setting("LOG_FILE", "--log-file", "/tmp/tuxanci-server.log"));
 
 	if (ret < 0) {
-		fprintf(stderr, _("I was unable to open config file!\n"));
+		/* Error message has been already printed */
 		return -1;
 	}
 
@@ -358,14 +360,16 @@ int public_server_init()
 	ret = public_server_initNetwork();
 
 	if (ret < 0) {
-		printf(_("Unable to initialize network socket!\n"));
+		fprintf(stderr, _("[Error] Unable to initialize network socket\n"));
+		/* TODO: Why not to log it? */
 		return -1;
 	}
 
-	server_set_max_clients(atoi (public_server_get_setting("MAX_CLIENTS", "--max-clients", "32")));
+	server_set_max_clients(atoi(public_server_get_setting("MAX_CLIENTS", "--max-clients", "32")));
 
 	if (public_server_register() < 0) {
-		printf(_("Unable to contact MasterServer!)\n"));
+		printf(stderr, _("[Error] Unable to contact MasterServer\n"));
+		/* TODO: Why not to log it? */
 	}
 
 	return 0;
@@ -396,7 +400,6 @@ void public_server_event()
 	if (interval < 50) {
 		return;
 	}
-	//printf("interval = %d\n", interval);
 
 	lastActive = timer_get_current_time();
 
@@ -405,14 +408,18 @@ void public_server_event()
 
 void my_handler_quit(int n)
 {
-	DEBUG_MSG("my_handler_quit\n");
+	DEBUG_MSG("[Debug] Received signal %d\n", n);
+	/* TODO: Why not to log it? */
 
 	isSignalEnd = TRUE;
+
+	public_server_quit();
 }
 
 void public_server_quit()
 {
-	DEBUG_MSG(_("Quitting public server\n"));
+	DEBUG_MSG(_("[Debug] Shutting down the Tuxanci game server\n"));
+	/* TODO: Why not to log it? */
 
 	net_multiplayer_quit();
 	arena_destroy(arena);
@@ -437,7 +444,7 @@ int public_server_start()
 	signal(SIGINT, my_handler_quit);
 	signal(SIGTERM, my_handler_quit);
 	signal(SIGQUIT, my_handler_quit);
-#endif
+#endif /* __WIN32__ */
 	if (public_server_init() < 0) {
 		public_server_quit();
 		return -1;
@@ -445,11 +452,13 @@ int public_server_start()
 
 	char *s = public_server_get_setting("DAEMON", "--daemon", "none");
 
-	if (atoi(s))
+	if (atoi(s)) {
 		daemonize();
+	}
 
-	for (;;)
+	for (;;) {
 		public_server_event();
+	}
 
 	return 0;
 }

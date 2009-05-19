@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,22 +17,21 @@ void high_score_init(char *file)
 	textFile = text_file_load(file);
 
 	if (textFile == NULL) {
-		fprintf(stderr, _("I am unable to load: \"%s\"!\n"), file);
-		fprintf(stderr, _("Creating: \"%s\"\n"), file);
+		fprintf(stderr, _("[Error] Unable to load high score [%s]\n"), file);
+		fprintf(stderr, _("[Debug] Creating high score file [%s]\n"), file);
 		textFile = text_file_new(file);
 	} else {
-
-		DEBUG_MSG(_("Scorefile: \"%s\"\n"), file);
+		DEBUG_MSG(_("[Debug] Loading high score file [%s]\n"), file);
 		return;
 	}
 
 	if (textFile == NULL) {
-		fprintf(stderr, _("I was unable to create: \"%s\"!\n"), file);
+		fprintf(stderr, _("[Error] Unable to create high score file [%s]\n"), file);
 		return;
 	}
 
 	for (i = 0; i < HIGHSCORE_MAX_PLAYERS; i++) {
-		list_add(textFile->text, strdup("no_name 0"));
+		list_add(textFile->text, strdup("--- 0"));
 	}
 
 	text_file_save(textFile);
@@ -44,7 +42,7 @@ int table_add(char *name, int score)
 	int i;
 
 	if (score <= 0) {
-		return -1;				// Ha ha ha
+		return -1;	/* Ha ha ha */
 	}
 
 	for (i = 0; i < HIGHSCORE_MAX_PLAYERS; i++) {
@@ -61,7 +59,7 @@ int table_add(char *name, int score)
 			sprintf(new, "%s %d", name, score);
 			list_ins(textFile->text, i, strdup(new));
 			list_del_item(textFile->text, HIGHSCORE_MAX_PLAYERS, free);
-			//text_file_print(textFile);
+			/*text_file_print(textFile);*/
 			text_file_save(textFile);
 
 			return 0;

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +23,7 @@ static void prepareConfigFile(textFile_t * ts)
 		len = strlen(line);
 
 		for (j = 0; j < len; j++) {
-			if (line[j] == '	')	// [TAB]
+			if (line[j] == '	')	/* [TAB] */
 			{
 				line[j] = ' ';
 			}
@@ -37,15 +36,13 @@ void server_configFile_init()
 	char *configFile;
 
 	configFile = getParamElse("--config-file", SERVER_CONFIG);
-	printf(_("Loading configuration from: \"%s\"\n"),
-		   getParamElse("--config-file", SERVER_CONFIG));
+	printf(_("[Debug] Loading configuration file [%s]\n"),
+		 getParamElse("--config-file", SERVER_CONFIG));
 
 	serverTextFile = text_file_load(configFile);
 
 	if (serverTextFile == NULL) {
-		fprintf(stderr,
-				_
-				("I was unable to load config file. Falling back to defaults!\n"));
+		fprintf(stderr, _("[Warning] Unable to load config file - using defaults\n"));
 		return;
 	}
 
