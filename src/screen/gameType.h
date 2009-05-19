@@ -1,9 +1,7 @@
+#ifndef SCREEN_GAME_TYPE_H
+#define SCREEN_GAME_TYPE_H
 
-#ifndef SCREEN_GAME_TYPE
-
-#    define SCREEN_GAME_TYPE
-
-#    include "main.h"
+#include "main.h"
 
 extern void game_type_draw();
 extern void game_type_event();
@@ -18,4 +16,4 @@ extern int public_server_get_settingPort();
 extern int public_server_get_settingProto();
 extern void game_type_quit();
 
-#endif
+#endif /* SCREEN_GAME_TYPE_H */

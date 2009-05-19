@@ -1,16 +1,14 @@
-
 #ifndef SCREEN_DOWN_ARENA_H
+#define SCREEN_DOWN_ARENA_H
 
-#    define SCREEN_DOWN_ARENA_H
+#define DOWN_SERVER_STATUS_OK		0
+#define DOWN_SERVER_STATUS_ZOMBIE	1
 
-#    define DOWN_SERVER_STATUS_OK		0
-#    define DOWN_SERVER_STATUS_ZOMBIE	1
+#define	DOWN_ARENA_BUFFER_SIZE		4096
 
-#    define	DOWN_ARENA_BUFFER_SIZE	4096
-
-#    define DOWN_ARENA_MAX_SEND_MSG_STATUS	10
-#    define DOWN_ARENA_MAX_TIEMOUT_LIMIT	500
-#    define DOWN_ARENA_COUNT_READ_SOCKET	100
+#define DOWN_ARENA_MAX_SEND_MSG_STATUS	10
+#define DOWN_ARENA_MAX_TIEMOUT_LIMIT	500
+#define DOWN_ARENA_COUNT_READ_SOCKET	100
 
 extern void down_arena_start();
 extern void down_arena_draw();
@@ -19,4 +17,4 @@ extern void down_arena_stop();
 extern void down_arena_init();
 extern void down_arena_quit();
 
-#endif
+#endif /* SCREEN_DOWN_ARENA_H */

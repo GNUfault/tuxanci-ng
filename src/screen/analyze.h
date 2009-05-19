@@ -1,9 +1,7 @@
-
 #ifndef SCREEN_ANALYZE_H
+#define SCREEN_ANALYZE_H
 
-#    define SCREEN_ANALYZE_H
-
-#    include "main.h"
+#include "main.h"
 
 typedef struct analyze_struct {
 	char *name;
@@ -21,4 +19,4 @@ extern void analyze_end();
 extern void analyze_init();
 extern void analyze_quit();
 
-#endif
+#endif /* SCREEN_ANALYZE_H */

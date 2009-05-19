@@ -1,13 +1,11 @@
+#ifndef SCREEN_SETTING_H
+#define SCREEN_SETTING_H
 
-#ifndef SCREEN_SETTING
+#include "main.h"
 
-#    define SCREEN_SETTING
-
-#    include "main.h"
-
-#    define NAME_AI			"TuxBot"
-#    define NAME_PLAYER_RIGHT	"Name1"
-#    define NAME_PLAYER_LEFT	"Name2"
+#define NAME_AI			"TuxBot"
+#define NAME_PLAYER_RIGHT	"Name1"
+#define NAME_PLAYER_LEFT	"Name2"
 
 extern void setting_init();
 extern void setting_draw();
@@ -19,4 +17,5 @@ extern bool_t setting_is_ai();
 extern bool_t setting_is_any_item();
 extern bool_t setting_is_item(int item);
 extern void setting_quit();
-#endif
+
+#endif /* SCREEN_SETTING_H */
