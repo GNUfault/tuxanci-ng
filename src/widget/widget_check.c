@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -21,7 +20,7 @@ widget_t *check_new(int x, int y, bool_t status,  void (*fce_event) (void *))
 	return widget_new(WIDGET_TYPE_CHECK, x, y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, new);
 }
 
-void check_draw(widget_t * widget)
+void check_draw(widget_t *widget)
 {
 	widget_check_t *p;
 	static image_t *g_check = NULL;
@@ -48,7 +47,7 @@ void check_draw(widget_t * widget)
 	image_draw(g_check, widget->x, widget->y, offset, 0, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT);
 }
 
-void check_event(widget_t * widget)
+void check_event(widget_t *widget)
 {
 	widget_check_t *p;
 	int x, y;
@@ -82,7 +81,7 @@ void check_event(widget_t * widget)
 	}
 }
 
-bool_t check_get_status(widget_t * widget)
+bool_t check_get_status(widget_t *widget)
 {
 	widget_check_t *p;
 
@@ -94,7 +93,7 @@ bool_t check_get_status(widget_t * widget)
 	return p->status;
 }
 
-void check_set_status(widget_t * widget, bool_t status)
+void check_set_status(widget_t *widget, bool_t status)
 {
 	widget_check_t *p;
 
@@ -105,7 +104,7 @@ void check_set_status(widget_t * widget, bool_t status)
 	p->status = status;
 }
 
-void check_destroy(widget_t * widget)
+void check_destroy(widget_t *widget)
 {
 	widget_check_t *p;
 

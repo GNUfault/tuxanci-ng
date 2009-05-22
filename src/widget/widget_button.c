@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -21,10 +20,10 @@ widget_t *button_new(char *text, int x, int y, void (*fce_event) (void *))
 	font_text_size(text, &(new->w), &(new->h));
 
 	return widget_new(WIDGET_TYPE_BUTTON, x, y,
-			WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, new);
+			  WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, new);
 }
 
-void button_draw(widget_t * widget)
+void button_draw(widget_t *widget)
 {
 	widget_button_t *p;
 	static image_t *g_button0 = NULL;
@@ -42,8 +41,7 @@ void button_draw(widget_t * widget)
 	}
 
 	if (g_button1 == NULL) {
-		g_button1 =
-			image_add("button1.png", IMAGE_ALPHA, "button1", IMAGE_GROUP_BASE);
+		g_button1 = image_add("button1.png", IMAGE_ALPHA, "button1", IMAGE_GROUP_BASE);
 	}
 
 	if (x >= widget->x && x <= widget->x + WIDGET_BUTTON_WIDTH &&
@@ -53,12 +51,13 @@ void button_draw(widget_t * widget)
 		image_draw(g_button0, widget->x, widget->y, 0, 0, g_button0->w, g_button0->h);
 	}
 
-	//font_draw(p->text, p->x+WIDGET_BUTTON_WIDTH/2-p->w/2, p->y+p->h/2, COLOR_WHITE);
+	/*font_draw(p->text, p->x+WIDGET_BUTTON_WIDTH/2-p->w/2, p->y+p->h/2, COLOR_WHITE);*/
 	font_draw(p->text, widget->x + WIDGET_BUTTON_WIDTH / 2 - p->w / 2,
-			  widget->y + WIDGET_BUTTON_HEIGHT / 2 - p->h / 2, COLOR_WHITE);
+			   widget->y + WIDGET_BUTTON_HEIGHT / 2 - p->h / 2,
+			   COLOR_WHITE);
 }
 
-void button_event(widget_t * widget)
+void button_event(widget_t *widget)
 {
 	widget_button_t *p;
 	static int my_time = 0;
@@ -81,13 +80,13 @@ void button_event(widget_t * widget)
 	    interface_is_mouse_clicket()) {
 		my_time = WIDGET_BUTTON_TIME;
 
-		DEBUG_MSG(_("Event caught\n"));
+		DEBUG_MSG(_("[Debug] Caught some button event\n"));
 
 		p->fce_event(widget);
 	}
 }
 
-void button_destroy(widget_t * widget)
+void button_destroy(widget_t *widget)
 {
 	widget_button_t *p;
 

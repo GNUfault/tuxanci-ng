@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -20,7 +19,7 @@ widget_t *label_new(char *text, int x, int y, int bind)
 	return widget_new(WIDGET_TYPE_LABEL, x, y, new->w, new->h, new);
 }
 
-void label_draw(widget_t * widget)
+void label_draw(widget_t *widget)
 {
 	widget_label_t *p;
 
@@ -42,13 +41,13 @@ void label_draw(widget_t * widget)
 	}
 }
 
-void label_event(widget_t * widget)
+void label_event(widget_t *widget)
 {
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_LABEL);
 }
 
-void label_destroy(widget_t * widget)
+void label_destroy(widget_t *widget)
 {
 	widget_label_t *p;
 

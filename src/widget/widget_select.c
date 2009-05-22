@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -21,7 +20,7 @@ widget_t *select_new(int x, int y, void (*fce_event) (void *))
 	return widget_new(WIDGET_TYPE_SELECT, x, y, 0, 0, new);
 }
 
-char *select_get_item(widget_t * widget)
+char *select_get_item(widget_t *widget)
 {
 	widget_select_t *p;
 
@@ -37,7 +36,7 @@ char *select_get_item(widget_t * widget)
 	return (char *) p->list->list[p->select];
 }
 
-int select_get_index(widget_t * widget)
+int select_get_index(widget_t *widget)
 {
 	widget_select_t *p;
 
@@ -49,7 +48,7 @@ int select_get_index(widget_t * widget)
 	return p->select;
 }
 
-void select_add(widget_t * widget, char *s)
+void select_add(widget_t *widget, char *s)
 {
 	widget_select_t *p;
 
@@ -61,7 +60,7 @@ void select_add(widget_t * widget, char *s)
 	list_add(p->list, strdup(s));
 }
 
-void select_remove_all(widget_t * widget)
+void select_remove_all(widget_t *widget)
 {
 	widget_select_t *p;
 
@@ -75,7 +74,7 @@ void select_remove_all(widget_t * widget)
 	}
 }
 
-void select_draw(widget_t * widget)
+void select_draw(widget_t *widget)
 {
 	widget_select_t *p;
 	int x, y, w, h;
@@ -107,7 +106,7 @@ void select_draw(widget_t * widget)
 	}
 }
 
-void select_event(widget_t * widget)
+void select_event(widget_t *widget)
 {
 	widget_select_t *p;
 	int x, y, w, h;
@@ -135,7 +134,7 @@ void select_event(widget_t * widget)
 	}
 }
 
-void select_destroy(widget_t * widget)
+void select_destroy(widget_t *widget)
 {
 	widget_select_t *p;
 

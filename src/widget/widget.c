@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -22,37 +21,41 @@ widget_t *widget_new(int type, int x, int y, int w, int h, void *private_data)
 	return new;
 }
 
-void widget_set_location(widget_t * p, int x, int y)
+void widget_set_location(widget_t *p, int x, int y)
 {
 	p->x = x;
 	p->y = y;
 }
 
-void widget_get_location(widget_t * p, int *x, int *y)
+void widget_get_location(widget_t *p, int *x, int *y)
 {
-	if (x != NULL)
+	if (x != NULL) {
 		*x = p->x;
+	}
 
-	if (y != NULL)
+	if (y != NULL) {
 		*y = p->y;
+	}
 }
 
-void widget_get_size(widget_t * p, int w, int h)
+void widget_get_size(widget_t *p, int w, int h)
 {
 	p->w = w;
 	p->h = h;
 }
 
-void widget_set_size(widget_t * p, int *w, int *h)
+void widget_set_size(widget_t *p, int *w, int *h)
 {
-	if (w != NULL)
+	if (w != NULL) {
 		*w = p->w;
+	}
 
-	if (h != NULL)
+	if (h != NULL) {
 		*h = p->h;
+	}
 }
 
-void widget_destroy(widget_t * p)
+void widget_destroy(widget_t *p)
 {
 	free(p);
 }

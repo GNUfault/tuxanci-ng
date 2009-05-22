@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -21,7 +20,7 @@ widget_t *catch_key_new(int key, int x, int y, void *event)
 	return widget_new(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, new);
 }
 
-int catch_key_get(widget_t * widget)
+int catch_key_get(widget_t *widget)
 {
 	widget_catchkey_t *p;
 
@@ -33,7 +32,7 @@ int catch_key_get(widget_t * widget)
 	return p->key;
 }
 
-void catch_key_set(widget_t * widget, int key)
+void catch_key_set(widget_t *widget, int key)
 {
 	widget_catchkey_t *p;
 
@@ -45,7 +44,7 @@ void catch_key_set(widget_t * widget, int key)
 	p->key = key;
 }
 
-void catch_key_draw(widget_t * widget)
+void catch_key_draw(widget_t *widget)
 {
 	widget_catchkey_t *p;
 	char *name;
@@ -79,7 +78,7 @@ static int getPessAnyKey()
 	mapa = SDL_GetKeyState(NULL);
 
 	for (i = SDLK_FIRST; i <= SDLK_COMPOSE; i++) {
-		if (i == SDLK_NUMLOCK ||	// black key
+		if (i == SDLK_NUMLOCK ||	/* black key */
 		    i == SDLK_CAPSLOCK ||
 		    i == SDLK_SCROLLOCK) {
 			continue;
@@ -93,7 +92,7 @@ static int getPessAnyKey()
 	return WIDGET_CATCHKEY_NOKEY;
 }
 
-void catch_key_event(widget_t * widget)
+void catch_key_event(widget_t *widget)
 {
 	widget_catchkey_t *p;
 	int x, y;
@@ -126,7 +125,7 @@ void catch_key_event(widget_t * widget)
 	}
 }
 
-void catch_key_destroy(widget_t * widget)
+void catch_key_destroy(widget_t *widget)
 {
 	widget_catchkey_t *p;
 

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -10,7 +9,7 @@
 #include "widget.h"
 #include "widget_buttonimage.h"
 
-widget_t *button_image_new(image_t * image, int x, int y, void (*fce_event) (void *))
+widget_t *button_image_new(image_t *image, int x, int y, void (*fce_event) (void *))
 {
 	widget_buttonimage_t *new;
 
@@ -24,7 +23,7 @@ widget_t *button_image_new(image_t * image, int x, int y, void (*fce_event) (voi
 	return widget_new(WIDGET_TYPE_BUTTONIMAGE, x, y, new->w, new->h, new);
 }
 
-void button_image_set_active(widget_t * widget, bool_t active)
+void button_image_set_active(widget_t *widget, bool_t active)
 {
 	widget_buttonimage_t *p;
 
@@ -35,7 +34,7 @@ void button_image_set_active(widget_t * widget, bool_t active)
 	p->active = active;
 }
 
-void button_image_draw(widget_t * widget)
+void button_image_draw(widget_t *widget)
 {
 	widget_buttonimage_t *p;
 
@@ -43,10 +42,10 @@ void button_image_draw(widget_t * widget)
 	assert(widget->type == WIDGET_TYPE_BUTTONIMAGE);
 
 	p = (widget_buttonimage_t *) widget->private_data;
-	image_draw(p->image, widget->x, widget->y, p->active * p->w, 0, p->w, p->h);
+	image_draw(p->image, widget->x, widget->y, p->active *p->w, 0, p->w, p->h);
 }
 
-void button_image_event(widget_t * widget)
+void button_image_event(widget_t *widget)
 {
 	widget_buttonimage_t *p;
 	static int my_time = 0;
@@ -72,7 +71,7 @@ void button_image_event(widget_t * widget)
 	}
 }
 
-void button_image_destroy(widget_t * widget)
+void button_image_destroy(widget_t *widget)
 {
 	widget_buttonimage_t *p;
 
