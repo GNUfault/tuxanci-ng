@@ -1,13 +1,3 @@
-/*
- * keyboardBuffer.c
- *
- *  Created on: 1. 8. 2008
- *      Author: Karel Podvolecky
- *
- *  Simple front of pressed keys.
- *
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +11,8 @@ static keyboardBuffer_t *keyboardBuffer = NULL;
 static SDL_keysym emptyKey;
 
 /*
- * Key buffer initializes. The parameter sets the number of keys.
+ * Key buffer initialization
+ * the parameter sets the number of keys
  */
 void keyboard_buffer_init(int size)
 {
@@ -66,7 +57,7 @@ bool_t keyboard_buffer_push(SDL_keysym key)
 	assert(keyboardBuffer != NULL);
 
 	if (keyboardBuffer->count >= keyboardBuffer->size) {
-		fprintf(stderr, _("Keyboard Buffer overrun! Dropping key: %02x\n"), key.sym);
+		fprintf(stderr, _("[Error] Keyboard buffer overrun - dropping the key [%02x]\n"), key.sym);
 		return FALSE;
 	}
 
@@ -91,7 +82,7 @@ SDL_keysym keyboard_buffer_pop()
 	assert(keyboardBuffer != NULL);
 
 	if (keyboardBuffer->count <= 0) {
-		fprintf(stderr, _("Keyboard Buffer underrun!\n"));
+		fprintf(stderr, _("[Error] Keyboard buffer underrun\n"));
 		return emptyKey;
 	}
 
@@ -142,7 +133,7 @@ void keyboard_buffer_quit()
 	assert(keyboardBuffer != NULL);
 
 	if (keyboardBuffer->count > 0) {
-		fprintf(stderr, _("Keyboard buffer is not empty!\n"));
+		fprintf(stderr, _("[Warning] Shutting down non-empty keyboard buffer\n"));
 	}
 
 	free(keyboardBuffer->buff);

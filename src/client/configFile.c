@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,9 +8,11 @@
 
 int isYesOrNO(char *s)
 {
-	if (s[0] == 'Y' || s[0] == 'y')
+	if (s[0] == 'Y' || s[0] == 'y') {
 		return 1;
-	return 0;
+	} else {
+		return 0;
+	}
 }
 
 char *getYesOrNo(int n)
@@ -31,23 +32,27 @@ int getValue(char *line, char *env, char *val, int len)
 
 	offset_env = strstr(line, clone_env);
 
-	if (offset_env == NULL)
+	if (offset_env == NULL) {
 		return -1;
+	}
 
 	offset_val_begin = strchr(offset_env, '"');
 
-	if (offset_val_begin == NULL)
+	if (offset_val_begin == NULL) {
 		return -1;
+	}
 
 	offset_val_end = strchr(offset_val_begin + 1, '"');
 
-	if (offset_val_end == NULL)
+	if (offset_val_end == NULL) {
 		return -1;
+	}
 
 	val_len = (int) (offset_val_end - (offset_val_begin + 1));
 
-	if (val_len > len - 1)
+	if (val_len > len - 1) {
 		val_len = len - 1;
+	}
 
 	memset(val, 0, len);
 	memcpy(val, offset_val_begin + 1, val_len);
@@ -63,23 +68,26 @@ char *setValue(char *line, char *env, char *val)
 	char clone_env[STR_SIZE];
 	char clone[STR_SIZE];
 
-	//strcpy(clone_env, " ");
+	/*strcpy(clone_env, " ");*/
 	strcpy(clone_env, env);
 
 	offset_env = strstr(line, clone_env);
 
-	if (offset_env == NULL)
+	if (offset_env == NULL) {
 		return NULL;
+	}
 
 	offset_val_begin = strchr(offset_env, '"');
 
-	if (offset_val_begin == NULL)
+	if (offset_val_begin == NULL) {
 		return NULL;
+	}
 
 	offset_val_end = strchr(offset_val_begin + 1, '"');
 
-	if (offset_val_end == NULL)
+	if (offset_val_end == NULL) {
 		return NULL;
+	}
 
 	memset(clone, 0, STR_SIZE);
 	strncpy(clone, line, (int) ((offset_val_begin - line) + 1));
@@ -96,8 +104,6 @@ int getValueInConfigFile(textFile_t * textFile, char *env, char *val, int len)
 
 	for (i = 0; i < textFile->text->count; i++) {
 		line = (char *) (textFile->text->list[i]);
-
-		//printf("env = %s line = %s\n", env, line);
 
 		if (strncmp(line, env, strlen(env)) == 0) {
 			return getValue(line, env, val, len);
@@ -141,6 +147,6 @@ void loadValueFromConfigFile(textFile_t * textFile, char *env, char *val, int le
 		sprintf(line, "%s=\"%s\"", env, butVal);
 		list_add(textFile->text, strdup(line));
 
-		DEBUG_MSG(_("ADDING: \"%s\" into config file.\n"), line);
+		DEBUG_MSG(_("[Debug] Expanding config file [%s]\n"), line);
 	}
 }

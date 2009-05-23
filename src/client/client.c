@@ -1,4 +1,3 @@
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,13 +7,13 @@
 #include <sys/time.h>
 
 #ifndef __WIN32__
-#    include <sys/ioctl.h>
-#    include <sys/socket.h>
-#    include <sys/select.h>
-#else
-#    include <io.h>
-#    include <winsock2.h>
-#endif
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#else /* __WIN32__ */
+#include <io.h>
+#include <winsock2.h>
+#endif /* __WIN32__ */
 
 #include "main.h"
 #include "list.h"
@@ -43,7 +42,7 @@ static my_time_t lastPingServerAlive;
 static my_time_t lastTraffic;
 static int traffic_down;
 static int traffic_up;
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 typedef struct proto_cmd_client_struct {
 	char *name;
@@ -64,7 +63,7 @@ static proto_cmd_client_t proto_cmd_list[] = {
 	{.name = "chat",.len = 4,.fce_proto = proto_recv_chat_client},
 	{.name = "ping",.len = 4,.fce_proto = proto_recv_ping_client},
 	{.name = "end",.len = 3,.fce_proto = proto_recv_end_client},
-	{.name = "",.len = 0,.fce_proto = NULL},
+	{.name = "",.len = 0,.fce_proto = NULL}
 };
 
 static proto_cmd_client_t *findCmdProto(char *msg)
@@ -79,8 +78,8 @@ static proto_cmd_client_t *findCmdProto(char *msg)
 
 		thisCmd = &proto_cmd_list[i];
 
-		if (len >= thisCmd->len
-			&& strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
+		if (len >= thisCmd->len &&
+		    strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
 			return thisCmd;
 		}
 	}
@@ -96,7 +95,7 @@ static int initUdpClient(char *ip, int port)
 		return -1;
 	}
 
-	DEBUG_MSG(_("Connected to: %s on port: %d via UDP\n"), ip, port);
+	DEBUG_MSG(_("[Debug] Connected to game server [%s]:[%d]\n"), ip, port);
 
 	return 0;
 }
@@ -114,7 +113,7 @@ int client_init(char *ip, int port)
 	lastTraffic = timer_get_current_time();
 	traffic_down = 0;
 	traffic_up = 0;
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 	clientRecvBuffer = buffer_new(CLIENT_BUFFER_LIMIT);
 	clientSendBuffer = buffer_new(CLIENT_BUFFER_LIMIT);
@@ -133,8 +132,8 @@ int client_init(char *ip, int port)
 
 static void errorWithServer()
 {
-	fprintf(stderr, _("Server did not respond!\n"));
-	analyze_set_msg(_("Server is not running or being blocked. I was unable to connect."));
+	fprintf(stderr, _("[Error] Game server is not responding\n"));
+	analyze_set_msg(_("[Error] Unable to connect to the game server"));
 	world_do_end();
 }
 
@@ -146,15 +145,13 @@ void client_send(char *msg)
 
 	ret = -1;
 
-#ifndef PUBLIC_SERVER
 	if (isParamFlag("--send")) {
-		printf(_("Sending: \"%s\""), msg);
+		printf(_("[Debug] Sending data: %s"), msg);
 	}
-#endif
 
 #ifdef SUPPORT_TRAFFIC
 	traffic_up += strlen(msg);
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 	if (sock_server_udp != NULL) {
 		ret = sock_udp_write(sock_server_udp, sock_server_udp, msg, strlen(msg));
@@ -185,22 +182,9 @@ static int server_eventSelect()
 
 #ifdef SUPPORT_TRAFFIC
 	traffic_down += ret;
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 	list_add(listRecvMsg, strdup(buffer));
-
-#if 0
-	if (buffer_append(clientRecvBuffer, buffer, ret) < 0) {
-		errorWithServer();
-		return ret;
-	}
-
-	while (buffer_get_line(clientRecvBuffer, buffer, STR_PROTO_SIZE) >= 0) {
-		if (strlen(buffer) > 0) {
-			list_add(listRecvMsg, strdup(buffer));
-		}
-	}
-#endif
 
 	return ret;
 }
@@ -211,7 +195,7 @@ static void client_eventWorkRecvList()
 	char *line;
 	int i;
 
-	/* obsluha udalosti od servera */
+	/* processing of an event received from a game server */
 
 	assert(listRecvMsg != NULL);
 
@@ -219,11 +203,10 @@ static void client_eventWorkRecvList()
 		line = (char *) listRecvMsg->list[i];
 		protoCmd = findCmdProto(line);
 
-#ifndef PUBLIC_SERVER
 		if (isParamFlag("--recv")) {
-			printf(_("Recieved: \"%s\""), line);
+			printf(_("[Debug] Recieved data: %s"), line);
 		}
-#endif
+
 		if (protoCmd != NULL) {
 			protoCmd->fce_proto(line);
 			lastPingServerAlive = timer_get_current_time();
@@ -303,7 +286,6 @@ static void selectClientSocket()
 }
 
 #ifdef SUPPORT_TRAFFIC
-
 static void eventTraffic()
 {
 	my_time_t currentTime;
@@ -313,20 +295,19 @@ static void eventTraffic()
 	if (currentTime - lastTraffic > 5000) {
 		lastTraffic = currentTime;
 
-		DEBUG_MSG(_("down: %d\n") _("up  : %d\n"), traffic_down, traffic_up);
+		DEBUG_MSG(_("[Debug] Traffic: down [%d]/up [%d]\n"), traffic_down, traffic_up);
 
 		traffic_down = 0;
 		traffic_up = 0;
 	}
 }
-
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 void client_event()
 {
 #ifdef SUPPORT_TRAFFIC
 	eventTraffic();
-#endif
+#endif /* SUPPORT_TRAFFIC */
 
 	eventPingServer();
 	selectClientSocket();
@@ -339,7 +320,7 @@ static void quitUdpClient()
 	assert(sock_server_udp != NULL);
 	sock_udp_close(sock_server_udp);
 
-	DEBUG_MSG(_("Closing UDP connection.\n"));
+	DEBUG_MSG(_("[Debug] Closing connection to game server\n"));
 }
 
 void client_quit()

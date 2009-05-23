@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -66,23 +65,22 @@ void save_dialog_init()
 
 	g_background = image_get(IMAGE_GROUP_BASE, "screen_main");
 
-	widgetLabelMsg = label_new("name", SAVE_DIALOG_LOCATIN_X + 20,
-						SAVE_DIALOG_LOCATIN_Y + 20,
-						WIDGET_LABEL_LEFT);
+	widgetLabelMsg = label_new(_("Save as:"), SAVE_DIALOG_LOCATIN_X + 20,
+				   SAVE_DIALOG_LOCATIN_Y + 20,
+				   WIDGET_LABEL_LEFT);
 
-	widgetTextFieldName = text_field_new("noname", WIDGET_TEXTFIELD_FILTER_ALPHANUM,
-							widgetLabelMsg->x +
-							widgetLabelMsg->w + 10,
-							 widgetLabelMsg->y);
+	widgetTextFieldName = text_field_new("", WIDGET_TEXTFIELD_FILTER_ALPHANUM,
+					     widgetLabelMsg->x + widgetLabelMsg->w + 10,
+					     widgetLabelMsg->y);
 
-	widgetButtonSave = button_new("Save", SAVE_DIALOG_LOCATIN_X + 20,
-						SAVE_DIALOG_LOCATIN_Y + 60,
-						eventWidget);
+	widgetButtonSave = button_new(_("Save"), SAVE_DIALOG_LOCATIN_X + 20,
+				      SAVE_DIALOG_LOCATIN_Y + 60,
+				      eventWidget);
 
-	widgetButtonBack = button_new("Back", SAVE_DIALOG_LOCATIN_X + 20 +
-						WIDGET_BUTTON_WIDTH + 20,
-						SAVE_DIALOG_LOCATIN_Y + 60,
-						eventWidget);
+	widgetButtonBack = button_new(_("Back"), SAVE_DIALOG_LOCATIN_X + 20 +
+						 WIDGET_BUTTON_WIDTH + 20,
+				      SAVE_DIALOG_LOCATIN_Y + 60,
+				      eventWidget);
 
 	hot_key_register(SDLK_F2, hotkey_saveDialog);
 }
@@ -98,13 +96,12 @@ void save_dialog_draw()
 		return;
 	}
 
-	image_draw(g_background,
-		SAVE_DIALOG_LOCATIN_X,
-		SAVE_DIALOG_LOCATIN_Y,
-		SAVE_DIALOG_LOCATIN_X,
-		SAVE_DIALOG_LOCATIN_Y,
-		SAVE_DIALOG_SIZE_X,
-		SAVE_DIALOG_SIZE_Y);
+	image_draw(g_background, SAVE_DIALOG_LOCATIN_X,
+				 SAVE_DIALOG_LOCATIN_Y,
+				 SAVE_DIALOG_LOCATIN_X,
+				 SAVE_DIALOG_LOCATIN_Y,
+				 SAVE_DIALOG_SIZE_X,
+				 SAVE_DIALOG_SIZE_Y);
 
 	label_draw(widgetLabelMsg);
 	text_field_draw(widgetTextFieldName);

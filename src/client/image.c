@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -20,13 +19,13 @@ bool_t image_is_inicialized()
 }
 
 /*
- * Inicializuje globalny zoznam obrazkov
+ * Initialization of global list of images
  */
 void image_init()
 {
 	assert(interface_is_inicialized() == TRUE);
 
-	DEBUG_MSG(_("Initializing image database\n"));
+	DEBUG_MSG(_("[Debug] Initializing image database\n"));
 
 	listStorage = storage_new();
 	isImageDataInit = TRUE;
@@ -38,7 +37,6 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 	SDL_Surface *ret;
 
 	char str[STR_PATH_SIZE];
-
 
 	if (isFillPath(filename)) {
 		strcpy(str, filename);
@@ -64,7 +62,7 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 }
 
 
-image_t *image_new_sdl(SDL_Surface * surface)
+image_t *image_new_sdl(SDL_Surface *surface)
 {
 	image_t *new;
 
@@ -86,11 +84,11 @@ unsigned int closestpoweroftwo(unsigned int i)
 {
 	int p;
 	p=0;
-	while(i){
-		i=i>>1;
+	while (i) {
+		i = i >> 1;
 		p++;
 	}
-	return 1<<(p-0);
+	return 1 << (p - 0);
 }
 
 /* convert from SDL_Surface to image_t
@@ -98,22 +96,22 @@ unsigned int closestpoweroftwo(unsigned int i)
  * surface is not needed for image_t after execution of image_new
  */
 
-image_t* image_new_opengl(SDL_Surface *surface)
+image_t *image_new_opengl(SDL_Surface *surface)
 {
 	image_t *new;
 	Uint32 rmask, gmask, bmask, amask;
 	SDL_Surface *sdl_rgba_surface;
 	unsigned int bpp;
 
-	//it is unoptimal to blit to buffer surface before actual loading to opengl texture but it is safer and simpler to implement
-	//it is unoptimal to always use RGBA texture
+	/* it is unoptimal to blit to buffer surface before actual loading to opengl texture but it is safer and simpler to implement */
+	/* it is unoptimal to always use RGBA texture */
 
-	// we set properties of our buffer sdl_rgba_surface
+	/* we set properties of our buffer sdl_rgba_surface */
 	rmask = 0x000000ff;
 	gmask = 0x0000ff00;
 	bmask = 0x00ff0000;
 	amask = 0xff000000;
-	bpp = 32; /*bits per pixel*/
+	bpp = 32;		/* bits per pixel */
 
 	assert(surface != NULL);
 
@@ -121,22 +119,22 @@ image_t* image_new_opengl(SDL_Surface *surface)
 	new->w = surface->w;
 	new->h = surface->h;
 
-	//because some older hw is really slow when using textures with width and height which is not a power of two
+	/* because some older hw is really slow when using textures with width and height which is not a power of two */
 	new->tw = closestpoweroftwo(new->w);
 	new->th = closestpoweroftwo(new->h);
 
-	sdl_rgba_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, new->tw, new->th, bpp,  rmask, gmask, bmask, amask);
+	sdl_rgba_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, new->tw, new->th, bpp,  rmask, gmask, bmask, amask);
 
-	SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE); // we unset SDL_SRCALPHA to preserve alpha channel of original image
+	SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);	/* we unset SDL_SRCALPHA to preserve alpha channel of original image */
 	SDL_BlitSurface(surface, 0, sdl_rgba_surface, 0);
 
-	SDL_LockSurface(sdl_rgba_surface); // we ensure that we can read pixels from sdl_rgba_surface
+	SDL_LockSurface(sdl_rgba_surface);		/* we ensure that we can read pixels from sdl_rgba_surface */
 
 	GLuint tid;
-	glGenTextures(1, &tid); //we ask for free texture id
+	glGenTextures(1, &tid);				/* we ask for free texture id */
 	glBindTexture(GL_TEXTURE_2D, tid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // scale linearly when image bigger than texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // scale linearly when image smalled than texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	/* scale linearly when image bigger than texture */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	/* scale linearly when image smalled than texture */
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, new->tw, new->th, 0, GL_RGBA, GL_UNSIGNED_BYTE, sdl_rgba_surface->pixels);
 	SDL_UnlockSurface(sdl_rgba_surface);
 	SDL_FreeSurface(sdl_rgba_surface);
@@ -147,53 +145,43 @@ image_t* image_new_opengl(SDL_Surface *surface)
 
 	return new;
 }
-#endif
+#endif /* SUPPORT_OPENGL */
 
-image_t* image_new(SDL_Surface *surface)
+image_t *image_new(SDL_Surface *surface)
 {
 #ifdef SUPPORT_OPENGL
-	if( interface_is_use_open_gl() )
-	{
+	if (interface_is_use_open_gl()) {
 		return image_new_opengl(surface);
-	}
-	else
-	{
+	} else {
 		return image_new_sdl(surface);
 	}
-#endif
-
-#ifndef SUPPORT_OPENGL
+#else /* SUPPORT_OPENGL */
 	return image_new_sdl(surface);
-#endif
+#endif /* SUPPORT_OPENGL */
 }
 
-void image_destroy(image_t * p)
+void image_destroy(image_t *p)
 {
 	assert(p != NULL);
 
 #ifndef SUPPORT_OPENGL
 	SDL_FreeSurface((SDL_Surface *) p->image);
-#endif
-
-#ifdef SUPPORT_OPENGL
-	if( interface_is_use_open_gl() )
-	{
+#else /* SUPPORT_OPENGL */
+	if (interface_is_use_open_gl()) {
 		glDeleteTextures(1, &p->tex_id);
-	}
-	else
-	{
+	} else {
 		SDL_FreeSurface((SDL_Surface *) p->image);
 	}
-#endif
+#endif /* SUPPORT_OPENGL */
 
 	free(p);
 }
 
 /*
- * Prida obrazok do globalneho zoznamu obrazkov
- * *file - nazov suboru v ktorom je obrazok ulozeny
- * *name - nazov obrazku ( pouzije sa ako vyhadavaci retazec v zazanem )
- * alpha - 0 - nema alpha kanal | 1 - ma alpha kanal
+ * Adds an image to the global image list
+ * *file - name of the image file
+ * *name - name of the image (is used for searching in the list)
+ * alpha - [0] without alpha channel; [1] with alpha channel
  */
 image_t *image_add(char *file, int alpha, char *name, char *group)
 {
@@ -209,14 +197,13 @@ image_t *image_add(char *file, int alpha, char *name, char *group)
 
 	storage_add(listStorage, group, name, new);
 
-	DEBUG_MSG(_("Loading image %s\n"), file);
+	DEBUG_MSG(_("[Debug] Loading image [%s]\n"), file);
 
 	return new;
 }
 
 /*
- * Vrati odkaz na image_data v globalnom zozname obrazkov
- * a nazvom *s
+ * Returns pointer to image with name *name in the global image list
  */
 image_t *image_get(char *group, char *name)
 {
@@ -241,7 +228,7 @@ void image_del_all_image_in_group(char *group)
 	storage_del_all(listStorage, group, image_destroy);
 }
 
-void image_draw_sdl(image_t * p, int x, int y, int px, int py, int w, int h)
+void image_draw_sdl(image_t *p, int x, int y, int px, int py, int w, int h)
 {
 	static SDL_Surface *screen = NULL;
 	SDL_Rect dst_rect, src_rect;
@@ -261,79 +248,75 @@ void image_draw_sdl(image_t * p, int x, int y, int px, int py, int w, int h)
 	SDL_BlitSurface(p->image, &src_rect, screen, &dst_rect);
 }
 
-
 #ifdef SUPPORT_OPENGL
 /*
  * Draws image on screen at [x,y], with width w and height h, top-left corner on image is at [px,py]
  */
 void image_draw_opengl(image_t *image, int x,int y, int px, int py, int w, int h)
 {
-	/* x -coordinate of left border xx- coordinate of right border,
-	 * y -coordinate of top border yy- coordinate of bottom border,
-	 * t_ texture space d_ screen space,
+	/* x - coordinate of left border; xx - coordinate of right border
+	 * y - coordinate of top border; yy - coordinate of bottom border
+	 * t - texture space; d - screen space
 	 */
 	float t_x, t_y, t_xx, t_yy;
 	float d_x, d_y, d_xx, d_yy;
 
-	// screen space
+	/* screen space */
 	d_x = x;
 	d_y = y;
 	d_xx = x+w;
 	d_yy = y+h;
 
-	// texture space (remember that texture space is from 0.0  to 1.0)
-	t_x = px/(float)image->tw;
-	t_y = py/(float)image->th;
-	t_xx = (px+w)/(float)image->tw;
-	t_yy = (py+h)/(float)image->th;
+	/* texture space (remember that texture space is from 0.0  to 1.0) */
+	t_x = px / (float) image->tw;
+	t_y = py / (float) image->th;
+	t_xx = (px+w) / (float) image->tw;
+	t_yy = (py+h) / (float) image->th;
 
 	glBindTexture(GL_TEXTURE_2D, image->tex_id);
 
-	// 2--4
-	// |\ |
-	// | \|
-	// 1--3
+	/*
+	 * 2--4
+	 * |\ |
+	 * | \|
+	 * 1--3
+	 */
 	glBegin(GL_TRIANGLE_STRIP);
-		//1
+		/* 1 */
 		glTexCoord2f(t_x,t_yy);
 		glVertex2f(d_x, d_yy);
-		//2
+		/* 2 */
 		glTexCoord2f(t_x, t_y);
 		glVertex2f(d_x, d_y);
-		//3
+		/* 3 */
 		glTexCoord2f(t_xx, t_yy);
 		glVertex2f(d_xx, d_yy);
-		//4
+		/* 4 */
 		glTexCoord2f(t_xx,t_y);
 		glVertex2f(d_xx, d_y);
 	glEnd();
 }
-#endif
+#endif /* SUPPORT_OPENGL */
 
 void image_draw(image_t *image, int x,int y, int px, int py, int w, int h)
 {
 #ifdef SUPPORT_OPENGL
-	if( interface_is_use_open_gl() )
-	{
+	if (interface_is_use_open_gl()) {
 		image_draw_opengl(image, x, y, px, py, w, h);
-	}
-	else
-	{
+	} else {
 		image_draw_sdl(image, x, y, px, py, w, h);
 	}
-#endif
-
-#ifndef SUPPORT_OPENGL
+#else /* SUPPORT_OPENGL */
 	image_draw_sdl(image, x, y, px, py, w, h);
-#endif
+#endif /* SUPPORT_OPENGL */
 }
 
 /*
- * Odstrani zoznam obrazkov z pamate
+ * Frees global image list
  */
 void image_quit()
 {
-	DEBUG_MSG(_("Quitting image database\n"));
+	DEBUG_MSG(_("[Debug] Shutting down image database\n"));
 
 	storage_destroy(listStorage, image_destroy);
 	isImageDataInit = FALSE;

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -48,7 +47,7 @@ static char *getStrGun(int gun)
 			return "none";
 	}
 
-	return "gun_unknow";
+	return "gun_unknown";
 }
 
 static char *getStrBonus(int bonus)
@@ -63,17 +62,17 @@ static char *getStrBonus(int bonus)
 		case BONUS_GHOST:
 			return "ghost";
 		case BONUS_4X:
-			return "4X";
+			return "4";
 		case BONUS_HIDDEN:
 			return "hidden";
 		default:
 			return "none";
 	}
 
-	return "bonus_unknow";
+	return "bonus_unknown";
 }
 
-static void action_refreshTerm(space_t * space, tux_t * tux, void *p)
+static void action_refreshTerm(space_t *space, tux_t *tux, void *p)
 {
 	char str[STR_SIZE];
 
@@ -81,13 +80,13 @@ static void action_refreshTerm(space_t * space, tux_t * tux, void *p)
 	UNUSED(p);
 
 	sprintf(str,
-			"name: %s "
-			"score: %d "
-			"gun: %s "
-			"shot: %d "
-			"bonus: %s",
-			tux->name, tux->score,
-			getStrGun(tux->gun), tux->shot[tux->gun], getStrBonus(tux->bonus)
+		"name: %s "
+		"score: %d "
+		"gun: %s "
+		"shot: %d "
+		"bonus: %s",
+		tux->name, tux->score,
+		getStrGun(tux->gun), tux->shot[tux->gun], getStrBonus(tux->bonus)
 		);
 
 	list_add(listText, strdup(str));
@@ -104,7 +103,7 @@ static void refreshTerm()
 
 	space_action(arena->spaceTux, action_refreshTerm, NULL);
 
-	//printf("refresh term..\n");
+	/*printf("refresh term..\n");*/
 }
 
 void term_draw()

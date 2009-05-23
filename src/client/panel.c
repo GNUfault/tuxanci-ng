@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <assert.h>
 
@@ -71,7 +70,7 @@ static void shot_draw(int n, int x, int y)
 	image_draw(g_shot, x, y, n * PANEL_SHOT_WIDTH, 0, PANEL_SHOT_WIDTH, PANEL_SHOT_HEIGHT);
 }
 
-static void shot_drawInfo(tux_t * tux, int x, int y)
+static void shot_drawInfo(tux_t *tux, int x, int y)
 {
 	int i;
 
@@ -92,17 +91,17 @@ static void shot_drawInfo(tux_t * tux, int x, int y)
 	}
 }
 
-static void drawGunInfo(tux_t * tux, int x, int y)
+static void drawGunInfo(tux_t *tux, int x, int y)
 {
 	image_draw(g_icon[tux->gun], x, y, 0, 0, g_icon[tux->gun]->w, g_icon[tux->gun]->h);
 }
 
-static void drawBonusInfo(tux_t * tux, int x, int y)
+static void drawBonusInfo(tux_t *tux, int x, int y)
 {
 	image_draw(g_icon[tux->bonus], x, y, 0, 0, g_icon[tux->bonus]->w, g_icon[tux->bonus]->h);
 }
 
-static void drawGrafBonus(tux_t * tux, int x, int y)
+static void drawGrafBonus(tux_t *tux, int x, int y)
 {
 	int offset;
 
@@ -111,7 +110,7 @@ static void drawGrafBonus(tux_t * tux, int x, int y)
 	image_draw(g_bonus, x + 1, y, 0, g_bonus->h / 2, offset, g_bonus->h / 2);
 }
 
-static void tux_drawRight(tux_t * tux)
+static void tux_drawRight(tux_t *tux)
 {
 	if (tux == NULL) {
 		return;
@@ -126,7 +125,7 @@ static void tux_drawRight(tux_t * tux)
 	}
 }
 
-static void tux_drawLeft(tux_t * tux)
+static void tux_drawLeft(tux_t *tux)
 {
 	if (tux == NULL) {
 		return;
@@ -141,13 +140,13 @@ static void tux_drawLeft(tux_t * tux)
 	}
 }
 
-void panel_draw(tux_t * tux_right, tux_t * tux_left)
+void panel_draw(tux_t *tux_right, tux_t *tux_left)
 {
 	image_draw(g_panel, PANEL_LOCATION_X, PANEL_LOCATION_Y, 0, 0, g_panel->w, g_panel->h);
 	drawScore(tux_right, tux_left);
 
 	if (chat_is_recived_new_msg()) {
-		font_draw("recived new msg", PANEL_LOCATION_X, PANEL_LOCATION_Y, COLOR_WHITE);
+		font_draw(_("Recived new chat message"), PANEL_LOCATION_X, PANEL_LOCATION_Y, COLOR_WHITE);
 	}
 
 	tux_drawRight(tux_right);

@@ -1,4 +1,3 @@
-
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,9 +24,9 @@
 #include "radar.h"
 
 #ifndef NO_SOUND
-#    include "audio.h"
-#    include "sound.h"
-#    include "music.h"
+#include "audio.h"
+#include "sound.h"
+#include "music.h"
 #endif
 
 #include "world.h"
@@ -54,7 +53,7 @@ static void initGame()
 	audio_init();
 	sound_init();
 	music_init();
-#endif
+#endif /* NO_SOUND */
 	screen_init();
 	arena_file_init();
 	tux_init();
@@ -104,9 +103,9 @@ void game_quit()
 	sound_quit();
 	music_quit();
 	audio_quit();
-#endif
+#endif /* NO_SOUND */
 
-	DEBUG_MSG(_("Quitting TUXANCI...\n"));
+	DEBUG_MSG(_("[Debug] Shutting down the game\n"));
 
 	exit(0);
 }

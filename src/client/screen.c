@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -10,7 +9,7 @@
 #include "layer.h"
 #include "myTimer.h"
 
-//#define DEBUG_TIME_DRAW
+/*#define DEBUG_TIME_DRAW*/
 
 static screen_t *currentScreen;
 static screen_t *futureScreen;
@@ -25,7 +24,7 @@ bool_t screen_is_inicialized()
 }
 
 screen_t *screen_new(char *name, void (*fce_start) (), void (*fce_event) (),
-				void (*fce_draw) (), void (*fce_stop) ())
+		     void (*fce_draw) (), void (*fce_stop) ())
 {
 	screen_t *new;
 
@@ -45,7 +44,7 @@ screen_t *screen_new(char *name, void (*fce_start) (), void (*fce_event) (),
 	return new;
 }
 
-void screen_destroy(screen_t * p)
+void screen_destroy(screen_t *p)
 {
 	assert(p != NULL);
 
@@ -53,11 +52,11 @@ void screen_destroy(screen_t * p)
 	free(p);
 }
 
-void screen_register(screen_t * p)
+void screen_register(screen_t *p)
 {
 	assert(p != NULL);
 
-	DEBUG_MSG(_("Registering screen: \"%s\"\n"), p->name);
+	DEBUG_MSG(_("[Debug] Registering screen [%s]\n"), p->name);
 
 	list_add(listScreen, p);
 }
@@ -78,7 +77,7 @@ static screen_t *findScreen(char *name)
 	int i;
 
 	for (i = 0; i < listScreen->count; i++) {
-		this = (screen_t *) (listScreen->list[i]);
+		this = (screen_t *) listScreen->list[i];
 		assert(this != NULL);
 
 		if (strcmp(name, this->name) == 0) {
@@ -104,16 +103,14 @@ void screen_switch()
 	layer_flush();
 
 	if (currentScreen != NULL) {
-		DEBUG_MSG(_("Stopping screen: \"%s\"\n"), currentScreen->name);
+		DEBUG_MSG(_("[Debug] Stopping screen [%s]\n"), currentScreen->name);
 		currentScreen->fce_stop();
 	}
 
 	currentScreen = futureScreen;
 	futureScreen = NULL;
 
-	//printf("switch screen %s..\n", currentScreen->name);
-
-	DEBUG_MSG(_("Starting screen: \"%s\"\n"), currentScreen->name);
+	DEBUG_MSG(_("[Debug] Starting screen [%s]\n"), currentScreen->name);
 
 	currentScreen->fce_start();
 }
@@ -145,7 +142,7 @@ void screen_draw()
 		my_time_t prev;
 
 		prev = timer_get_current_timeMicro();
-#endif
+#endif /* DEBUG_TIME_DRAW */
 
 		currentScreen->fce_draw();
 
@@ -153,7 +150,7 @@ void screen_draw()
 
 #ifdef DEBUG_TIME_DRAW
 		printf("c draw time = %d\n", timer_get_current_timeMicro() - prev);
-#endif
+#endif /* DEBUG_TIME_DRAW */
 	}
 }
 
@@ -161,22 +158,12 @@ void screen_draw()
 void screen_event()
 {
 	assert(currentScreen != NULL);
-#if 0
-	static my_time_t last = 0;
 
-	if( last == 0 )
-	{
-  		last = timer_get_current_time();
-	}
-
-	printf("%d\n", timer_get_current_time()-last);
-	last = timer_get_current_time();
-#endif
 	currentScreen->fce_event();
 
 #ifdef DEBUG_TIME_EVENT
 	printf("c event time = %d\n", timer_get_current_timeMicro() - prev);
-#endif
+#endif /* DEBUG_TIME_EVENT */
 }
 
 void screen_quit()

@@ -1,4 +1,3 @@
-
 #include "main.h"
 #include "interface.h"
 #include "font.h"
@@ -26,8 +25,7 @@ void font_init()
 
 	res = fontconfig_init();
 
-	if( res != 0 )
-	{
+	if (res != 0) {
 		return;
 	}
 
@@ -39,9 +37,8 @@ void font_init()
 		printf("path[%d]=%s\nflag[%d]=%s\n\n", i, font_list[i].path, i, font_list[i].flag);
 	}
 */
-	if( font_list == NULL )
-	{
-		fprintf(stderr, _("I do not find font\n"));
+	if (font_list == NULL) {
+		fprintf(stderr, _("[Error] Unable to locate a font\n"));
 		return;
 	}
 
@@ -62,14 +59,14 @@ void font_init()
 	g_font = TTF_OpenFont(font_file, fontSize);
 	TTF_SetFontStyle(g_font, TTF_STYLE_NORMAL);
 
-	DEBUG_MSG(_("Loading font: \"%s\"\n"), font_file);
+	DEBUG_MSG(_("[Debug] Loading font [%s]\n"), font_file);
 
 	free(font_file);
 	isFontInit = TRUE;
 }
 
 /*
- * Zobrazi text *string na suradnicu x y s farbou RGB
+ * Shows text *string on coordinates [x,y] with RGB color
  */
 void font_draw(char *string, int x, int y, int r, int g, int b)
 {
@@ -77,18 +74,16 @@ void font_draw(char *string, int x, int y, int r, int g, int b)
 	image_t *image;
 	SDL_Color font_color = {r, g, b, SDL_ALPHA_OPAQUE};
 
-
 	assert( string != NULL );
-
 
 	text = TTF_RenderUTF8_Blended(g_font, string, font_color);
 
-	// because if string=="" TTF_RenderUTF8_Blended returns NULL
-	if( text != NULL ){
+	/* because if string=="" TTF_RenderUTF8_Blended returns NULL */
+	if (text != NULL) {
 		image = image_new(text);
 		image_draw(image, x, y, 0, 0, image->w, image->h);
 		image_destroy(image);
-	};
+	}
 }
 
 void font_drawMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
@@ -125,13 +120,13 @@ void font_drawMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
 
 	i = image_new(text);
 
-	//posibly broken
+	/* possibly broken */
 	image_draw(i, x, y, 0, 0, my_w, my_h);
 	image_destroy(i);
 }
 
 /*
- * Vrati velkost daneho fontu.
+ * Returns size of the font
  */
 int font_get_size()
 {
@@ -148,14 +143,14 @@ void font_text_size(char *s, int *w, int *h)
 }
 
 /*
- * Uvolni font z pamete.
+ * Frees font from memory
  */
 void font_quit()
 {
 	TTF_CloseFont(g_font);
 	TTF_Quit();
 
-	DEBUG_MSG(_("Unloading font\n"));
+	DEBUG_MSG(_("[Debug] Unloading font\n"));
 
 	isFontInit = FALSE;
 }

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
@@ -37,15 +36,16 @@ static void chat_eventDisable();
 
 static void hotkey_chat_esc()
 {
-	//printf("*** hotkey_chat_esc\n");
-	//hot_key_unregister(SDLK_ESCAPE);
+	/*
+	printf("*** hotkey_chat_esc\n");
+	hot_key_unregister(SDLK_ESCAPE);
+	*/
 	chat_eventDisable();
 }
 
 static void hotkey_chat_enter()
 {
-	if( chat_active == TRUE )
-	{
+	if (chat_active == TRUE) {
 		return;
 	}
 
@@ -68,8 +68,7 @@ void chat_init()
 	strcpy(line, "");
 	chat_active = FALSE;
 
-	if( net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE )
-	{
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE) {
 		hot_key_register(SDLK_RETURN, hotkey_chat_enter);
 	}
 
@@ -89,7 +88,8 @@ void chat_draw()
 	}
 
 	image_draw(g_chat, CHAT_LOCATION_X, CHAT_LOCATION_Y,
-			  0, 0, CHAT_SIZE_X, CHAT_SIZE_Y);
+			   0, 0,
+			   CHAT_SIZE_X, CHAT_SIZE_Y);
 
 	for (i = 0; i < listText->count; i++) {
 		char *s;
@@ -97,7 +97,7 @@ void chat_draw()
 		s = (char *) listText->list[i];
 
 		font_drawMaxSize(s, CHAT_LOCATION_X + 5, CHAT_LOCATION_Y + 5 + i * 20,
-				   CHAT_SIZE_X - 10, 20, COLOR_WHITE);
+				 CHAT_SIZE_X - 10, 20, COLOR_WHITE);
 	}
 
 	strcpy(str, line);
@@ -132,11 +132,12 @@ static void processMessageKey(SDL_keysym keysym)
 		',', '<',
 		'.', '>',
 		'/', '?',
-		')', '(',
+		')', '('
 	};
 
-	if (line_atime < 100)
+	if (line_atime < 100) {
 		line_atime++;
+	}
 
 	len = strlen(line);
 	font_text_size(line, &w, &h);
@@ -148,12 +149,13 @@ static void processMessageKey(SDL_keysym keysym)
 	}
 
 	/* end of line */
-	if (w > CHAT_SIZE_X - 20)
+	if (w > CHAT_SIZE_X - 20) {
 		return;
+	}
 
 	/* processing of printable chars but not letters */
-	if ((keysym.sym >= SDLK_SPACE && keysym.sym <= SDLK_AT)
-		|| (keysym.sym >= SDLK_LEFTBRACKET && keysym.sym <= SDLK_BACKQUOTE)) {
+	if ((keysym.sym >= SDLK_SPACE && keysym.sym <= SDLK_AT) ||
+	    (keysym.sym >= SDLK_LEFTBRACKET && keysym.sym <= SDLK_BACKQUOTE)) {
 		/* here would be much better to put 'strcat' as 'line' is expected
 		 * to be full of '0' up to its end
 		 */
@@ -167,7 +169,6 @@ static void processMessageKey(SDL_keysym keysym)
 				}
 			}
 		}
-			
 
 		line[len] = c;
 		return;
@@ -180,6 +181,7 @@ static void processMessageKey(SDL_keysym keysym)
 		if (keysym.mod & KMOD_SHIFT) {
 			c = toupper(c);
 		}
+
 		/* here would be much better to put 'strcat' as 'line' is expected
 		 * to be full of '0' up to its end
 		 */
@@ -199,7 +201,8 @@ static void sendNewMessage()
 		char out[STR_PROTO_SIZE];
 
 		snprintf(out, STR_PROTO_SIZE, "chat %s:%s\n",
-				 world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name, line);
+			 world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name,
+			 line);
 
 		proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
 	}
@@ -284,8 +287,7 @@ void chat_quit()
 {
 	assert(listText != NULL);
 
-	if( net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE )
-	{
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_NONE) {
 		hot_key_unregister(SDLK_RETURN);
 	}
 

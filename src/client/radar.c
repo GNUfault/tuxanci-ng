@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -34,7 +33,7 @@ static radar_item_t *newRadarItem(int id, int x, int y, int type)
 	return new;
 }
 
-static void destroyRadarItem(radar_item_t * p)
+static void destroyRadarItem(radar_item_t *p)
 {
 	assert(p != NULL);
 	free(p);
@@ -85,7 +84,7 @@ void radar_init()
 	listRadar = list_new();
 }
 
-void radar_draw(arena_t * arena)
+void radar_draw(arena_t *arena)
 {
 	int i;
 
@@ -103,7 +102,7 @@ void radar_draw(arena_t * arena)
 
 		if (x >= 0 && x <= RADAR_SIZE_X && y >= 0 && y <= RADAR_SIZE_Y) {
 			image_draw(g_radar, RADAR_LOCATION_X + 1 + x, RADAR_LOCATION_Y + 1 + y,
-				  2 * thisRadarItem->type, RADAR_SIZE_Y + 2, 2, 2);
+				   2 * thisRadarItem->type, RADAR_SIZE_Y + 2, 2, 2);
 		}
 	}
 }

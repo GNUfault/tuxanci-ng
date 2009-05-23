@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -22,7 +21,7 @@ bool_t layer_is_inicialized()
 }
 
 /*
- * Initializes global list of the layers
+ * Initialize global list of the layers
  */
 void layer_init()
 {
@@ -37,9 +36,9 @@ void layer_init()
  * w,h - width and height of rendered part of image
  * px,py - coordinates of upper left corner of rendered part of image
  * layer - on which layer to draw
- *          (0 - under tuxanci | 1 - same as tuxanci | 2 - over tuxancami)
+ *         [0] - under Tuxanek; [1] same as Tuxanek; [2] over Tuxanek
  */
-void addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int player)
+void addLayer(image_t *img, int x, int y, int px, int py, int w, int h, int player)
 {
 	layer_t *new;
 	layer_t *actual;
@@ -59,19 +58,19 @@ void addLayer(image_t * img, int x, int y, int px, int py, int w, int h, int pla
 	new->layer = player;
 	new->image = img;
 
-	new_value = player*WINDOW_SIZE_Y + y + h;
+	new_value = player * WINDOW_SIZE_Y + y + h;
 
-	// here we are sure, that we want to insert it somewhere else than the begining
+	/* here we are sure, that we want to insert it somewhere else than the begining */
 	for (i = 0; i < listLayer->count; i++) {
 		actual = list_get(listLayer, i);
 
-		actual_value = actual->layer*WINDOW_SIZE_Y + actual->y + actual->h;
+		actual_value = actual->layer * WINDOW_SIZE_Y + actual->y + actual->h;
 
 		if (actual_value > new_value) {
 			list_ins(listLayer, i, new);
 			return;
-		};
-	};
+		}
+	}
 
 	list_add(listLayer, new);
 }
@@ -91,7 +90,7 @@ void layer_draw_all()
 		image_draw(this->image, this->x, this->y, this->px, this->py, this->w, this->h);
 	}
 
-	//printf("listLayer->count = %d\n", listLayer->count);
+	/*printf("listLayer->count = %d\n", listLayer->count);*/
 
 	list_destroy_item(listLayer, free);
 	listLayer = list_new();
@@ -102,7 +101,7 @@ void layer_draw_center(int x, int y)
 	layer_t *this;
 	int screen_x, screen_y;
 	int i;
-	//int count = 0;
+	/*int count = 0;*/
 
 	arena_get_center_screen(&screen_x, &screen_y, x, y, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
@@ -115,15 +114,15 @@ void layer_draw_center(int x, int y)
 		    this->y > screen_y + WINDOW_SIZE_Y) {
 			continue;
 		}
-		//count++;
+		/*count++;*/
 
 		image_draw(this->image, this->x - screen_x, this->y - screen_y,
-				  this->px, this->py, this->w, this->h);
+					this->px, this->py, this->w, this->h);
 
-		//printf("%d %d\n", this->x - screen_x, this->y - screen_y);
+		/*printf("%d %d\n", this->x - screen_x, this->y - screen_y);*/
 	}
 
-	//printf("count = %d\n", count);
+	/*printf("count = %d\n", count);*/
 
 	list_destroy_item(listLayer, free);
 	listLayer = list_new();
@@ -133,7 +132,7 @@ void layer_draw_slpit(int local_x, int local_y, int x, int y, int w, int h)
 {
 	layer_t *this;
 	int i;
-	//int count = 0;
+	/*int count = 0;*/
 
 	for (i = 0; i < listLayer->count; i++) {
 		this = (layer_t *) listLayer->list[i];
@@ -143,7 +142,7 @@ void layer_draw_slpit(int local_x, int local_y, int x, int y, int w, int h)
 			continue;
 		}
 
-		//count++;
+		/*count++;*/
 
 		if (local_x + (this->x - x) < local_x) {
 			int z;
@@ -176,10 +175,10 @@ void layer_draw_slpit(int local_x, int local_y, int x, int y, int w, int h)
 		image_draw(this->image, local_x + (this->x - x), local_y + (this->y - y),
 				       this->px, this->py, this->w, this->h);
 
-		//printf("%d %d\n", this->x - screen_x, this->y - screen_y);
+		/*printf("%d %d\n", this->x - screen_x, this->y - screen_y);*/
 	}
 
-	//printf("count = %d\n", count);
+	/*printf("count = %d\n", count);*/
 
 	list_destroy_item(listLayer, free);
 	listLayer = list_new();

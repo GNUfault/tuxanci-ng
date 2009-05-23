@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -41,9 +40,9 @@ void pauza_draw()
 {
 	if (activePauza) {
 		image_draw(g_pauza,
-			WINDOW_SIZE_X / 2 - g_pauza->w / 2,
-			WINDOW_SIZE_Y / 2 - g_pauza->h / 2,
-			0, 0, g_pauza->w, g_pauza->h);
+			   WINDOW_SIZE_X / 2 - g_pauza->w / 2,
+			   WINDOW_SIZE_Y / 2 - g_pauza->h / 2,
+			   0, 0, g_pauza->w, g_pauza->h);
 	}
 }
 

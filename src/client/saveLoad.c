@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,25 +18,25 @@
 #include "choiceArena.h"
 #include "world.h"
 
-static void action_saveTux(space_t * space, tux_t * tux, textFile_t * textFile)
+static void action_saveTux(space_t *space, tux_t *tux, textFile_t *textFile)
 {
 	char str[STR_PROTO_SIZE];
 
 	UNUSED(space);
 
 	snprintf(str, STR_PROTO_SIZE,
-			 "TUX %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d",
-			 tux->id, tux->x, tux->y, tux->status, tux->position,
-			 tux->control, tux->frame, tux->score, tux->name, tux->gun,
-			 tux->bonus, tux->shot[GUN_SIMPLE], tux->shot[GUN_DUAL_SIMPLE],
-			 tux->shot[GUN_SCATTER], tux->shot[GUN_TOMMY],
-			 tux->shot[GUN_LASSER], tux->shot[GUN_MINE],
-			 tux->shot[GUN_BOMBBALL], tux->bonus_time, tux->pickup_time);
+		 "TUX %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d",
+		 tux->id, tux->x, tux->y, tux->status, tux->position,
+		 tux->control, tux->frame, tux->score, tux->name, tux->gun,
+		 tux->bonus, tux->shot[GUN_SIMPLE], tux->shot[GUN_DUAL_SIMPLE],
+		 tux->shot[GUN_SCATTER], tux->shot[GUN_TOMMY],
+		 tux->shot[GUN_LASSER], tux->shot[GUN_MINE],
+		 tux->shot[GUN_BOMBBALL], tux->bonus_time, tux->pickup_time);
 
 	list_add(textFile->text, strdup(str));
 }
 
-static void action_saveShot(space_t * space, shot_t * shot, textFile_t * textFile)
+static void action_saveShot(space_t *space, shot_t *shot, textFile_t *textFile)
 {
 	char str[STR_PROTO_SIZE];
 
@@ -51,26 +50,26 @@ static void action_saveShot(space_t * space, shot_t * shot, textFile_t * textFil
 	list_add(textFile->text, strdup(str));
 }
 
-static void action_saveItem(space_t * space, item_t * item, textFile_t * textFile)
+static void action_saveItem(space_t *space, item_t *item, textFile_t *textFile)
 {
 	char str[STR_PROTO_SIZE];
 
 	UNUSED(space);
 
 	snprintf(str, STR_PROTO_SIZE, "ITEM %d %d %d %d %d %d %d",
-			 item->id, item->type, item->x, item->y,
-			 item->count, item->frame, item->author_id);
+		 item->id, item->type, item->x, item->y,
+		 item->count, item->frame, item->author_id);
 
 	list_add(textFile->text, strdup(str));
 }
 
-static void saveContextArenaToTextFile(textFile_t * textFile, arena_t * arena)
+static void saveContextArenaToTextFile(textFile_t *textFile, arena_t *arena)
 {
 	char str[STR_PROTO_SIZE];
 
 	sprintf(str, "ARENA %s %d %d",
-			arena_file_get_net_name(choice_arena_get()),
-			arena->countRound, arena->max_countRound);
+		arena_file_get_net_name(choice_arena_get()),
+		arena->countRound, arena->max_countRound);
 
 	list_add(textFile->text, strdup(str));
 
@@ -79,14 +78,14 @@ static void saveContextArenaToTextFile(textFile_t * textFile, arena_t * arena)
 	space_action(arena->spaceItem, action_saveItem, textFile);
 }
 
-void save_arena(char *filename, arena_t * arena)
+void save_arena(char *filename, arena_t *arena)
 {
 	textFile_t *textFile;
 	char path[STR_PATH_SIZE];
 
 	sprintf(path, "%s/%s.sav", home_director_get(), filename);
 
-	DEBUG_MSG(_("Saving game to: \"%s\"\n"), path);
+	DEBUG_MSG(_("[Debug] Saving game [%s]\n"), path);
 
 	textFile = text_file_new(path);
 
@@ -95,7 +94,7 @@ void save_arena(char *filename, arena_t * arena)
 		text_file_save(textFile);
 		text_file_destroy(textFile);
 	} else {
-		fprintf(stderr, _("I was unable to save: \"%s\"\n"), path);
+		fprintf(stderr, _("[Error] Unable to save game [%s]\n"), path);
 	}
 }
 
@@ -118,7 +117,7 @@ static arena_t *load_arenaFromLine(char *line)
 	return arena;
 }
 
-static void loadTuxFromLine(char *line, arena_t * arena)
+static void loadTuxFromLine(char *line, arena_t *arena)
 {
 	char cmd[STR_PROTO_SIZE];
 	char name[STR_NAME_SIZE];
@@ -129,10 +128,10 @@ static void loadTuxFromLine(char *line, arena_t * arena)
 	tux_t *tux;
 
 	sscanf(line,
-		   "%s %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d",
-		   cmd, &id, &x, &y, &status, &position, &control, &frame, &score,
-		   name, &myGun, &myBonus, &gun1, &gun2, &gun3, &gun4, &gun5, &gun6,
-		   &gun7, &time1, &time2);
+	       "%s %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d",
+	       cmd, &id, &x, &y, &status, &position, &control, &frame, &score,
+	       name, &myGun, &myBonus, &gun1, &gun2, &gun3, &gun4, &gun5, &gun6,
+	       &gun7, &time1, &time2);
 
 	tux = tux_new();
 	tux_replace_id(tux, id);
@@ -172,15 +171,15 @@ static void loadTuxFromLine(char *line, arena_t * arena)
 	tux->pickup_time = time2;
 }
 
-static void loadShotFromLine(char *line, arena_t * arena)
+static void loadShotFromLine(char *line, arena_t *arena)
 {
 	char cmd[STR_PROTO_SIZE];
 	int x, y, px, py, position, gun, shot_id, author_id, isCanKillAuthor;
 	shot_t *shot;
 
 	sscanf(line, "%s %d %d %d %d %d %d %d %d %d",
-		   cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id,
-		   &isCanKillAuthor);
+	       cmd, &shot_id, &x, &y, &px, &py, &position, &gun, &author_id,
+	       &isCanKillAuthor);
 
 	shot = shot_new(x, y, px, py, gun, author_id);
 
@@ -195,14 +194,14 @@ static void loadShotFromLine(char *line, arena_t * arena)
 	space_add(arena->spaceShot, shot);
 }
 
-static void loadItemFromLine(char *line, arena_t * arena)
+static void loadItemFromLine(char *line, arena_t *arena)
 {
 	char cmd[STR_PROTO_SIZE];
 	int id, type, x, y, count, frame, author_id, check_id;
 	item_t *item;
 
 	sscanf(line, "%s %d %d %d %d %d %d %d %d",
-		   cmd, &id, &type, &x, &y, &count, &frame, &author_id, &check_id);
+	       cmd, &id, &type, &x, &y, &count, &frame, &author_id, &check_id);
 
 	item = item_new(x, y, type, author_id);
 
@@ -213,7 +212,7 @@ static void loadItemFromLine(char *line, arena_t * arena)
 	space_add(arena->spaceItem, item);
 }
 
-static arena_t *loadContextArenaFromTextFile(textFile_t * textFile)
+static arena_t *loadContextArenaFromTextFile(textFile_t *textFile)
 {
 	arena_t *arena;
 	int i;
@@ -252,7 +251,7 @@ void load_arena(char *filename)
 
 	sprintf(path, "%s/%s", home_director_get(), filename);
 
-	DEBUG_MSG(_("Loadig game from file: \"%s\"\n"), path);
+	DEBUG_MSG(_("[Debug] Loading arena [%s]\n"), path);
 
 	textFile = text_file_load(path);
 
@@ -260,6 +259,6 @@ void load_arena(char *filename)
 		loadContextArenaFromTextFile(textFile);
 		text_file_destroy(textFile);
 	} else {
-		fprintf(stderr, _("Unable to load save: \"%s\"\n"), path);
+		fprintf(stderr, _("[Error] Unable to load saved game [%s]\n"), path);
 	}
 }
