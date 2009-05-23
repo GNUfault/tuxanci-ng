@@ -18,6 +18,7 @@ OPTION (BUILD_SERVER		"Build the server instead of client"		OFF)
 OPTION (ENABLE_IPV6		"Build with the ipv6 support"				ON)
 OPTION (WITH_AUDIO		"Build with audio enabled"					ON)
 OPTION (ENABLE_DEBUG	"Build debug features"						OFF)
+OPTION (ENABLE_COMPRESSION    "Compress documentation files"              OFF)
 OPTION (DEVELOPER		"Modify stuff to please tuxanci devs"		OFF)
 OPTION (WITH_NLS		"Build the translations"					ON)
 OPTION (Apple			"Build some apple quirks. USE ONLY ON MAC!"	OFF)
@@ -200,18 +201,23 @@ SET ( tuxanci_docs
 	${CMAKE_CURRENT_SOURCE_DIR}/AUTHORS
 	${CMAKE_CURRENT_SOURCE_DIR}/README
 )
-FOREACH ( doc ${tuxanci_docs} )
-	GET_FILENAME_COMPONENT( _doc ${doc} NAME_WE )
-	ADD_CUSTOM_COMMAND ( OUTPUT ${_doc}.gz
-		COMMAND ${GZIP_TOOL} -c ${doc} > ${_doc}.gz
-		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-		DEPENDS ${doc}
-	)
-	INSTALL ( FILES ${CMAKE_BINARY_DIR}/${_doc}.gz
+IF ( ENABLE_COMPRESSION )
+	FOREACH ( doc ${tuxanci_docs} )
+		GET_FILENAME_COMPONENT( _doc ${doc} NAME_WE )
+		ADD_CUSTOM_COMMAND ( OUTPUT ${_doc}.gz
+			COMMAND ${GZIP_TOOL} -c ${doc} > ${_doc}.gz
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+			DEPENDS ${doc}
+		)
+		INSTALL ( FILES ${CMAKE_BINARY_DIR}/${_doc}.gz
+			DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
+		LIST(APPEND _docFiles ${_doc}.gz )
+	ENDFOREACH ( doc )
+	ADD_CUSTOM_TARGET(docs ALL DEPENDS ${_docFiles})
+ELSE ( ENABLE_COMPRESSION )
+	INSTALL ( FILES ${tuxanci_docs}
 		DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
-	LIST(APPEND _docFiles ${_doc}.gz )
-ENDFOREACH ( doc )
-ADD_CUSTOM_TARGET(docs ALL DEPENDS ${_docFiles})
+ENDIF ( ENABLE_COMPRESSION )
 ###############################################################################
 # GOODBYE INFORMATIONS (VARIABLES SETTINGS)
 ###############################################################################
