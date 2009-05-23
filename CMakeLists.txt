@@ -209,7 +209,7 @@ FOREACH ( doc ${tuxanci_docs} )
 	)
 	INSTALL ( FILES ${CMAKE_BINARY_DIR}/${_doc}.gz
 		DESTINATION ${CMAKE_INSTALL_DOCDIR}/ )
-	LIST(APPEND _docFiles ${_doc}.bz2 )
+	LIST(APPEND _docFiles ${_doc}.gz )
 ENDFOREACH ( doc )
 ADD_CUSTOM_TARGET(docs ALL DEPENDS ${_docFiles})
 ###############################################################################
