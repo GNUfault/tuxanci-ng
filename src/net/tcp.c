@@ -4,7 +4,6 @@
 #include <string.h>
 
 #ifndef __WIN32__
-#include <sys/poll.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/socket.h>
