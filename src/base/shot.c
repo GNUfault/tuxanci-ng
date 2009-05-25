@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -12,23 +11,19 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#    include "image.h"
-#    include "layer.h"
-#    include "world.h"
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#endif
+#include "image.h"
+#include "layer.h"
+#include "world.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#endif /* PUBLIC_SERVER */
 
 #ifndef PUBLIC_SERVER
-
 static image_t *g_shot_simple;
 static image_t *g_shot_lasserX;
 static image_t *g_shot_lasserY;
 static image_t *g_shot_bombball;
-
-#endif
+#endif /* PUBLIC_SERVER */
 
 static bool_t isShotInit = FALSE;
 
@@ -41,15 +36,12 @@ void shot_init()
 {
 #ifndef PUBLIC_SERVER
 	assert(image_is_inicialized() == TRUE);
-#endif
 
-#ifndef PUBLIC_SERVER
 	g_shot_simple = image_add("shot.png", IMAGE_ALPHA, "shot", IMAGE_GROUP_BASE);
 	g_shot_lasserX = image_add("lasserX.png", IMAGE_NO_ALPHA, "lasserX", IMAGE_GROUP_BASE);
 	g_shot_lasserY = image_add("lasserY.png", IMAGE_NO_ALPHA, "lasserY",IMAGE_GROUP_BASE);
 	g_shot_bombball = image_add("bombball.png", IMAGE_ALPHA, "bombball", IMAGE_GROUP_BASE);
-
-#endif
+#endif /* PUBLIC_SERVER */
 
 	isShotInit = TRUE;
 }
@@ -85,29 +77,29 @@ shot_t *shot_new(int x, int y, int px, int py, int gun, int author_id)
 		case GUN_SIMPLE:
 			new->w = GUN_SHOT_WIDTH;
 			new->h = GUN_SHOT_HEIGHT;
-	#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
 			new->img = g_shot_simple;
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 	
 		case GUN_LASSER:
 			switch (author->position) {
-			case TUX_RIGHT:
-			case TUX_LEFT:
-				new->w = GUN_LASSER_HORIZONTAL;
-				new->h = GUN_SHOT_VERTICAL;
-	#ifndef PUBLIC_SERVER
-				new->img = g_shot_lasserX;
-	#endif
-				break;
-			case TUX_UP:
-			case TUX_DOWN:
-				new->w = GUN_SHOT_VERTICAL;
-				new->h = GUN_LASSER_HORIZONTAL;
-	#ifndef PUBLIC_SERVER
-				new->img = g_shot_lasserY;
-	#endif
-				break;
+				case TUX_RIGHT:
+				case TUX_LEFT:
+					new->w = GUN_LASSER_HORIZONTAL;
+					new->h = GUN_SHOT_VERTICAL;
+#ifndef PUBLIC_SERVER
+					new->img = g_shot_lasserX;
+#endif /* PUBLIC_SERVER */
+					break;
+				case TUX_UP:
+				case TUX_DOWN:
+					new->w = GUN_SHOT_VERTICAL;
+					new->h = GUN_LASSER_HORIZONTAL;
+#ifndef PUBLIC_SERVER
+					new->img = g_shot_lasserY;
+#endif /* PUBLIC_SERVER */
+					break;
 			}
 			break;
 	
@@ -115,20 +107,21 @@ shot_t *shot_new(int x, int y, int px, int py, int gun, int author_id)
 			new->w = GUN_BOMBBALL_WIDTH;
 			new->h = GUN_BOMBBALL_HEIGHT;
 	
-	#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
 			new->img = g_shot_bombball;
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 	
 		default:
-			assert(!_("Type variable has a really wierd value!"));
+			fprintf(stderr, _("[Error] Unknown type of gun [%d]\n"), gun);
+			assert(0);
 			break;
 	}
 
 	return new;
 }
 
-void shot_replace_id(shot_t * shot, int id)
+void shot_replace_id(shot_t *shot, int id)
 {
 	id_replace(shot->id, id);
 	shot->id = id;
@@ -159,14 +152,13 @@ void shot_set_status(void *p, int x, int y, int w, int h)
 }
 
 #ifndef PUBLIC_SERVER
-
-void shot_draw(shot_t * p)
+void shot_draw(shot_t *p)
 {
 	assert(p != NULL);
 	addLayer(p->img, p->x, p->y, 0, 0, p->img->w, p->img->h, TUX_LAYER);
 }
 
-void shot_draw_list(list_t * listShot)
+void shot_draw_list(list_t *listShot)
 {
 	shot_t *thisShot;
 	int i;
@@ -179,12 +171,11 @@ void shot_draw_list(list_t * listShot)
 		shot_draw(thisShot);
 	}
 }
-
-#endif
+#endif /* PUBLIC_SERVER */
 
 static int getRandomCourse(int x, int y)
 {
-	int ret = -1; // no warnning
+	int ret = -1;	/* no warnings */
 
 	do {
 		switch (random() % 3) {
@@ -203,7 +194,7 @@ static int getRandomCourse(int x, int y)
 	return ret;
 }
 
-void shot_bound_bombBall(shot_t * shot)
+void shot_bound_bombBall(shot_t *shot)
 {
 	if (shot->gun != GUN_BOMBBALL) {
 		return;
@@ -218,7 +209,7 @@ void shot_bound_bombBall(shot_t * shot)
 	}
 }
 
-void shot_transform_lasser(shot_t * shot)
+void shot_transform_lasser(shot_t *shot)
 {
 	space_t *space;
 	int mustRefesh = 0;
@@ -238,17 +229,17 @@ void shot_transform_lasser(shot_t * shot)
 		case TUX_LEFT:
 			shot->w = GUN_LASSER_HORIZONTAL;
 			shot->h = GUN_SHOT_VERTICAL;
-	#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
 			shot->img = g_shot_lasserX;
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 		case TUX_UP:
 		case TUX_DOWN:
 			shot->w = GUN_SHOT_VERTICAL;
 			shot->h = GUN_LASSER_HORIZONTAL;
-	#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
 			shot->img = g_shot_lasserY;
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 	}
 
@@ -257,7 +248,7 @@ void shot_transform_lasser(shot_t * shot)
 	}
 }
 
-static void action_moveShot(space_t * space, shot_t * shot, void *p)
+static void action_moveShot(space_t *space, shot_t *shot, void *p)
 {
 	int new_x, new_y;
 	arena_t *arena;
@@ -277,12 +268,12 @@ static void action_moveShot(space_t * space, shot_t * shot, void *p)
 	}
 }
 
-void shot_event_move_list(arena_t * arena)
+void shot_event_move_list(arena_t *arena)
 {
 	space_action(arena->spaceShot, action_moveShot, NULL);
 }
 
-static int isValueInList(list_t * list, int x)
+static int isValueInList(list_t *list, int x)
 {
 	int i;
 
@@ -295,17 +286,17 @@ static int isValueInList(list_t * list, int x)
 	return 0;
 }
 
-static void action_check(space_t * space, shot_t * shot, client_t * client)
+static void action_check(space_t *space, shot_t *shot, client_t *client)
 {
 	UNUSED(space);
 
 	if (isValueInList(client->listSeesShot, shot->id) == 0) {
-	    list_add(client->listSeesShot, newInt(shot->id));
-	    proto_send_shot_server(PROTO_SEND_ONE, client, shot);
+		list_add(client->listSeesShot, newInt(shot->id));
+		proto_send_shot_server(PROTO_SEND_ONE, client, shot);
 	}
 }
 
-void shot_check_is_tux_screen(arena_t * arena)
+void shot_check_is_tux_screen(arena_t *arena)
 {
 	int screen_x, screen_y;
 	tux_t *thisTux;
@@ -329,22 +320,22 @@ void shot_check_is_tux_screen(arena_t * arena)
 		}
 
 		arena_get_center_screen(&screen_x, &screen_y, thisTux->x, thisTux->y,
-				WINDOW_SIZE_X, WINDOW_SIZE_Y);
+					WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
 		space_action_from_location(arena->spaceShot, action_check,
-					thisClient, screen_x, screen_y,
-					WINDOW_SIZE_X, WINDOW_SIZE_Y);
+					   thisClient, screen_x, screen_y,
+					   WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
 		while (thisClient->listSeesShot->count > 100) {
 			list_del_item(thisClient->listSeesShot, 0, free);
 			del++;
 		}
 
-		//if( del > 0 )printf("del = %d\n", del);
+		/*if( del > 0 )printf("del = %d\n", del);*/
 	}
 }
 
-void shot_destroy(shot_t * p)
+void shot_destroy(shot_t *p)
 {
 	assert(p != NULL);
 

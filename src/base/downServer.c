@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,14 +25,13 @@
 #define DOWN_SERVER_LIMIT_BUFFER	10240
 #define DOWN_SERVER_SEND_FILE_BUFFER	4096
 
-#define NET_STATUS_OK		0
-#define NET_STATUS_ZOMBIE	1
+#define NET_STATUS_OK			0
+#define NET_STATUS_ZOMBIE		1
 
 static sock_tcp_t *sock_server_tcp;
 static list_t *listClient;
 
-typedef struct client_down_server_struct
-{
+typedef struct client_down_server_struct {
 	int status_connect;
 	sock_tcp_t *sock;
 	buffer_t *recvBuffer;
@@ -48,8 +46,7 @@ static int getFileSize(char *s)
 {
 	struct stat buf;
 
-	if( lstat(s, &buf) < 0 )
-	{
+	if (lstat(s, &buf) < 0) {
 		return -1;
 	}
 
@@ -62,45 +59,42 @@ static void proto_getarena(client_ds_t *client, char *msg)
 	char msg_out[STR_PROTO_SIZE];
 	char *arenaName;
 
-	arenaName = msg+9;
+	arenaName = msg + 9;
 
-	//printf("arena = >>%s<<\n", arenaName);
+	/*printf("arena = >>%s<<\n", arenaName);*/
 	arenaFile = arena_file_get_file_format_net_name(arenaName);
 
-	if( arenaFile == NULL )
-	{
-		char *error_msg = _("ERR Arena not found !\n");
+	if (arenaFile == NULL) {
+		char *error_msg = _("[Error] Arena not found\n");
 		buffer_append(client->sendBuffer, error_msg, strlen(error_msg));
 		return;
 	}
 
 	client->file = fopen(arenaFile->path, "rb");
 
-	if( client->file == NULL )
-	{
-		char *error_msg = _("ERR Server has a problem !\n");
+	if (client->file == NULL) {
+		char *error_msg = _("[Error] Server has some problem\n");
 		buffer_append(client->sendBuffer, error_msg, strlen(error_msg));
 		return;
 	}
 
 	client->size = getFileSize(arenaFile->path);
-	sprintf(msg_out, "OK %d\n", client->size);
+	sprintf(msg_out, _("OK %d\n"), client->size);
 	buffer_append(client->sendBuffer, msg_out, strlen(msg_out));
 }
 
 static void do_proto(client_ds_t *client, char *msg)
 {
-	if( strncmp(msg, "GETARENA ", 9) == 0 && client->file == NULL )
-	{
+	if (strncmp(msg, "GETARENA ", 9) == 0 && client->file == NULL) {
 		proto_getarena(client, msg);
 	}
 }
 
-static client_ds_t* newClient(sock_tcp_t *sock)
+static client_ds_t *newClient(sock_tcp_t *sock)
 {
 	client_ds_t *new;
 
-	new = malloc( sizeof(client_ds_t) );
+	new = malloc(sizeof(client_ds_t));
 	memset(new, 0, sizeof(client_ds_t));
 
 	new->status_connect = NET_STATUS_OK;
@@ -117,8 +111,7 @@ static void destroyClient(client_ds_t *client)
 	buffer_destroy(client->recvBuffer);
 	buffer_destroy(client->sendBuffer);
 
-	if( client->file != NULL )
-	{
+	if (client->file != NULL) {
 		fclose(client->file);
 	}
 
@@ -129,9 +122,8 @@ int down_server_init(char *ip4, int port4)
 {
 	sock_server_tcp = sock_tcp_bind(ip4, port4);
 
-	if( sock_server_tcp == NULL )
-	{
-		fprintf(stderr, _("Unable to initialize download server!\n"));
+	if (sock_server_tcp == NULL) {
+		fprintf(stderr, _("[Error] Unable to initialize download server\n"));
 		return -1;
 	}
 
@@ -148,16 +140,14 @@ int down_server_set_select()
 
 	select_add_sock_for_read(sock_server_tcp->sock);
 
-	for( i = 0 ; i < listClient->count ; i++ )
-	{
+	for (i = 0; i < listClient->count; i++) {
 		client_ds_t *this;
 
-		this = (client_ds_t *)listClient->list[i];
+		this = (client_ds_t *) listClient->list[i];
 
 		select_add_sock_for_read(this->sock->sock);
 
-		if( buffer_get_size(this->sendBuffer) > 0 )
-		{
+		if (buffer_get_size(this->sendBuffer) > 0) {
 			select_add_sock_for_write(this->sock->sock);
 		}
 	}
@@ -177,7 +167,7 @@ static void eventNewClient(sock_tcp_t *sock_server)
 	list_add(listClient, client);
 }
 
-static void eventReadClient(client_ds_t * client)
+static void eventReadClient(client_ds_t *client)
 {
 	char buffer[STR_PROTO_SIZE];
 	int ret;
@@ -185,33 +175,29 @@ static void eventReadClient(client_ds_t * client)
 	memset(buffer, 0, STR_PROTO_SIZE);
 
 	ret = sock_tcp_read(client->sock, buffer, STR_PROTO_SIZE - 1);
-	//printf("sock_tcp_read = %d\n", ret);
+	/*printf("sock_tcp_read = %d\n", ret);*/
 
-	if( ret <= 0 )
-	{
+	if (ret <= 0) {
 		client->status_connect = NET_STATUS_ZOMBIE;
 		return;
 	}
 
-	if( buffer_append(client->recvBuffer, buffer, ret) < 0 )
-	{
+	if (buffer_append(client->recvBuffer, buffer, ret) < 0) {
 		client->status_connect = NET_STATUS_ZOMBIE;
 		return;
 	}
 
-	while( buffer_get_line(client->recvBuffer, buffer, STR_PROTO_SIZE) >= 0 )
-	{
+	while (buffer_get_line(client->recvBuffer, buffer, STR_PROTO_SIZE) >= 0) {
 		int len;
 
 		len = strlen(buffer);
 
-		if( buffer[len-1] == '\n' )
-		{
-			buffer[len-1] = '\0';
+		if (buffer[len - 1] == '\n') {
+			buffer[len - 1] = '\0';
 		}
 
 		do_proto(client, buffer);
-		//buffer_append(client->sendBuffer, buffer, strlen(buffer));
+		/*buffer_append(client->sendBuffer, buffer, strlen(buffer));*/
 	}
 }
 
@@ -223,18 +209,16 @@ static void eventWriteClient(client_ds_t *client)
 
 	len = buffer_get_size(client->sendBuffer);
 
-	if( len == 0 )
-	{
+	if (len == 0) {
 		return;
 	}
 
 	data = buffer_get_data(client->sendBuffer);
 
 	res = sock_tcp_write(client->sock, data, len);
-	//printf("sock_tcp_write = %d\n", res);
+	/*printf("sock_tcp_write = %d\n", res);*/
 
-	if( res < 0 )
-	{
+	if (res < 0) {
 		client->status_connect = NET_STATUS_ZOMBIE;
 		return;
 	}
@@ -249,13 +233,11 @@ static void sendFile(client_ds_t *client)
 
 	count = client->size - client->send;
 
-	if( count > DOWN_SERVER_SEND_FILE_BUFFER )
-	{
+	if (count > DOWN_SERVER_SEND_FILE_BUFFER) {
 		count = DOWN_SERVER_SEND_FILE_BUFFER;
 	}
 
-	if( fread(buffer, count, 1, client->file) != 1 )
-	{
+	if (fread(buffer, count, 1, client->file) != 1) {
 		client->status_connect = NET_STATUS_ZOMBIE;
 		return;
 	}
@@ -268,34 +250,28 @@ int down_server_select_socket()
 {
 	int i;
 
-	if( select_is_change_sock_for_read(sock_server_tcp->sock) )
-	{
+	if (select_is_change_sock_for_read(sock_server_tcp->sock)) {
 		eventNewClient(sock_server_tcp);
 	}
 
-	for( i = 0 ; i < listClient->count ; i++ )
-	{
+	for (i = 0; i < listClient->count; i++) {
 		client_ds_t *this;
 
-		this = (client_ds_t *)listClient->list[i];
+		this = (client_ds_t *) listClient->list[i];
 
-		if( select_is_change_sock_for_read(this->sock->sock) )
-		{
+		if (select_is_change_sock_for_read(this->sock->sock)) {
 			eventReadClient(this);
 		}
 
-		if( select_is_change_sock_for_write(this->sock->sock) )
-		{
+		if (select_is_change_sock_for_write(this->sock->sock)) {
 			eventWriteClient(this);
 		}
 
-		if( this->file != NULL && buffer_get_size(this->sendBuffer) == 0 )
-		{
+		if (this->file != NULL && buffer_get_size(this->sendBuffer) == 0) {
 			sendFile(this);
 		}
 
-		if( this->status_connect == NET_STATUS_ZOMBIE )
-		{
+		if (this->status_connect == NET_STATUS_ZOMBIE) {
 			list_del_item(listClient, i, destroyClient);
 		}
 	}

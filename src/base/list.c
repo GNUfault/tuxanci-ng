@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +16,7 @@ list_t *list_new()
 	return new;
 }
 
-list_t *list_clone(list_t * p)
+list_t *list_clone(list_t *p)
 {
 	list_t *new;
 
@@ -29,10 +28,11 @@ list_t *list_clone(list_t * p)
 		new->list = malloc(p->alloc * sizeof(void *));
 		memcpy(new->list, p->list, p->alloc * sizeof(void *));
 	}
+
 	return new;
 }
 
-list_t *list_clone_item(list_t * p, void *f)
+list_t *list_clone_item(list_t *p, void *f)
 {
 	list_t *new;
 	void *(*fce) (void *);
@@ -43,13 +43,14 @@ list_t *list_clone_item(list_t * p, void *f)
 	new = list_clone(p);
 	fce = f;
 
-	for (i = 0; i < p->count; i++)
+	for (i = 0; i < p->count; i++) {
 		new->list[i] = fce(p->list[i]);
+	}
 
 	return new;
 }
 
-void list_add(list_t * p, void *item)
+void list_add(list_t *p, void *item)
 {
 	assert(p != NULL);
 
@@ -70,8 +71,8 @@ void list_add(list_t * p, void *item)
 	if (p->count + 1 > p->alloc) {
 		void **new;
 #ifdef DEBUG_LIST
-		printf("Realocating from %d to %d (count=%d)\n",
-			   p->alloc, p->alloc + LIST_ALLOC_LIMIT, p->count);
+		printf("[Debug] Reallocating list from %d to %d (count: %d)\n",
+		       p->alloc, p->alloc + LIST_ALLOC_LIMIT, p->count);
 #endif
 		p->alloc += LIST_ALLOC_LIMIT;
 		new = malloc(p->alloc * sizeof(void *));
@@ -84,36 +85,38 @@ void list_add(list_t * p, void *item)
 	}
 }
 
-void list_ins(list_t * p, int n, void *item)
+void list_ins(list_t *p, int n, void *item)
 {
 	assert(p != NULL);
-	list_add(p, NULL);			// :)
+	list_add(p, NULL);		/* :) */
 	assert(n >= 0 || n < p->count);
 	memmove(p->list + n + 1, p->list + n, ((p->count - 1) - n) * sizeof(void *));
 	p->list[n] = item;
 }
 
-void *list_get(list_t * p, int n)
+void *list_get(list_t *p, int n)
 {
 	assert(p != NULL);
 	assert(n >= 0 || n < p->count);
 	return p->list[n];
 }
 
-int list_search(list_t * p, void *n)
+int list_search(list_t *p, void *n)
 {
 	int i;
 
 	assert(p != NULL);
 
-	for (i = 0; i < p->count; i++)
-		if (p->list[i] == n)
+	for (i = 0; i < p->count; i++) {
+		if (p->list[i] == n) {
 			return i;
+		}
+	}
 
 	return -1;
 }
 
-void list_del(list_t * p, int n)
+void list_del(list_t *p, int n)
 {
 	assert(p != NULL);
 	assert(n >= 0 || n < p->count);
@@ -125,8 +128,8 @@ void list_del(list_t * p, int n)
 		void **new;
 
 #ifdef DEBUG_LIST
-		printf("Realocating from %d to %d (count=%d)\n",
-			   p->alloc, p->alloc - LIST_ALLOC_LIMIT, p->count);
+		printf("Reallocating list from %d to %d (count: %d)\n",
+		       p->alloc, p->alloc - LIST_ALLOC_LIMIT, p->count);
 #endif
 		p->alloc -= LIST_ALLOC_LIMIT;
 		new = malloc(p->alloc * sizeof(void *));
@@ -136,7 +139,7 @@ void list_del(list_t * p, int n)
 	}
 }
 
-void list_del_item(list_t * p, int n, void *f)
+void list_del_item(list_t *p, int n, void *f)
 {
 	int (*fce) (void *);
 
@@ -144,28 +147,30 @@ void list_del_item(list_t * p, int n, void *f)
 	assert(n >= 0 || n < p->count);
 	fce = f;
 
-	if (fce != NULL)
+	if (fce != NULL) {
 		fce(p->list[n]);
+	}
 
 	list_del(p, n);
 }
 
-void list_do_empty(list_t * p)
+void list_do_empty(list_t *p)
 {
 	p->count = 0;
 }
 
-void list_destroy(list_t * p)
+void list_destroy(list_t *p)
 {
 	assert(p != NULL);
 
-	if (p->list != NULL)
+	if (p->list != NULL) {
 		free(p->list);
+	}
 
 	free(p);
 }
 
-void list_destroy_item(list_t * p, void *f)
+void list_destroy_item(list_t *p, void *f)
 {
 	void (*fce) (void *);
 	int i;
@@ -175,8 +180,9 @@ void list_destroy_item(list_t * p, void *f)
 
 	fce = f;
 
-	for (i = 0; i < p->count; i++)
+	for (i = 0; i < p->count; i++) {
 		fce(p->list[i]);
+	}
 
 	list_destroy(p);
 }

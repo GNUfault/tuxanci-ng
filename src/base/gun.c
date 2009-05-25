@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -15,15 +14,15 @@
 #include "serverSendMsg.h"
 
 #ifndef NO_SOUND
-#    include "sound.h"
-#endif
+#include "sound.h"
+#endif /* NO_SOUND */
+
 #ifndef PUBLIC_SERVER
-#    include "interface.h"
-#    include "world.h"
-#endif
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#endif
+#include "interface.h"
+#include "world.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#endif /* PUBLIC_SERVER */
 
 static void modificiationCopuse(int courser, int right_x, int right_y, int *dest_x, int *dest_y)
 {
@@ -48,12 +47,12 @@ static void modificiationCopuse(int courser, int right_x, int right_y, int *dest
 			*dest_y = right_x;
 			break;
 		default:
-			assert(!_("There is wrong value in course variable!"));
+			assert(!_("[Debug] Wrong Tux course change"));
 			break;
 	}
 }
 
-static void addShotTrivial(tux_t * tux, int x, int y, int px, int py, int gun)
+static void addShotTrivial(tux_t *tux, int x, int y, int px, int py, int gun)
 {
 	int dest_x = 0, dest_y = 0;
 	int dest_px = 0, dest_py = 0;
@@ -62,7 +61,7 @@ static void addShotTrivial(tux_t * tux, int x, int y, int px, int py, int gun)
 	modificiationCopuse(tux->position, px, py, &dest_px, &dest_py);
 	modificiationCopuse(tux->position, x, y, &dest_x, &dest_y);
 
-	if (gun == GUN_LASSER)
+	if (gun == GUN_LASSER) {
 		switch (tux->position) {
 			case TUX_UP:
 				dest_y -= GUN_LASSER_HORIZONTAL;
@@ -75,24 +74,27 @@ static void addShotTrivial(tux_t * tux, int x, int y, int px, int py, int gun)
 			case TUX_DOWN:
 				break;
 		}
+	}
 
 	shot = shot_new(tux->x + dest_x, tux->y + dest_y, dest_px, dest_py, gun, tux->id);
 	space_add(arena_get_current()->spaceShot, shot);
 }
 
-static void addShot(tux_t * tux, int x, int y, int px, int py)
+static void addShot(tux_t *tux, int x, int y, int px, int py)
 {
 	int gun;
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
+	}
 
-	if (tux->gun == GUN_BOMBBALL)
+	if (tux->gun == GUN_BOMBBALL) {
 		gun = GUN_BOMBBALL;
-	else if (tux->gun == GUN_LASSER)
+	} else if (tux->gun == GUN_LASSER) {
 		gun = GUN_LASSER;
-	else
+	} else {
 		gun = GUN_SIMPLE;
+	}
 
 	if (tux->bonus == BONUS_4X) {
 		int zal;
@@ -102,18 +104,18 @@ static void addShot(tux_t * tux, int x, int y, int px, int py)
 
 		for (i = 0; i < 4; i++) {
 			switch (i) {
-			case 0:
-				tux->position = TUX_UP;
-				break;
-			case 1:
-				tux->position = TUX_RIGHT;
-				break;
-			case 2:
-				tux->position = TUX_LEFT;
-				break;
-			case 3:
-				tux->position = TUX_DOWN;
-				break;
+				case 0:
+					tux->position = TUX_UP;
+					break;
+				case 1:
+					tux->position = TUX_RIGHT;
+					break;
+				case 2:
+					tux->position = TUX_LEFT;
+					break;
+				case 3:
+					tux->position = TUX_DOWN;
+					break;
 			}
 
 			addShotTrivial(tux, x, y, px, py, gun);
@@ -125,23 +127,24 @@ static void addShot(tux_t * tux, int x, int y, int px, int py)
 	}
 }
 
-static void gun_shotSimpe(tux_t * tux)
+static void gun_shotSimpe(tux_t *tux)
 {
 	addShot(tux, 0, 0, +5, 0);
 }
 
-static void gun_shotDualSimpe(tux_t * tux)
+static void gun_shotDualSimpe(tux_t *tux)
 {
 	addShot(tux, 0, -10, +6, 0);
 	addShot(tux, 0, +10, +6, 0);
 }
 
-static void gun_shotScatter(tux_t * tux)
+static void gun_shotScatter(tux_t *tux)
 {
 	int i;
 
-	for (i = -2; i <= +2; i++)
+	for (i = -2; i <= +2; i++) {
 		addShot(tux, 0, 0, +8, i);
+	}
 }
 
 static void timer_addShotTimer(void *p)
@@ -155,11 +158,13 @@ static void timer_addShotTimer(void *p)
 
 	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
-	if (tux == NULL)
+	if (tux == NULL) {
 		return;
+	}
 
-	if (tux->status != TUX_STATUS_ALIVE)
+	if (tux->status != TUX_STATUS_ALIVE) {
 		return;
+	}
 
 	gun = tux->gun;
 	tux->gun = GUN_SIMPLE;
@@ -167,13 +172,14 @@ static void timer_addShotTimer(void *p)
 	tux->gun = gun;
 }
 
-static void gun_shotTommy(tux_t * tux)
+static void gun_shotTommy(tux_t *tux)
 {
 	int i;
 
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 10; i++) {
 		timer_add_task(arena_get_current()->listTimer, TIMER_ONE,
 			       timer_addShotTimer, newInt(tux->id), i * 100);
+	}
 }
 
 static void timer_addLaserTimer(void *p)
@@ -187,31 +193,34 @@ static void timer_addLaserTimer(void *p)
 
 	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
-	if (tux == NULL)
+	if (tux == NULL) {
 		return;
+	}
 
-	if (tux->status != TUX_STATUS_ALIVE)
+	if (tux->status != TUX_STATUS_ALIVE) {
 		return;
+	}
 
 	gun = tux->gun;
 	tux->gun = GUN_LASSER;
 
 	addShot(tux, 0, 0, +10, 0);
 	addShot(tux, +40, 0, +10, 0);
-	//addShot(tux, +40, 0, +10, 0);
+	/*addShot(tux, +40, 0, +10, 0);*/
 	tux->gun = gun;
 }
 
-static void gun_shotLasser(tux_t * tux)
+static void gun_shotLasser(tux_t *tux)
 {
 	int i;
 
-	for (i = 0; i < 50; i++)
+	for (i = 0; i < 50; i++) {
 		timer_add_task(arena_get_current()->listTimer, TIMER_ONE,
 			       timer_addLaserTimer, newInt(tux->id), i * 10);
+	}
 }
 
-static void putInGunMine(tux_t * tux)
+static void putInGunMine(tux_t *tux)
 {
 	int x, y;
 	arena_t *arena;
@@ -240,59 +249,61 @@ static void putInGunMine(tux_t * tux)
 		item_t *item;
 #ifndef NO_SOUND
 		sound_play("put_mine", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 		tux->shot[tux->gun]--;
 
 		if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 			item = item_new(x, y, ITEM_MINE, tux->id);
 
-			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 				proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
+			}
 
 			space_add(arena->spaceItem, item);
 		}
 	}
 }
 
-static void gun_shotBombball(tux_t * tux)
+static void gun_shotBombball(tux_t *tux)
 {
 	addShot(tux, 0, 0, +10, 0);
 }
 
-void gun_shot(tux_t * tux)
+void gun_shot(tux_t *tux)
 {
-	if (tux->bonus != BONUS_SHOT && tux->gun != GUN_MINE)
+	if (tux->bonus != BONUS_SHOT && tux->gun != GUN_MINE) {
 		tux->shot[tux->gun]--;
+	}
 
 	switch (tux->gun) {
 		case GUN_SIMPLE:
 	#ifndef NO_SOUND
 			sound_play("gun_revolver", SOUND_GROUP_BASE);
-	#endif
+	#endif /* NO_SOUND */
 			gun_shotSimpe(tux);
 			break;
 		case GUN_DUAL_SIMPLE:
 	#ifndef NO_SOUND
 			sound_play("gun_revolver", SOUND_GROUP_BASE);
-	#endif
+	#endif /* NO_SOUND */
 			gun_shotDualSimpe(tux);
 			break;
 		case GUN_SCATTER:
 	#ifndef NO_SOUND
 			sound_play("gun_scatter", SOUND_GROUP_BASE);
-	#endif
+	#endif /* NO_SOUND */
 			gun_shotScatter(tux);
 			break;
 		case GUN_TOMMY:
 	#ifndef NO_SOUND
 			sound_play("gun_tommy", SOUND_GROUP_BASE);
-	#endif
+	#endif /* NO_SOUND */
 			gun_shotTommy(tux);
 			break;
 		case GUN_LASSER:
 	#ifndef NO_SOUND
 			sound_play("gun_lasser", SOUND_GROUP_BASE);
-	#endif
+	#endif /* NO_SOUND */
 			gun_shotLasser(tux);
 			break;
 		case GUN_BOMBBALL:

@@ -1,4 +1,3 @@
-
 #include <dirent.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -30,14 +29,13 @@ director_t *director_load(char *s)
 	new->list = list_new();
 
 #ifndef __WIN32__
-	if (s[0] == '/')
+	if (s[0] == '/') {
 #else
-	if (s[1] == ':')
+	if (s[1] == ':') {
 #endif
 		strcpy(path, s);
-
-	else {
-		// this is really correct aproach
+	} else {
+		/* this is really correct aproach */
 		getcwd(path, STR_PATH_SIZE);
 		strcat(path, "/");
 		strcat(path, s);
@@ -52,15 +50,16 @@ director_t *director_load(char *s)
 		return NULL;
 	}
 
-	while ((item = readdir(dir)) != NULL)
+	while ((item = readdir(dir)) != NULL) {
 		list_add(new->list, strdup(item->d_name));
+	}
 
 	closedir(dir);
 
 	return new;
 }
 
-void director_destroy(director_t * p)
+void director_destroy(director_t *p)
 {
 	assert(p != NULL);
 

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -26,7 +25,7 @@ static id_item_t *newIdItem(int id, int count)
 	return new;
 }
 
-static void destroyIdItem(id_item_t * p)
+static void destroyIdItem(id_item_t *p)
 {
 	assert(p != NULL);
 
@@ -35,10 +34,10 @@ static void destroyIdItem(id_item_t * p)
 
 void id_init_list()
 {
+	DEBUG_MSG(_("[Debug] Initializing ID manager\n"));
+
 	listID = list_new();
 	lastID = 0;
-
-	DEBUG_MSG(_("Starting ID manger\n"));
 
 }
 
@@ -68,15 +67,15 @@ static int findNewID()
 	assert(listID != NULL);
 
 	if (listID->count >= MAX_ID - 1) {
-		assert(!_("No free ID left!"));
+		assert(!_("[Error] There is no free ID left"));
 	}
 
 	do {
-		//ret  = ( random() % (listID->count + 8 ) ) + 1;
+		/*ret  = (random() % (listID->count + 8 )) + 1;*/
 		ret = random() % MAX_ID + 1;
 	} while (id_is_register(ret) != -1);
 
-	//printf("new ID %d\n", ret);
+	/*printf("new ID %d\n", ret);*/
 
 	return ret;
 }
@@ -107,15 +106,16 @@ void id_inc(int id)
 	index = id_is_register(id);
 
 	if (index == -1) {
-		assert(!_("This kind of ID was never registered!"));
-		return;	// ha ha ha
+		fprintf(stderr, _("[Error] Trying to increment counter of never registered ID [%d]"), id);
+		assert(0);
+		return;		/* ha ha ha */
 	}
 
 	this = listID->list[index];
 
 	this->count++;
 
-	//printf("inc ID %d %d\n", this->id, this->count);
+	/*printf("inc ID %d %d\n", this->id, this->count);*/
 	return;
 }
 
@@ -129,18 +129,19 @@ void id_del(int id)
 	index = id_is_register(id);
 
 	if (index == -1) {
-		assert(!_("This kind of ID was never registered!"));
-		return;	// ha ha ha
+		fprintf(stderr, _("[Error] Trying to delete never registered ID [%d]"), id);
+		assert(0);
+		return;		/* ha ha ha */
 	}
 
 	this = listID->list[index];
 
 	this->count--;
-	//printf("dec ID %d %d\n", this->id, this->count);
+	/*printf("dec ID %d %d\n", this->id, this->count);*/
 
 	if (this->count <= 0) {
 		list_del_item(listID, index, free);
-		//printf("listID->count = %d\n", listID->count);
+		/*printf("listID->count = %d\n", listID->count);*/
 	}
 
 	return;
@@ -176,21 +177,21 @@ void infoID(int id)
 	index = id_is_register(id);
 
 	if (index == -1) {
-		DEBUG_MSG(_("ID %d does not exist\n"), id);
+		DEBUG_MSG(_("[Debug] Getting information of nonexistent ID [%d]\n"), id);
 
 		return;
 	}
 
 	this = listID->list[index];
 
-	DEBUG_MSG(_("ID %d (count %d)\n"), this->id, this->count);
+	DEBUG_MSG(_("[Debug] ID information [%d]: used %d times\n"), this->id, this->count);
 
 	return;
 }
 
 void id_quit_list()
 {
-	DEBUG_MSG(_("Quitting ID manger\n"));
+	DEBUG_MSG(_("[Debug] Shutting down ID manager\n"));
 
 	assert(listID != NULL);
 	list_destroy_item(listID, destroyIdItem);

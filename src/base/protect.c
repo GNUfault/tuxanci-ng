@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +21,7 @@ protect_t *newProtect()
 	return new;
 }
 
-void refreshLastMove(protect_t * p)
+void refreshLastMove(protect_t *p)
 {
 	my_time_t currentTime;
 	my_time_t interval;
@@ -40,26 +39,32 @@ void refreshLastMove(protect_t * p)
 		my_index = p->avarage / PROTECT_SPEED_AVARAGE;
 		p->avarage = 0;
 		p->count = 0;
-#if 0
+
+/*
 		if (my_index < PROTECT_SPEED_INTERVAL_TIMEOUT) {
 			p->isDown = TRUE;
 		}
-#endif
-		//printf("speed index = %d\n", my_index);
+*/
+
+		/*printf("speed index = %d\n", my_index);*/
 	}
 }
 
-void rereshLastPing(protect_t * p)
+void rereshLastPing(protect_t *p)
 {
-	//my_time_t currentTime;
-	//my_time_t interval;
-	//currentTime = timer_get_current_time();
-	//interval = currentTime - p->lastPing;
+	/*
+	my_time_t currentTime;
+	my_time_t interval;
+	currentTime = timer_get_current_time();
+	interval = currentTime - p->lastPing;
+	*/
+
 	p->lastPing = timer_get_current_time();
-	//printf("interval = %d\n", interval);
+
+	/*printf("interval = %d\n", interval);*/
 }
 
-bool_t isDown(protect_t * p)
+bool_t isDown(protect_t *p)
 {
 	my_time_t currentTime;
 	my_time_t interval;
@@ -67,13 +72,14 @@ bool_t isDown(protect_t * p)
 	currentTime = timer_get_current_time();
 	interval = currentTime - p->lastPing;
 
-	if (interval > PROTECT_PING_INTERVAL_TIMEOUT)
+	if (interval > PROTECT_PING_INTERVAL_TIMEOUT) {
 		p->isDown = TRUE;
+	}
 
 	return p->isDown;
 }
 
-void destroyProtect(protect_t * p)
+void destroyProtect(protect_t *p)
 {
 	assert(p != NULL);
 	free(p);

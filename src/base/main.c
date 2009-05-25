@@ -1,4 +1,3 @@
-
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,20 +8,18 @@
 #include <sys/stat.h>
 
 #ifdef __WIN32__
-#    include <windows.h>
-#    include <wininet.h>
-#endif
+#include <windows.h>
+#include <wininet.h>
+#endif /* __WIN32__ */
 
 #include "main.h"
 #include "tux.h"
 
 #ifndef PUBLIC_SERVER
-#    include "game.h"
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#endif
+#include "game.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#endif /* PUBLIC_SERVER */
 
 static int my_argc;
 static char **my_argv;
@@ -35,7 +32,7 @@ char *getParam(char *s)
 	len = strlen(s);
 
 	for (i = 1; i < my_argc; i++) {
-		//printf("%s %s\n", s, my_argv[i]);
+		/*printf("%s %s\n", s, my_argv[i]);*/
 
 		if (strlen(my_argv[i]) < len) {
 			continue;
@@ -94,17 +91,19 @@ int *newInt(int x)
 void accessExistFile(const char *s)
 {
 	if (access(s, F_OK) != 0) {
-		fprintf(stderr, _("File %s not found !\nProgram shutdown !\n"), s);
+		fprintf(stderr, _("[Error] File not found [%s]\n"), s);
+		fprintf(stderr, _("[Error] Shutting down the game\n"));
 		exit(-1);
 	}
 }
 
 int tryExistFile(const char *s)
 {
-	if (access(s, F_OK) != 0)
+	if (access(s, F_OK) != 0) {
 		return 1;
-	else
+	} else {
 		return 0;
+	}
 }
 
 int isFillPath(const char *path)
@@ -112,11 +111,10 @@ int isFillPath(const char *path)
 	assert(path != NULL);
 
 #ifndef __WIN32__
-	if (path[0] == '/')	// for Unix-like systems ;)
-#else
-	if (path[1] == ':')	// for Windows-like systems ;)
-#endif
-	{
+	if (path[0] == '/') {	/* for Unix-like systems ;) */
+#else /* __WIN32__ */
+	if (path[1] == ':') {	/* for Windows-like systems ;) */
+#endif /* __WIN32__ */
 		return 1;
 	}
 
@@ -125,53 +123,51 @@ int isFillPath(const char *path)
 
 #ifdef __WIN32__
 int WINAPI
-WinMain(HINSTANCE hInstance,
-		HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
+WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else /* __WIN32__ */
 int main(int argc, char *argv[])
-#endif
+#endif /* __WIN32__ */
 {
 #ifndef __WIN32__
 	signal(SIGPIPE, SIG_IGN);
-#endif
+#endif /* __WIN32__ */
 
 	srand((unsigned) time(NULL));
-
 
 #ifdef NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, PATH_LOCALE);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
-#endif
+#endif /* NLS */
+
 #ifndef __WIN32__
 	my_argc = argc;
 	my_argv = argv;
-#endif
+#endif /* __WIN32__ */
+
 /*
 	test_space();
 	exit(0);
 */
 
 #ifdef __WIN32__
-	WORD wVersionRequested = MAKEWORD(1, 1);	// WinSock version
-	WSADATA data;				// WinSock information structure
+	WORD wVersionRequested = MAKEWORD(1, 1);	/* WinSock version */
+	WSADATA data;					/* WinSock information structure */
 
-	/* Let's initialize WinSock */
+	/* let's initialize WinSock */
 	if (WSAStartup(wVersionRequested, &data) != 0) {
-		fprintf(stderr,
-				_("WinSock initialization failed !\nProgram shutdown !\n"));
+		fprintf(stderr, _("[Error] Initialization of WinSock failed\n"));
+		fprintf(stderr, _("[Error] Shutting down the game\n"));
 		exit(-1);
 	}
-#endif
+#endif /* __WIN32__ */
 
 #ifndef PUBLIC_SERVER
 	game_start();
-#endif
-
-#ifdef PUBLIC_SERVER
+#else /* PUBLIC_SERVER */
 	public_server_start();
-#endif
+#endif /* PUBLIC_SERVER */
 
 	return 0;
 }

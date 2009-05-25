@@ -9,13 +9,13 @@
 #include <sys/time.h>
 
 #ifndef __WIN32__
-#    include <sys/ioctl.h>
-#    include <sys/socket.h>
-#    include <sys/select.h>
-#else
-#    include <io.h>
-#    include <winsock2.h>
-#endif
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#else /* __WIN32__ */
+#include <io.h>
+#include <winsock2.h>
+#endif /* __WIN32__ */
 
 #include "main.h"
 #include "list.h"
@@ -30,14 +30,12 @@
 #include "index.h"
 
 #ifndef PUBLIC_SERVER
-#    include "world.h"
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#    include "highScore.h"
-#    include "log.h"
-#endif
+#include "world.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#include "highScore.h"
+#include "log.h"
+#endif /* PUBLIC_SERVER */
 
 #include "udp.h"
 #include "udp_server.h"
@@ -46,7 +44,7 @@
 static sock_udp_t *sock_server_udp;
 static sock_udp_t *sock_server_udp_second;
 
-client_t *server_udp_new_client(sock_udp_t * sock_udp)
+client_t *server_udp_new_client(sock_udp_t *sock_udp)
 {
 	client_t *new;
 
@@ -61,14 +59,14 @@ client_t *server_udp_new_client(sock_udp_t * sock_udp)
 	char str_ip[STR_IP_SIZE];
 
 	sock_udp_get_ip(sock_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, _("New client \"%s\" on port \"%d\" connected"), str_ip, sock_udp_get_port(sock_udp));
+	sprintf(str_log, _("New player [%s]:%d connected"), str_ip, sock_udp_get_port(sock_udp));
 	log_add(LOG_INF, str_log);
-#endif
+#endif /* PUBLIC_SERVER */
 
 	return new;
 }
 
-void server_udp_destroy_client(client_t * p)
+void server_udp_destroy_client(client_t *p)
 {
 	check_front_event(p);
 
@@ -77,9 +75,9 @@ void server_udp_destroy_client(client_t * p)
 	char str_ip[STR_IP_SIZE];
 
 	sock_udp_get_ip(p->socket_udp, str_ip, STR_IP_SIZE);
-	sprintf(str_log, _("Client \"%s\" on port \"%d\" disconnected"), str_ip, sock_udp_get_port(p->socket_udp));
+	sprintf(str_log, _("Player [%s]:%d disconnected"), str_ip, sock_udp_get_port(p->socket_udp));
 	log_add(LOG_INF, str_log);
-#endif
+#endif /* PUBLIC_SERVER */
 
 	sock_udp_destroy(p->socket_udp);
 
@@ -97,9 +95,9 @@ int server_udp_init(char *ip4, int port4, char *ip6, int port6)
 
 		if (sock_server_udp != NULL) {
 			ret++;
-			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip4, port4);
+			DEBUG_MSG(_("[Debug] Starting server on [%s]:%d\n"), ip4, port4);
 		} else {
-			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip4, port4);
+			DEBUG_MSG(_("[Error] Unable to start server on [%s]:%d\n"), ip4, port4);
 		}
 	}
 
@@ -108,16 +106,16 @@ int server_udp_init(char *ip4, int port4, char *ip6, int port6)
 
 		if (sock_server_udp_second != NULL) {
 			ret++;
-			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\"\n"), ip6, port6);
+			DEBUG_MSG(_("[Debug] Starting server on [%s]:%d\n"), ip6, port6);
 		} else {
-			DEBUG_MSG(_("Starting server: \"%s\" on port: \"%d\" FAILED!\n"), ip6, port6);
+			DEBUG_MSG(_("[Error] Unable to start server on [%s]:%d\n"), ip6, port6);
 		}
 	}
 
 	return ret;
 }
 
-static void eventCreateNewUdpClient(sock_udp_t * socket_udp)
+static void eventCreateNewUdpClient(sock_udp_t *socket_udp)
 {
 	list_t *listClient;
 	client_t *client;
@@ -130,7 +128,7 @@ static void eventCreateNewUdpClient(sock_udp_t * socket_udp)
 	list_add(listClient, client);
 }
 
-static client_t *findUdpClient(sock_udp_t * sock_udp)
+static client_t *findUdpClient(sock_udp_t *sock_udp)
 {
 	list_t *listClient;
 	int port;
@@ -153,7 +151,7 @@ static client_t *findUdpClient(sock_udp_t * sock_udp)
 	return NULL;
 }
 
-static void client_eventUdpSelect(sock_udp_t * sock_server)
+static void client_eventUdpSelect(sock_udp_t *sock_server)
 {
 	sock_udp_t *sock_client;
 	client_t *client;
@@ -179,7 +177,7 @@ static void client_eventUdpSelect(sock_udp_t * sock_server)
 	}
 
 	if (client == NULL) {
-		fprintf(stderr, _("Client was not FOUND!\n"));
+		fprintf(stderr, _("[Error] UDP client not found\n"));
 		return;
 	}
 
@@ -192,7 +190,7 @@ static void client_eventUdpSelect(sock_udp_t * sock_server)
 		return;
 	}
 
-	//printf("add packet >>%s<<\n", listRecvMsg);
+	/*printf("add packet >>%s<<\n", listRecvMsg);*/
 	list_add(client->listRecvMsg, strdup(listRecvMsg));
 }
 
@@ -232,15 +230,15 @@ int server_udp_select_sock()
 
 void server_udp_quit()
 {
+	DEBUG_MSG(_("[Debug] Shutting down UDP\n"));
+
 	if (sock_server_udp != NULL) {
-		DEBUG_MSG(_("Closing port: \"%d\"\n"), sock_udp_get_port(sock_server_udp));
+		DEBUG_MSG(_("[Debug] Closing IPv4 [port %d]\n"), sock_udp_get_port(sock_server_udp));
 		sock_udp_close(sock_server_udp);
 	}
 
 	if (sock_server_udp_second != NULL) {
-		DEBUG_MSG(_("Closing port: \"%d\"\n"), sock_udp_get_port(sock_server_udp_second));
+		DEBUG_MSG(_("[Debug] Closing IPv6 [port %d]\n"), sock_udp_get_port(sock_server_udp));
 		sock_udp_close(sock_server_udp_second);
 	}
-
-	DEBUG_MSG(_("Quitting UDP\n"));
 }

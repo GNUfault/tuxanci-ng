@@ -1,14 +1,13 @@
-
 #ifndef __WIN32__
-#    include <sys/socket.h>
-#    include <sys/types.h>
-#    include <netinet/in.h>
-#    include <arpa/inet.h>
-#    include <netdb.h>
-#else
-#    include <windows.h>
-#    include <wininet.h>
-#endif
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#else /* __WIN32__ */
+#include <windows.h>
+#include <wininet.h>
+#endif /* __WIN32__ */
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -33,14 +32,11 @@
 #include "downServer.h"
 
 #ifndef PUBLIC_SERVER
-#    include "world.h"
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#    include "highScore.h"
-#endif
-
+#include "world.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#include "highScore.h"
+#endif /* PUBLIC_SERVER */
 
 #include "udp_server.h"
 
@@ -61,9 +57,8 @@ static proto_cmd_server_t proto_cmd_list[] = {
 	{.name = "hello",.len = 5,.tux = 0,.fce_proto = proto_recv_hello_server},
 	{.name = "status",.len = 6,.tux = 0,.fce_proto = proto_recv_status_server},
 #ifdef PUBLIC_SERVER
-	{.name = "list",.len = 4,.tux = 0,.fce_proto =
-	 proto_recv_listscore_server},
-#endif
+	{.name = "list",.len = 4,.tux = 0,.fce_proto = proto_recv_listscore_server},
+#endif /* PUBLIC_SERVER */
 	{.name = "event",.len = 5,.tux = 1,.fce_proto = proto_recv_event_server},
 	{.name = "check",.len = 5,.tux = 1,.fce_proto = proto_recv_check_server},
 	{.name = "module",.len = 6,.tux = 1,.fce_proto = proto_recv_module_server},
@@ -74,7 +69,7 @@ static proto_cmd_server_t proto_cmd_list[] = {
 	{.name = "",.len = 0,.tux = 0,.fce_proto = NULL},
 };
 
-static proto_cmd_server_t *findCmdProto(client_t * client, char *msg)
+static proto_cmd_server_t *findCmdProto(client_t *client, char *msg)
 {
 	int len;
 	int i;
@@ -88,8 +83,9 @@ static proto_cmd_server_t *findCmdProto(client_t * client, char *msg)
 
 		if (len >= thisCmd->len && strncmp(msg, thisCmd->name, thisCmd->len) == 0) {
 			if ((thisCmd->tux == 1 && client->tux == NULL) ||
-					(thisCmd->tux == 0 && client->tux != NULL))
+			    (thisCmd->tux == 0 && client->tux != NULL)) {
 				return NULL;
+			}
 
 			return thisCmd;
 		}
@@ -124,11 +120,11 @@ client_t *server_new_any_client()
 	return new;
 }
 
-void server_destroy_any_client(client_t * p)
+void server_destroy_any_client(client_t *p)
 {
 	assert(p != NULL);
 
-	//check_front_event(p);
+	/*check_front_event(p);*/
 	list_destroy_item(p->listRecvMsg, free);
 	list_destroy_item(p->listSeesShot, free);
 	check_front_destroy(p->listSendMsg);
@@ -138,14 +134,14 @@ void server_destroy_any_client(client_t * p)
 	if (p->tux != NULL) {
 #ifdef PUBLIC_SERVER
 		table_add(p->tux->name, p->tux->score);
-#endif
+#endif /* PUBLIC_SERVER */
 		space_del_with_item(arena_get_current()->spaceTux, p->tux, tux_destroy);
 	}
 
 	free(p);
 }
 
-static void eventDelClientFromListClient(client_t * client)
+static void eventDelClientFromListClient(client_t *client)
 {
 	int offset;
 
@@ -207,7 +203,7 @@ static void eventPeriodicSyncClient(void *p_nothink)
 		}
 
 		proto_send_newtux_server(PROTO_SEND_ALL_SEES_TUX, thisClientSend, thisTux);
-		//proto_send_newtux_server(PROTO_SEND_BUT, thisClientSend, thisTux);
+		/*proto_send_newtux_server(PROTO_SEND_BUT, thisClientSend, thisTux);*/
 	}
 }
 
@@ -244,19 +240,16 @@ int server_init(char *ip4, int port4, char *ip6, int port6)
 	server_set_max_clients(SERVER_MAX_CLIENTS);
 	server_set_time();
 
-	//printf("%s %d %s %d\n", ip4, port4, ip6, port6);
+	/*printf("%s %d %s %d\n", ip4, port4, ip6, port6);*/
 	ret = server_udp_init(ip4, port4, ip6, port6);
 
 	if (ret == 0) {
 		return -1;
 	}
 
-	if( ip4 != NULL )
-	{
+	if (ip4 != NULL) {
 		down_server_init(ip4, port4);
-	}
-	else if( ip6 != NULL )
-	{
+	} else if (ip6 != NULL) {
 		down_server_init(ip6, port6);
 	}
 
@@ -278,19 +271,20 @@ void server_set_max_clients(int n)
 	maxClients = n;
 }
 
-void server_send_client(client_t * p, char *msg)
+void server_send_client(client_t *p, char *msg)
 {
 	assert(p != NULL);
 	assert(msg != NULL);
 
 	if (p->status != NET_STATUS_ZOMBIE) {
-		int ret = -1; // no Warnnings
+		int ret = -1;	/* no warnings */
 
 #ifndef PUBLIC_SERVER
 		if (isParamFlag("--send")) {
-			printf(_("Sending: \"%s\""), msg);
+			printf(_("[Debug] Sending: %s"), msg);
 		}
-#endif
+#endif /* PUBLIC_SERVER */
+
 		ret = sock_udp_write(p->socket_udp, p->socket_udp, msg, strlen(msg));
 
 		if (ret <= 0) {
@@ -299,7 +293,7 @@ void server_send_client(client_t * p, char *msg)
 	}
 }
 
-static void client_eventWorkRecvList(client_t * client)
+static void client_eventWorkRecvList(client_t *client)
 {
 	proto_cmd_server_t *protoCmd;
 	char *line;
@@ -307,17 +301,16 @@ static void client_eventWorkRecvList(client_t * client)
 
 	assert(client != NULL);
 
-	/* obsluha udalosti od clientov */
-
+	/* processing of events from clients */
 	for (i = 0; i < client->listRecvMsg->count; i++) {
 		line = (char *) client->listRecvMsg->list[i];
 		protoCmd = findCmdProto(client, line);
 
 #ifndef PUBLIC_SERVER
 		if (isParamFlag("--recv")) {
-			printf(_("Recieved: \"%s\""), line);
+			printf(_("[Debug] Received: %s"), line);
 		}
-#endif
+#endif /* PUBLIC_SERVER */
 
 		if (protoCmd != NULL) {
 			protoCmd->fce_proto(client, line);
@@ -360,9 +353,7 @@ void server_event()
 		count = server_udp_select_sock();
 		down_server_select_socket();
 	} while (count > 0);
-#endif
-
-#ifdef PUBLIC_SERVER
+#else /* PUBLIC_SERVER */
 	int ret;
 
 	select_restart();
@@ -376,7 +367,7 @@ void server_event()
 		server_udp_select_sock();
 		down_server_select_socket();
 	}
-#endif
+#endif /* PUBLIC_SERVER */
 
 	porcesListClients();
 	timer_event(listServerTimer);

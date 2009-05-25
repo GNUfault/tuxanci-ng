@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,17 +18,17 @@ buffer_t *buffer_new(int n)
 	return new;
 }
 
-void *buffer_get_data(buffer_t * p)
+void *buffer_get_data(buffer_t *p)
 {
 	return p->data;
 }
 
-int buffer_get_size(buffer_t * p)
+int buffer_get_size(buffer_t *p)
 {
 	return p->size;
 }
 
-int buffer_append(buffer_t * p, char *data, int len)
+int buffer_append(buffer_t *p, char *data, int len)
 {
 	assert(p != NULL);
 	assert(data != NULL);
@@ -44,7 +43,7 @@ int buffer_append(buffer_t * p, char *data, int len)
 	return -1;
 }
 
-int buffer_cut(buffer_t * p, int len)
+int buffer_cut(buffer_t *p, int len)
 {
 	assert(p != NULL);
 	assert(len >= 0);
@@ -58,7 +57,7 @@ int buffer_cut(buffer_t * p, int len)
 	return -1;
 }
 
-int buffer_count_line(buffer_t * p)
+int buffer_count_line(buffer_t *p)
 {
 	char *begin;
 	char *end;
@@ -77,12 +76,15 @@ int buffer_count_line(buffer_t * p)
 		begin = end + 1;
 	}
 
-	//printf("count = %d\n", count);
-	//printf("data = %s\n",  p->data);
+	/*
+	printf("count = %d\n", count);
+	printf("data = %s\n",  p->data);
+	*/
+
 	return count;
 }
 
-int buffer_get_line(buffer_t * p, char *line, int len)
+int buffer_get_line(buffer_t *p, char *line, int len)
 {
 	char *end;
 	int ret_len;
@@ -95,12 +97,14 @@ int buffer_get_line(buffer_t * p, char *line, int len)
 
 	end = memchr(p->data, '\n', p->size);
 
-	if (end == NULL)
+	if (end == NULL) {
 		return -1;
+	}
 
 	ret_len = (int) (end - p->data) + 1;
-	if (ret_len > len - 1)
+	if (ret_len > len - 1) {
 		ret_len = len - 1;
+	}
 
 	memset(line, 0, len);
 	memcpy(line, p->data, ret_len);
@@ -110,7 +114,7 @@ int buffer_get_line(buffer_t * p, char *line, int len)
 	return ret_len;
 }
 
-int buffer_get_data_len(buffer_t * p, char *line, int len)
+int buffer_get_data_len(buffer_t *p, char *line, int len)
 {
 	assert(p != NULL);
 	assert(line != NULL);
@@ -126,12 +130,13 @@ int buffer_get_data_len(buffer_t * p, char *line, int len)
 	return len;
 }
 
-void buffer_destroy(buffer_t * p)
+void buffer_destroy(buffer_t *p)
 {
 	assert(p != NULL);
 
-	if (p->data != NULL)
+	if (p->data != NULL) {
 		free(p->data);
+	}
 
 	free(p);
 }

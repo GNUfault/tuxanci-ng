@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +24,7 @@ static share_fce_item_t *newShareFceItem(char *name, void *function)
 	return new;
 }
 
-static void destroyShareFce(share_fce_item_t * p)
+static void destroyShareFce(share_fce_item_t *p)
 {
 	free(p->name);
 	free(p);
@@ -38,7 +37,7 @@ void share_function_init()
 
 void share_function_add(char *name, void *function)
 {
-	DEBUG_MSG(_("Adding  \"%s\" to share function.\n"), name);
+	DEBUG_MSG(_("[Debug] Adding new shared function [%s]\n"), name);
 
 	list_add(listShareFce, newShareFceItem(name, function));
 }
@@ -52,8 +51,9 @@ void *share_function_get(char *name)
 
 		this = (share_fce_item_t *) listShareFce->list[i];
 
-		if (strcmp(this->name, name) == 0)
+		if (strcmp(this->name, name) == 0) {
 			return this->function;
+		}
 	}
 
 	return NULL;

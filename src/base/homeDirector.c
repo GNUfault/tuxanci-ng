@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -15,26 +14,25 @@ void home_director_create()
 	char *envHome;
 #ifndef __WIN32__
 	envHome = getenv("HOME");
-#else
+#else /* __WIN32__ */
 	envHome = getenv("USERPROFILE");
-#endif
+#endif /* __WIN32__ */
 	if (envHome == NULL) {
-		fprintf(stderr, _("Environment variable HOME not found!\n"));
+		fprintf(stderr, _("[Error] Environment variable HOME not found\n"));
 		exit(0);
 	}
 
 	sprintf(homeDirector, "%s/%s", envHome, HOMEDIRECTOR_NAME);
 
 	if (access(homeDirector, F_OK) != 0) {
-
-		DEBUG_MSG(_("Creating home directory %s.\n"), homeDirector);
+		DEBUG_MSG(_("[Debug] Creating home directory [%s]\n"), homeDirector);
 
 #ifndef __WIN32__
 		if (mkdir(homeDirector, 0755) != 0) {
-#else
+#else /* __WIN32__ */
 		if (mkdir(homeDirector) != 0) {
-#endif
-			fprintf(stderr, _("Unable to create home directory!\n"));
+#endif /* __WIN32__ */
+			fprintf(stderr, _("[Error] Unable to create home directory [%s]\n"), homeDirector);
 			exit(0);
 		}
 	}

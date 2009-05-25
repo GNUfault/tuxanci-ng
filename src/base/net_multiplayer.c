@@ -15,12 +15,12 @@
 #include "udp.h"
 
 #ifndef PUBLIC_SERVER
-#    include "setting.h"
-#    include "choiceArena.h"
+#include "setting.h"
+#include "choiceArena.h"
 
-#    include "screen.h"
-#    include "client.h"
-#endif
+#include "screen.h"
+#include "client.h"
+#endif /* PUBLIC_SERVER */
 
 static int netGameType;
 
@@ -47,40 +47,43 @@ int net_multiplayer_init(int type, char *ip, int port, int proto)
 	netGameType = type;
 
 	switch (netGameType) {
-	case NET_GAME_TYPE_NONE:
-		break;
+		case NET_GAME_TYPE_NONE:
+			break;
 
-	case NET_GAME_TYPE_SERVER:
-		switch (proto) {
-		case PROTO_UDPv4:
-			if (server_init(ip, port, NULL, 0) != 1) {
-				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
-				netGameType = NET_GAME_TYPE_NONE;
-				return -1;
+		case NET_GAME_TYPE_SERVER:
+			switch (proto) {
+				case PROTO_UDPv4:
+					if (server_init(ip, port, NULL, 0) != 1) {
+						fprintf(stderr, _("[Error] Unable to initialize multiplayer game\n"));
+						netGameType = NET_GAME_TYPE_NONE;
+						return -1;
+					}
+					break;
+
+				case PROTO_UDPv6:
+					if (server_init(NULL, 0, ip, port) != 1) {
+						fprintf(stderr, _("[Error] Unable to initialize multiplayer game\n"));
+						netGameType = NET_GAME_TYPE_NONE;
+						return -1;
+					}
+					break;
 			}
 			break;
-		case PROTO_UDPv6:
-			if (server_init(NULL, 0, ip, port) != 1) {
-				fprintf(stderr, _("Unable to inicialize network game as server!\n"));
-				netGameType = NET_GAME_TYPE_NONE;
-				return -1;
-			}
-			break;
-		}
-		break;
 
 #ifndef PUBLIC_SERVER
-	case NET_GAME_TYPE_CLIENT:
-		if (client_init(ip, port) != 0) {
-			fprintf(stderr, _("Unable to inicialize network game as client!\n"));
-			netGameType = NET_GAME_TYPE_NONE;
-			return -1;
-		}
-		break;
-#endif
-	default:
-		assert(!_("Variable netGameType has a really weird value!"));
-		break;
+		case NET_GAME_TYPE_CLIENT:
+			if (client_init(ip, port) != 0) {
+				fprintf(stderr, _("[Error] Unable to join multiplayer game\n"));
+				netGameType = NET_GAME_TYPE_NONE;
+				return -1;
+			}
+			break;
+#endif /* PUBLIC_SERVER */
+
+		default:
+			fprintf(stderr, _("[Error] Unknown type of the network game [%d]\n"), netGameType);
+			assert(0);
+			break;
 	}
 
 	return 0;
@@ -89,42 +92,46 @@ int net_multiplayer_init(int type, char *ip, int port, int proto)
 void net_multiplayer_event()
 {
 	switch (netGameType) {
-	case NET_GAME_TYPE_NONE:
-		break;
+		case NET_GAME_TYPE_NONE:
+			break;
 
-	case NET_GAME_TYPE_SERVER:
-		server_event();
-		break;
+		case NET_GAME_TYPE_SERVER:
+			server_event();
+			break;
 
 #ifndef PUBLIC_SERVER
-	case NET_GAME_TYPE_CLIENT:
-		client_event();
-		break;
-#endif
-	default:
-		assert(!_("Variable netGameType has a really weird value!"));
-		break;
+		case NET_GAME_TYPE_CLIENT:
+			client_event();
+			break;
+#endif /* PUBLIC_SERVER */
+
+		default:
+			fprintf(stderr, _("[Error] Unknown type of the network game [%d]\n"), netGameType);
+			assert(0);
+			break;
 	}
 }
 
 void net_multiplayer_quit()
 {
 	switch (netGameType) {
-	case NET_GAME_TYPE_NONE:
-		break;
+		case NET_GAME_TYPE_NONE:
+			break;
 
-	case NET_GAME_TYPE_SERVER:
-		server_quit();
-		break;
+		case NET_GAME_TYPE_SERVER:
+			server_quit();
+			break;
 
 #ifndef PUBLIC_SERVER
-	case NET_GAME_TYPE_CLIENT:
-		client_quit();
-		break;
-#endif
-	default:
-		assert(!_("Variable netGameType has a really weird value!"));
-		break;
+		case NET_GAME_TYPE_CLIENT:
+			client_quit();
+			break;
+#endif /* PUBLIC_SERVER */
+
+		default:
+			fprintf(stderr, _("[Error] Unknown type of the network game [%d]\n"), netGameType);
+			assert(0);
+			break;
 	}
 
 	netGameType = NET_GAME_TYPE_NONE;

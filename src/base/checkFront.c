@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +35,7 @@ static checkfront_t *newCheck(char *s, int type, int id)
 	return new;
 }
 
-static void destroyCheck(checkfront_t * p)
+static void destroyCheck(checkfront_t *p)
 {
 	assert(p != NULL);
 	free(p->msg);
@@ -48,15 +47,16 @@ list_t *check_front_new()
 	return list_new();
 }
 
-void check_front_msg_add(list_t * list, char *msg, int type, int id)
+void check_front_msg_add(list_t *list, char *msg, int type, int id)
 {
-	if (type == CHECK_FRONT_TYPE_CHECK)
+	if (type == CHECK_FRONT_TYPE_CHECK) {
 		id_inc(id);
+	}
 
 	list_add(list, newCheck(msg, type, id));
 }
 
-void check_front_event(client_t * client)
+void check_front_event(client_t *client)
 {
 	my_time_t currentTime;
 	int i;
@@ -87,13 +87,13 @@ void check_front_event(client_t * client)
 				}
 				break;
 			default:
-				assert(!_("Bad type of front!"));
+				assert(!_("[Error] Wrong type of the event front"));
 				break;
 		}
 	}
 }
 
-void check_front_del_msg(list_t * listCheckFront, int id)
+void check_front_del_msg(list_t *listCheckFront, int id)
 {
 	int i;
 
@@ -110,7 +110,7 @@ void check_front_del_msg(list_t * listCheckFront, int id)
 	}
 }
 
-void check_front_destroy(list_t * p)
+void check_front_destroy(list_t *p)
 {
 	assert(p != NULL);
 	list_destroy_item(p, destroyCheck);

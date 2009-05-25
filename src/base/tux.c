@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,31 +18,27 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#    include "font.h"
-#    include "image.h"
-#    include "layer.h"
-#    include "radar.h"
+#include "font.h"
+#include "image.h"
+#include "layer.h"
+#include "radar.h"
 
-#    ifndef NO_SOUND
-#        include "sound.h"
-#    endif
+#ifndef NO_SOUND
+#include "sound.h"
+#endif /* NO_SOUND */
 
-#    include "world.h"
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#endif
+#include "world.h"
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#endif /* PUBLIC_SERVER */
 
 #ifndef PUBLIC_SERVER
-
 static image_t *g_tux_up;
 static image_t *g_tux_right;
 static image_t *g_tux_left;
 static image_t *g_tux_down;
 static image_t *g_cross;
-
-#endif
+#endif /* PUBLIC_SERVER */
 
 static bool_t isTuxInit = FALSE;
 
@@ -56,15 +51,13 @@ void tux_init()
 {
 #ifndef PUBLIC_SERVER
 	assert(image_is_inicialized() == TRUE);
-#endif
 
-#ifndef PUBLIC_SERVER
 	g_tux_up = image_add("tux8.png", IMAGE_ALPHA, "tux8", IMAGE_GROUP_BASE);
 	g_tux_right = image_add("tux6.png", IMAGE_ALPHA, "tux6", IMAGE_GROUP_BASE);
 	g_tux_left = image_add("tux4.png", IMAGE_ALPHA, "tux4", IMAGE_GROUP_BASE);
 	g_tux_down = image_add("tux2.png", IMAGE_ALPHA, "tux2", IMAGE_GROUP_BASE);
 	g_cross = image_add("cross.png", IMAGE_ALPHA, "cross", IMAGE_GROUP_BASE);
-#endif
+#endif /* PUBLIC_SERVER */
 	isTuxInit = TRUE;
 }
 
@@ -109,13 +102,13 @@ tux_t *tux_new()
 	return new;
 }
 
-void tux_set_name(tux_t * tux, char *name)
+void tux_set_name(tux_t *tux, char *name)
 {
 	strcpy(tux->name, name);
-	//tux->g_name = getFontImage(name, COLOR_WHITE);
+	/*tux->g_name = getFontImage(name, COLOR_WHITE);*/
 }
 
-bool_t tux_is_any_gun(tux_t * tux)
+bool_t tux_is_any_gun(tux_t *tux)
 {
 	int i;
 
@@ -155,14 +148,14 @@ void tux_get_course(int n, int *x, int *y)
 			break;
 	
 		default:
-			assert(!_("Type variable has a really wierd value!"));
+			fprintf(stderr, _("[Error] Unknown direction of the tux [%d]\n"), n);
+			assert(0);
 			break;
 	}
 }
 
 #ifndef PUBLIC_SERVER
-
-void tux_draw(tux_t * tux)
+void tux_draw(tux_t *tux)
 {
 	image_t *g_image = NULL;
 
@@ -192,7 +185,8 @@ void tux_draw(tux_t * tux)
 			break;
 	
 		default:
-			assert(!_("p->control has a really wierd value!"));
+			fprintf(stderr, _("[Error] Unknown direction of the tux [%d]\n"), tux->position);
+			assert(0);
 			break;
 	}
 
@@ -205,16 +199,17 @@ void tux_draw(tux_t * tux)
 
 		return;
 	}
+
 /*
-	if( tux->g_name != NULL )
-	{
+	if (tux->g_name != NULL) {
 		addLayer(tux->g_name,
-			tux->x - TUX_IMG_WIDTH / 2,
-			( tux->y + TUX_HEIGHT / 2 ) - TUX_IMG_HEIGHT,
-			0, 0,
-			tux->g_name->w, tux->g_name->h, TUX_LAYER);
+			 tux->x - TUX_IMG_WIDTH / 2,
+			 (tux->y + TUX_HEIGHT / 2) - TUX_IMG_HEIGHT,
+			 0, 0,
+			 tux->g_name->w, tux->g_name->h, TUX_LAYER);
 	}
 */
+
 	addLayer(g_image, tux->x - TUX_IMG_WIDTH / 2,
 			 (tux->y + TUX_HEIGHT / 2) - TUX_IMG_HEIGHT,
 			 (tux->frame / TUX_KEY) * TUX_IMG_WIDTH, 0,
@@ -227,19 +222,18 @@ void drawListTux(list_t *listTux)
 	tux_t *thisTux;
 	int i;
 
-	assert( listTux != NULL );
+	assert(listTux != NULL);
 
-	for( i = 0 ; i < listTux->count ; i++ )
-	{
-		thisTux  = (tux_t *)listTux->list[i];
-		assert( thisTux != NULL );
+	for(i = 0; i < listTux->count; i++) {
+		thisTux = (tux_t *) listTux->list[i];
+		assert(thisTux != NULL);
 		tux_draw(thisTux);
 	}
 }
 */
-#endif
+#endif /* PUBLIC_SERVER */
 
-void tux_replace_id(tux_t * tux, int id)
+void tux_replace_id(tux_t *tux, int id)
 {
 	id_replace(tux->id, id);
 	tux->id = id;
@@ -258,8 +252,9 @@ static void timer_spawnTux(void *p)
 	arena = arena_get_current();
 	tux = space_get_object_id(arena->spaceTux, id);
 
-	if (tux == NULL)
+	if (tux == NULL) {
 		return;
+	}
 
 	tux->status = TUX_STATUS_ALIVE;
 	arena_find_free_space(arena_get_current(), &x, &y, TUX_WIDTH, TUX_HEIGHT);
@@ -283,8 +278,9 @@ static void timer_tuxCanShot(void *p)
 
 	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
-	if (tux == NULL)
+	if (tux == NULL) {
 		return;
+	}
 
 	tux->isCanShot = TRUE;
 }
@@ -299,13 +295,14 @@ static void timer_tuxCanSwitchGun(void *p)
 
 	tux = space_get_object_id(arena_get_current()->spaceTux, id);
 
-	if (tux == NULL)
+	if (tux == NULL) {
 		return;
+	}
 
 	tux->isCanSwitchGun = TRUE;
 }
 
-void tux_event_tux_is_dead(tux_t * tux)
+void tux_event_tux_is_dead(tux_t *tux)
 {
 	if (tux->status == TUX_STATUS_DEAD) {
 		return;
@@ -313,7 +310,7 @@ void tux_event_tux_is_dead(tux_t * tux)
 
 #ifndef NO_SOUND
 	sound_play("dead", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 	tux->status = TUX_STATUS_DEAD;
 	memset(tux->shot, 0, sizeof(int) * GUN_COUNT);
@@ -337,7 +334,7 @@ void tux_event_tux_is_dead(tux_t * tux)
 	}
 }
 
-static void tux_event_tux_is_deadWIthShot(tux_t * tux, shot_t * shot)
+static void tux_event_tux_is_deadWIthShot(tux_t *tux, shot_t *shot)
 {
 	if (shot->author_id == tux->id) {
 		tux->score--;
@@ -366,18 +363,18 @@ static void tux_event_tux_is_deadWIthShot(tux_t * tux, shot_t * shot)
 	tux_event_tux_is_dead(tux);
 }
 
-void tux_teleport(tux_t * tux)
+void tux_teleport(tux_t *tux)
 {
 	int x, y;
 
 #ifndef NO_SOUND
 	sound_play("teleport", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		arena_find_free_space(arena_get_current(), &x, &y, TUX_WIDTH, TUX_HEIGHT);
 		space_move_object(arena_get_current()->spaceTux, tux, x, y);
-		//tux_set_proportion(tux, x, y);
+		/*tux_set_proportion(tux, x, y);*/
 	}
 
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
@@ -385,7 +382,7 @@ void tux_teleport(tux_t * tux)
 	}
 }
 
-static void bombBallExplosion(shot_t * shot)
+static void bombBallExplosion(shot_t *shot)
 {
 	item_t *item;
 	int x, y;
@@ -398,15 +395,14 @@ static void bombBallExplosion(shot_t * shot)
 	space_add(arena_get_current()->spaceItem, item);
 
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
-		//proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+		/*proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);*/
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
 	}
 
-	//space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);
-
+	/*space_del_with_item(arena_get_current()->spaceShot, shot, shot_destroy);*/
 }
 
-static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
+static void action_tux(space_t *space, tux_t *tux, shot_t *shot)
 {
 	UNUSED(space);
 
@@ -435,6 +431,7 @@ static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
 	}
 
 	shot->del = TRUE;
+
 /*
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
@@ -444,30 +441,32 @@ static void action_tux(space_t * space, tux_t * tux, shot_t * shot)
 */
 }
 
-static void action_shot(space_t * space, shot_t * shot, space_t * spaceTux)
+static void action_shot(space_t *space, shot_t *shot, space_t *spaceTux)
 {
 	space_action_from_location(spaceTux, action_tux, shot, shot->x, shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {
-		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+		}
 
 		space_del_with_item(space, shot, shot_destroy);
 	}
 }
 
-void tux_conflict_woth_shot(arena_t * arena)
+void tux_conflict_woth_shot(arena_t *arena)
 {
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) { // na skusku
+	/* just for a test */
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
 	}
 
 	space_action(arena->spaceShot, action_shot, arena->spaceTux);
 }
 
-void moveTux(tux_t * tux, int n)
+void moveTux(tux_t *tux, int n)
 {
-	int px = 0, py = 0; // no warninng
+	int px = 0, py = 0;	/* no warnings */
 	int zal_x, zal_y;
 	int new_x, new_y;
 	int w, h;
@@ -476,7 +475,7 @@ void moveTux(tux_t * tux, int n)
 	assert(tux != NULL);
 
 	arena = arena_get_current();
-	//interval();
+	/*interval();*/
 
 	if (tux->position != n) {
 		tux->position = n;
@@ -506,8 +505,8 @@ void moveTux(tux_t * tux, int n)
 	}
 
 	if (tux->bonus != BONUS_GHOST &&
-	   ( space_is_conflict_with_object_but(arena->spaceTux, new_x, new_y, w, h, tux) ||
-	     module_is_conflict(new_x, new_y, w, h))) {
+	    (space_is_conflict_with_object_but(arena->spaceTux, new_x, new_y, w, h, tux) ||
+	    module_is_conflict(new_x, new_y, w, h))) {
 		tux_set_proportion(tux, zal_x, zal_y);
 		return;
 	}
@@ -517,11 +516,12 @@ void moveTux(tux_t * tux, int n)
 	item_tux_give_list_item(tux, arena_get_current()->spaceItem);
 	tux->frame++;
 
-	if (tux->frame == TUX_KEY * TUX_MAX_ANIMATION_FRAME)
+	if (tux->frame == TUX_KEY * TUX_MAX_ANIMATION_FRAME) {
 		tux->frame = 0;
+	}
 }
 
-void switchTuxGun(tux_t * tux)
+void switchTuxGun(tux_t *tux)
 {
 	int i;
 
@@ -534,11 +534,11 @@ void switchTuxGun(tux_t * tux)
 			tux->gun = i;
 			tux->isCanSwitchGun = FALSE;
 			timer_add_task(arena_get_current()->listTimer, TIMER_ONE,
-					timer_tuxCanSwitchGun, newInt(tux->id),
-					TUX_TIME_CAN_SWITCH_GUN);
+				       timer_tuxCanSwitchGun, newInt(tux->id),
+				       TUX_TIME_CAN_SWITCH_GUN);
 #ifndef NO_SOUND
 			sound_play("switch_gun", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 			return;
 		}
 	}
@@ -554,13 +554,13 @@ void switchTuxGun(tux_t * tux)
 
 #ifndef NO_SOUND
 			sound_play("switch_gun", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 			return;
 		}
 	}
 }
 
-void shotTux(tux_t * tux)
+void shotTux(tux_t *tux)
 {
 	assert(tux != NULL);
 
@@ -570,7 +570,7 @@ void shotTux(tux_t * tux)
 
 #ifndef NO_SOUND
 	sound_play("switch_gun", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 	gun_shot(tux);
 
@@ -584,7 +584,7 @@ void shotTux(tux_t * tux)
 	}
 }
 
-void tux_action(tux_t * tux, int action)
+void tux_action(tux_t *tux, int action)
 {
 	if (tux->status == TUX_STATUS_DEAD) {
 		return;
@@ -608,7 +608,7 @@ void tux_action(tux_t * tux, int action)
 	}
 }
 
-static void pickUpGun(tux_t * tux)
+static void pickUpGun(tux_t *tux)
 {
 	if (tux_is_any_gun(tux) == FALSE) {
 		tux->gun = GUN_SIMPLE;
@@ -620,7 +620,7 @@ static void pickUpGun(tux_t * tux)
 		if (tux->pickup_time == TUX_MAX_PICKUP && net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 #ifndef NO_SOUND
 			sound_play("switch_gun", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 			tux->gun = GUN_SIMPLE;
 			tux->shot[tux->gun] = GUN_MAX_SHOT;
@@ -633,7 +633,7 @@ static void pickUpGun(tux_t * tux)
 	}
 }
 
-static void eventBonus(tux_t * tux)
+static void eventBonus(tux_t *tux)
 {
 	if (tux->bonus != BONUS_NONE) {
 		if (tux->bonus_time > 0) {
@@ -647,8 +647,8 @@ static void eventBonus(tux_t * tux)
 
 				tux->bonus = BONUS_NONE;
 
-				if ( /*isConflictTuxWithListTux(tux, arena_get_current()->listTux) || */
-				     module_is_conflict(x, y, w, h)) {
+				if (/*isConflictTuxWithListTux(tux, arena_get_current()->listTux) ||*/
+				    module_is_conflict(x, y, w, h)) {
 					tux->bonus = BONUS_GHOST;
 					return;
 				}
@@ -663,7 +663,7 @@ static void eventBonus(tux_t * tux)
 	}
 }
 
-void tux_event(tux_t * tux)
+void tux_event(tux_t *tux)
 {
 	arena_t *arena;
 
@@ -671,7 +671,7 @@ void tux_event(tux_t * tux)
 
 #ifndef PUBLIC_SERVER
 	world_tux_control(tux);
-#endif
+#endif /* PUBLIC_SERVER */
 	pickUpGun(tux);
 	eventBonus(tux);
 	item_tux_give_list_item(tux, arena->spaceItem);
@@ -683,34 +683,38 @@ void eventListTux(list_t *listTux)
 	tux_t *thisTux;
 	int i;
 
-	assert( listTux != NULL );
+	assert(listTux != NULL);
 
-	for( i = 0 ; i < listTux->count ; i++ )
-	{
-		thisTux  = (tux_t *)listTux->list[i];
-		assert( thisTux != NULL );
+	for (i = 0; i < listTux->count; i++) {
+		thisTux  = (tux_t *) listTux->list[i];
+		assert(thisTux != NULL);
 		tux_event(thisTux);
 	}
 }
 */
-void tux_get_proportion(tux_t * tux, int *x, int *y, int *w, int *h)
+
+void tux_get_proportion(tux_t *tux, int *x, int *y, int *w, int *h)
 {
 	assert(tux != NULL);
 
-	if (x != NULL)
+	if (x != NULL) {
 		*x = tux->x - TUX_WIDTH / 2;
+	}
 
-	if (y != NULL)
+	if (y != NULL) {
 		*y = tux->y - TUX_HEIGHT / 2;
+	}
 
-	if (w != NULL)
+	if (w != NULL) {
 		*w = TUX_WIDTH;
+	}
 
-	if (h != NULL)
+	if (h != NULL) {
 		*h = TUX_HEIGHT;
+	}
 }
 
-void tux_set_proportion(tux_t * tux, int x, int y)
+void tux_set_proportion(tux_t *tux, int x, int y)
 {
 	assert(tux != NULL);
 
@@ -738,7 +742,7 @@ void tux_set_status(void *p, int x, int y, int w, int h)
 	tux_set_proportion(tux, x, y);
 }
 
-static void action_checkMine(space_t * space, item_t * item, tux_t * tux)
+static void action_checkMine(space_t *space, item_t *item, tux_t *tux)
 {
 	UNUSED(space);
 
@@ -747,7 +751,7 @@ static void action_checkMine(space_t * space, item_t * item, tux_t * tux)
 	}
 }
 
-void tux_destroy(tux_t * tux)
+void tux_destroy(tux_t *tux)
 {
 	arena_t *arena;
 

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +32,7 @@ static storage_item_t *storage_new_item(char *group, char *name, void *data)
 	return new;
 }
 
-static void storage_destroy_item(storage_item_t * p, void *f)
+static void storage_destroy_item(storage_item_t *p, void *f)
 {
 	void (*fce) (void *);
 
@@ -47,7 +46,7 @@ static void storage_destroy_item(storage_item_t * p, void *f)
 	free(p);
 }
 
-void storage_add(list_t * list, char *group, char *name, void *data)
+void storage_add(list_t *list, char *group, char *name, void *data)
 {
 	assert(list != NULL);
 	assert(group != NULL);
@@ -56,7 +55,7 @@ void storage_add(list_t * list, char *group, char *name, void *data)
 	list_add(list, storage_new_item(group, name, data));
 }
 
-void *storage_get(list_t * list, char *group, char *name)
+void *storage_get(list_t *list, char *group, char *name)
 {
 	storage_item_t *this;
 	int i;
@@ -68,16 +67,17 @@ void *storage_get(list_t * list, char *group, char *name)
 	for (i = 0; i < list->count; i++) {
 		this = (storage_item_t *) list->list[i];
 
-		if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0)
+		if (strcmp(group, this->group) == 0 && strcmp(name, this->name) == 0) {
 			return this->data;
+		}
 	}
 
-	DEBUG_MSG(_("%s %s was not found in storage!\n"), group, name);
+	DEBUG_MSG(_("[Error] Storage item not found [%s %s]\n"), group, name);
 
 	return NULL;
 }
 
-void storage_del(list_t * list, char *group, char *name, void *f)
+void storage_del(list_t *list, char *group, char *name, void *f)
 {
 	storage_item_t *this;
 	int i;
@@ -99,7 +99,7 @@ void storage_del(list_t * list, char *group, char *name, void *f)
 	return;
 }
 
-void storage_del_all(list_t * list, char *group, void *f)
+void storage_del_all(list_t *list, char *group, void *f)
 {
 	storage_item_t *this;
 	int i;
@@ -118,7 +118,7 @@ void storage_del_all(list_t * list, char *group, void *f)
 	}
 }
 
-void storage_destroy(list_t * p, void *f)
+void storage_destroy(list_t *p, void *f)
 {
 	storage_item_t *this;
 	int i;

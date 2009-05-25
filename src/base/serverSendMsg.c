@@ -1,4 +1,3 @@
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,10 +10,10 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
-#    include "world.h"
-#endif
+#include "world.h"
+#endif /* PUBLIC_SERVER */
 
-static void addMsgClient(client_t * p, char *msg, int type, int id)
+static void addMsgClient(client_t *p, char *msg, int type, int id)
 {
 	assert(p != NULL);
 	assert(msg != NULL);
@@ -24,7 +23,7 @@ static void addMsgClient(client_t * p, char *msg, int type, int id)
 	}
 }
 
-static void addMsgAllClientBut(char *msg, client_t * p, int type, int id)
+static void addMsgAllClientBut(char *msg, client_t *p, int type, int id)
 {
 	list_t *listClient;
 	client_t *thisClient;
@@ -50,7 +49,7 @@ static void addMsgAllClient(char *msg, int type, int id)
 	addMsgAllClientBut(msg, NULL, type, id);
 }
 
-static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
+static void addMsgAllClientSeesTux(char *msg, tux_t *tux, int type, int id)
 {
 	list_t *listHelp;
 	arena_t *arena;
@@ -69,22 +68,26 @@ static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
 	w = 2 * WINDOW_SIZE_X;
 	h = 2 * WINDOW_SIZE_Y;
 
-	if (x < 0)
+	if (x < 0) {
 		x = 0;
+	}
 
-	if (y < 0)
+	if (y < 0) {
 		y = 0;
+	}
 
-	if (w + x >= arena->w)
+	if (w + x >= arena->w) {
 		w = arena->w - (x + 1);
+	}
 
-	if (h + y >= arena->h)
+	if (h + y >= arena->h) {
 		h = arena->h - (y + 1);
+	}
 
 	listHelp = list_new();
 
 	space_get_object(space, x, y, w, h, listHelp);
-	//printf("%d %d %d %d %d\n", x, y, w, h, listHelp->count);
+	/*printf("%d %d %d %d %d\n", x, y, w, h, listHelp->count);*/
 
 	for (i = 0; i < listHelp->count; i++) {
 		tux_t *thisTux;
@@ -106,7 +109,7 @@ static void addMsgAllClientSeesTux(char *msg, tux_t * tux, int type, int id)
 	list_destroy(listHelp);
 }
 
-void send_msg_to_client(int type, client_t * client, char *msg, int type2, int id)
+void send_msg_to_client(int type, client_t *client, char *msg, int type2, int id)
 {
 	assert(msg != NULL);
 
@@ -124,19 +127,19 @@ void send_msg_to_client(int type, client_t * client, char *msg, int type2, int i
 			addMsgAllClientBut(msg, client, type2, id);
 			break;
 		case PROTO_SEND_ALL_SEES_TUX:
-	#ifndef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
 			if (client != NULL) {
 				addMsgAllClientSeesTux(msg, client->tux, type2, id);
 			} else {
 				addMsgAllClientSeesTux(msg, world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT), type2, id);
 			}
-	#endif
-	#ifdef PUBLIC_SERVER
+#else /* PUBLIC_SERVER*/
 			addMsgAllClientSeesTux(msg, client->tux, type2, id);
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 		default:
-			assert(!_("Type variable has a really wierd value!"));
+			fprintf(stderr, _("[Error] Unknown type of target group of players [%d]\n"), type);
+			assert(0);
 			break;
 	}
 }

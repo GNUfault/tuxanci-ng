@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +18,7 @@ zone_t *newZone()
 	return new;
 }
 
-void destroyZone(zone_t * p)
+void destroyZone(zone_t *p)
 {
 	assert(p != NULL);
 
@@ -27,8 +26,7 @@ void destroyZone(zone_t * p)
 	free(p);
 }
 
-static int my_arena_conflict_space(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
-				 int h2)
+static int my_arena_conflict_space(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
 	return (x1 < x2 + w2 && x2 < x1 + w1 && y1 < y2 + h2 && y2 < y1 + h1);
 }
@@ -66,8 +64,8 @@ space_t *space_new(int w, int h, int segW, int segH,
 	return new;
 }
 
-static void getSegment(space_t * p, int x, int y, int w, int h,
-		                    int *segX, int *segY, int *segW, int *segH)
+static void getSegment(space_t *p, int x, int y, int w, int h,
+				   int *segX, int *segY, int *segW, int *segH)
 {
 	*segX = x / p->segW;
 	*segY = y / p->segH;
@@ -75,12 +73,12 @@ static void getSegment(space_t * p, int x, int y, int w, int h,
 	*segH = ((y + h) / p->segH + 1) - *segY;
 }
 
-int space_get_count(space_t * p)
+int space_get_count(space_t *p)
 {
 	return p->listIndex->count;
 }
 
-void *space_get_item(space_t * p, int offset)
+void *space_get_item(space_t *p, int offset)
 {
 	index_item_t *this;
 
@@ -88,7 +86,7 @@ void *space_get_item(space_t * p, int offset)
 	return this->data;
 }
 
-void space_add(space_t * p, void *item)
+void space_add(space_t *p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
@@ -110,7 +108,7 @@ void space_add(space_t * p, void *item)
 	index_add(p->listIndex, id, item);
 }
 
-void space_get_object(space_t * p, int x, int y, int w, int h, list_t * list)
+void space_get_object(space_t *p, int x, int y, int w, int h, list_t *list)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -139,12 +137,12 @@ void space_get_object(space_t * p, int x, int y, int w, int h, list_t * list)
 	}
 }
 
-void *space_get_object_id(space_t * space, int id)
+void *space_get_object_id(space_t *space, int id)
 {
 	return index_get(space->listIndex, id);
 }
 
-int space_is_conflict_with_object(space_t * p, int x, int y, int w, int h)
+int space_is_conflict_with_object(space_t *p, int x, int y, int w, int h)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -174,7 +172,7 @@ int space_is_conflict_with_object(space_t * p, int x, int y, int w, int h)
 	return 0;
 }
 
-int space_is_conflict_with_object_but(space_t * p, int x, int y, int w, int h, void *but)
+int space_is_conflict_with_object_but(space_t *p, int x, int y, int w, int h, void *but)
 {
 	int segX, segY, segW, segH;
 	int id, this_x, this_y, this_w, this_h;
@@ -209,7 +207,7 @@ int space_is_conflict_with_object_but(space_t * p, int x, int y, int w, int h, v
 	return 0;
 }
 
-void space_del(space_t * p, void *item)
+void space_del(space_t *p, void *item)
 {
 	int segX, segY, segW, segH;
 	int id, x, y, w, h;
@@ -234,7 +232,7 @@ void space_del(space_t * p, void *item)
 	index_del(p->listIndex, id);
 }
 
-void space_del_with_item(space_t * p, void *item, void *f)
+void space_del_with_item(space_t *p, void *item, void *f)
 {
 	void (*fce) (void *param);
 
@@ -244,7 +242,7 @@ void space_del_with_item(space_t * p, void *item, void *f)
 	fce(item);
 }
 
-void space_move_object(space_t * p, void *item, int move_x, int move_y)
+void space_move_object(space_t *p, void *item, int move_x, int move_y)
 {
 	int old_segX, old_segY, old_segW, old_segH;
 	int new_segX, new_segY, new_segW, new_segH;
@@ -253,11 +251,13 @@ void space_move_object(space_t * p, void *item, int move_x, int move_y)
 	p->getStatus(item, &id, &x, &y, &w, &h);
 	getSegment(p, x, y, w, h, &old_segX, &old_segY, &old_segW, &old_segH);
 	getSegment(p, move_x, move_y, w, h, &new_segX, &new_segY, &new_segW, &new_segH);
+
 /*
 	printf("%d %d %d %d  -> %d %d %d %d \n",
 		old_segX, old_segY, old_segW, old_segH,
 		new_segX, new_segY, new_segW, new_segH);
 */
+
 	if (old_segX != new_segX || old_segY != new_segY ||
 	    old_segW != new_segW || old_segH != new_segH) {
 		space_del(p, item);
@@ -269,11 +269,11 @@ void space_move_object(space_t * p, void *item, int move_x, int move_y)
 	p->setStatus(item, move_x, move_y, w, h);
 }
 
-void space_print(space_t * p)
+void space_print(space_t *p)
 {
 	int i, j;
 
-	printf("print space : \n");
+	printf(_("[Debug] Debugging space:\n"));
 
 	for (i = 0; i < p->h; i++) {
 		for (j = 0; j < p->w; j++) {
@@ -284,9 +284,9 @@ void space_print(space_t * p)
 	}
 }
 
-void space_action(space_t * space, void *f, void *p)
+void space_action(space_t *space, void *f, void *p)
 {
-	void (*fce) (space_t * space, void *f, void *p);
+	void (*fce) (space_t *space, void *f, void *p);
 	int len;
 	int i;
 
@@ -303,9 +303,9 @@ void space_action(space_t * space, void *f, void *p)
 	}
 }
 
-void space_action_from_location(space_t * space, void *f, void *p, int x, int y, int w, int h)
+void space_action_from_location(space_t *space, void *f, void *p, int x, int y, int w, int h)
 {
-	void (*fce) (space_t * space, void *f, void *p);
+	void (*fce) (space_t *space, void *f, void *p);
 	list_t *list;
 	int len;
 	int i;
@@ -325,7 +325,7 @@ void space_action_from_location(space_t * space, void *f, void *p, int x, int y,
 	list_destroy(list);
 }
 
-void space_destroy(space_t * p)
+void space_destroy(space_t *p)
 {
 	int j, i;
 
@@ -345,7 +345,7 @@ void space_destroy(space_t * p)
 	free(p);
 }
 
-void space_destroy_with_item(space_t * p, void *f)
+void space_destroy_with_item(space_t *p, void *f)
 {
 	void (*fce) (void *param);
 	int i;

@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <assert.h>
 
@@ -13,28 +12,25 @@
 #include "serverSendMsg.h"
 
 #ifndef PUBLIC_SERVER
+#include "interface.h"
+#include "image.h"
+#include "radar.h"
+#include "layer.h"
 
-#    include "interface.h"
-#    include "image.h"
-#    include "radar.h"
-#    include "layer.h"
+#include "world.h"
+#include "setting.h"
 
-#    include "world.h"
-#    include "setting.h"
+#ifndef NO_SOUND
+#include "sound.h"
+#endif /* NO_SOUND */
 
-#    ifndef NO_SOUND
-#        include "sound.h"
-#    endif
-
-#endif
-
-#ifdef PUBLIC_SERVER
-#    include "publicServer.h"
-#endif
+#else /* PUBLIC_SERVER */
+#include "publicServer.h"
+#endif /* PUBLIC_SERVER */
 
 #ifndef PUBLIC_SERVER
 static image_t *g_item[ITEM_COUNT];
-#endif
+#endif /* PUBLIC_SERVER */
 
 static bool_t isItemInit = FALSE;
 
@@ -61,7 +57,7 @@ void item_init()
 	g_item[BONUS_GHOST] = image_add("item.bonus.ghost.png", IMAGE_ALPHA, "item_ghost_speed",  IMAGE_GROUP_BASE);
 	g_item[BONUS_4X] = image_add("item.bonus.4x.png", IMAGE_ALPHA, "item_4x_speed", IMAGE_GROUP_BASE);
 	g_item[BONUS_HIDDEN] = image_add("item.bonus.hidden.png", IMAGE_ALPHA, "item_hidden_speed", IMAGE_GROUP_BASE);
-#endif
+#endif /* PUBLIC_SERVER */
 	isItemInit = TRUE;
 }
 
@@ -79,7 +75,7 @@ item_t *item_new(int x, int y, int type, int author_id)
 	new->count = 0;
 #ifndef PUBLIC_SERVER
 	new->img = g_item[type];
-#endif
+#endif /* PUBLIC_SERVER */
 	new->author_id = author_id;
 
 	switch (type) {
@@ -97,16 +93,16 @@ item_t *item_new(int x, int y, int type, int author_id)
 			new->h = ITEM_MINE_HEIGHT;
 			break;
 		case ITEM_EXPLOSION:
-	#ifndef NO_SOUND
+#ifndef NO_SOUND
 			sound_play("explozion", SOUND_GROUP_BASE);
-	#endif
+#endif /* NO_SOUND */
 			new->w = ITEM_EXPLOSION_WIDTH;
 			new->h = ITEM_EXPLOSION_HEIGHT;
 			break;
 		case ITEM_BIG_EXPLOSION:
-	#ifndef NO_SOUND
+#ifndef NO_SOUND
 			sound_play("explozion", SOUND_GROUP_BASE);
-	#endif
+#endif /* NO_SOUND */
 			new->w = ITEM_BIG_EXPLOSION_WIDTH;
 			new->h = ITEM_BIG_EXPLOSION_HEIGHT;
 			break;
@@ -147,22 +143,22 @@ void item_set_status(void *p, int x, int y, int w, int h)
 	item->h = h;
 }
 
-void item_replace_id(item_t * item, int id)
+void item_replace_id(item_t *item, int id)
 {
 	id_replace(item->id, id);
 	item->id = id;
 }
 
 #ifdef PUBLIC_SERVER
-static void action_countitem(space_t * space, item_t * item, int *count)
+static void action_countitem(space_t *space, item_t *item, int *count)
 {
 	if ((item->type >= GUN_DUAL_SIMPLE && item->type <= GUN_BOMBBALL) ||
-	    (item->type >= BONUS_SPEED && item->type <= BONUS_HIDDEN) ) {
+	    (item->type >= BONUS_SPEED && item->type <= BONUS_HIDDEN)) {
 		(*count)++;
 	}
 }
 
-static int getCountWeaponOrBonusItem(space_t * spaceItem)
+static int getCountWeaponOrBonusItem(space_t *spaceItem)
 {
 	int count = 0;
 
@@ -170,9 +166,9 @@ static int getCountWeaponOrBonusItem(space_t * spaceItem)
 
 	return count;
 }
-#endif
+#endif /* PUBLIC_SERVER */
 
-void item_add_new_item(space_t * spaceItem, int author_id)
+void item_add_new_item(space_t *spaceItem, int author_id)
 {
 	arena_t *arena;
 	item_t *item;
@@ -183,13 +179,13 @@ void item_add_new_item(space_t * spaceItem, int author_id)
 	if (getCountWeaponOrBonusItem(spaceItem) >= atoi(public_server_get_setting("MAX_ITEM", "--max-item", "100"))) {
 		return;
 	}
-#endif
+#endif /* PUBLIC_SERVER */
 
 #ifndef PUBLIC_SERVER
 	if (setting_is_any_item() == FALSE || net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
 	}
-#endif
+#endif /* PUBLIC_SERVER */
 
 	arena = arena_get_current();
 	arena_find_free_space(arena_get_current(), &new_x, &new_y, ITEM_GUN_WIDTH, ITEM_GUN_HEIGHT);
@@ -198,7 +194,7 @@ void item_add_new_item(space_t * spaceItem, int author_id)
 
 #ifndef PUBLIC_SERVER
 	do {
-#endif
+#endif /* PUBLIC_SERVER */
 		switch (random() % 12) {
 			case 0:
 				type = GUN_DUAL_SIMPLE;
@@ -239,28 +235,30 @@ void item_add_new_item(space_t * spaceItem, int author_id)
 		}
 #ifndef PUBLIC_SERVER
 	} while (setting_is_item(type) == FALSE ||
-		(net_multiplayer_get_game_type() == NET_GAME_TYPE_NONE && type == BONUS_HIDDEN));
-#endif
+		 (net_multiplayer_get_game_type() == NET_GAME_TYPE_NONE && type == BONUS_HIDDEN));
+#endif /* PUBLIC_SERVER */
 	item = item_new(new_x, new_y, type, author_id);
 	space_add(spaceItem, item);
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_additem_server(PROTO_SEND_ALL, NULL, item);
+	}
 
 #ifndef PUBLIC_SERVER
-	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		radar_add(item->id, new_x, new_y, RADAR_TYPE_ITEM);
-#endif
+	}
+#endif /* PUBLIC_SERVER */
 }
 
 #ifndef PUBLIC_SERVER
-void item_draw(item_t * p)
+void item_draw(item_t *p)
 {
 	assert(p != NULL);
 	addLayer(p->img, p->x, p->y, p->frame * p->w, 0, p->w, p->h, TUX_LAYER);
 }
 
-void item_draw_list(list_t * listItem)
+void item_draw_list(list_t *listItem)
 {
 	item_t *thisItem;
 	int i;
@@ -274,9 +272,9 @@ void item_draw_list(list_t * listItem)
 	}
 }
 
-#endif
+#endif /* PUBLIC_SERVER */
 
-static void action_itemevent(space_t * space, item_t * item, void *p)
+static void action_itemevent(space_t *space, item_t *item, void *p)
 {
 	my_time_t currentTime;
 
@@ -297,17 +295,20 @@ static void action_itemevent(space_t * space, item_t * item, void *p)
 		case GUN_LASSER:
 		case GUN_MINE:
 		case GUN_BOMBBALL:
-			if (item->frame == ITEM_GUN_MAX_FRAME)
+			if (item->frame == ITEM_GUN_MAX_FRAME) {
 				item->frame = 0;
+			}
 			break;
 		case ITEM_MINE:
-			if (item->frame == ITEM_MINE_MAX_FRAME)
+			if (item->frame == ITEM_MINE_MAX_FRAME) {
 				item->frame = 0;
+			}
 			break;
 		case ITEM_EXPLOSION:
 		case ITEM_BIG_EXPLOSION:
-			if (item->frame == ITEM_EXPLOSION_MAX_FRAME)
+			if (item->frame == ITEM_EXPLOSION_MAX_FRAME) {
 				space_del_with_item(space, item, item_destroy);
+			}
 			break;
 		case BONUS_SPEED:
 		case BONUS_SHOT:
@@ -315,18 +316,19 @@ static void action_itemevent(space_t * space, item_t * item, void *p)
 		case BONUS_GHOST:
 		case BONUS_4X:
 		case BONUS_HIDDEN:
-			if (item->frame == ITEM_GUN_MAX_FRAME)
+			if (item->frame == ITEM_GUN_MAX_FRAME) {
 				item->frame = 0;
+			}
 			break;
 	}
 }
 
-void item_event(space_t * spaceItem)
+void item_event(space_t *spaceItem)
 {
 	space_action(spaceItem, action_itemevent, NULL);
 }
 
-static void mineExplosion(space_t * spaceItem, item_t * item)
+static void mineExplosion(space_t *spaceItem, item_t *item)
 {
 	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		int x, y;
@@ -336,25 +338,29 @@ static void mineExplosion(space_t * spaceItem, item_t * item)
 		y = (item->y + item->h / 2) - ITEM_BIG_EXPLOSION_HEIGHT / 2;
 		item_explosion = item_new(x, y, ITEM_BIG_EXPLOSION, item->author_id);
 
-		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			proto_send_additem_server(PROTO_SEND_ALL, NULL, item_explosion);
+		}
 
 		space_add(spaceItem, item_explosion);
 	}
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_del_server(PROTO_SEND_ALL, NULL, item->id);
+	}
 
-	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		space_del_with_item(spaceItem, item, item_destroy);
+	}
 }
 
-static void action_item(space_t * space, item_t * item, int *isDel)
+static void action_item(space_t *space, item_t *item, int *isDel)
 {
 	switch (item->type) {
 		case ITEM_MINE:
-			if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)
+			if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 				mineExplosion(space, item);
+			}
 			break;
 		case ITEM_EXPLOSION:
 		case ITEM_BIG_EXPLOSION:
@@ -363,33 +369,36 @@ static void action_item(space_t * space, item_t * item, int *isDel)
 	}
 }
 
-static void action_shot(space_t * space, shot_t * shot, space_t * spaceItem)
+static void action_shot(space_t *space, shot_t *shot, space_t *spaceItem)
 {
 	int isDel = 0;
 
 	space_action_from_location(spaceItem, action_item, &isDel,
-				shot->x, shot->y, shot->w, shot->h);
+				   shot->x, shot->y, shot->w, shot->h);
 
 	if (isDel) {
-		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+		}
 
 		space_del_with_item(space, shot, shot_destroy);
 	}
 }
 
-void item_event_conglicts_shot_with_item(arena_t * arena)
+void item_event_conglicts_shot_with_item(arena_t *arena)
 {
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
+	}
 
 	space_action(arena->spaceShot, action_shot, arena->spaceItem);
 }
 
-static void tux_event_tux_is_deadWithItem(tux_t * tux, item_t * item)
+static void tux_event_tux_is_deadWithItem(tux_t *tux, item_t *item)
 {
-	if (tux->bonus == BONUS_GHOST)
+	if (tux->bonus == BONUS_GHOST) {
 		return;
+	}
 
 	if (tux->bonus == BONUS_TELEPORT) {
 		tux_teleport(tux);
@@ -399,8 +408,9 @@ static void tux_event_tux_is_deadWithItem(tux_t * tux, item_t * item)
 	if (item->author_id == tux->id) {
 		tux->score--;
 
-		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 			proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+		}
 	}
 
 	if (item->author_id != tux->id) {
@@ -411,8 +421,9 @@ static void tux_event_tux_is_deadWithItem(tux_t * tux, item_t * item)
 		if (author != NULL) {
 			author->score++;
 
-			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 				proto_send_newtux_server(PROTO_SEND_ALL, NULL, author);
+			}
 		}
 	}
 
@@ -420,42 +431,46 @@ static void tux_event_tux_is_deadWithItem(tux_t * tux, item_t * item)
 	tux_event_tux_is_dead(tux);
 }
 
-static void tuxGiveBonus(tux_t * tux, item_t * item)
+static void tuxGiveBonus(tux_t *tux, item_t *item)
 {
 #ifndef NO_SOUND
 	sound_play("item_bonus", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 	tux->bonus = item->type;
 	tux->bonus_time = TUX_MAX_BONUS;
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+	}
 
 #ifndef PUBLIC_SERVER
-	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		radar_del(item->id);
-#endif
+	}
+#endif /* PUBLIC_SERVER */
 }
 
-static void tuxGiveGun(tux_t * tux, item_t * item)
+static void tuxGiveGun(tux_t *tux, item_t *item)
 {
 #ifndef NO_SOUND
 	sound_play("item_gun", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 	tux->pickup_time = 0;
 	tux->shot[item->type] += GUN_MAX_SHOT;
 	tux->gun = item->type;
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 		proto_send_newtux_server(PROTO_SEND_ALL, NULL, tux);
+	}
 
 #ifndef PUBLIC_SERVER
-	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		radar_del(item->id);
-#endif
+	}
+#endif /* PUBLIC_SERVER */
 }
 
-static void action_giveitem(space_t * space, item_t * item, tux_t * tux)
+static void action_giveitem(space_t *space, item_t *item, tux_t *tux)
 {
 	switch (item->type) {
 		case GUN_TOMMY:
@@ -466,23 +481,26 @@ static void action_giveitem(space_t * space, item_t * item, tux_t * tux)
 		case GUN_BOMBBALL:
 			tuxGiveGun(tux, item);
 	
-			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 				proto_send_del_server(PROTO_SEND_ALL, NULL, item->id);
+			}
 	
 			space_del_with_item(space, item, item_destroy);
-	#ifdef PUBLIC_SERVER
+#ifdef PUBLIC_SERVER
 			item_add_new_item(space, ID_UNKNOWN);
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 	
 		case ITEM_MINE:
-			if (tux->bonus != BONUS_GHOST)
+			if (tux->bonus != BONUS_GHOST) {
 				mineExplosion(space, item);
+			}
 			break;
 		case ITEM_EXPLOSION:
 		case ITEM_BIG_EXPLOSION:
-			if (tux->bonus != BONUS_GHOST)
+			if (tux->bonus != BONUS_GHOST) {
 				tux_event_tux_is_deadWithItem(tux, item);
+			}
 			break;
 		case BONUS_SPEED:
 		case BONUS_SHOT:
@@ -492,35 +510,38 @@ static void action_giveitem(space_t * space, item_t * item, tux_t * tux)
 		case BONUS_HIDDEN:
 			tuxGiveBonus(tux, item);
 	
-			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER)
+			if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
 				proto_send_del_server(PROTO_SEND_ALL, NULL, item->id);
+			}
 	
 			space_del_with_item(space, item, item_destroy);
-	#ifdef PUBLIC_SERVER
+#ifdef PUBLIC_SERVER
 			item_add_new_item(space, ID_UNKNOWN);
-	#endif
+#endif /* PUBLIC_SERVER */
 			break;
 	}
 }
 
-void item_tux_give_list_item(tux_t * tux, space_t * spaceItem)
+void item_tux_give_list_item(tux_t *tux, space_t *spaceItem)
 {
 	int x, y, w, h;
 
 	assert(spaceItem != NULL);
 	assert(tux != NULL);
 
-	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT)
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		return;
+	}
 
-	if (tux->status == TUX_STATUS_DEAD)
+	if (tux->status == TUX_STATUS_DEAD) {
 		return;
+	}
 
 	tux_get_proportion(tux, &x, &y, &w, &h);
 	space_action_from_location(spaceItem, action_giveitem, tux, x, y, w, h);
 }
 
-void item_destroy(item_t * p)
+void item_destroy(item_t *p)
 {
 	assert(p != NULL);
 	id_del(p->id);

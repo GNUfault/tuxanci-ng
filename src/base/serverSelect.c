@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,13 +9,13 @@
 #include <sys/time.h>
 
 #ifndef __WIN32__
-#    include <sys/ioctl.h>
-#    include <sys/socket.h>
-#    include <sys/select.h>
-#else
-#    include <io.h>
-#    include <winsock2.h>
-#endif
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#else /* __WIN32__ */
+#include <io.h>
+#include <winsock2.h>
+#endif /* __WIN32__ */
 
 #include "server.h"
 
@@ -30,12 +29,10 @@ void select_restart()
 #ifndef PUBLIC_SERVER
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
-#endif
-
-#ifdef PUBLIC_SERVER
+#else /* PUBLIC_SERVER */
 	tv.tv_sec = 0;
 	tv.tv_usec = 1000;
-#endif
+#endif /* PUBLIC_SERVER */
 
 	FD_ZERO(&readfds);
 	FD_ZERO(&writefds);
@@ -44,7 +41,7 @@ void select_restart()
 
 void select_add_sock_for_read(int sock)
 {
-	//printf("select_add_sock_for_read %d\n", sock);
+	/*printf("select_add_sock_for_read %d\n", sock);*/
 
 	FD_SET(sock, &readfds);
 
@@ -55,7 +52,7 @@ void select_add_sock_for_read(int sock)
 
 void select_add_sock_for_write(int sock)
 {
-	//printf("select_add_sock_for_write %d\n", sock);
+	/*printf("select_add_sock_for_write %d\n", sock);*/
 
 	FD_SET(sock, &writefds);
 
@@ -68,7 +65,9 @@ int select_action()
 {
 	int ret;
 
-#ifdef PUBLIC_SERVER
+#ifndef PUBLIC_SERVER
+	ret = select(max_fd + 1, &readfds, &writefds, (fd_set *) NULL, &tv);
+#else /* PUBLIC_SERVER */
 	list_t *listClient;
 	listClient = server_get_list_clients();
 
@@ -78,11 +77,7 @@ int select_action()
 	} else {
 		ret = select(max_fd + 1, &readfds, &writefds, (fd_set *) NULL, &tv);
 	}
-#endif
-
-#ifndef PUBLIC_SERVER
-	ret = select(max_fd + 1, &readfds, &writefds, (fd_set *) NULL, &tv);
-#endif
+#endif /* PUBLIC_SERVER */
 
 	return ret;
 }
@@ -93,7 +88,7 @@ int select_is_change_sock_for_read(int sock)
 
 	ret = FD_ISSET(sock, &readfds);
 
-	//printf("select_is_change_sock %d -> %d\n", sock, ret);
+	/*printf("select_is_change_sock %d -> %d\n", sock, ret);*/
 
 	return ret;
 }
@@ -104,7 +99,7 @@ int select_is_change_sock_for_write(int sock)
 
 	ret = FD_ISSET(sock, &writefds);
 
-	//printf("select_is_change_sock %d -> %d\n", sock, ret);
+	/*printf("select_is_change_sock %d -> %d\n", sock, ret);*/
 
 	return ret;
 }

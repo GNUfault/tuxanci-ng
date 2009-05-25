@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,17 +21,16 @@ static index_item_t *index_item_new(int key, void *data)
 }
 
 #ifdef DEBUG_INDEX
-static void printIndexItem(index_item_t * p)
+static void printIndexItem(index_item_t *p)
 {
-	printf("key = %d data = %p\n", p->key, p->data);
+	printf(_("[Debug] Index [%d] contains: %p\n"), p->key, p->data);
 }
 
-static void printListIndexItem(list_t * list)
+static void printListIndexItem(list_t *list)
 {
 	int i;
 
-	printf("list :\n");
-	printf("------------------\n");
+	printf(_("List:\n"));
 
 	for (i = 0; i < list->count; i++) {
 		index_item_t *this;
@@ -42,16 +40,16 @@ static void printListIndexItem(list_t * list)
 	}
 }
 
-static void checkList(list_t * list)
+static void checkList(list_t *list)
 {
 	int i;
 	int prev;
 	int this;
 
-	//return;
+	/*return;*/
 
 	if (list->count == 0) {
-		printf("nothing\n");
+		printf(_("Nothing\n"));
 		return;
 	}
 
@@ -62,15 +60,15 @@ static void checkList(list_t * list)
 
 		if (prev >= this) {
 			printListIndexItem(list);
-			assert(!"error");
+			assert(!_("Error"));
 		}
 
 		prev = this;
 	}
 }
-#endif
+#endif /* DEBUG_INDEX */
 
-static void index_item_destroy(index_item_t * p)
+static void index_item_destroy(index_item_t *p)
 {
 	free(p);
 }
@@ -80,11 +78,11 @@ list_t *index_new()
 	return list_new();
 }
 
-void index_add(list_t * list, int key, void *data)
+void index_add(list_t *list, int key, void *data)
 {
 #ifdef DEBUG_INDEX
 	int count = 0;
-#endif
+#endif /* DEBUG_INDEX */
 
 	index_item_t *item;
 	index_item_t *this;
@@ -102,19 +100,18 @@ void index_add(list_t * list, int key, void *data)
 
 #ifdef DEBUG_INDEX
 		if (++count == len * 5) {
-			printf("CICLIC ERROR\n");
+			printf(_("[Error] Cyclic error\n"));
 			printIndexItem(item);
-			printf("-------------------\n");
 			printListIndexItem(list);
 			assert(0);
 		}
-#endif
+#endif /* DEBUG_INDEX */
 
 		if (max < 0) {
 			list_ins(list, 0, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
-#endif
+#endif /* DEBUG_INDEX */
 			return;
 		}
 
@@ -122,7 +119,7 @@ void index_add(list_t * list, int key, void *data)
 			list_add(list, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
-#endif
+#endif /* DEBUG_INDEX */
 			return;
 		}
 
@@ -131,13 +128,13 @@ void index_add(list_t * list, int key, void *data)
 /*
 		printf("min = %d max = %d point = %d len = %d offset = %d\n",
 			min, max, point, len, offset);
-
 */
+
 		if (min > max) {
 			list_ins(list, point, item);
 #ifdef DEBUG_INDEX
 			checkList(list);
-#endif
+#endif /* DEBUG_INDEX */
 			return;
 		}
 
@@ -153,7 +150,7 @@ void index_add(list_t * list, int key, void *data)
 	}
 }
 
-static int getOffsetFromIndex(list_t * list, int key)
+static int getOffsetFromIndex(list_t *list, int key)
 {
 	index_item_t *this;
 	int min, max, point, len;
@@ -175,10 +172,12 @@ static int getOffsetFromIndex(list_t * list, int key)
 		}
 
 		this = (index_item_t *) list->list[point];
+
 /*
 		printf("min = %d max = %d point = %d len = %d offset = %d\n",
 			min, max, point, len, offset);
 */
+
 		if (key == this->key) {
 			return point;
 		}
@@ -195,7 +194,7 @@ static int getOffsetFromIndex(list_t * list, int key)
 	}
 }
 
-void *index_get(list_t * list, int key)
+void *index_get(list_t *list, int key)
 {
 	int offset;
 
@@ -211,7 +210,7 @@ void *index_get(list_t * list, int key)
 	return NULL;
 }
 
-void index_del(list_t * list, int key)
+void index_del(list_t *list, int key)
 {
 	int offset;
 
@@ -222,7 +221,7 @@ void index_del(list_t * list, int key)
 	}
 }
 
-void index_del_with_object(list_t * list, int key, void *f)
+void index_del_with_object(list_t *list, int key, void *f)
 {
 	int offset;
 
@@ -241,7 +240,7 @@ void index_del_with_object(list_t * list, int key, void *f)
 	}
 }
 
-void index_action(list_t * list, void *f)
+void index_action(list_t *list, void *f)
 {
 	int i;
 
@@ -256,12 +255,12 @@ void index_action(list_t * list, void *f)
 	}
 }
 
-void index_destroy(list_t * list)
+void index_destroy(list_t *list)
 {
 	list_destroy_item(list, index_item_destroy);
 }
 
-void index_destroyWithObject(list_t * list, void *f)
+void index_destroyWithObject(list_t *list, void *f)
 {
 	index_action(list, f);
 	list_destroy_item(list, index_item_destroy);
