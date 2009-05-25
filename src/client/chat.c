@@ -239,10 +239,10 @@ static void chat_eventEnable()
 				continue;		/* continue with other keys */
 			} else {
 				/* the chat row is empty - it is needed to turn off the chat window */
-				//chat_eventDisable();
+				/*chat_eventDisable();*/
 				/* turn off key catching into the buffer and clear the buffer */
-				//interface_disable_keyboard_buffer();
-				//keyboard_buffer_clear();
+				/*interface_disable_keyboard_buffer();*/
+				/*keyboard_buffer_clear();*/
 			}
 		}
 

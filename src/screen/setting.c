@@ -347,7 +347,7 @@ void setting_init()
 	check_music = check_new(label_music->x + label_music->w + 10, WINDOW_SIZE_Y - 80,
 				music_is_active(), eventWidget);
 	label_sound = label_new(_("Sound:"), check_music->x + WIDGET_CHECK_WIDTH + 10,
-			 	WINDOW_SIZE_Y - 85, WIDGET_LABEL_LEFT);
+				WINDOW_SIZE_Y - 85, WIDGET_LABEL_LEFT);
 
 	check_sound = check_new(label_sound->x + label_sound->w + 10, WINDOW_SIZE_Y - 80,
 				sound_is_active(), eventWidget);
