@@ -27,7 +27,7 @@ void audio_init()
 
 	DEBUG_MSG(_("[Debug] Initializing audio\n"));
 
-	if (SDL_Init(SDL_INIT_AUDIO) == -1) {
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO) == -1) {
 		fprintf(stderr, _("[Error] Unable to initialize audio: %s\n"), SDL_GetError());
 		return;
 	}
