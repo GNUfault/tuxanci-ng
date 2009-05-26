@@ -27,7 +27,7 @@ IF ( DEFINED $ENV{LINGUAS} )
 ELSE ( DEFINED $ENV{LINGUAS} )
 	# all languages
 	FILE ( GLOB _po_files *.po )
-ENDIF ( DEFINED $ENV{FOO} )
+ENDIF ( DEFINED $ENV{LINGUAS} )
 SET ( _gmoFiles )
 FOREACH ( _current_PO_FILE ${_po_files} )
 	GET_FILENAME_COMPONENT ( _lang ${_current_PO_FILE} NAME_WE )
