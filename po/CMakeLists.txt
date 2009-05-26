@@ -4,6 +4,7 @@
 MESSAGE ( STATUS "<Locating Gettext>" )
 FIND_PACKAGE ( Gettext REQUIRED )
 INCLUDE_DIRECTORIES ( ${GETTEXT_INCLUDE_DIR} )
+SET ( DOMAIN "tuxanci" )
 ###############################################################################
 # CREATE .MO FOR EACH .PO
 ###############################################################################
@@ -48,7 +49,7 @@ FOREACH ( _current_PO_FILE ${_po_files} )
 		DEPENDS ${_current_PO_FILE}
 	)
 	INSTALL ( FILES ${CMAKE_BINARY_DIR}/po/${_lang}.gmo
-		DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/ RENAME tuxanci.mo )
+		DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/ RENAME ${domain}.mo )
 	LIST ( APPEND _gmoFiles ${_gmoFile} )
 ENDFOREACH ( _current_PO_FILE )
 ADD_CUSTOM_TARGET ( pofiles ALL DEPENDS ${_gmoFiles} )
