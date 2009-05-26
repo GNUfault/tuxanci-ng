@@ -31,11 +31,11 @@ IF ( DEFINED $ENV{LINGUAS} )
 			MESSAGE ( "LINGUAS variable is set but no coresponding availible translations found. Installing none" )
 		ENDIF ( ${_install} )
 	ELSE ( $ENV{LINGUAS} )
-		MESSAGE ( "LINGUAS variable is empty so no languages will be installed"
+		MESSAGE ( "LINGUAS variable is empty so no languages will be installed" )
 	ENDIF ( $ENV{LINGUAS} )
 ELSE ( DEFINED $ENV{LINGUAS} )
 	# all languages
-	MESSAGE ( "Installing all available languages."
+	MESSAGE ( "Installing all available languages." )
 	FILE ( GLOB _po_files *.po )
 ENDIF ( DEFINED $ENV{LINGUAS} )
 SET ( _gmoFiles )
