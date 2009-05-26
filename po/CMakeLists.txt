@@ -4,8 +4,6 @@
 MESSAGE ( STATUS "<Locating Gettext>" )
 FIND_PACKAGE ( Gettext REQUIRED )
 INCLUDE_DIRECTORIES ( ${GETTEXT_INCLUDE_DIR} )
-FILE ( GLOB _po_files *.po )
-SET ( _gmoFiles )
 ###############################################################################
 # CREATE .MO FOR EACH .PO
 ###############################################################################
@@ -15,6 +13,22 @@ SET ( _gmoFiles )
 # if it is empty, dont install any language
 # if it is set to some value, install those
 ###############################################################################
+IF ( DEFINED $ENV{LINGUAS} )
+	# no languages
+	SET ( _po_files )
+	IF ( $ENV{LINGUAS} )
+		# only specified languages
+		FOREACH ( _lang $ENV{LINGUAS} )
+			IF ( EXISTS ${CURRENT_SOURCE_DIR}/${_lang}.po )
+				LIST ( APPEND _po_files ${CURRENT_SOURCE_DIR}/${_lang}.po )
+			ENDIF ( EXISTS ${CURRENT_SOURCE_DIR}/${_lang}.po )
+		ENDFOREACH ( _lang )
+	ENDIF ( $ENV{LINGUAS} )
+ELSE ( DEFINED $ENV{LINGUAS} )
+	# all languages
+	FILE ( GLOB _po_files *.po )
+ENDIF ( DEFINED $ENV{FOO} )
+SET ( _gmoFiles )
 FOREACH ( _current_PO_FILE ${_po_files} )
 	GET_FILENAME_COMPONENT ( _lang ${_current_PO_FILE} NAME_WE )
 	SET ( _gmoFile ${CMAKE_BINARY_DIR}/po/${_lang}.gmo )
