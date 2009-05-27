@@ -32,18 +32,19 @@ ELSE ( "${lingua}" STREQUAL "" )
 	ENDFOREACH ( _lang )
 ENDIF ( "${lingua}" STREQUAL "" )
 SET ( _gmoFiles )
+SET ( STORE_DIR "${CMAKE_BINARY_DIR}/po" )
 FOREACH ( _current_PO_FILE ${_po_files} )
-	IF ( EXISTS ${_current_PO_FILE} )	
+	IF ( EXISTS ${_current_PO_FILE} )
 		GET_FILENAME_COMPONENT ( _lang ${_current_PO_FILE} NAME_WE )
-		SET ( _gmoFile ${CMAKE_BINARY_DIR}/po/${_lang}.gmo )
+		SET ( _gmoFile "${_lang}.mo" )
 		ADD_CUSTOM_COMMAND ( OUTPUT ${_gmoFile}
 			COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_gmoFile} ${_current_PO_FILE}
-			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+			WORKING_DIRECTORY "${STORE_DIR}"
 			DEPENDS ${_current_PO_FILE}
 		)
-		INSTALL ( FILES ${CMAKE_BINARY_DIR}/po/${_lang}.gmo
-			DESTINATION ${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/ RENAME ${domain}.mo )
-		LIST ( APPEND _gmoFiles ${_gmoFile} )
+		INSTALL ( FILES "${STORE_DIR}/${_gmoFile}"
+			DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/" RENAME ${domain}.mo )
+		LIST ( APPEND _gmoFiles "${STORE_DIR}/${_gmoFile}" )
 	ENDIF ( EXISTS ${_current_PO_FILE} )
 ENDFOREACH ( _current_PO_FILE )
 ADD_CUSTOM_TARGET ( pofiles ALL DEPENDS ${_gmoFiles} )
