@@ -14,17 +14,17 @@
 ###############################################################################
 # DEFAULT OPTIONS
 ###############################################################################
-OPTION (BUILD_SERVER	"Build the server instead of client"		OFF)
-OPTION (ENABLE_IPV6		"Build with the ipv6 support"				ON)
-OPTION (WITH_AUDIO		"Build with audio enabled"					ON)
-OPTION (ENABLE_DEBUG	"Build debug features"						OFF)
-OPTION (ENABLE_COMPRESSION    "Compress documentation files"        OFF)
-OPTION (DEVELOPER		"Modify stuff to please tuxanci devs"		OFF)
-OPTION (PACKAGE			"Define building binary package"			OFF)
-OPTION (WITH_NLS		"Build the translations"					ON)
-OPTION (Apple			"Build some apple quirks. USE ONLY ON MAC!"	OFF)
-OPTION (WITH_OPENGL		"Use opengl as renderer instead of SW"		ON)
-OPTION (CROSSCOMPILE	"Crosscompile tuxanci defined by ENV{TARGET}" OFF)
+OPTION (BUILD_SERVER        "Build the server instead of client"           OFF)
+OPTION (ENABLE_IPV6         "Build with the ipv6 support"                  ON)
+OPTION (WITH_AUDIO          "Build with audio enabled"                     ON)
+OPTION (ENABLE_DEBUG        "Build debug features"                         OFF)
+OPTION (ENABLE_COMPRESSION  "Compress documentation files"                 OFF)
+OPTION (DEVELOPER           "Modify stuff to please tuxanci devs"          OFF)
+OPTION (PACKAGE             "Define building binary package"               OFF)
+OPTION (WITH_NLS            "Build the translations"                       ON)
+OPTION (Apple               "Build some apple quirks. USE ONLY ON MAC!"    OFF)
+OPTION (WITH_OPENGL         "Use opengl as renderer instead of SW"         ON)
+OPTION (CROSSCOMPILE        "Crosscompile tuxanci defined by ENV{TARGET}"  OFF)
 ###############################################################################
 # IMPORTANT DEFINITIONS [PREFIX,...]
 ###############################################################################
