@@ -13,23 +13,23 @@
 #define PREFIX			PACKAGE_PREFIX "@CMAKE_INSTALL_PREFIX@" "/"
 #define APPNAME			"@APPNAME@"
 #ifdef PUBLIC_SERVER
-	#define SERVER_CONFIG	PREFIX "@CMAKE_CONF_PATH@" "/"	APPNAME	"/server.conf"
+	#define SERVER_CONFIG	PACKAGE_PREFIX "@CMAKE_CONF_PATH@" "/"	APPNAME	"/server.conf"
 #endif /* PUBLIC_SERVER */
-#define PATH_DIR		PREFIX "@CMAKE_DATA_PATH@"	"/"	APPNAME "/"
+#define PATH_DIR		PACKAGE_PREFIX "@CMAKE_DATA_PATH@"	"/"	APPNAME "/"
 
 /* windows bug */
 #ifndef __WIN32__
-	#define PATH_MODULES 	PREFIX "@LIB_INSTALL_DIR@" "/"	APPNAME	"/"
+	#define PATH_MODULES 	PACKAGE_PREFIX "@LIB_INSTALL_DIR@" "/"	APPNAME	"/"
 #else /* __WIN32__ */
-	#define PATH_MODULES 	PREFIX
+	#define PATH_MODULES 	"./"
 #endif /* __WIN32__ */
 
 #define PATH_IMAGE		PATH_DIR		"images/"
 #define PATH_ARENA		PATH_DIR		"arena/"
 #define PATH_SOUND		PATH_DIR		"sound/"
 #define PATH_MUSIC		PATH_DIR		"music/"
-#define PATH_LOCALE		PREFIX "@CMAKE_LOCALE_PATH@"	"/"
-#define PATH_DOC		PREFIX "@CMAKE_DOC_PATH@"	"/"
-#define PACKAGE			"tuxanci"
+#define PATH_LOCALE		PACKAGE_PREFIX "@CMAKE_LOCALE_PATH@"	"/"
+#define PATH_DOC		PACKAGE_PREFIX "@CMAKE_DOC_PATH@"	"/"
+#define PACKAGE			APPNAME
 
 #endif /* PATH_H */
