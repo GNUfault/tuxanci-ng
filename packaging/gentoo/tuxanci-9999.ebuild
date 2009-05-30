@@ -48,13 +48,12 @@ src_configure() {
 
 	mycmakeargs="${mycmakeargs}
 		-DCMAKE_INSTALL_PREFIX=${GAMES_PREFIX}
-		-DCMAKE_INSTALL_ICONDIR=/usr/share/pixmaps/
-		-DCMAKE_INSTALL_DESKTOPDIR=/usr/share/applications/
+		-DCMAKE_INSTALL_ICONDIR=${GAMES_DATADIR_BASE}/pixmaps/
+		-DCMAKE_INSTALL_DESKTOPDIR=${GAMES_DATADIR_BASE}/applications/
 		-DCMAKE_DATA_PATH=${GAMES_DATADIR}
 		-DCMAKE_LOCALE_PATH=${GAMES_DATADIR_BASE}/locale/
 		-DCMAKE_DOC_PATH=${GAMES_DATADIR_BASE}/doc/${PF}
-		-DCMAKE_CONF_PATH=${GAMES_SYSCONFDIR}
-		-DLIB_INSTALL_DIR=$(games_get_libdir)"
+		-DCMAKE_CONF_PATH=${GAMES_SYSCONFDIR}"
 
 	cmake-utils_src_configure
 }
