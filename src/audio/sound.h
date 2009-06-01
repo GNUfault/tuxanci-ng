@@ -9,6 +9,15 @@
 #define SOUND_GROUP_BASE "base"
 #define SOUND_GROUP_USER "user"
 
+/*
+   typedef struct sound_struct
+   {
+   char *name;
+   int group;
+   Mix_Chunk *sound;
+   } sound_t;
+ */
+
 extern bool_t sound_is_inicialized();
 extern void sound_init();
 extern void sound_add(char *file, char *name, char *group);

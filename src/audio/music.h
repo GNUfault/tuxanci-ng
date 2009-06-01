@@ -9,6 +9,15 @@
 #define MUSIC_GROUP_BASE "base"
 #define MUSIC_GROUP_USER "user"
 
+/*
+   typedef struct music_struct
+   {
+   char *name;
+   int group;
+   Mix_Music *music;
+   } music_t;
+ */
+
 extern bool_t music_is_inicialized();
 extern void music_init();
 extern void music_add(char *file, char *name, char *group);

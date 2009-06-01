@@ -37,10 +37,11 @@ void sound_init()
 	isSoundInit = TRUE;
 	var_sound_is_active = TRUE;
 
-	if (isParamFlag("--no-sound"))
+	if (isParamFlag("--no-sound")) {
 		sound_set_active(FALSE);
-	else if (isParamFlag("--sound"))
+	} else if (isParamFlag("--sound")) {
 		sound_set_active(TRUE);
+	}
 }
 
 /*
@@ -91,8 +92,9 @@ void sound_add(char *file, char *name, char *group)
 {
 	Mix_Chunk *new;
 
-	if (isSoundInit == FALSE)
+	if (isSoundInit == FALSE) {
 		return;
+	}
 
 	assert(file != NULL);
 	assert(name != NULL);
@@ -107,8 +109,9 @@ void sound_add(char *file, char *name, char *group)
  */
 void sound_play(char *name, char *group)
 {
-	if (isSoundInit == FALSE || var_sound_is_active == FALSE)
+	if (isSoundInit == FALSE || var_sound_is_active == FALSE) {
 		return;
+	}
 
 	playMixSound(storage_get(listStorage, group, name));
 }
@@ -134,8 +137,9 @@ bool_t sound_is_active()
  */
 void sound_quit()
 {
-	if (isSoundInit == FALSE)
+	if (isSoundInit == FALSE) {
 		return;
+	}
 
 	DEBUG_MSG(_("[Debug] Shutting down sound\n"));
 
