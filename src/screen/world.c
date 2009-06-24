@@ -45,7 +45,6 @@
 #include "table.h"
 #include "control.h"
 
-
 static arena_t *arena;
 static bool_t isScreenWorldInit = FALSE;
 static bool_t isEndWorld;
@@ -247,19 +246,19 @@ static void control_keyboard(tux_t *tux, control_t *control)
 {
 	switch (control_get_key_route(control))
 	{
-		case CONTROL_UP :
+		case CONTROL_UP:
 			netAction(tux, TUX_UP);
 			tux_action(tux, TUX_UP);
 		break;
-		case CONTROL_RIGHT :
+		case CONTROL_RIGHT:
 			netAction(tux, TUX_RIGHT);
 			tux_action(tux, TUX_RIGHT);
 		break;
-		case CONTROL_LEFT :
+		case CONTROL_LEFT:
 			netAction(tux, TUX_LEFT);
 			tux_action(tux, TUX_LEFT);
 		break;
-		case CONTROL_DOWN :
+		case CONTROL_DOWN:
 			netAction(tux, TUX_DOWN);
 			tux_action(tux, TUX_DOWN);
 		break;
@@ -267,11 +266,11 @@ static void control_keyboard(tux_t *tux, control_t *control)
 
 	switch (control_get_key_action(control))
 	{
-		case CONTROL_SHOT :
+		case CONTROL_SHOT:
 			netAction(tux, TUX_SHOT);
 			tux_action(tux, TUX_SHOT);
 		break;
-		case CONTROL_SWITCH :
+		case CONTROL_SWITCH:
 			netAction(tux, TUX_SWITCH_GUN);
 			tux_action(tux, TUX_SWITCH_GUN);
 		break;

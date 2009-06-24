@@ -1,4 +1,3 @@
-
 #include <SDL.h>
 #include <limits.h>
 #include <assert.h>
@@ -36,26 +35,21 @@ int control_get_key_route(control_t *my_control)
 
 	mapa = SDL_GetKeyState(NULL);
 
-	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++)
-	{
-		if (mapa[my_control->key[i]] == SDL_PRESSED)
-		{
+	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++) {
+		if (mapa[my_control->key[i]] == SDL_PRESSED) {
 			my_control->count[i]++;
 		}
-		else
-		{
+		else {
 			my_control->count[i] = 0;
 		}
 	}
 
 	z = INT_MAX;
 
-	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++)
-	{
+	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++) {
 		if ( my_control->count[i] > 0 &&
 		     my_control->count[i] < z &&
-		     mapa[my_control->key[i]] == SDL_PRESSED )
-		{
+		     mapa[my_control->key[i]] == SDL_PRESSED ) {
 			z = my_control->count[i];
 			ret_key = i;
 		}
@@ -75,13 +69,11 @@ int control_get_key_action(control_t *my_control)
 
 	mapa = SDL_GetKeyState(NULL);
 
-	if (mapa[my_control->key[CONTROL_SHOT]] == SDL_PRESSED)
-	{
+	if (mapa[my_control->key[CONTROL_SHOT]] == SDL_PRESSED) {
 		return CONTROL_SHOT;
 	}
 
-	if (mapa[my_control->key[CONTROL_SWITCH]] == SDL_PRESSED)
-	{
+	if (mapa[my_control->key[CONTROL_SWITCH]] == SDL_PRESSED) {
 		return CONTROL_SWITCH;
 	}
 

@@ -1,5 +1,4 @@
 #ifndef CONTROL_H
-
 #define CONTROL_H
 
 #define CONTROL_NONE	-1
@@ -19,7 +18,8 @@ typedef struct control_struct
 	int count[CONTROL_KEY_COUNT];
 } control_t;
 
-extern control_t* control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left, SDLKey arg_down,
+extern control_t* control_new(SDLKey arg_up, SDLKey arg_right,
+			SDLKey arg_left, SDLKey arg_down,
 			SDLKey arg_shot, SDLKey arg_switch);
 extern int control_get_key_route(control_t *my_control);
 extern int control_get_key_action(control_t *my_control);
