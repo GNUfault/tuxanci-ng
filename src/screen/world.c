@@ -33,7 +33,7 @@
 #ifndef NO_SOUND
 #include "music.h"
 #include "sound.h"
-#endif
+#endif /* NO_SOUND */
 
 #include "screen.h"
 #include "world.h"
@@ -79,7 +79,7 @@ void world_set_arena(arenaFile_t *arenaFile)
 
 #ifndef NO_SOUND
 	music_play(arena->music, MUSIC_GROUP_USER);
-#endif
+#endif /* NO_SOUND */
 }
 
 void world_do_end()
@@ -109,7 +109,7 @@ void world_inc_round()
 		/*printf("count %d ending\n", count);*/
 #ifndef NO_SOUND
 		sound_play("end", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 		timer_add_task(arena_get_current()->listTimer, TIMER_ONE, timer_endArena, NULL, TIMER_END_ARENA);
 	}
 }
@@ -149,12 +149,14 @@ void prepareArena()
 
 			tux = tux_new();
 
-			control_tux_right = control_new(key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
-				      key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
-				      key_table_get_key(KEY_TUX_RIGHT_SHOOT));
+			control_tux_right = control_new(
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
+				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
+				key_table_get_key(KEY_TUX_RIGHT_SHOOT)
+			);
 
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			tuxWithControlRightKeyboard = tux;
@@ -164,12 +166,14 @@ void prepareArena()
 
 			tux = tux_new();
 
-			control_tux_left = control_new(key_table_get_key(KEY_TUX_LEFT_MOVE_UP),
-				      key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT),
-				      key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT),
-				      key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN),
-				      key_table_get_key(KEY_TUX_LEFT_SWITCH_WEAPON),
-				      key_table_get_key(KEY_TUX_LEFT_SHOOT));
+			control_tux_left = control_new(
+				key_table_get_key(KEY_TUX_LEFT_MOVE_UP),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN),
+				key_table_get_key(KEY_TUX_LEFT_SWITCH_WEAPON),
+				key_table_get_key(KEY_TUX_LEFT_SHOOT)
+			);
 
 			tux->control = TUX_CONTROL_KEYBOARD_LEFT;
 			tuxWithControlLeftKeyboard = tux;
@@ -195,12 +199,14 @@ void prepareArena()
 
 			tux = tux_new();
 
-			control_tux_right = control_new(key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
-				      key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
-				      key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
-				      key_table_get_key(KEY_TUX_RIGHT_SHOOT));
+			control_tux_right = control_new(
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
+				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
+				key_table_get_key(KEY_TUX_RIGHT_SHOOT)
+			);
 
 			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
 			tuxWithControlRightKeyboard = tux;
@@ -244,36 +250,34 @@ static void netAction(tux_t *tux, int action)
 
 static void control_keyboard(tux_t *tux, control_t *control)
 {
-	switch (control_get_key_route(control))
-	{
+	switch (control_get_key_route(control)) {
 		case CONTROL_UP:
 			netAction(tux, TUX_UP);
 			tux_action(tux, TUX_UP);
-		break;
+			break;
 		case CONTROL_RIGHT:
 			netAction(tux, TUX_RIGHT);
 			tux_action(tux, TUX_RIGHT);
-		break;
+			break;
 		case CONTROL_LEFT:
 			netAction(tux, TUX_LEFT);
 			tux_action(tux, TUX_LEFT);
-		break;
+			break;
 		case CONTROL_DOWN:
 			netAction(tux, TUX_DOWN);
 			tux_action(tux, TUX_DOWN);
-		break;
+			break;
 	}
 
-	switch (control_get_key_action(control))
-	{
+	switch (control_get_key_action(control)) {
 		case CONTROL_SHOT:
 			netAction(tux, TUX_SHOT);
 			tux_action(tux, TUX_SHOT);
-		break;
+			break;
 		case CONTROL_SWITCH:
 			netAction(tux, TUX_SWITCH_GUN);
 			tux_action(tux, TUX_SWITCH_GUN);
-		break;
+			break;
 	}
 }
 
@@ -465,12 +469,12 @@ void stoptWorld()
 
 #ifndef NO_SOUND
 	music_stop();
-#endif
+#endif /* NO_SOUND */
 	image_del_all_image_in_group(IMAGE_GROUP_USER);
 
 #ifndef NO_SOUND
 	music_del_all_in_group(MUSIC_GROUP_USER);
-#endif
+#endif /* NO_SOUND */
 	module_quit();
 	chat_quit();
 	id_quit_list();
@@ -499,7 +503,7 @@ void world_init()
 	sound_add("item_gun.ogg", "item_gun", SOUND_GROUP_BASE);
 	sound_add("switch_gun.ogg", "switch_gun", SOUND_GROUP_BASE);
 	sound_add("end.ogg", "end", SOUND_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 	isScreenWorldInit = TRUE;
 }

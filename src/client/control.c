@@ -5,8 +5,8 @@
 #include "main.h"
 #include "control.h"
 
-control_t* control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left, SDLKey arg_down,
-			SDLKey arg_shot, SDLKey arg_switch)
+control_t* control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left,
+		       SDLKey arg_down, SDLKey arg_shot, SDLKey arg_switch)
 {
 	control_t *tmp;
 
@@ -24,7 +24,7 @@ control_t* control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left, SDLKey 
 
 int control_get_key_route(control_t *my_control)
 {
-	Uint8 *mapa;
+	Uint8 *map;
 	SDLKey ret_key;
 	int z;
 	int i;
@@ -33,23 +33,22 @@ int control_get_key_route(control_t *my_control)
 
 	ret_key = CONTROL_NONE;
 
-	mapa = SDL_GetKeyState(NULL);
+	map = SDL_GetKeyState(NULL);
 
-	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++) {
-		if (mapa[my_control->key[i]] == SDL_PRESSED) {
+	for (i = 0; i < CONTROL_KEY_COUNT_ROUTE; i++) {
+		if (map[my_control->key[i]] == SDL_PRESSED) {
 			my_control->count[i]++;
-		}
-		else {
+		} else {
 			my_control->count[i] = 0;
 		}
 	}
 
 	z = INT_MAX;
 
-	for (i = 0; i<CONTROL_KEY_COUNT_ROUTE; i++) {
-		if ( my_control->count[i] > 0 &&
-		     my_control->count[i] < z &&
-		     mapa[my_control->key[i]] == SDL_PRESSED ) {
+	for (i = 0; i < CONTROL_KEY_COUNT_ROUTE; i++) {
+		if (my_control->count[i] > 0 &&
+		    my_control->count[i] < z &&
+		    map[my_control->key[i]] == SDL_PRESSED) {
 			z = my_control->count[i];
 			ret_key = i;
 		}
@@ -60,20 +59,20 @@ int control_get_key_route(control_t *my_control)
 
 int control_get_key_action(control_t *my_control)
 {
-	Uint8 *mapa;
+	Uint8 *map;
 	SDLKey ret_key;
 
 	assert(my_control != NULL);
 
 	ret_key = CONTROL_NONE;
 
-	mapa = SDL_GetKeyState(NULL);
+	map = SDL_GetKeyState(NULL);
 
-	if (mapa[my_control->key[CONTROL_SHOT]] == SDL_PRESSED) {
+	if (map[my_control->key[CONTROL_SHOT]] == SDL_PRESSED) {
 		return CONTROL_SHOT;
 	}
 
-	if (mapa[my_control->key[CONTROL_SWITCH]] == SDL_PRESSED) {
+	if (map[my_control->key[CONTROL_SWITCH]] == SDL_PRESSED) {
 		return CONTROL_SWITCH;
 	}
 

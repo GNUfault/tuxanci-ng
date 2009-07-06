@@ -39,7 +39,7 @@ void label_draw(widget_t *widget)
 			font_draw(p->text, widget->x - p->w / 2, widget->y + p->h / 2, COLOR_WHITE);
 			break;
 		default:
-			assert(!_("[Error] Unknown dimension for label placement."));
+			assert(!_("[Error] Unknown dimension for label placement"));
 			break;
 	}
 }

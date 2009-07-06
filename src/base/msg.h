@@ -14,7 +14,7 @@
 #endif /* DEBUG */
 
 #define warning(msg,arg...)	fprintf(stderr, "%s ", _("[Warning]")); fprintf(stderr, _(msg) "\n", ##arg)
-#define error(msg,arg...)	fprintf(stderr, "%s ", _("[Error]")));  fprintf(stderr, _(msg) "\n", ##arg)
+#define error(msg,arg...)	fprintf(stderr, "%s ", _("[Error]"));   fprintf(stderr, _(msg) "\n", ##arg)
 #define fatal(msg,arg...)								\
 {											\
 	fprintf(stderr, "%s ", _("[Fatal]")); fprintf(stderr, _(msg) "\n", ##arg);	\
