@@ -5,6 +5,7 @@
 #include "interface.h"
 #include "font.h"
 #include "image.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_textfield.h"
@@ -300,18 +301,14 @@ static void readKey(widget_textfield_t *p)
 void text_field_event(widget_t *widget)
 {
 	widget_textfield_t *p;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_TEXTFILED);
 
 	p = (widget_textfield_t *) widget->private_data;
 
-	interface_get_mouse_position(&x, &y);
-
-	if (interface_is_mouse_clicket()) {
-		if (x >= widget->x && x <= widget->x + WIDGET_TEXTFIELD_WIDTH &&
-		    y >= widget->y && y <= widget->y + WIDGET_TEXTFIELD_HEIGHT) {
+	if (mouse_buffer_is_on_area(0, 0, 0, 0, MOUSE_BUF_AREA_NONE|MOUSE_BUF_CLICK)) {
+		if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_TEXTFIELD_WIDTH, WIDGET_TEXTFIELD_HEIGHT, MOUSE_BUF_MOTION)) {
 			p->active = TRUE;
 			interface_enable_keyboard_buffer();
 			keyboard_buffer_clear();

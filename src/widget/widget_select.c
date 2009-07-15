@@ -4,6 +4,7 @@
 #include "main.h"
 #include "interface.h"
 #include "font.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_select.h"
@@ -92,7 +93,7 @@ void select_draw(widget_t *widget)
 		line = (char *) p->list->list[i];
 
 		font_text_size(line, &w, &h);
-
+/*
 		if (x > widget->x && y > widget->y + i * 20 &&
 		    x < widget->x + w && y < widget->y + i * 20 + h) {
 			font_draw(line, widget->x, widget->y + i * 20, COLOR_YELLOW);
@@ -103,6 +104,17 @@ void select_draw(widget_t *widget)
 				font_draw(line, widget->x, widget->y + i * 20, COLOR_WHITE);
 			}
 		}
+*/
+		if (mouse_buffer_is_on_area(widget->x, widget->y+i * 20, w, h, MOUSE_BUF_MOTION)) {
+			font_draw(line, widget->x, widget->y + i * 20, COLOR_YELLOW);
+		} else {
+			if (p->select == i) {
+				font_draw(line, widget->x, widget->y + i * 20, COLOR_RED);
+			} else {
+				font_draw(line, widget->x, widget->y + i * 20, COLOR_WHITE);
+			}
+		}
+
 	}
 }
 
@@ -125,12 +137,18 @@ void select_event(widget_t *widget)
 
 		font_text_size(line, &w, &h);
 
+		if (mouse_buffer_is_on_area(widget->x, widget->y+i * 20, w, h, MOUSE_BUF_CLICK)) {
+			p->select = i;
+			p->fce_event(p);
+		}
+/*
 		if (x > widget->x && y > widget->y + i * 20 &&
 		    x < widget->x + w && y < widget->y + i * 20 + h &&
 		    interface_is_mouse_clicket()) {
 			p->select = i;
 			p->fce_event(p);
 		}
+*/
 	}
 }
 

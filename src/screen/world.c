@@ -149,34 +149,14 @@ void prepareArena()
 
 			tux = tux_new();
 
-			control_tux_right = control_new(
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
-				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
-				key_table_get_key(KEY_TUX_RIGHT_SHOOT)
-			);
-
-			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
-			tuxWithControlRightKeyboard = tux;
+			world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 			public_server_get_setting_name_right(name);
 			tux_set_name(tux, name);
 			space_add(arena->spaceTux, tux);
 
 			tux = tux_new();
 
-			control_tux_left = control_new(
-				key_table_get_key(KEY_TUX_LEFT_MOVE_UP),
-				key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT),
-				key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT),
-				key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN),
-				key_table_get_key(KEY_TUX_LEFT_SWITCH_WEAPON),
-				key_table_get_key(KEY_TUX_LEFT_SHOOT)
-			);
-
-			tux->control = TUX_CONTROL_KEYBOARD_LEFT;
-			tuxWithControlLeftKeyboard = tux;
+			world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_LEFT);
 			public_server_get_settingNameLeft(name);
 			tux_set_name(tux, name);
 			space_add(arena->spaceTux, tux);
@@ -199,17 +179,7 @@ void prepareArena()
 
 			tux = tux_new();
 
-			control_tux_right = control_new(
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
-				key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
-				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON),
-				key_table_get_key(KEY_TUX_RIGHT_SHOOT)
-			);
-
-			tux->control = TUX_CONTROL_KEYBOARD_RIGHT;
-			tuxWithControlRightKeyboard = tux;
+			world_set_control_tux(tux, TUX_CONTROL_KEYBOARD_RIGHT);
 			public_server_get_setting_name_right(name);
 			tux_set_name(tux, name);
 			space_add(arena->spaceTux, tux);
@@ -308,9 +278,31 @@ void world_set_control_tux(tux_t *tux, int control_type)
 	switch (control_type) {
 		case TUX_CONTROL_KEYBOARD_RIGHT:
 			tuxWithControlRightKeyboard = tux;
+			tux->control = control_type;
+
+			control_tux_right = control_new(
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_UP),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_RIGHT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_LEFT),
+				key_table_get_key(KEY_TUX_RIGHT_MOVE_DOWN),
+				key_table_get_key(KEY_TUX_RIGHT_SHOOT),
+				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON)
+			);
+
 			break;
 		case TUX_CONTROL_KEYBOARD_LEFT:
 			tuxWithControlLeftKeyboard = tux;
+			tux->control = control_type;
+
+			control_tux_left = control_new(
+				key_table_get_key(KEY_TUX_LEFT_MOVE_UP),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT),
+				key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN),
+				key_table_get_key(KEY_TUX_RIGHT_SHOOT),
+				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON)
+			);
+
 			break;
 	}
 }

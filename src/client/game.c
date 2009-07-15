@@ -22,6 +22,7 @@
 #include "settingKeys.h"
 #include "panel.h"
 #include "radar.h"
+#include "mouse_buffer.h"
 
 #ifndef NO_SOUND
 #include "audio.h"
@@ -45,6 +46,7 @@ static void initGame()
 {
 	home_director_create();
 
+	mouse_buffer_init();
 	interface_init();
 	font_init();
 	layer_init();
@@ -76,6 +78,7 @@ static void initGame()
 
 void game_quit()
 {
+	mouse_buffer_quit();
 	interface_quit();
 
 	main_menu_quit();

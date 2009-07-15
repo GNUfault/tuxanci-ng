@@ -4,6 +4,7 @@
 #include "main.h"
 #include "interface.h"
 #include "image.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_check.h"
@@ -50,7 +51,6 @@ void check_draw(widget_t *widget)
 void check_event(widget_t *widget)
 {
 	widget_check_t *p;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_CHECK);
@@ -62,11 +62,7 @@ void check_event(widget_t *widget)
 		return;
 	}
 
-	interface_get_mouse_position(&x, &y);
-
-	if (x >= widget->x && x <= widget->x + WIDGET_CHECK_WIDTH &&
-	    y >= widget->y && y <= widget->y + WIDGET_CHECK_HEIGHT &&
-	    interface_is_mouse_clicket()) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, MOUSE_BUF_CLICK)) {
 		if (p->status == TRUE) {
 			p->status = FALSE;
 			p->time = WIDGET_CHECK_TIME_SWITCH_STATUS;

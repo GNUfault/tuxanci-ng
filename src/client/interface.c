@@ -7,7 +7,7 @@
 #include "screen.h"
 #include "keyboardBuffer.h"
 #include "hotKey.h"
-
+#include "mouse_buffer.h"
 
 static SDL_Surface *screen;	/* window surface */
 /*static SDL_Surface *my_surface;*/
@@ -278,6 +278,10 @@ int eventAction()
 
 	while (SDL_WaitEvent(&event)) {
 		switch (event.type) {
+				case SDL_MOUSEBUTTONDOWN:
+					mouse_buffer_event(&event.button);
+					break;
+
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 					default:
@@ -300,6 +304,7 @@ int eventAction()
 						screen_event();
 						hot_key_event();
 						screen_switch();
+						mouse_buffer_clean();
 						break;
 
 					default:

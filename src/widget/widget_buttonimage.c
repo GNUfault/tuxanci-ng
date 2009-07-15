@@ -5,6 +5,7 @@
 #include "interface.h"
 #include "font.h"
 #include "image.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_buttonimage.h"
@@ -49,7 +50,6 @@ void button_image_event(widget_t *widget)
 {
 	widget_buttonimage_t *p;
 	static int my_time = 0;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_BUTTONIMAGE);
@@ -61,10 +61,7 @@ void button_image_event(widget_t *widget)
 		return;
 	}
 
-	interface_get_mouse_position(&x, &y);
-
-	if (x >= widget->x && x <= widget->x + p->w &&
-	    y >= widget->y && y <= widget->y + p->h && interface_is_mouse_clicket()) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y,  p->w, p->h, MOUSE_BUF_CLICK)) {
 		my_time = WIDGET_BUTTONIMAGE_TIME;
 		p->active = 1;
 		p->fce_event(widget);

@@ -7,6 +7,7 @@
 #include "font.h"
 #include "widget_statusbar.h"
 #include "widget.h"
+#include "mouse_buffer.h"
 
 typedef struct item_struct {
 	widget_t *widget;
@@ -107,15 +108,12 @@ void statusbar_draw(widget_t *widget)
 void statusbar_event(widget_t *widget)
 {
 	widget_statusbar_t *p;
-	int x, y;
 	int i;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_STATUSBAR);
 
 	p = (widget_statusbar_t *) widget->private_data;
-
-	interface_get_mouse_position(&x, &y);
 
 	p->selectElement = WIDGET_STATUSBAR_NONE_SELECT_ELEMENT;
 
@@ -124,8 +122,7 @@ void statusbar_event(widget_t *widget)
 
 		item = (item_t *) p->listElement->list[i];
 
-		if (x >= item->widget->x && x <= item->widget->x + item->widget->w &&
-		    y >= item->widget->y && y <= item->widget->y + item->widget->h) {
+		if (mouse_buffer_is_on_area(item->widget->x, item->widget->y, item->widget->w, item->widget->h, MOUSE_BUF_MOTION)) {
 			p->selectElement = i;
 		}
 	}

@@ -4,6 +4,7 @@
 #include "main.h"
 #include "interface.h"
 #include "image.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_choicegroup.h"
@@ -30,15 +31,12 @@ void choice_group_draw(widget_t *widget)
 {
 	widget_choicegroup_t *p;
 	static image_t *g_choicegroup = NULL;
-	int x, y;
 	int offset;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_CHOICE);
 
 	p = (widget_choicegroup_t *) widget->private_data;
-
-	interface_get_mouse_position(&x, &y);
 
 	if (g_choicegroup == NULL) {
 		g_choicegroup = image_add("choice.png", IMAGE_ALPHA, "choicegroup", IMAGE_GROUP_BASE);
@@ -107,7 +105,6 @@ void choiceGroup_set_status(widget_t *widget, bool_t status)
 void choice_group_event(widget_t *widget)
 {
 	widget_choicegroup_t *p;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_CHOICE);
@@ -119,11 +116,7 @@ void choice_group_event(widget_t *widget)
 		return;
 	}
 
-	interface_get_mouse_position(&x, &y);
-
-	if (x >= widget->x && x <= widget->x + WIDGET_CHOICEGROUP_WIDTH &&
-	    y >= widget->y && y <= widget->y + WIDGET_CHOICEGROUP_HEIGHT &&
-	    interface_is_mouse_clicket()) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, MOUSE_BUF_CLICK)) {
 		choice_group_set_active(widget);
 	}
 }

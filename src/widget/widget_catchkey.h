@@ -7,7 +7,7 @@
 #define WIDGET_CATCHKEY_NOKEY	-1
 
 #define WIDGET_CATCHKEY_WIDTH	110
-#define WIDGET_CATCHKEY_HEIGHT	12
+#define WIDGET_CATCHKEY_HEIGHT	16
 
 typedef struct widget_catchkey_struct {
 	int w, h;

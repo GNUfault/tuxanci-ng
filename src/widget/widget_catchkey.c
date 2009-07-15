@@ -4,6 +4,7 @@
 #include "main.h"
 #include "interface.h"
 #include "font.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_catchkey.h"
@@ -95,18 +96,14 @@ static int getPessAnyKey()
 void catch_key_event(widget_t *widget)
 {
 	widget_catchkey_t *p;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_CATCHKEY);
 
 	p = (widget_catchkey_t *) widget->private_data;
 
-	interface_get_mouse_position(&x, &y);
-
-	if (interface_is_mouse_clicket()) {
-		if (x >= widget->x && x <= widget->x + WIDGET_CATCHKEY_WIDTH &&
-		    y >= widget->y && y <= widget->y + WIDGET_CATCHKEY_HEIGHT) {
+	if (mouse_buffer_is_on_area(0, 0, 0, 0, MOUSE_BUF_AREA_NONE|MOUSE_BUF_CLICK)) {
+		if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, MOUSE_BUF_CLICK)) {
 			p->active = TRUE;
 		} else {
 			p->active = FALSE;

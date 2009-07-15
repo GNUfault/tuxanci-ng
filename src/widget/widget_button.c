@@ -6,6 +6,7 @@
 #include "interface.h"
 #include "image.h"
 #include "font.h"
+#include "mouse_buffer.h"
 
 #include "widget.h"
 #include "widget_button.h"
@@ -44,8 +45,7 @@ void button_draw(widget_t *widget)
 		g_button1 = image_add("button1.png", IMAGE_ALPHA, "button1", IMAGE_GROUP_BASE);
 	}
 
-	if (x >= widget->x && x <= widget->x + WIDGET_BUTTON_WIDTH &&
-	    y >= widget->y && y <= widget->y + WIDGET_BUTTON_HEIGHT) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, MOUSE_BUF_MOTION)) {
 		image_draw(g_button1, widget->x, widget->y, 0, 0, g_button0->w, g_button0->h);
 	} else {
 		image_draw(g_button0, widget->x, widget->y, 0, 0, g_button0->w, g_button0->h);
@@ -61,7 +61,6 @@ void button_event(widget_t *widget)
 {
 	widget_button_t *p;
 	static int my_time = 0;
-	int x, y;
 
 	assert(widget != NULL);
 	assert(widget->type == WIDGET_TYPE_BUTTON);
@@ -73,11 +72,7 @@ void button_event(widget_t *widget)
 		return;
 	}
 
-	interface_get_mouse_position(&x, &y);
-
-	if (x >= widget->x && x <= widget->x + WIDGET_BUTTON_WIDTH &&
-	    y >= widget->y && y <= widget->y + WIDGET_BUTTON_HEIGHT &&
-	    interface_is_mouse_clicket()) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, MOUSE_BUF_CLICK)) {
 		my_time = WIDGET_BUTTON_TIME;
 
 		DEBUG_MSG(_("[Debug] Caught some button event\n"));
