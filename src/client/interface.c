@@ -278,9 +278,9 @@ int eventAction()
 
 	while (SDL_WaitEvent(&event)) {
 		switch (event.type) {
-				case SDL_MOUSEBUTTONDOWN:
-					mouse_buffer_event(&event.button);
-					break;
+			case SDL_MOUSEBUTTONDOWN:
+				mouse_buffer_event(&event.button);
+				break;
 
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {

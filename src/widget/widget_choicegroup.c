@@ -20,7 +20,8 @@ widget_t *choice_group_new(int x, int y, bool_t status, list_t *list, void (*fce
 	new->fce_event = fce_event;
 	new->list = list;
 
-	widget = widget_new(WIDGET_TYPE_CHOICE, x, y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, new);
+	widget = widget_new(WIDGET_TYPE_CHOICE, x, y, WIDGET_CHOICEGROUP_WIDTH,
+			    WIDGET_CHOICEGROUP_HEIGHT, new);
 
 	list_add(new->list, widget);
 
@@ -116,7 +117,10 @@ void choice_group_event(widget_t *widget)
 		return;
 	}
 
-	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CHOICEGROUP_WIDTH, WIDGET_CHOICEGROUP_HEIGHT, MOUSE_BUF_CLICK)) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y,
+				    WIDGET_CHOICEGROUP_WIDTH,
+				    WIDGET_CHOICEGROUP_HEIGHT,
+				    MOUSE_BUF_CLICK)) {
 		choice_group_set_active(widget);
 	}
 }

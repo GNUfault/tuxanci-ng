@@ -62,7 +62,8 @@ void check_event(widget_t *widget)
 		return;
 	}
 
-	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CHECK_WIDTH, WIDGET_CHECK_HEIGHT, MOUSE_BUF_CLICK)) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CHECK_WIDTH,
+				    WIDGET_CHECK_HEIGHT, MOUSE_BUF_CLICK)) {
 		if (p->status == TRUE) {
 			p->status = FALSE;
 			p->time = WIDGET_CHECK_TIME_SWITCH_STATUS;

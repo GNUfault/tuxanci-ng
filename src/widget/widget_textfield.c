@@ -308,7 +308,10 @@ void text_field_event(widget_t *widget)
 	p = (widget_textfield_t *) widget->private_data;
 
 	if (mouse_buffer_is_on_area(0, 0, 0, 0, MOUSE_BUF_AREA_NONE|MOUSE_BUF_CLICK)) {
-		if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_TEXTFIELD_WIDTH, WIDGET_TEXTFIELD_HEIGHT, MOUSE_BUF_MOTION)) {
+		if (mouse_buffer_is_on_area(widget->x, widget->y,
+					    WIDGET_TEXTFIELD_WIDTH,
+					    WIDGET_TEXTFIELD_HEIGHT,
+					    MOUSE_BUF_MOTION)) {
 			p->active = TRUE;
 			interface_enable_keyboard_buffer();
 			keyboard_buffer_clear();

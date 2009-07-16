@@ -18,7 +18,8 @@ widget_t *catch_key_new(int key, int x, int y, void *event)
 	new->fce_event = event;
 	new->active = FALSE;
 
-	return widget_new(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, new);
+	return widget_new(WIDGET_TYPE_CATCHKEY, x, y, WIDGET_CATCHKEY_WIDTH,
+			  WIDGET_CATCHKEY_HEIGHT, new);
 }
 
 int catch_key_get(widget_t *widget)
@@ -103,7 +104,10 @@ void catch_key_event(widget_t *widget)
 	p = (widget_catchkey_t *) widget->private_data;
 
 	if (mouse_buffer_is_on_area(0, 0, 0, 0, MOUSE_BUF_AREA_NONE|MOUSE_BUF_CLICK)) {
-		if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_CATCHKEY_WIDTH, WIDGET_CATCHKEY_HEIGHT, MOUSE_BUF_CLICK)) {
+		if (mouse_buffer_is_on_area(widget->x, widget->y,
+					    WIDGET_CATCHKEY_WIDTH,
+					    WIDGET_CATCHKEY_HEIGHT,
+					    MOUSE_BUF_CLICK)) {
 			p->active = TRUE;
 		} else {
 			p->active = FALSE;

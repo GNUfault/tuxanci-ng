@@ -15,6 +15,4 @@ extern int mouse_buffer_clean();
 extern bool_t mouse_buffer_is_on_area(int x, int y, int w, int h, unsigned int flag);
 extern int mouse_buffer_quit();
 
-#endif
-
-
+#endif /* MOUSE_EVENT_H */

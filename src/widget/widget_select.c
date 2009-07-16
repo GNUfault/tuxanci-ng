@@ -105,7 +105,8 @@ void select_draw(widget_t *widget)
 			}
 		}
 */
-		if (mouse_buffer_is_on_area(widget->x, widget->y+i * 20, w, h, MOUSE_BUF_MOTION)) {
+		if (mouse_buffer_is_on_area(widget->x, widget->y + i * 20,
+					    w, h, MOUSE_BUF_MOTION)) {
 			font_draw(line, widget->x, widget->y + i * 20, COLOR_YELLOW);
 		} else {
 			if (p->select == i) {

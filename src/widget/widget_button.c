@@ -45,10 +45,13 @@ void button_draw(widget_t *widget)
 		g_button1 = image_add("button1.png", IMAGE_ALPHA, "button1", IMAGE_GROUP_BASE);
 	}
 
-	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, MOUSE_BUF_MOTION)) {
-		image_draw(g_button1, widget->x, widget->y, 0, 0, g_button0->w, g_button0->h);
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH,
+				    WIDGET_BUTTON_HEIGHT, MOUSE_BUF_MOTION)) {
+		image_draw(g_button1, widget->x, widget->y, 0, 0,
+			   g_button0->w, g_button0->h);
 	} else {
-		image_draw(g_button0, widget->x, widget->y, 0, 0, g_button0->w, g_button0->h);
+		image_draw(g_button0, widget->x, widget->y, 0, 0,
+			   g_button0->w, g_button0->h);
 	}
 
 	/*font_draw(p->text, p->x+WIDGET_BUTTON_WIDTH/2-p->w/2, p->y+p->h/2, COLOR_WHITE);*/
@@ -72,7 +75,8 @@ void button_event(widget_t *widget)
 		return;
 	}
 
-	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH, WIDGET_BUTTON_HEIGHT, MOUSE_BUF_CLICK)) {
+	if (mouse_buffer_is_on_area(widget->x, widget->y, WIDGET_BUTTON_WIDTH,
+				    WIDGET_BUTTON_HEIGHT, MOUSE_BUF_CLICK)) {
 		my_time = WIDGET_BUTTON_TIME;
 
 		DEBUG_MSG(_("[Debug] Caught some button event\n"));

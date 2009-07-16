@@ -122,7 +122,9 @@ void statusbar_event(widget_t *widget)
 
 		item = (item_t *) p->listElement->list[i];
 
-		if (mouse_buffer_is_on_area(item->widget->x, item->widget->y, item->widget->w, item->widget->h, MOUSE_BUF_MOTION)) {
+		if (mouse_buffer_is_on_area(item->widget->x, item->widget->y,
+					    item->widget->w, item->widget->h,
+					    MOUSE_BUF_MOTION)) {
 			p->selectElement = i;
 		}
 	}

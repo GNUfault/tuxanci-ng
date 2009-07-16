@@ -10,14 +10,13 @@
 
 static list_t *list_event;
 
-typedef struct mouse_event_struct
-{
+typedef struct mouse_event_struct {
 	Uint8 button;
 	int x;
 	int y;
 } mouse_event_t;
 
-static mouse_event_t* mouse_event_new(int x, int y, Uint8 button)
+static mouse_event_t *mouse_event_new(int x, int y, Uint8 button)
 {
 	mouse_event_t *mouse_event;
 
@@ -47,18 +46,18 @@ int mouse_buffer_event(SDL_MouseButtonEvent *button)
 	assert(button != NULL);
 	assert(list_event != NULL);
 
-	switch(button->button) {
+	switch (button->button) {
 		case SDL_BUTTON_LEFT:
 		case SDL_BUTTON_RIGHT:
-			//printf("mouse button - pos(%d,%d)\n", button->x, button->y);
+			/*printf("mouse button - pos(%d,%d)\n", button->x, button->y);*/
 
 			list_add(list_event, mouse_event_new(button->x, button->y, button->button));
 
 			return 1;
-		break;
+			break;
 
 		default:
-		break;
+			break;
 	}
 
 	return 0;
@@ -89,10 +88,11 @@ bool_t mouse_buffer_is_on_area(int x, int y, int w, int h, unsigned int flag)
 			return TRUE;
 		}
 	} else {
-		for (i = 0; i<list_event->count; i++) {
-			mouse_event = (mouse_event_t *)list_event->list[i];
+		for (i = 0; i < list_event->count; i++) {
+			mouse_event = (mouse_event_t *) list_event->list[i];
 
-			if ((mouse_event->x >= x && mouse_event->y >= y && mouse_event->x < x+w && mouse_event->y < y+h) ||
+			if ((mouse_event->x >= x && mouse_event->y >= y &&
+			     mouse_event->x < x + w && mouse_event->y < y + h) ||
 			    (flag & MOUSE_BUF_AREA_NONE)) {
 				if (flag & MOUSE_BUF_CLICK_LEFT) {
 					if (mouse_event->button == SDL_BUTTON_LEFT) {
@@ -111,7 +111,8 @@ bool_t mouse_buffer_is_on_area(int x, int y, int w, int h, unsigned int flag)
 				}
 
 				if (flag & MOUSE_BUF_CLICK) {
-					if (mouse_event->button == SDL_BUTTON_LEFT || mouse_event->button == SDL_BUTTON_RIGHT) {
+					if (mouse_event->button == SDL_BUTTON_LEFT ||
+					    mouse_event->button == SDL_BUTTON_RIGHT) {
 						return TRUE;
 					} else {
 						return FALSE;
