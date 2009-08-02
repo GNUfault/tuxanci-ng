@@ -1,6 +1,7 @@
 ### General section ###
 # build directory
 build/
+doc/
 
 ### xHire's section ###
 # private scripts
