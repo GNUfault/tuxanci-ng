@@ -122,6 +122,7 @@ void catch_key_event(widget_t *widget)
 		if (key != WIDGET_CATCHKEY_NOKEY) {
 			p->key = key;
 			p->fce_event(widget);
+			p->active = FALSE;
 		}
 	}
 }
