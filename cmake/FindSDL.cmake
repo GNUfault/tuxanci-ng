@@ -67,7 +67,6 @@ FIND_PATH(SDL_INCLUDE_DIR SDL.h
   /usr/include/SDL11
   /usr/local/include
   /usr/include
-  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include #tuxanci
   /sw/include/SDL # Fink
   /sw/include
   /opt/local/include/SDL # DarwinPorts
@@ -76,6 +75,7 @@ FIND_PATH(SDL_INCLUDE_DIR SDL.h
   /opt/csw/include 
   /opt/include/SDL
   /opt/include
+  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include #tuxanci
 )
 #MESSAGE("SDL_INCLUDE_DIR is ${SDL_INCLUDE_DIR}")
 
@@ -109,13 +109,13 @@ IF(NOT SDL_BUILDING_LIBRARY)
       $ENV{SDLDIR}
       PATH_SUFFIXES lib64 lib
       PATHS
-	  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/
       /usr/local
       /usr
       /sw
       /opt/local
       /opt/csw
       /opt
+	  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/
     )
   ENDIF(NOT ${SDL_INCLUDE_DIR} MATCHES ".framework")
 ENDIF(NOT SDL_BUILDING_LIBRARY)

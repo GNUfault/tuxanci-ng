@@ -13,7 +13,7 @@ static list_t *listStorage;
 static bool_t isSoundInit = FALSE;
 static bool_t var_sound_is_active = TRUE;
 
-/*
+/**
  * Return status of sound
  */
 bool_t sound_is_inicialized()
@@ -21,7 +21,7 @@ bool_t sound_is_inicialized()
 	return isSoundInit;
 }
 
-/*
+/**
  * Initialize sound
  */
 void sound_init()
@@ -44,7 +44,7 @@ void sound_init()
 	}
 }
 
-/*
+/**
  * Load sound from file (Null/mixer)
  */
 static Mix_Chunk *loadMixSound(char *file)
@@ -66,7 +66,7 @@ static Mix_Chunk *loadMixSound(char *file)
 	return new;
 }
 
-/*
+/**
  * Play sound with mixer
  */
 static void playMixSound(Mix_Chunk *p)
@@ -77,7 +77,7 @@ static void playMixSound(Mix_Chunk *p)
 	}
 }
 
-/*
+/**
  * Destroy mixer chunk
  */
 static void destroySound(void *p)
@@ -85,7 +85,7 @@ static void destroySound(void *p)
 	Mix_FreeChunk((Mix_Chunk *) p);
 }
 
-/*
+/**
  * Add a sound to list
  */
 void sound_add(char *file, char *name, char *group)
@@ -104,7 +104,7 @@ void sound_add(char *file, char *name, char *group)
 	storage_add(listStorage, group, name, new);
 }
 
-/*
+/**
  * Start playing a sound from a file from the list
  */
 void sound_play(char *name, char *group)
@@ -116,7 +116,7 @@ void sound_play(char *name, char *group)
 	playMixSound(storage_get(listStorage, group, name));
 }
 
-/*
+/**
  * Set sound status to active/inactive (true/false)
  */
 void sound_set_active(bool_t n)
@@ -124,7 +124,7 @@ void sound_set_active(bool_t n)
 	var_sound_is_active = n;
 }
 
-/*
+/**
  * Return status of sound
  */
 bool_t sound_is_active()
@@ -132,7 +132,7 @@ bool_t sound_is_active()
 	return var_sound_is_active;
 }
 
-/*
+/**
  * Shutdown sound
  */
 void sound_quit()

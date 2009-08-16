@@ -15,7 +15,7 @@ static bool_t isMusicInit = FALSE;
 static bool_t var_music_is_active = TRUE;
 static Mix_Music *currentMusic;
 
-/*
+/**
  * Return status of music
  */
 bool_t music_is_inicialized()
@@ -23,7 +23,7 @@ bool_t music_is_inicialized()
 	return isMusicInit;
 }
 
-/*
+/**
  * Initialize music
  */
 void music_init()
@@ -47,7 +47,7 @@ void music_init()
 	}
 }
 
-/*
+/**
  * Load a file with music and returns it
  */
 static Mix_Music *loadMixMusic(char *file)
@@ -75,7 +75,7 @@ static Mix_Music *loadMixMusic(char *file)
 	return mixer;
 }
 
-/*
+/**
  * Prepare the music mixer
  */
 static void playMixMusic()
@@ -85,7 +85,7 @@ static void playMixMusic()
 	}
 }
 
-/*
+/**
  * Remove music from the memory
  */
 static void destroyMusic(void *p)
@@ -93,7 +93,7 @@ static void destroyMusic(void *p)
 	Mix_FreeMusic((Mix_Music *) p);
 }
 
-/*
+/**
  * Add a file to the music list
  */
 void music_add(char *file, char *name, char *group)
@@ -112,7 +112,7 @@ void music_add(char *file, char *name, char *group)
 	storage_add(listStorage, group, name, new);
 }
 
-/*
+/**
  * Stop playing music
  */
 void music_stop()
@@ -129,7 +129,7 @@ void music_stop()
 	}
 }
 
-/*
+/**
  * Play music playback
  */
 void music_play(char *name, char *group)
@@ -169,7 +169,7 @@ void music_play(char *name, char *group)
 	}
 }
 
-/*
+/**
  * Set music status to active/inactive
  */
 void music_set_active(bool_t n)
@@ -187,7 +187,7 @@ void music_set_active(bool_t n)
 	var_music_is_active = n;
 }
 
-/*
+/**
  * Return the activity status of music
  */
 bool_t music_is_active()
@@ -195,7 +195,7 @@ bool_t music_is_active()
 	return var_music_is_active;
 }
 
-/*
+/**
  * Return the music playing right now
  */
 char *music_get_current()
@@ -203,7 +203,7 @@ char *music_get_current()
 	return "unknown";
 }
 
-/*
+/**
  * Remove all music files belonging to the certain group
  */
 void music_del_all_in_group(char *group)
@@ -215,7 +215,7 @@ void music_del_all_in_group(char *group)
 	storage_del_all(listStorage, group, destroyMusic);
 }
 
-/*
+/**
  * Shutdown music
  */
 void music_quit()

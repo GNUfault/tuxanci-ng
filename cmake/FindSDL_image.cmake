@@ -30,13 +30,13 @@ FIND_PATH(SDLIMAGE_INCLUDE_DIR SDL_image.h
   /usr/include
   /sw/include/SDL # Fink
   /sw/include
-  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include #tuxanci
   /opt/local/include/SDL # DarwinPorts
   /opt/local/include
   /opt/csw/include/SDL # Blastwave
   /opt/csw/include 
   /opt/include/SDL
   /opt/include
+  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/include #tuxanci
 )
 
 FIND_LIBRARY(SDLIMAGE_LIBRARY 
@@ -46,7 +46,6 @@ FIND_LIBRARY(SDLIMAGE_LIBRARY
   $ENV{SDLDIR}
   PATH_SUFFIXES lib64 lib
   PATHS
-  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/
   ~/Library/Frameworks
   /Library/Frameworks
   /usr/local
@@ -55,6 +54,7 @@ FIND_LIBRARY(SDLIMAGE_LIBRARY
   /opt/local
   /opt/csw
   /opt
+  ${CMAKE_SOURCE_DIR}/packaging/windows/SDL/
 )
 
 SET(SDLIMAGE_FOUND "NO")

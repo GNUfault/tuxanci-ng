@@ -8,7 +8,7 @@
 
 static bool_t isAudioInit = FALSE;
 
-/*
+/**
  * Return status of audio
  */
 bool_t audio_is_inicialized()
@@ -16,7 +16,7 @@ bool_t audio_is_inicialized()
 	return isAudioInit;
 }
 
-/*
+/**
  * Initialize audio
  */
 void audio_init()
@@ -43,7 +43,7 @@ void audio_init()
 	isAudioInit = TRUE;
 }
 
-/*
+/**
  * Shutdown audio
  */
 void audio_quit()
