@@ -13,6 +13,7 @@
 #include "item.h"
 #include "shot.h"
 #include "arenaFile.h"
+#include "config.h"
 
 #include "image.h"
 #include "layer.h"
@@ -63,6 +64,7 @@ static void initGame()
 	shot_init();
 	panel_init();
 	world_init();
+	config_init();
 
 	main_menu_init();
 	analyze_init();
@@ -91,6 +93,7 @@ void game_quit()
 	scredits_quit();
 	table_quit();
 	browser_quit();
+	config_quit();
 
 	layer_quit();
 	font_quit();

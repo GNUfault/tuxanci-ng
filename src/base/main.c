@@ -78,6 +78,14 @@ char *getString(int n)
 	return strdup(str);
 }
 
+char* get_string_static(int n)
+{
+	static char str[STR_SIZE];
+	sprintf(str, "%d", n);
+
+	return str; // !!!!
+}
+
 int *newInt(int x)
 {
 	int *new;

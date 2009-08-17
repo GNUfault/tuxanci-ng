@@ -27,6 +27,7 @@ extern char *getParam(char *s);
 extern char *getParamElse(char *s1, char *s2);
 extern bool_t isParamFlag(char *s);
 extern char *getString(int n);
+extern char* get_string_static(int n);
 extern int *newInt(int x);
 extern int isFillPath(const char *path);
 extern void accessExistFile(const char *s);

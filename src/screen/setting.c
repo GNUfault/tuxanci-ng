@@ -9,6 +9,7 @@
 #include "director.h"
 #include "homeDirector.h"
 #include "arenaFile.h"
+#include "config.h"
 
 #include "configFile.h"
 #include "interface.h"
@@ -78,8 +79,6 @@ static widget_t *textfield_name_player2;
 static widget_t *check_ai;
 
 static widget_t *statusbar;
-
-static textFile_t *configFile;
 
 static void hotkey_escape()
 {
@@ -219,113 +218,63 @@ static void eventWidget(void *p)
 
 static void initSettingFile()
 {
-	char path[STR_PATH_SIZE];
-	char val[STR_SIZE];
+	text_field_set_text(textfield_count_cound, get_string_static(config_get_int_value(CFG_COUNT_ROUND)));
+	text_field_set_text(textfield_name_player1, config_get_str_value(CFG_NAME_RIGHT));
+	text_field_set_text(textfield_name_player2, config_get_str_value(CFG_NAME_LEFT));
 
-	sprintf(path, "%s/tuxanci.conf", home_director_get());
+	check_set_status(check[GUN_DUAL_SIMPLE], config_get_int_value(CFG_GUN_DUAL_SIMPLE));
+	check_set_status(check[GUN_SCATTER], config_get_int_value(CFG_GUN_SCATTER));
+	check_set_status(check[GUN_TOMMY], config_get_int_value(CFG_GUN_TOMMY));
+	check_set_status(check[GUN_LASSER], config_get_int_value(CFG_GUN_LASSER));
+	check_set_status(check[GUN_MINE], config_get_int_value(CFG_GUN_MINE));
+	check_set_status(check[GUN_BOMBBALL], config_get_int_value(CFG_GUN_BOMBBALL));
 
-	configFile = text_file_load(path);
+	check_set_status(check[BONUS_SPEED], config_get_int_value(CFG_BONUS_SPEED));
+	check_set_status(check[BONUS_SHOT], config_get_int_value(CFG_BONUS_SHOT));
+	check_set_status(check[BONUS_TELEPORT], config_get_int_value(CFG_BONUS_TELEPORT));
+	check_set_status(check[BONUS_GHOST], config_get_int_value(CFG_BONUS_GHOST));
+	check_set_status(check[BONUS_4X], config_get_int_value(CFG_BONUS_4X));
+	check_set_status(check[BONUS_HIDDEN], config_get_int_value(CFG_BONUS_HIDDEN));
 
-	if (configFile == NULL) {
-		fprintf(stderr, _("[Error] Unable to load config file [%s]\n"), path);
-		fprintf(stderr, _("[Debug] Creating config file [%s]\n"), path);
-
-		configFile = text_file_new(path);
-	}
-
-	if (configFile == NULL) {
-		fprintf(stderr, _("[Error] Unable to create config file [%s]\n"), path);
-		return;
-	}
-
-	loadValueFromConfigFile(configFile, "COUNT_ROUND", val, STR_SIZE, "15");
-	text_field_set_text(textfield_count_cound, val);
-
-	loadValueFromConfigFile(configFile, "NAME_PLAYER_RIGHT", val, STR_SIZE, NAME_PLAYER_RIGHT);
-	text_field_set_text(textfield_name_player1, val);
-
-	loadValueFromConfigFile(configFile, "NAME_PLAYER_LEFT", val, STR_SIZE, NAME_PLAYER_LEFT);
-	text_field_set_text(textfield_name_player2, val);
-
-	loadValueFromConfigFile(configFile, "GUN_DUAL_SIMPLE", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_DUAL_SIMPLE], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "GUN_SCATTER", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_SCATTER], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "GUN_TOMMY", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_TOMMY], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "GUN_LASSER", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_LASSER], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "GUN_MINE", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_MINE], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "GUN_BOMBBALL", val, STR_SIZE, "YES");
-	check_set_status(check[GUN_BOMBBALL], isYesOrNO(val));
-
-	loadValueFromConfigFile(configFile, "BONUS_SPEED", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_SPEED], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "BONUS_SHOT", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_SHOT], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "BONUS_TELEPORT", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_TELEPORT], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "BONUS_GHOST", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_GHOST], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "BONUS_4X", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_4X], isYesOrNO(val));
-	loadValueFromConfigFile(configFile, "BONUS_HIDDEN", val, STR_SIZE, "YES");
-	check_set_status(check[BONUS_HIDDEN], isYesOrNO(val));
-
-	loadValueFromConfigFile(configFile, "AI", val, STR_SIZE, "NO");
-	check_set_status(check_ai, isYesOrNO(val));
+	check_set_status(check_ai, config_get_int_value(CFG_AI));
 
 #ifndef NO_SOUND
-	loadValueFromConfigFile(configFile, "MUSIC", val, STR_SIZE, "YES");
-	check_set_status(check_music, isYesOrNO(val));
-
-	loadValueFromConfigFile(configFile, "SOUND", val, STR_SIZE, "YES");
-	check_set_status(check_sound, isYesOrNO(val));
+	check_set_status(check_music, config_get_int_value(CFG_MUSIC));
+	check_set_status(check_sound, config_get_int_value(CFG_SOUND));
 #endif
 
-	loadValueFromConfigFile(configFile, "ARENA", val, STR_SIZE, "FAGN");
-	choice_arena_set(arena_file_get_file_format_net_name(val));
-
-	text_file_save(configFile);
+	choice_arena_set(arena_file_get_file_format_net_name(config_get_str_value(CFG_ARENA)));
 }
 
 static void saveAndDestroyConfigFile()
 {
-	if (configFile == NULL) {
-		fprintf(stderr, _("[Error] Unable to save config file - not initialized\n"));
-		return;
-	}
+	config_set_int_value(CFG_COUNT_ROUND, atoi(text_field_get_text(textfield_count_cound)));
+	config_set_str_value(CFG_NAME_RIGHT, text_field_get_text(textfield_name_player1));
+	config_set_str_value(CFG_NAME_LEFT, text_field_get_text(textfield_name_player2));
 
-	setValueInConfigFile(configFile, "COUNT_ROUND",  text_field_get_text(textfield_count_cound));
-	setValueInConfigFile(configFile, "NAME_PLAYER_RIGHT", text_field_get_text(textfield_name_player1));
-	setValueInConfigFile(configFile, "NAME_PLAYER_LEFT", text_field_get_text(textfield_name_player2));
-	setValueInConfigFile(configFile, "GUN_DUAL_SIMPLE", getYesOrNo(check_get_status(check[GUN_DUAL_SIMPLE])));
-	setValueInConfigFile(configFile, "GUN_SCATTER", getYesOrNo(check_get_status(check[GUN_SCATTER])));
-	setValueInConfigFile(configFile, "GUN_TOMMY", getYesOrNo(check_get_status(check[GUN_TOMMY])));
-	setValueInConfigFile(configFile, "GUN_LASSER", getYesOrNo(check_get_status(check[GUN_LASSER])));
-	setValueInConfigFile(configFile, "GUN_MINE", getYesOrNo(check_get_status(check[GUN_MINE])));
-	setValueInConfigFile(configFile, "GUN_BOMBBALL", getYesOrNo(check_get_status(check[GUN_BOMBBALL])));
-	setValueInConfigFile(configFile, "BONUS_SPEED", getYesOrNo(check_get_status(check[BONUS_SPEED])));
-	setValueInConfigFile(configFile, "BONUS_SHOT", getYesOrNo(check_get_status(check[BONUS_SHOT])));
-	setValueInConfigFile(configFile, "BONUS_TELEPORT", getYesOrNo(check_get_status (check[BONUS_TELEPORT])));
-	setValueInConfigFile(configFile, "BONUS_GHOST", getYesOrNo(check_get_status(check[BONUS_GHOST])));
-	setValueInConfigFile(configFile, "BONUS_4X", getYesOrNo(check_get_status(check[BONUS_4X])));
-	setValueInConfigFile(configFile, "BONUS_HIDDEN", getYesOrNo(check_get_status(check[BONUS_HIDDEN])));
-	setValueInConfigFile(configFile, "AI", getYesOrNo(check_get_status(check_ai)));
+	config_set_int_value(CFG_GUN_DUAL_SIMPLE, check_get_status(check[GUN_DUAL_SIMPLE]));
+	config_set_int_value(CFG_GUN_SCATTER, check_get_status(check[GUN_SCATTER]));
+	config_set_int_value(CFG_GUN_TOMMY, check_get_status(check[GUN_TOMMY]));
+	config_set_int_value(CFG_GUN_LASSER, check_get_status(check[GUN_LASSER]));
+	config_set_int_value(CFG_GUN_MINE, check_get_status(check[GUN_MINE]));
+	config_set_int_value(CFG_GUN_BOMBBALL, check_get_status(check[GUN_BOMBBALL]));
+	config_set_int_value(CFG_BONUS_SPEED, check_get_status(check[BONUS_SPEED]));
+	config_set_int_value(CFG_BONUS_SHOT, check_get_status(check[BONUS_SHOT]));
+	config_set_int_value(CFG_BONUS_TELEPORT, check_get_status(check[BONUS_TELEPORT]));
+	config_set_int_value(CFG_BONUS_GHOST, check_get_status(check[BONUS_GHOST]));
+	config_set_int_value(CFG_BONUS_4X, check_get_status(check[BONUS_4X]));
+	config_set_int_value(CFG_BONUS_HIDDEN, check_get_status(check[BONUS_HIDDEN]));
+
+	config_set_int_value(CFG_AI, check_get_status(check_ai));
 
 #ifndef NO_SOUND
-	setValueInConfigFile(configFile, "MUSIC", getYesOrNo(check_get_status(check_music)));
-	setValueInConfigFile(configFile, "SOUND", getYesOrNo(check_get_status(check_sound)));
+	config_set_int_value(CFG_MUSIC, check_get_status(check_music));
+	config_set_int_value(CFG_SOUND, check_get_status(check_sound));
 #endif
 
 	if (choice_arena_get() != NULL) {
-		setValueInConfigFile(configFile, "ARENA", arena_file_get_net_name(choice_arena_get()));
+		config_set_str_value(CFG_ARENA, arena_file_get_net_name(choice_arena_get()));
 	}
-	/* TODO */
-
-	text_file_save(configFile);
-	text_file_destroy(configFile);
 }
 
 void setting_init()
