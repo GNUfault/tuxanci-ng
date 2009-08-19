@@ -13,6 +13,7 @@
 #include "screen.h"
 #include "image.h"
 #include "hotKey.h"
+#include "config.h"
 
 #ifndef NO_SOUND
 #include "music.h"
@@ -93,10 +94,12 @@ void screen_startGameType()
 	music_play("menu", MUSIC_GROUP_BASE);
 #endif
 
+/*
 	choiceGroup_set_status(check_none, TRUE);
 	choiceGroup_set_status(check_server, FALSE);
 	choiceGroup_set_status(check_client, FALSE);
 	choiceGroup_set_status(check_load_session, FALSE);
+*/
 
 	loadSession(selectSession);
 
@@ -233,12 +236,14 @@ void game_type_init()
 	check_client = choice_group_new(100, 250, FALSE, listChoiceGroup, eventWidget);
 	check_load_session = choice_group_new(100, 300, FALSE, listChoiceGroup, eventWidget);
 
-	if (isParamFlag("--server")) {
+	if (strcmp(config_get_str_value(CFG_GAME_TYPE), "server") == 0) {
 		choiceGroup_set_status(check_server, TRUE);
-	} else if (isParamFlag("--client")) {
+	} else if (strcmp(config_get_str_value(CFG_GAME_TYPE), "client") == 0) {
 		choiceGroup_set_status(check_client, TRUE);
-	} else {
+	} else if (strcmp(config_get_str_value(CFG_GAME_TYPE), "none") == 0) {
 		choiceGroup_set_status(check_none, TRUE);
+	} else {
+		choiceGroup_set_status(check_load_session, TRUE);
 	}
 
 	label_none = label_new(_("Local game"), 130, 145, WIDGET_LABEL_LEFT);
@@ -250,11 +255,11 @@ void game_type_init()
 	label_port = label_new(_("Port"), 300, 245, WIDGET_LABEL_LEFT);
 	label_session = label_new(_("Load saved game:"), 300, 145, WIDGET_LABEL_LEFT);
 
-	textfield_ip = text_field_new(getParamElse("--ip", "127.0.0.1"),
+	textfield_ip = text_field_new(config_get_str_value(CFG_NET_IP),
 					WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN,
 					300, 180);
 
-	textfield_port = text_field_new(getParamElse("--port", "6800"),
+	textfield_port = text_field_new(config_get_str_value(CFG_NET_PORT),
 					WIDGET_TEXTFIELD_FILTER_NUM, 300, 280);
 
 	selectSession = select_new(300, 185, eventWidget);
@@ -356,8 +361,32 @@ int public_server_get_settingProto()
 	return -1;
 }
 
+static void save_config()
+{
+	if (choice_group_get_status(check_none) == TRUE) {
+		config_set_str_value(CFG_GAME_TYPE, "none");
+	}
+
+	if (choice_group_get_status(check_server) == TRUE) {
+		config_set_str_value(CFG_GAME_TYPE, "server");
+	}
+
+	if (choice_group_get_status(check_client) == TRUE) {
+		config_set_str_value(CFG_GAME_TYPE, "client");
+	}
+
+	if (choice_group_get_status(check_load_session) == TRUE) {
+		config_set_str_value(CFG_GAME_TYPE, "session");
+	}
+
+	config_set_str_value(CFG_NET_IP, text_field_get_text(textfield_ip));
+	config_set_str_value(CFG_NET_PORT, text_field_get_text(textfield_port));
+}
+
 void game_type_quit()
 {
+	save_config();
+
 	wid_image_destroy(image_backgorund);
 
 	label_destroy(label_none);

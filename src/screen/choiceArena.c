@@ -9,6 +9,7 @@
 #include "screen.h"
 #include "image.h"
 #include "hotKey.h"
+#include "config.h"
 
 #ifndef NO_SOUND
 #include "music.h"
@@ -242,10 +243,16 @@ void choice_arena_init()
 	screen_register(screen_new("chiceArena", screen_startChoiceArena,
 			choice_arena_event, choice_arena_draw,
 			stopScreenChoiceArena));
+
+	choice_arena_set(arena_file_get_file_format_net_name(config_get_str_value(CFG_ARENA)));
 }
 
 void choice_arena_quit()
 {
+	if (choice_arena_get() != NULL) {
+		config_set_str_value(CFG_ARENA, arena_file_get_net_name(choice_arena_get()));
+	}
+
 	wid_image_destroy(image_backgorund);
 
 	button_destroy(button_play);

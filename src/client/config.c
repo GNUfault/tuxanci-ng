@@ -46,8 +46,14 @@ static config_t config_list[] =
 	{ .key=CFG_BONUS_TELEPORT,	.var="BONUS_TELEPORT",		.param="--bonus-teleport",	.type=CONFIG_TYPE_INT,	.value_int=1 },
 	{ .key=CFG_BONUS_GHOST,		.var="BONUS_GHOST",		.param="--bonus-ghost",		.type=CONFIG_TYPE_INT,	.value_int=1 },
 	{ .key=CFG_BONUS_4X,		.var="BONUS_4X",		.param="--bonus-4x",		.type=CONFIG_TYPE_INT,	.value_int=1 },
-	{ .key=CFG_BONUS_HIDDEN,	.var="BONUS_HIDDEN",		.param="--bonus-hidden",	.type=CONFIG_TYPE_INT,	.value_int=1 }
+	{ .key=CFG_BONUS_HIDDEN,	.var="BONUS_HIDDEN",		.param="--bonus-hidden",	.type=CONFIG_TYPE_INT,	.value_int=1 },
+
+	{ .key=CFG_GAME_TYPE,		.var="GAME_TYPE",		.param="--game-type",		.type=CONFIG_TYPE_STR,	.value_str="none" },
+	{ .key=CFG_NET_IP,		.var="NET_IP",			.param="--ip",			.type=CONFIG_TYPE_STR,	.value_str="127.0.0.1" },
+	{ .key=CFG_NET_PORT,		.var="NET_PORT",		.param="--port",		.type=CONFIG_TYPE_STR,	.value_str="6800" }
 };
+
+static textFile_t *config_file;
 
 static config_t* find_config(int key)
 {
@@ -62,11 +68,34 @@ static config_t* find_config(int key)
 	return NULL;
 }
 
-static textFile_t *config_file;
+static void check_param()
+{
+	int i;
+
+	for (i = 0; i < CONFIG_LIST_COUNT; i++) {
+		char *str;
+
+		str = getParam(config_list[i].param);
+
+		if (str != NULL) {
+			if (config_list[i].type == CONFIG_TYPE_INT) {
+				config_list[i].value_int = atoi(str);
+			} else {
+				if (config_list[i].value_str != NULL) {
+					free(config_list[i].value_str);
+				}
+
+				config_list[i].value_str = strdup(str);
+			}
+		}
+	}
+}
 
 int config_init()
 {
 	config_load();
+	check_param();
+
 	return 0;
 }
 
@@ -126,7 +155,6 @@ void config_save()
 	}
 
 	text_file_save(config_file);
-	text_file_destroy(config_file);
 }
 
 int config_get_int_value(int key)
@@ -184,5 +212,10 @@ void config_set_str_value(int key, char *str)
 int config_quit()
 {
 	config_save();
+
+	if (config_file != NULL) {
+		text_file_destroy(config_file);
+	}
+
 	return 0;
 }

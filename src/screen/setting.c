@@ -242,8 +242,6 @@ static void initSettingFile()
 	check_set_status(check_music, config_get_int_value(CFG_MUSIC));
 	check_set_status(check_sound, config_get_int_value(CFG_SOUND));
 #endif
-
-	choice_arena_set(arena_file_get_file_format_net_name(config_get_str_value(CFG_ARENA)));
 }
 
 static void saveAndDestroyConfigFile()
@@ -271,10 +269,6 @@ static void saveAndDestroyConfigFile()
 	config_set_int_value(CFG_MUSIC, check_get_status(check_music));
 	config_set_int_value(CFG_SOUND, check_get_status(check_sound));
 #endif
-
-	if (choice_arena_get() != NULL) {
-		config_set_str_value(CFG_ARENA, arena_file_get_net_name(choice_arena_get()));
-	}
 }
 
 void setting_init()

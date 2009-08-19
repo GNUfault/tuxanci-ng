@@ -24,7 +24,11 @@
 #define CFG_BONUS_4X		18
 #define CFG_BONUS_HIDDEN	19
 
-#define	CONFIG_LIST_COUNT	19
+#define CFG_GAME_TYPE		20
+#define CFG_NET_IP		21
+#define CFG_NET_PORT		22
+
+#define	CONFIG_LIST_COUNT	22
 
 extern int config_init();
 extern void config_load();
