@@ -51,7 +51,7 @@ typedef struct {
 } barfoo_t;
 
 /* breaking lines only when longer than 80 characters or for special purposes */
-extern foobar_t* foo_new(int faa, int fae,
+extern foobar_t *foo_new(int faa, int fae,
 			 char *bor, char *ber);
 
 #endif /* FOO_H */
