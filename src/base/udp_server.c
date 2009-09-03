@@ -238,7 +238,7 @@ void server_udp_quit()
 	}
 
 	if (sock_server_udp_second != NULL) {
-		DEBUG_MSG(_("[Debug] Closing IPv6 [port %d]\n"), sock_udp_get_port(sock_server_udp));
+		DEBUG_MSG(_("[Debug] Closing IPv6 [port %d]\n"), sock_udp_get_port(sock_server_udp_second));
 		sock_udp_close(sock_server_udp_second);
 	}
 }
