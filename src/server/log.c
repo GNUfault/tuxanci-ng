@@ -33,6 +33,10 @@ void log_add(int type, char *msg)
 	time_t currentTime;
 	char *str_type;
 
+	if (logFile == NULL) {
+		return;
+	}
+
 	currentTime = time(NULL);
 	tm_struct = localtime(&currentTime);
 
@@ -66,6 +70,10 @@ void log_add(int type, char *msg)
 
 void log_quit()
 {
+	if (logFile == NULL) {
+		return;
+	}
+
 	log_add(LOG_INF, "Logging finished");
 	fclose(logFile);
 }

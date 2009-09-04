@@ -299,8 +299,8 @@ void world_set_control_tux(tux_t *tux, int control_type)
 				key_table_get_key(KEY_TUX_LEFT_MOVE_RIGHT),
 				key_table_get_key(KEY_TUX_LEFT_MOVE_LEFT),
 				key_table_get_key(KEY_TUX_LEFT_MOVE_DOWN),
-				key_table_get_key(KEY_TUX_RIGHT_SHOOT),
-				key_table_get_key(KEY_TUX_RIGHT_SWITCH_WEAPON)
+				key_table_get_key(KEY_TUX_LEFT_SHOOT),
+				key_table_get_key(KEY_TUX_LEFT_SWITCH_WEAPON)
 			);
 
 			break;

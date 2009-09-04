@@ -209,10 +209,18 @@ void config_set_str_value(int key, char *str)
 
 int config_quit()
 {
+	int i;
+
 	config_save();
 
 	if (config_file != NULL) {
 		text_file_destroy(config_file);
+	}
+
+	for (i = 0; i < CONFIG_LIST_COUNT; i++) {
+		if (config_list[i].type == CONFIG_TYPE_STR && config_list[i].value_str != NULL) {
+			free(config_list[i].value_str);
+		}
 	}
 
 	return 0;
