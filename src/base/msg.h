@@ -8,7 +8,7 @@
 #endif /* DEBUG * */
 
 #ifdef DEBUG
-#define debug(msg,arg...)	fprintf(stdout, "%s ", _("[Debug]"));   fprintf(stdout, _(msg) "\n", ##arg)
+#define debug(msg,arg...)	fprintf(stdout, "%s ", _("[Debug]"));   fprintf(stdout, _(msg), ##arg); fprintf(stdout, "\n")
 #else /* DEBUG */
 #define debug(msg,arg...)
 #endif /* DEBUG */
