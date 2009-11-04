@@ -36,6 +36,7 @@ RDEPEND="
 	)
 	>=dev-libs/libzip-0.9"
 DEPEND="${RDEPEND}
+	dev-util/pkgconfig
 	nls? ( sys-devel/gettext )"
 
 src_configure() {
