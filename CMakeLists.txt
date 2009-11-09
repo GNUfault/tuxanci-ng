@@ -166,7 +166,7 @@ ENDIF ( Apple )
 ###############################################################################
 # LIBS SEARCH
 ###############################################################################
-MESSAGE ( STATUS "<Searching PkgConfig>" )
+MESSAGE ( STATUS "<Loading PkgConfig>" )
 FIND_PACKAGE ( PkgConfig REQUIRED )
 pkg_check_modules(ZIP REQUIRED libzip)
 INCLUDE_DIRECTORIES( ${ZIP_INCLUDE_DIRS} )
