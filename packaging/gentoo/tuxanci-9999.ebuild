@@ -41,7 +41,6 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	local mycmakeargs="$(cmake-utils_use_with sound AUDIO)
-		$(cmake-utils_use_enable debug)
 		$(cmake-utils_use_build dedicated SERVER)
 		$(cmake-utils_use_with nls)
 		$(cmake-utils_use_with opengl)
