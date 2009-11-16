@@ -43,7 +43,7 @@ FOREACH ( _current_PO_FILE ${_po_files} )
 			DEPENDS ${_current_PO_FILE}
 		)
 		INSTALL ( FILES "${STORE_DIR}/${_gmoFile}"
-			DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/" RENAME ${domain}.mo )
+			DESTINATION "${CMAKE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES/" RENAME ${DOMAIN}.mo )
 		LIST ( APPEND _gmoFiles "${STORE_DIR}/${_gmoFile}" )
 	ENDIF ( EXISTS ${_current_PO_FILE} )
 ENDFOREACH ( _current_PO_FILE )
