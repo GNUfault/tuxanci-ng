@@ -46,6 +46,7 @@ static export_fce_t export_fce = {
 	.fce_arena_find_free_space = arena_find_free_space,
 
 	.fce_proto_send_module_server = proto_send_module_server,
+	.fce_proto_send_del_server = proto_send_del_server,
 #ifndef PUBLIC_SERVER
 	.fce_proto_send_module_client = proto_send_module_client,
 #endif /* PUBLIC_SERVER */

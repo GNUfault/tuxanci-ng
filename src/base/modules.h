@@ -40,6 +40,8 @@ typedef struct export_fce_s {
 					 int x2, int y2, int w2, int h2);
 	int (*fce_arena_is_free_space) (arena_t *arena, int x, int y, int w, int h);
 	void (*fce_arena_find_free_space) (arena_t *arena, int *x, int *y, int w, int h);
+
+	void (*fce_proto_send_del_server)(int type, client_t *client, int id);
 	void (*fce_proto_send_module_server) (int type, client_t *client, char *msg);
 	void (*fce_proto_send_module_client) (char *msg);
 

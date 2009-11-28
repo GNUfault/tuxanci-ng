@@ -281,8 +281,8 @@ static void action_eventshot(space_t *space, shot_t *shot, space_t *p_spacePipe)
 	space_action_from_location(p_spacePipe, action_eventpipe, shot, shot->x, shot->y, shot->w, shot->h);
 
 	if (shot->del == TRUE) {
-		if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
-			proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
+		if (export_fce->fce_net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
+			export_fce->fce_proto_send_del_server(PROTO_SEND_ALL, NULL, shot->id);
 		}
 
 		space_del_with_item(space, shot, export_fce->fce_shot_destroy);
