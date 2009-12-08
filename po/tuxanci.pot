@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-07 19:40+0100\n"
+"Report-Msgid-Bugs-To: team@tuxanci.org\n"
+"POT-Creation-Date: 2009-12-08 15:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,7 +77,7 @@ msgstr ""
 #: src/screen/credits.c:110
 #: src/screen/downArena.c:372
 #: src/screen/gameType.c:229
-#: src/screen/choiceArena.c:202
+#: src/screen/choiceArena.c:203
 #: src/screen/setting.c:282
 #: src/screen/settingKeys.c:282
 #: src/screen/table.c:203
@@ -90,7 +90,7 @@ msgstr ""
 
 #: src/screen/browser.c:715
 #: src/screen/gameType.c:230
-#: src/screen/choiceArena.c:203
+#: src/screen/choiceArena.c:204
 msgid "Play"
 msgstr ""
 
@@ -200,12 +200,12 @@ msgstr ""
 msgid "Load saved game:"
 msgstr ""
 
-#: src/screen/choiceArena.c:205
-msgid "Previous maps"
+#: src/screen/choiceArena.c:206
+msgid "Previous arenas"
 msgstr ""
 
-#: src/screen/choiceArena.c:206
-msgid "Next maps"
+#: src/screen/choiceArena.c:207
+msgid "Next arenas"
 msgstr ""
 
 #: src/screen/mainMenu.c:118
@@ -310,7 +310,8 @@ msgid "Player 2"
 msgstr ""
 
 #: src/screen/settingKeys.c:285
-msgid "Up"
+#: src/screen/settingKeys.c:292
+msgid "Up:"
 msgstr ""
 
 #: src/screen/settingKeys.c:286
@@ -340,8 +341,4 @@ msgstr ""
 
 #: src/screen/settingKeys.c:291
 msgid "Player 1"
-msgstr ""
-
-#: src/screen/settingKeys.c:292
-msgid "Up:"
 msgstr ""

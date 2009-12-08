@@ -282,7 +282,7 @@ void setting_key_int()
 	button_back = button_new(_("Back"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
 
 	tux_left = label_new(_("Player 2"), WINDOW_SIZE_X / 4, 150, WIDGET_LABEL_CENTER);
-	tux_left_keyup = label_new(_("Up"), 50, tux_left->y + 50, WIDGET_LABEL_LEFT);
+	tux_left_keyup = label_new(_("Up:"), 50, tux_left->y + 50, WIDGET_LABEL_LEFT);
 	tux_left_keydown = label_new(_("Down:"), tux_left_keyup->x, tux_left_keyup->y + 20, WIDGET_LABEL_LEFT);
 	tux_left_keyleft = label_new(_("Left:"), tux_left_keyup->x, tux_left_keydown->y + 20, WIDGET_LABEL_LEFT);
 	tux_left_keyright = label_new(_("Right:"), tux_left_keyup->x, tux_left_keyleft->y + 20, WIDGET_LABEL_LEFT);

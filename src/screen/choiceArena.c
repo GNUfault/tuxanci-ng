@@ -70,7 +70,7 @@ void choice_arena_draw()
 	if (show_map_buttons.next) { button_draw(button_next); }
 	if (show_map_buttons.prev) { button_draw(button_prev); }
 
-	for (i = show_map_buttons.min ; i < show_map_buttons.max; i++) {
+	for (i = show_map_buttons.min; i < show_map_buttons.max; i++) {
 		button_image_draw((widget_t *) listAllWidgetButtonimage->list[i]);
 	}
 }
@@ -163,13 +163,14 @@ static void eventWidget(void *p)
 	}
 }
 
-/*
+/**
  * groups of 6 map buttons to be shown and handled
  * the group is set by static global variable handled_map_button_group
  * sets static global show_map_buttons.min to index of first button to be drawn in listAllButtonimage
  * and show_map_buttons.max to index of last button to be drawn+1 in listAllButtonimage
  */
-static void activateHandledMapButtonGroup(void) {
+static void activateHandledMapButtonGroup(void)
+{
 	int min = handled_map_button_group * 6;
 	min = min < 0 ? 0 : min;
 	min = min <= arena_file_get_count() ? min : arena_file_get_count();
@@ -202,8 +203,8 @@ void choice_arena_init()
 	button_back = button_new(_("Back"), 100, WINDOW_SIZE_Y - 100, eventWidget);
 	button_play = button_new(_("Play"), WINDOW_SIZE_X - 200, WINDOW_SIZE_Y - 100, eventWidget);
 
-	button_prev = button_new(_("Previous maps"), 250, WINDOW_SIZE_Y - 100, eventWidget);
-	button_next = button_new(_("Next maps"), WINDOW_SIZE_X-350, WINDOW_SIZE_Y - 100, eventWidget);
+	button_prev = button_new(_("Previous arenas"), 250, WINDOW_SIZE_Y - 100, eventWidget);
+	button_next = button_new(_("Next arenas"), WINDOW_SIZE_X - 350, WINDOW_SIZE_Y - 100, eventWidget);
 
 	listAllWidgetButtonimage = list_new();
 	currentArena = NULL;
@@ -230,8 +231,7 @@ void choice_arena_init()
 
 		widget_buttonimage = button_image_new(image, x, y, button_eventImage);
 /*
-		if( i == choiceArenaId )
-		{
+		if (i == choiceArenaId) {
 			widget_buttonimage->active = 1;
 		}
 */
