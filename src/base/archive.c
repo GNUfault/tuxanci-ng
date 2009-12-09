@@ -24,7 +24,7 @@ char *archive_extract_file(char *archive, char *filename)
 	char *tmp;
 
 #ifndef __WIN32__
-	tmp = getenv("TMPDIR");
+	tmp = getenv("TMPDIR") == NULL ? "/tmp" : getenv("TMPDIR");
 #else
 	tmp = getenv("TEMP");
 #endif
