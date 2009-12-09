@@ -22,7 +22,7 @@ void home_director_create()
 		exit(0);
 	}
 
-	sprintf(homeDirector, "%s/%s", envHome, HOMEDIRECTOR_NAME);
+	sprintf(homeDirector, "%s%s%s", envHome, PATH_SEPARATOR, HOMEDIRECTOR_NAME);
 
 	if (access(homeDirector, F_OK) != 0) {
 		debug("Creating home directory [%s]", homeDirector);

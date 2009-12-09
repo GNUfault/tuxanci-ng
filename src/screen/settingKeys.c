@@ -133,7 +133,7 @@ void key_table_init()
 {
 	char path[STR_PATH_SIZE];
 
-	sprintf(path, "%s/keycontrol.conf", home_director_get());
+	sprintf(path, "%s%skeycontrol.conf", home_director_get(), PATH_SEPARATOR);
 
 	keycontrolFile = text_file_load(path);
 

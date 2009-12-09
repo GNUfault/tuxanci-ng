@@ -18,7 +18,7 @@ FIND_PATH(GETTEXT_INCLUDE_DIR libintl.h
 		PATHS
 		/usr/local/include
 		/usr/include
-		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/include
+		/usr/i686-pc-mingw32/sys-root/mingw/include
 		NO_DEFAULT_PATH
 )
 

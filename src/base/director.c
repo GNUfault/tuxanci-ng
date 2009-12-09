@@ -37,7 +37,7 @@ director_t *director_load(char *s)
 	} else {
 		/* this is really correct aproach */
 		getcwd(path, STR_PATH_SIZE);
-		strcat(path, "/");
+		strcat(path, PATH_SEPARATOR);
 		strcat(path, s);
 	}
 

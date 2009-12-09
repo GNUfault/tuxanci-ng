@@ -21,6 +21,12 @@
 
 #include "msg.h"
 
+#ifndef __WIN32__
+#define PATH_SEPARATOR "/"
+#else
+#define PATH_SEPARATOR "\\"
+#endif
+
 #define UNUSED(var)		if (0 && var) {}
 
 extern char *getParam(char *s);

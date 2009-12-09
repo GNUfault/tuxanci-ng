@@ -143,7 +143,7 @@ static void loadHighscoreFile()
 	char path[STR_PATH_SIZE];
 	int i;
 
-	sprintf(path, "%s/" SCREEN_TABLE_FILE_HIGHSCORE_NAME, home_director_get());
+	sprintf(path, "%s%s%s", home_director_get(), PATH_SEPARATOR, SCREEN_TABLE_FILE_HIGHSCORE_NAME);
 	textFile = text_file_load(path);
 
 	if (textFile == NULL) {

@@ -103,7 +103,7 @@ void config_load()
 	char val[STR_SIZE];
 	int i;
 
-	sprintf(path, "%s/tuxanci.conf", home_director_get());
+	sprintf(path, "%s%stuxanci.conf", home_director_get(), PATH_SEPARATOR);
 
 	config_file = text_file_load(path);
 

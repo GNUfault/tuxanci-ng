@@ -83,7 +83,7 @@ void save_arena(char *filename, arena_t *arena)
 	textFile_t *textFile;
 	char path[STR_PATH_SIZE];
 
-	sprintf(path, "%s/%s.sav", home_director_get(), filename);
+	sprintf(path, "%s%s%s.sav", home_director_get(), PATH_SEPARATOR, filename);
 
 	debug("Saving game [%s]", path);
 

@@ -6,6 +6,7 @@
 #else
 #include <windows.h>
 #include <wininet.h>
+#include <winsock.h>
 #endif
 
 typedef struct struct_sock_udp_t {

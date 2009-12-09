@@ -370,10 +370,10 @@ static void load_arenaFromDirector(char *director)
 		if (strstr(line, ".zip") != NULL && strstr(line, "~") == NULL) {
 			char path[STR_PATH_SIZE];
 
-			if (director[strlen(director)-1] == '/') {
+			if (director[strlen(director)-1] == PATH_SEPARATOR) {
 				sprintf(path, "%s%s", director, line);
 			} else {
-				sprintf(path, "%s/%s", director, line);
+				sprintf(path, "%s%s%s", director, PATH_SEPARATOR, line);
 			}
 
 			debug("Loading arena [%s]", line);

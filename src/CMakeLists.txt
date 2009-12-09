@@ -32,7 +32,9 @@ ELSE ( BUILD_SERVER )
 		${FONTCONFIG_LIBRARIES}
 	)
 ENDIF ( BUILD_SERVER )
-
+IF( WIN32 )
+	LINK_LIBRARIES( -lwsock32 -lintl )
+ENDIF ( WIN32 )
 ###############################################################################
 # SOURCE SPECIFICATION
 ###############################################################################

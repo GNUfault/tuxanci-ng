@@ -21,8 +21,14 @@ char *archive_extract_file(char *archive, char *filename)
 	FILE *file;
 	int len;
 	int err;
+	char *tmp;
 
-	sprintf(name, "/tmp/tuxanci.%d-%s", getpid(), filename);
+#ifndef __WIN32__
+	tmp = getenv("TMPDIR");
+#else
+	tmp = getenv("TEMP");
+#endif
+	sprintf(name, "%s%stuxanci.%d-%s", tmp, PATH_SEPARATOR ,getpid(), filename);
 
 	/*printf("ARCHIVE %s %s %s\n", archive, filename, name);*/
 

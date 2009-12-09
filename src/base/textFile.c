@@ -19,7 +19,7 @@ textFile_t *text_file_new(char *s)
 		strcpy(path, s);
 	} else {
 		getcwd(path, STR_PATH_SIZE);
-		strcat(path, "/");
+		strcat(path, PATH_SEPARATOR);
 		strcat(path, s);
 	}
 
