@@ -4,32 +4,25 @@
 #include "main.h"
 
 #cmakedefine USE_MAGICK
-#ifdef BUILD_PACKAGE
-	#define PACKAGE_PREFIX "../"
-#else /* BUILD_PACKAGE */
-	#define PACKAGE_PREFIX ""
-#endif /* BUILD_PACKAGE */
+#define APPNAME         "@APPNAME@"
+#ifdef __WIN32___
+	#define PATH_MODULES    "mods" PATH_SEPARATOR
+	#define PATH_DIR        "data" PATH_SEPARATOR
+#else 
+	#define PATH_MODULES    "@LIB_INSTALL_DIR@" PATH_SEPARATOR   APPNAME PATH_SEPARATOR
+	#define PATH_DIR        "@CMAKE_DATA_PATH@"  PATH_SEPARATOR  APPNAME PATH_SEPARATOR
+#endif
 #define TUXANCI_VERSION		"@TUXANCI_VERSION@"
-#define PREFIX			PACKAGE_PREFIX "@CMAKE_INSTALL_PREFIX@" "/"
-#define APPNAME			"@APPNAME@"
+#define PREFIX			"@CMAKE_INSTALL_PREFIX@" PATH_SEPARATOR
 #ifdef PUBLIC_SERVER
-	#define SERVER_CONFIG	PACKAGE_PREFIX "@CMAKE_CONF_PATH@" "/"	APPNAME	"/server.conf"
+	#define SERVER_CONFIG	"@CMAKE_CONF_PATH@" PATH_SEPARATOR	APPNAME	PATH_SEPARATOR "server.conf"
 #endif /* PUBLIC_SERVER */
-#define PATH_DIR		PACKAGE_PREFIX "@CMAKE_DATA_PATH@"	"/"	APPNAME "/"
-
-/* windows bug */
-#ifndef __WIN32__
-	#define PATH_MODULES 	PACKAGE_PREFIX "@LIB_INSTALL_DIR@" "/"	APPNAME	"/"
-#else /* __WIN32__ */
-	#define PATH_MODULES 	"./"
-#endif /* __WIN32__ */
-
-#define PATH_IMAGE		PATH_DIR		"images/"
-#define PATH_ARENA		PATH_DIR		"arena/"
-#define PATH_SOUND		PATH_DIR		"sound/"
-#define PATH_MUSIC		PATH_DIR		"music/"
-#define PATH_LOCALE		PACKAGE_PREFIX "@CMAKE_LOCALE_PATH@"	"/"
-#define PATH_DOC		PACKAGE_PREFIX "@CMAKE_DOC_PATH@"	"/"
+#define PATH_IMAGE		PATH_DIR		"images" PATH_SEPARATOR
+#define PATH_ARENA		PATH_DIR		"arena" PATH_SEPARATOR
+#define PATH_SOUND		PATH_DIR		"sound" PATH_SEPARATOR
+#define PATH_MUSIC		PATH_DIR		"music" PATH_SEPARATOR
+#define PATH_LOCALE		"@CMAKE_LOCALE_PATH@"	PATH_SEPARATOR
+#define PATH_DOC		"@CMAKE_DOC_PATH@"	PATH_SEPARATOR
 #define PACKAGE			APPNAME
 
 #endif /* PATH_H */
