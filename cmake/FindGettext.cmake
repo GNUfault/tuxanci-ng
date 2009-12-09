@@ -19,24 +19,11 @@ FIND_PATH(GETTEXT_INCLUDE_DIR libintl.h
 		/usr/local/include
 		/usr/include
 		/usr/i686-pc-mingw32/sys-root/mingw/include
-		NO_DEFAULT_PATH
 )
 
-FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge
-		PATHS
-		/usr/local/bin
-		/usr/bin
-		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/exe/
-		NO_DEFAULT_PATH
-)
+FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge)
 
-FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt
-		PATHS
-		/usr/local/bin
-		/usr/bin
-		${CMAKE_SOURCE_DIR}/packaging/windows/Gettext/exe/
-		NO_DEFAULT_PATH
-)
+FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt)
 
 MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
 
