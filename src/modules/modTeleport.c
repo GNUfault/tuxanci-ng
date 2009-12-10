@@ -348,7 +348,11 @@ static void recvMsg(char *msg)
 static int destroy()
 {
 	space_destroy_with_item(spaceTeleport, destroyTeleport);
+	spaceTeleport = NULL;
+
 	list_destroy(listTeleport);
+	listTeleport = NULL;
+
 	return 0;
 }
 

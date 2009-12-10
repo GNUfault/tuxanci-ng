@@ -37,6 +37,8 @@ space_t *space_new(int w, int h, int segW, int segH,
 {
 	space_t *new;
 	int i, j;
+	
+	assert(w > 0 && h > 0 && segW > 0 && segH > 0);
 
 	new = malloc(sizeof(space_t));
 	

@@ -329,7 +329,10 @@ static void recvMsg(char *msg)
 static int destroy()
 {
 	space_destroy_with_item(spacePipe, destroyPipe);
+	spacePipe = NULL;
+
 	list_destroy(listPipe);
+	listPipe = NULL;
 
 	return 0;
 }

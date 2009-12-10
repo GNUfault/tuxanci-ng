@@ -354,6 +354,7 @@ static int destroy()
 #endif
 	list_destroy(listWall);
 	
+	listWall = NULL;
 	spaceWall = 0;
 	spaceImgWall = 0;
 	
