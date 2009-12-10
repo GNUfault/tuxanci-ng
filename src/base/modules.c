@@ -124,13 +124,7 @@ static void unmapImage(void *image)
 
 static void setModulePath(char *name, char *path)
 {
-	sprintf(path, PATH_MODULES "%s" MODULE_TYPE_UNIX, name);	/* GNU/Linux */
-#ifdef __WIN32__
-	sprintf(path, PATH_MODULES "%s" MODULE_TYPE_WIN, name);		/* MS Windows */
-#endif /* __WIN32__ */
-#ifdef APPLE
-	sprintf(path, PATH_MODULES "%s" MODULE_TYPE_APPLE, name);	/* Apple */
-#endif /* APPLE */
+	sprintf(path, PATH_MODULES "%s" MODULE_TYPE, name);
 }
 
 static module_t *newModule(char *name)
