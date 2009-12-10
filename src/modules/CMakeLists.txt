@@ -3,8 +3,6 @@
 ###############################################################################
 # LINKING ( for modules )
 ###############################################################################
-SET ( SONAME_VERSION "0" CACHE STRING "SONAME Version" )
-MARK_AS_ADVANCED ( SONAME_VERSION )
 LINK_LIBRARIES ( ${CMAKE_DL_LIBS} )
 ###############################################################################
 # SOURCE SPECIFICATION
@@ -32,10 +30,6 @@ SET ( SRC_base_modules
 FILE ( GLOB _lib_files mod*.c )
 FOREACH ( _current_LIB_FILE ${_lib_files} )
 	GET_FILENAME_COMPONENT( _lib ${_current_LIB_FILE} NAME_WE )
-	ADD_LIBRARY ( ${_lib} SHARED ${SRC_base_modules} ${_current_LIB_FILE} )
-	SET_TARGET_PROPERTIES (${_lib} PROPERTIES VERSION ${TUXANCI_VERSION} SOVERSION ${SONAME_VERSION})
-	INSTALL ( TARGETS ${_lib}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME}
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
+	ADD_LIBRARY ( ${_lib} STATIC ${SRC_base_modules} ${_current_LIB_FILE} )
 ENDFOREACH ( _current_LIB_FILE )
 ###############################################################################

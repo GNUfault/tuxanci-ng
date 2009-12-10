@@ -82,6 +82,7 @@ IF ( WITH_OPENGL AND NOT BUILD_SERVER )
 	ADD_DEFINITIONS ( -DSUPPORT_OPENGL )
 ENDIF ( WITH_OPENGL AND NOT BUILD_SERVER )
 ###############################################################################
+###############################################################################
 # SERVER COMPILATION
 ###############################################################################
 IF ( BUILD_SERVER )
@@ -98,6 +99,12 @@ ENDIF ( BUILD_SERVER )
 ################################################################################
 # INSTALLATION OF BINARY
 ################################################################################
+FILE ( GLOB _lib_files modules/mod*.c )
+FOREACH( _lib_file ${_lib_files} )
+	GET_FILENAME_COMPONENT ( _lib ${_lib_file} NAME_WE )
+	ADD_DEPENDENCIES ( ${APPNAME} ${_lib} )
+	TARGET_LINK_LIBRARIES ( ${APPNAME} ${_lib} )
+ENDFOREACH ( _lib_file ${_lib_files} )
 INSTALL ( TARGETS ${APPNAME}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/${APPNAME} )
