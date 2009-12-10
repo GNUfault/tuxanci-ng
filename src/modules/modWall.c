@@ -215,8 +215,7 @@ static void cmd_wall(char *line)
 		img_y += y;
 	}
 #ifndef PUBLIC_SERVER
-	new = newWall(x, y, w, h, img_x, img_y, layer,
-		      export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
+	new = newWall(x, y, w, h, img_x, img_y, layer, export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
 #else
 	new = newWall(x, y, w, h, img_x, img_y, layer);
 #endif
