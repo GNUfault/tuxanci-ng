@@ -7,7 +7,7 @@ ABOUT
 	supports gameplay over network (LAN/Internet [IPv4 and IPv6]).
 	
 	Goal in this game is to shoot enemy penguin before he does so. Penguin
-	can shoot only in X and Y axes so no diagonal shooting is availible yet.
+	can shoot only in X and Y axes so no diagonal shooting is available yet.
 
 	Weapon list
 	-----------
@@ -40,11 +40,11 @@ ABOUT
 		Infinite ammo: you have really big backpack of ammo (fire at will)
 		4way shoot: tux fire on shoot in every direction (cost only 1 ammo)
 		Teleport: if somebody shoots at Tux he teleport himself away
-		Ghost: Tux can move and shoot through obstracles
+		Ghost: Tux can move and shoot through obstacles.
 		Note
 		~~~~
-			Bonuses last only few seconds and if tux take another bonus
-			first loses its effects.
+			Bonuses last only few seconds and if tux take another bonus then
+			first one looses its effects.
 
 HOWTO COMPILE
 =============
@@ -120,8 +120,7 @@ HAVE PROBLEM/FOUND BUG/ETC...
 	http://www.tuxanci.org/buglist (you need account for that).
 
 	You need some help with install/etc... feel free to join us on our irc
-	channel which is #tuxanci on server irc.freenode.net. If you don't like
-	irc you can can contact us on our forum also: http://czf.tuxanci.org.
+	channel which is #tuxanci on server irc.freenode.net.
 
 INFORMATIONS FOR TRANSLATORS
 ============================
