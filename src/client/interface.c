@@ -119,8 +119,9 @@ int interface_init()
 
 	/* initialization of SDL */
 	if (SDL_Init(SDL_SUBSYSTEMS) == -1) {
-		error("Unable to initialize SDL: %s", SDL_GetError());
+		fatal("Unable to initialize SDL: %s", SDL_GetError());
 		SDL_Quit();
+		exit(0);
 		return -1;
 	}
 
