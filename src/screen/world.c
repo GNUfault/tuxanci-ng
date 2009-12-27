@@ -384,10 +384,14 @@ void startWorld()
 	radar_init();
 	pauza_init();
 	term_init();
-	save_dialog_init();
+
+	setGameType();
+
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_NONE) {
+		save_dialog_init();
+	}
 
 	module_init();
-	setGameType();
 	chat_init();
 	prepareArena();
 }
@@ -443,7 +447,10 @@ void stoptWorld()
 	radar_quit();
 	pauza_quit();
 	term_quit();
-	save_dialog_quit();
+	
+	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_NONE) {
+		save_dialog_quit();
+	}
 
 	if (control_tux_right != NULL) {
 		control_destroy(control_tux_right);
