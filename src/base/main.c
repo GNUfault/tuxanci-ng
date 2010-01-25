@@ -71,6 +71,11 @@ bool_t isParamFlag(char *s)
 	return FALSE;
 }
 
+char* get_program_name()
+{
+	return my_argv[0];
+}
+
 char *getString(int n)
 {
 	char str[STR_NUM_SIZE];

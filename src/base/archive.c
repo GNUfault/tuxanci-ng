@@ -101,7 +101,7 @@ char *archive_extract_file(char *archive, char *filename)
 #endif
 	sprintf(name, "%s%stuxanci.%d-%s", tmp, PATH_SEPARATOR ,getpid(), filename);
 
-	if( ! PHYSFS_init("hahaha") )
+	if( ! PHYSFS_init(get_program_name()) )
 	{
 		error("Unable to init physfs");
 		return NULL;
