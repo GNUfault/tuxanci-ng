@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2009
+# Copyright (C) 2010
 # This file is distributed under the same license as the tuxanci package.
-# Michal Zima <xhire@mujmalysvet.cz>, 2008
+# Michal Zima <xhire@mujmalysvet.cz>, 2008-2010
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: tuxanci\n"
 "Report-Msgid-Bugs-To: team@tuxanci.org\n"
-"POT-Creation-Date: 2009-12-08 15:55+0100\n"
+"POT-Creation-Date: 2010-02-08 22:43+0100\n"
 "PO-Revision-Date: 2009-12-28 16:03+0100\n"
 "Last-Translator: xHire <xhire@mujmalysvet.cz>\n"
 "Language-Team: \n"
@@ -77,11 +77,19 @@ msgstr "Uložit"
 #: src/screen/downArena.c:372
 #: src/screen/gameType.c:229
 #: src/screen/choiceArena.c:203
-#: src/screen/setting.c:282
+#: src/screen/setting.c:288
 #: src/screen/settingKeys.c:282
 #: src/screen/table.c:203
 msgid "Back"
 msgstr "Zpět"
+
+#: src/client/yes_no_dialog.c:56
+msgid "Yes"
+msgstr "Ano"
+
+#: src/client/yes_no_dialog.c:60
+msgid "No"
+msgstr "Ne"
 
 #: src/screen/analyze.c:167
 msgid "OK"
@@ -227,80 +235,88 @@ msgstr "Autoři"
 msgid "Quit game"
 msgstr "Ukončit hru"
 
-#: src/screen/setting.c:284
+#: src/screen/setting.c:290
 msgid "Controls"
 msgstr "Ovládání"
 
-#: src/screen/setting.c:288
+#: src/screen/setting.c:294
 msgid "Music:"
 msgstr "Hudba:"
 
-#: src/screen/setting.c:292
+#: src/screen/setting.c:298
 msgid "Sound:"
 msgstr "Zvuk:"
 
-#: src/screen/setting.c:298
-#: src/screen/setting.c:301
+#: src/screen/setting.c:304
+#: src/screen/setting.c:307
 msgid "AI:"
 msgstr "AI:"
 
-#: src/screen/setting.c:306
+#: src/screen/setting.c:312
 msgid "No. of rounds:"
 msgstr "Počet kol:"
 
-#: src/screen/setting.c:307
+#: src/screen/setting.c:313
 msgid "Player 1:"
 msgstr "Hráč 1:"
 
-#: src/screen/setting.c:308
+#: src/screen/setting.c:314
 msgid "Player 2:"
 msgstr "Hráč 2:"
 
-#: src/screen/setting.c:371
+#: src/screen/setting.c:329
+msgid "Weapons:"
+msgstr "Zbraně:"
+
+#: src/screen/setting.c:330
+msgid "Bonuses:"
+msgstr "Bonusy:"
+
+#: src/screen/setting.c:380
 msgid "Dual simple gun"
 msgstr "Dvojitá pistole"
 
-#: src/screen/setting.c:372
+#: src/screen/setting.c:381
 msgid "Scatter"
 msgstr "Brokovnice"
 
-#: src/screen/setting.c:373
+#: src/screen/setting.c:382
 msgid "Tommy"
 msgstr "Samopal"
 
-#: src/screen/setting.c:374
+#: src/screen/setting.c:383
 msgid "Laser beam"
 msgstr "Laser"
 
-#: src/screen/setting.c:375
+#: src/screen/setting.c:384
 msgid "Mine"
 msgstr "Mina"
 
-#: src/screen/setting.c:376
+#: src/screen/setting.c:385
 msgid "Bomb ball"
 msgstr "Bomba"
 
-#: src/screen/setting.c:378
+#: src/screen/setting.c:387
 msgid "Speed bonus"
 msgstr "Bonus Rychlost"
 
-#: src/screen/setting.c:379
+#: src/screen/setting.c:388
 msgid "Infinite ammo"
 msgstr "Bonus Nekonečná munice"
 
-#: src/screen/setting.c:380
+#: src/screen/setting.c:389
 msgid "Unkillable bonus"
 msgstr "Bonus Nesmrtelnost"
 
-#: src/screen/setting.c:381
+#: src/screen/setting.c:390
 msgid "No-walls bonus"
 msgstr "Bonus Průchod zdí"
 
-#: src/screen/setting.c:382
+#: src/screen/setting.c:391
 msgid "1 shot to 4 directions bonus"
 msgstr "Bonus 1 střela do 4 stran"
 
-#: src/screen/setting.c:383
+#: src/screen/setting.c:392
 msgid "Unvisibility bonus"
 msgstr "Bonus neviditelnosti"
 
