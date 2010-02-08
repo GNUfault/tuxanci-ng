@@ -52,6 +52,9 @@ static widget_t *label_music;
 static widget_t *label_sound;
 #endif
 
+static widget_t *label_weapons;
+static widget_t *label_bonuses;
+
 static widget_t *check[ITEM_COUNT];
 #ifndef NO_SOUND
 static widget_t *check_music;
@@ -99,6 +102,9 @@ void setting_draw()
 	int i;
 
 	wid_image_draw(image_backgorund);
+
+	label_draw(label_weapons);
+	label_draw(label_bonuses);
 
 	label_draw(label_count_round);
 	label_draw(label_name_player1);
@@ -320,6 +326,9 @@ void setting_init()
 						WIDGET_TEXTFIELD_FILTER_ALPHANUM,
 						110 + label_count_round->w, WINDOW_SIZE_Y - 120);
 
+	label_weapons = label_new(_("weapons:"), 100, 160, WIDGET_LABEL_LEFT);
+	label_bonuses = label_new(_("bonuses:"), 430, 160, WIDGET_LABEL_LEFT);
+
 	for (i = GUN_DUAL_SIMPLE; i <= GUN_BOMBBALL; i++) {
 		int x = 0;
 		int y = 0;
@@ -448,6 +457,9 @@ void setting_quit()
 	saveAndDestroyConfigFile();
 
 	wid_image_destroy(image_backgorund);
+
+	label_destroy(label_weapons);
+	label_destroy(label_bonuses);
 
 	label_destroy(label_count_round);
 	label_destroy(label_name_player1);
