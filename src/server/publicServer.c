@@ -110,7 +110,7 @@ void daemonize()
 	}
 
 	dup(i);
-	dup(i);					/* handle standart I/O */
+	dup(i);					/* handle standard I/O */
 
 	sprintf(spid, "/tmp/tuxanci-server.pid");
 
@@ -124,14 +124,14 @@ void daemonize()
 	#ifndef __CYGWIN__
 	/* lock the file */
 	if (lockf(lockfd, F_TLOCK, 0) < 0) {
-		perror("[Error] Lock: lockf\n");
+		error("Lock: lockf");
 		warning("The Tuxanci game server is already running");
 		exit(0);
 	}
 	#else /* __CYGWIN__ */
 	/* lock the file */
 	{
-	struct flock lock;
+		struct flock lock;
 		lock.l_type = F_RDLCK;
 		lock.l_start = 0;
 		lock.l_whence = SEEK_SET;
@@ -161,13 +161,13 @@ static int public_server_register()
 	SOCKET s;
 #endif /* __WIN32__ */
 
-	/* TODO: TCP macro */
 	struct sockaddr_in server;
 	char *master_server_ip;
 
 	master_server_ip = dns_resolv(NET_MASTER_SERVER_DOMAIN);
 
-	if (master_server_ip == NULL) {		/* master server is down? */
+	if (master_server_ip == NULL) {
+		warning("Did not obtained IP of the MasterServer");
 		return -1;
 	}
 
@@ -177,70 +177,14 @@ static int public_server_register()
 
 	free(master_server_ip);
 
-	if ((s = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		return 0;
-	}
-
-	/* Set to nonblocking socket mode */
-#ifndef __WIN32__
-	int oldFlag;
-
-	oldFlag = fcntl(s, F_GETFL, 0);
-
-	if (fcntl(s, F_SETFL, oldFlag | O_NONBLOCK) == -1) {
-		return -1;
-	}
-#else /* __WIN32__ */
-	unsigned long arg = 1;
-	/* Operation is  FIONBIO. Parameter is pointer on non-zero number */
-	if (ioctlsocket(s, FIONBIO, &arg) == SOCKET_ERROR) {
-		WSACleanup();
-		return -1;
-	}
-#endif /* __WIN32__ */
-
-	if (connect(s, (struct sockaddr *) &server, sizeof(server)) == -1) {
-#ifndef __WIN32__
-		if (errno != EINPROGRESS) {
-			return -1;
-		}
-#else /* __WIN32__ */
-		if (WSAGetLastError() != WSAEWOULDBLOCK) {
-			WSACleanup();
-			return -1;
-		}
-#endif /* __WIN32__ */
-	}
-
-	struct timeval tv;
-
-	fd_set myset;
-
-	FD_ZERO(&myset);
-	FD_SET(s, &myset);
-
-	tv.tv_sec = 3;
-	tv.tv_usec = 0;
-
-	int ret = select(s + 1, NULL, &myset, NULL, &tv);
-
-	if (ret == -1) {
-		return -1;
-	} else if (ret == 0) {
+	if ((s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+		warning("Unable to open socket for connection to MasterServer");
 		return -1;
 	}
 
-	FD_ZERO(&myset);
-	FD_SET(s, &myset);
-
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
-
-	ret = select(s + 1, NULL, &myset, NULL, &tv);
-
-	if (ret == -1) {
-		return -1;
-	} else if (ret == 0) {
+	/* connect to MasterServer */
+	if (connect(s, (struct sockaddr *) &server, sizeof(server)) < 0) {
+		warning("Unable to estabilish connection to MasterServer");
 		return -1;
 	}
 
@@ -250,34 +194,28 @@ static int public_server_register()
 		unsigned ip;
 	} __PACKED__ register_head;
 
-	char *str = (char *) malloc(sizeof(register_head));
-
-	register_head *head = (register_head *) str;
+	register_head *head = (register_head *) malloc(sizeof(register_head));
 
 	head->cmd = 'p';
 	head->port = atoi(public_server_get_setting("PORT4", "--port4", "6800"));
 	head->ip = 0;				/* TODO */
 
 	/* send request for server list */
-	int r = send(s, str, 9, 0);
+	int r = send(s, head, sizeof(register_head), 0);
 
-	free(str);
+	free(head);
 
-	if (r == -1) {
-#ifndef __WIN32__
-		close(s);
-#else /* __WIN32__ */
-		closesocket(s);
-#endif /* __WIN32__ */
-		return -1;
-	}
 #ifndef __WIN32__
 	close(s);
 #else /* __WIN32__ */
 	closesocket(s);
 #endif /* __WIN32__ */
 
-	return 0;
+	if (r == -1) {
+		return -1;
+	} else {
+		return 0;
+	}
 }
 
 static int public_server_initNetwork()
@@ -308,8 +246,6 @@ static int public_server_initNetwork()
 
 	port4 = atoi(public_server_get_setting("PORT4", "--port4", "6800"));
 	port6 = atoi(public_server_get_setting("PORT6", "--port6", "6800"));
-
-	/*ret = initNetMulitplayerPublicServer(p_ip4, port4, p_ip6, port6);*/
 
 	ret = net_multiplayer_init_for_game_server(p_ip4, port4, p_ip6, port6);
 
@@ -371,9 +307,13 @@ int public_server_init()
 
 	server_set_max_clients(atoi(public_server_get_setting("MAX_CLIENTS", "--max-clients", "32")));
 
-	if (public_server_register() < 0) {
-		error("Unable to contact MasterServer");
-		/* TODO: Why not to log it? */
+	if (atoi(public_server_get_setting("LAN_ONLY", "--lan-only", "0")) == 0) {
+		if (public_server_register() < 0) {
+			error("Unable to contact MasterServer");
+			/* TODO: Why not to log it? */
+		}
+	} else {
+		debug("Starting LAN-only server");
 	}
 
 	return 0;
@@ -454,7 +394,7 @@ int public_server_start()
 		return -1;
 	}
 
-	char *s = public_server_get_setting("DAEMON", "--daemon", "none");
+	char *s = public_server_get_setting("DAEMON", "--daemon", "0");
 
 	if (atoi(s)) {
 		daemonize();
