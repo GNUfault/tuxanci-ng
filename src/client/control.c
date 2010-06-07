@@ -60,11 +60,8 @@ int control_get_key_route(control_t *my_control)
 int control_get_key_action(control_t *my_control)
 {
 	Uint8 *map;
-	SDLKey ret_key;
 
 	assert(my_control != NULL);
-
-	ret_key = CONTROL_NONE;
 
 	map = SDL_GetKeyState(NULL);
 

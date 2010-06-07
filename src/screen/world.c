@@ -243,12 +243,16 @@ static void control_keyboard(tux_t *tux, control_t *control)
 
 	switch (control_get_key_action(control)) {
 		case CONTROL_SHOT:
-			netAction(tux, TUX_SHOT);
-			tux_action(tux, TUX_SHOT);
+			if (tux->isCanShot == TRUE) {
+				netAction(tux, TUX_SHOT);
+				tux_action(tux, TUX_SHOT);
+			}
 			break;
 		case CONTROL_SWITCH:
-			netAction(tux, TUX_SWITCH_GUN);
-			tux_action(tux, TUX_SWITCH_GUN);
+			if (tux->isCanSwitchGun == TRUE) {
+				netAction(tux, TUX_SWITCH_GUN);
+				tux_action(tux, TUX_SWITCH_GUN);
+			}
 			break;
 	}
 }
