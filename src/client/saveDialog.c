@@ -33,8 +33,10 @@ static void switchTerm()
 {
 	if (activeSaveDialog == TRUE) {
 		activeSaveDialog = FALSE;
+		hot_key_unregister(SDLK_ESCAPE);
 	} else {
 		activeSaveDialog = TRUE;
+		hot_key_register(SDLK_ESCAPE, switchTerm);
 	}
 }
 
