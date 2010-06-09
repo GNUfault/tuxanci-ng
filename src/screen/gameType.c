@@ -17,7 +17,7 @@
 
 #ifndef NO_SOUND
 #include "music.h"
-#endif
+#endif /* NO_SOUND */
 
 #include "gameType.h"
 #include "setting.h"
@@ -92,7 +92,7 @@ void screen_startGameType()
 {
 #ifndef NO_SOUND
 	music_play("menu", MUSIC_GROUP_BASE);
-#endif
+#endif /* NO_SOUND */
 
 /*
 	choiceGroup_set_status(check_none, TRUE);
@@ -256,8 +256,8 @@ void game_type_init()
 	label_session = label_new(_("Load saved game:"), 300, 145, WIDGET_LABEL_LEFT);
 
 	textfield_ip = text_field_new(config_get_str_value(CFG_NET_IP),
-					WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN,
-					300, 180);
+				      WIDGET_TEXTFIELD_FILTER_IP_OR_DOMAIN,
+				      300, 180);
 
 	textfield_port = text_field_new(config_get_str_value(CFG_NET_PORT),
 					WIDGET_TEXTFIELD_FILTER_NUM, 300, 280);

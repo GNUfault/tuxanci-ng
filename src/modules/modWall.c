@@ -7,16 +7,15 @@
 #include "modules.h"
 #include "tux.h"
 #include "shot.h"
-#include "list.h"
 #include "gun.h"
 #include "space.h"
 
 #ifndef PUBLIC_SERVER
 #include "interface.h"
 #include "image.h"
-#else
+#else /* PUBLIC_SERVER */
 #include "publicServer.h"
-#endif
+#endif /* PUBLIC_SERVER */
 
 typedef struct wall_struct {
 	int id;
@@ -38,7 +37,7 @@ typedef struct wall_struct {
 #ifndef PUBLIC_SERVER
 	/* its image */
 	image_t *img;
-#endif
+#endif /* PUBLIC_SERVER */
 } wall_t;
 
 static export_fce_t *export_fce;
@@ -47,22 +46,20 @@ static space_t *spaceWall;
 
 #ifndef PUBLIC_SERVER
 static space_t *spaceImgWall;
-#endif
-
-static list_t *listWall;
+#endif /* PUBLIC_SERVER */
 
 #ifndef PUBLIC_SERVER
 static wall_t *newWall(int x, int y, int w, int h, int img_x, int img_y, int layer, image_t *img)
-#else
+#else /* PUBLIC_SERVER */
 static wall_t *newWall(int x, int y, int w, int h, int img_x, int img_y, int layer)
-#endif
+#endif /* PUBLIC_SERVER */
 {
 	static int last_id = 0;
 	wall_t *new;
 
 #ifndef PUBLIC_SERVER
 	assert(img != NULL);
-#endif
+#endif /* PUBLIC_SERVER */
 	new = malloc(sizeof(wall_t));
 	assert(new != NULL);
 
@@ -76,13 +73,12 @@ static wall_t *newWall(int x, int y, int w, int h, int img_x, int img_y, int lay
 	new->layer = layer;
 #ifndef PUBLIC_SERVER
 	new->img = img;
-#endif
+#endif /* PUBLIC_SERVER */
 
 	return new;
 }
 
 #ifndef PUBLIC_SERVER
-
 static void drawWall(wall_t *p)
 {
 	assert(p != NULL);
@@ -93,22 +89,7 @@ static void drawWall(wall_t *p)
 				 p->img->w, p->img->h,
 				 p->layer);
 }
-
-static void drawListWall(list_t *list)
-{
-	wall_t *thisWall;
-	int i;
-
-	assert(list != NULL);
-
-	for (i = 0; i < list->count; i++) {
-		thisWall = (wall_t *) list->list[i];
-		assert(thisWall != NULL);
-		drawWall(thisWall);
-	}
-}
-
-#endif
+#endif /* PUBLIC_SERVER */
 
 static void destroyWall(wall_t *p)
 {
@@ -163,7 +144,7 @@ static void setStatusImgWall(void *p, int x, int y, int w, int h)
 	UNUSED(w);
 	UNUSED(h);
 }
-#endif
+#endif /* PUBLIC_SERVER */
 
 static void cmd_wall(char *line)
 {
@@ -216,9 +197,9 @@ static void cmd_wall(char *line)
 	}
 #ifndef PUBLIC_SERVER
 	new = newWall(x, y, w, h, img_x, img_y, layer, export_fce->fce_image_get(IMAGE_GROUP_USER, str_image));
-#else
+#else /* PUBLIC_SERVER */
 	new = newWall(x, y, w, h, img_x, img_y, layer);
-#endif
+#endif /* PUBLIC_SERVER */
 
 	if (spaceWall == NULL) {
 		spaceWall = space_new(export_fce->fce_arena_get_current()->w,
@@ -234,19 +215,18 @@ static void cmd_wall(char *line)
 					 320, 240,
 					 getStatusImgWall, setStatusImgWall);
 	}
-#endif
+#endif /* PUBLIC_SERVER */
 
 	space_add(spaceWall, new);
 
 #ifndef PUBLIC_SERVER
 	space_add(spaceImgWall, new);
-#endif
+#endif /* PUBLIC_SERVER */
 }
 
 static int init(export_fce_t *p)
 {
 	export_fce = p;
-	listWall = list_new();
 
 	return 0;
 }
@@ -272,7 +252,7 @@ static int draw(int x, int y, int w, int h)
 
 	return 0;
 }
-#endif
+#endif /* PUBLIC_SERVER */
 
 static void action_eventwall(space_t *space, wall_t *wall, shot_t *shot)
 {
@@ -352,10 +332,8 @@ static int destroy()
 #ifndef PUBLIC_SERVER
 	space_destroy(spaceImgWall);
 	spaceImgWall = NULL;
-#endif
-	list_destroy(listWall);
+#endif /* PUBLIC_SERVER */
 	
-	listWall = NULL;
 	spaceWall = NULL;
 	
 	return 0;
@@ -364,9 +342,9 @@ static int destroy()
 mod_sym_t modwall_sym = { &init,
 #ifndef PUBLIC_SERVER
 			  &draw,
-#else
+#else /* PUBLIC_SERVER */
 			  0,
-#endif
+#endif /* PUBLIC_SERVER */
 			  &event,
 			  &isConflict,
 			  &cmdArena,

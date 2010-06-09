@@ -3,16 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 
-#define SUPPORT_LIBZIP
-/* #define SUPPORT_LIBPHYSFS */
-
 #ifdef SUPPORT_LIBPHYSFS
 #include <physfs.h>
-#endif
+#endif /* SUPPORT_LIBPHYSFS */
 
 #ifdef SUPPORT_LIBZIP
 #include <zip.h>
-#endif
+#endif /* SUPPORT_LIBZIP */
 
 #include "main.h"
 #include "archive.h"
@@ -36,9 +33,9 @@ char *archive_extract_file(char *archive, char *filename)
 
 #ifndef __WIN32__
 	tmp = getenv("TMPDIR") == NULL ? "/tmp" : getenv("TMPDIR");
-#else
+#else /* __WIN32__ */
 	tmp = getenv("TEMP");
-#endif
+#endif /* __WIN32__ */
 	sprintf(name, "%s%stuxanci.%d-%s", tmp, PATH_SEPARATOR, getpid(), filename);
 
 	/*printf("ARCHIVE %s %s %s\n", archive, filename, name);*/
@@ -67,7 +64,6 @@ char *archive_extract_file(char *archive, char *filename)
 
 	do {
 		len = zip_fread(zipFile, buf, ARCHIVE_BUFFER_SIZE);
-		/*printf("len = %d\n", len);*/
 
 		if (len > 0) {
 			fwrite(buf, len, 1, file);
@@ -80,7 +76,7 @@ char *archive_extract_file(char *archive, char *filename)
 
 	return strdup(name);
 }
-#endif
+#endif /* SUPPORT_LIBZIP */
 
 #ifdef SUPPORT_LIBPHYSFS
 char *archive_extract_file(char *archive, char *filename)
@@ -96,9 +92,9 @@ char *archive_extract_file(char *archive, char *filename)
 
 #ifndef __WIN32__
 	tmp = getenv("TMPDIR") == NULL ? "/tmp" : getenv("TMPDIR");
-#else
+#else /* __WIN32__ */
 	tmp = getenv("TEMP");
-#endif
+#endif /* __WIN32__ */
 	sprintf(name, "%s%stuxanci.%d-%s", tmp, PATH_SEPARATOR, getpid(), filename);
 
 	if (!(PHYSFS_init(get_program_name()))) {
@@ -138,7 +134,7 @@ char *archive_extract_file(char *archive, char *filename)
 
 	return strdup(name);
 }
-#endif
+#endif /* SUPPORT_LIBPHYSFS */
 
 void archive_delete_file(char *s)
 {
