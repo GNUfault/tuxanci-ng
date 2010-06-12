@@ -674,9 +674,9 @@ static int RefreshServers()
 			sprintf(buf, "%dms", server->ping);
 
 			memcpy(list + 83, buf, strlen(buf));
-		}
 
-		select_add(select_server, list);
+			select_add(select_server, list);
+		}
 	}
 
 	return 1;
