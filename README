@@ -1,13 +1,15 @@
-ABOUT
-=====
-	Tuxanci is first tux shooter ere while inspired by well-known Czech
-	game Bulanci. But it goes its own way now and it is much better.
-	
-	Game supports 1 player and multiplayer game on one computer and also
-	supports gameplay over network (LAN/Internet [IPv4 and IPv6]).
-	
-	Goal in this game is to shoot enemy penguin before he does so. Penguin
-	can shoot only in X and Y axes so no diagonal shooting is available yet.
+ABOUT TUXANCI
+=============
+Tuxanci is first tux shooter. In the absolute beginning it was inspired by
+a well-known Czech game Bulanci. Today Tuxanci goes its own way and is much
+better then Bulanci (except the graphics though).
+
+Game supports 1 player and 2 players game on one computer and also supports
+gameplay over network (LAN/Internet [IPv4 and IPv6]).
+
+Goal in this game is to shoot enemy Tux before he does so. Tux can shoot only
+in X and Y axes so no diagonal shooting is available yet (in fact it is even
+not being planned at the moment).
 
 	Weapon list
 	-----------
@@ -46,37 +48,6 @@ ABOUT
 			Bonuses last only few seconds and if tux take another bonus then
 			first one looses its effects.
 
-HOWTO COMPILE
-=============
-	This howto is written for linux. For other platforms please think about
-	rather using binary modules.
-	First of all we need some libraries:
-		(g)libc, SDL, SDL_image, SDL_ttf, optionally SDL_mixer,
-		optionally opengl, gettext, libzip
-
-	And some applications:
-		cmake version 2.6.0 and above
-
-	Now we have two options what we can do:
-	(all commands are supposed to be written in tuxanci/build directory;
-	If such does not exist just create it :])
-
-	NOTE: if you want to see all variable options definable by cmake just
-	run ccmake instead of cmake.
-	Building Client
-	---------------
-		$ cmake ..
-		$ make
-		# make install
-	Building Server
-	--------------
-		$ cmake .. -DBUILD_SERVER=1
-		$ make
-		# make install
-	Removing current install
-	-----------------------
-		Same for both client and server
-		# make uninstall
 GAME USAGE
 ==========
 	Starting game is simple tuxanci-VERSION or tuxanci-server-V. based on what we
