@@ -772,8 +772,6 @@ void proto_recv_shot_client(char *msg)
 	}
 
 	space_add(arena_get_current()->spaceShot, shot);
-
-	printf("ADD new shot id=%d px=%d py=%d position=%d\n", shot_id, px, py, position);
 }
 
 void proto_send_chat_client(char *s)
