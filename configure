@@ -1,9 +1,13 @@
 #!/bin/sh
 
+# Go to the root
+cd ${0%%/*}
+ROOTDIR=`pwd`
+
 ###
 # Defaults
 ###
-VERSION=0.21.99
+VERSION=0.2.99
 PREFIX=/usr/local
 PREFIX_BIN=${PREFIX}/bin
 PREFIX_LIB=${PREFIX}/lib/tuxanci
@@ -42,7 +46,7 @@ help() {
 	echo "--enable-audio            build with audio facility [default: yes]"
 	echo "--enable-opengl           build with 3D acceleration [default: yes]"
 	echo ""
-	echo "--without-gettext         English only version"
+	echo "--without-gettext         English-only version [default: no]"
 }
 
 check_pkg() {
@@ -125,11 +129,77 @@ while [ $# -gt 0 ]; do
 		--destdir=*)
 			DESTDIR=`echo $1 | sed 's/--destdir=//'`
 			;;
-		--enable-debug)
-			DEBUG=1
+		--enable-*)
+			case ${1#--enable-} in
+				debug)
+					DEBUG=1
+					;;
+				server)
+					SERVER=1
+					;;
+				client)
+					CLIENT=1
+					;;
+				audio)
+					AUDIO=1
+					;;
+				opengl)
+					OPENGL=1
+					;;
+				*)
+				echo "Error: unknown option --enable-$1"
+					help
+					exit 1
+					;;
+			esac
 			;;
-		--disable-debug)
-			DEBUG=0
+		--disable-*)
+			case ${1#--disable-} in
+				debug)
+					DEBUG=0
+					;;
+				server)
+					SERVER=0
+					;;
+				client)
+					CLIENT=0
+					;;
+				audio)
+					AUDIO=0
+					;;
+				opengl)
+					OPENGL=0
+					;;
+				*)
+				echo "Error: unknown option --disable-$1"
+					help
+					exit 1
+					;;
+			esac
+			;;
+		--with-*)
+			case ${1#--with-} in
+				gettext)
+					GETTEXT=1
+					;;
+				*)
+				echo "Error: unknown option --with-$1"
+					help
+					exit 1
+					;;
+			esac
+			;;
+		--without-*)
+			case ${1#--with-} in
+				gettext)
+					GETTEXT=0
+					;;
+				*)
+				echo "Error: unknown option --without-$1"
+					help
+					exit 1
+					;;
+			esac
 			;;
 		*)
 		echo "Error: unknown option $1"
@@ -140,13 +210,11 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-###
-# Check for dependencies
-###
-echo "==> Checking for dependencies for building"
 
-# cmake
-printf "Checking for cmake >= 2.6.0... "
+###
+# Check for cmake dependency
+###
+printf "==> Checking for cmake >= 2.6.0... "
 cmakebin=`which cmake`
 if [ "${cmakebin}" == "" ]; then
 	echo "no"
@@ -165,25 +233,36 @@ else
 fi
 
 
-echo "==> Checking for dependencies for running"
+###
+# Run cmake for client
+###
+if [ ${CLIENT} == 1 ]; then
+	echo "==> Running cmake stage for client and creating subMakefile"
+	rm -rf build_client/
+	mkdir build_client/
+	cd build_client/
+	cmakeopts="-DBUILD_SERVER=0"
+	# debug
+	if [ ${DEBUG} == 1 ]; then cmakeopts="${cmakeopts} -DENABLE_DEBUG=1"
+	else cmakeopts="${cmakeopts} -DENABLE_DEBUG=0"; fi
+	# audio
+	if [ ${AUDIO} == 1 ]; then cmakeopts="${cmakeopts} -DWITH_AUDIO=1"
+	else cmakeopts="${cmakeopts} -DWITH_AUDIO=0"; fi
+	# opengl
+	if [ ${OPENGL} == 1 ]; then cmakeopts="${cmakeopts} -DWITH_OPENGL=1"
+	else cmakeopts="${cmakeopts} -DWITH_OPENGL=0"; fi
+	# gettext
+	if [ ${GETTEXT} == 1 ]; then cmakeopts="${cmakeopts} -DWITH_NLS=1"
+	else cmakeopts="${cmakeopts} -DWITH_NLS=0"; fi
 
-# SDL/OpenGL
-if [ ${CLIENT} == true ]; then
-	printf "Checking for SDL... "
-	check_pkg "sdl"
+	cmakecmd="cmake .. ${cmakeopts}"
+	echo "Executing: ${cmakecmd}"
+	${cmakecmd} > cmake.log
 fi
 
-# libzip
-printf "Checking for libzip... "
-check_pkg "libzip"
 
-# gettext
-#if [ ${GETTEXT} == true ]; then
-	#printf "Checking for gettext... "
-	#echo ""
-#fi
-
-
-echo "==> Creating Makefile"
+echo "==> Creating main Makefile"
+cat > Makefile <<EOF
+EOF
 
 echo "==> Configuring successfully finished!"
