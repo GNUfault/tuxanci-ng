@@ -71,3 +71,9 @@ Quit: Esc
 
 ## HAVE PROBLEM/FOUND BUG/ETC...
 If you found some bug, have feature request, or need some help with, please fill it into GitHub Issues.
+
+## NOTE
+This is also on OSX and Windows, not just Linux.
+Both of those ports don't compile and no longer maintained 
+(Due to me not being able to maintain them by myself.
+You can send me a email at <bluMATRIKZ@gmail.com> or open a issue if you want to maintain one of them).
