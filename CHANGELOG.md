@@ -1,11 +1,11 @@
 # TUXANCI CHANGELOG
-## from 0.21.0 to 0.2.2
+## from 0.21.0 to 0.22.0
 - the download server is integrated in game server
 - support for OpenGL in master branch
 - ESC closes the chat window -- not the game
 - game is quitable through ESC from each section of game menu
 - switched from libzzip to libzip
-- big code cleaning
+- big code cleaning and modernization
 
 ## from 0.20.0 to 0.21.0
 - implemented gettext -> automatic selection of right language
