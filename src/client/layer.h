@@ -33,7 +33,7 @@ extern void layer_init();
 
 extern void addLayer(image_t *img, int x, int y, int px, int py, int w, int h, int player);
 
-extern void layer_draw_all();
+extern void layer_draw_all(int x, int y); /* Fixed by GNUfault */
 extern void layer_draw_center(int x, int y);
 extern void layer_draw_slpit(int local_x, int local_y, int x, int y, int w, int h);
 extern void layer_flush();

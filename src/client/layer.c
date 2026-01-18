@@ -79,7 +79,7 @@ void addLayer(image_t *img, int x, int y, int px, int py, int w, int h, int play
  * Draws all items onto the screen according to the layer and coordinate Y+H
  * After drawing frees the list
  */
-void layer_draw_all()
+void layer_draw_all(int x, int y) /* Fixed by GNUfault */
 {
 	layer_t *this;
 	int i;

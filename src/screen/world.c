@@ -88,7 +88,7 @@ void world_do_end()
 	isEndWorld = TRUE;
 }
 
-static void timer_endArena()
+static void timer_endArena(void *p) /* Fixed by GNUfault */
 {
 	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		world_do_end();
