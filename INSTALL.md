@@ -1,10 +1,8 @@
-HOW TO INSTALL TUXANCI
-======================
+# HOW TO INSTALL TUXANCI
 
-Client
-------
-Requirements: cmake >= 2.6.0, SDL, SDL_image, SDL_ttf, (SDL_mixer), (OpenGL),
-	      (Gettext), libzip
+## Client
+Requirements: `cmake >= 2.6.0`, `SDL`, `SDL_image`, `SDL_ttf`, (`SDL_mixer`), (`OpenGL`),
+	      (`Gettext`), `libzip`
 (Those in brackets are optional and can be omitted if you choose appropriate
 switches while building the game. But we recommend to have all of them.)
 
@@ -18,10 +16,12 @@ Note: if you don't know all available cmake switches which can be used, you can
 run `ccmake` command (it seems to be ncurses based) instead of `cmake`. And
 please do enable the debug -- it helps us when you find a bug.
 
+```
 $ mkdir build
 $ cmake .. -DENABLE_DEBUG=1
 $ make
 # make install
+```
 
 Now it is installed in your system. And that's all. :c) You can run the game
 simply by running `tuxanci` command in the console (you'll see much of debug
@@ -29,7 +29,9 @@ output, but that's ok).
 
 Tip: please think about running this command too (before the game itself):
 
+```
 $ ulimit -c unlimited
+```
 
 It enables generating of coredumps which are very helpful when the game crashes
 as it contains much information about the crash which happend. You also need to
@@ -38,12 +40,12 @@ useful information for us.
 
 Note: if you want to uninstall the game, run this command:
 
+```
 # make uninstall
+```
 
-
-Server
-------
-Requirements: cmake >= 2.6.0, libzip
+## Server
+Requirements: `cmake >= 2.6.0`, `libzip`
 
 Note: you'll also need "-devel" version of libzip library package.
 
@@ -54,10 +56,12 @@ Note: if you don't know all available cmake switches which can be used, you can
 run `ccmake` command (it seems to be ncurses based) instead of `cmake`. And
 please do enable the debug -- it helps us when you find a bug.
 
+```
 $ mkdir build
 $ cmake .. -DBUILD_SERVER=1 -DENABLE_DEBUG=1
 $ make
 # make install
+```
 
 Now it is installed in your system. You should configure it before running. The
 configuration file is situated in /etc/tuxanci-server/server.conf. It contains
@@ -81,7 +85,9 @@ Note: RC script is not prepared yet. You have to write your own one.
 
 The game server itself can be started with following:
 
+```
 $ tuxanci-server
+```
 
 (If you have set appropriate paths and port, you don't need to have root
 privileges to start the server. Note: droping privileges is not implemented
@@ -90,11 +96,15 @@ yet.)
 Tip: if you have enabled debug when compiling, please think about running this
 command before starting the game server:
 
+```
 $ ulimit -c unlimited
+```
 
 It enables generating of coredumps which are very helpful when the game server
 crashes as it contains much information about the crash which happend.
 
 Note: if you want to uninstall the game server, run this command:
 
+```
 # make uninstall
+```
