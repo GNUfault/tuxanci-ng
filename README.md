@@ -70,25 +70,4 @@ Pause: P
 Quit: Esc
 
 ## HAVE PROBLEM/FOUND BUG/ETC...
-If you found some bug or have feature request please fill it into: 
-<URL Removed becuase of FEDORA-2026-c76c93c411> (you need account for that).
-
-You need some help with install/etc... feel free to join us on our irc
-channel which is #tuxanci on server irc.freenode.net.
-
-## INFORMATIONS FOR TRANSLATORS
-So you want to help us translating our perfect game :] What should you
-do is question you are asking i guess. It is pretty simple. We are using
-gettext so you only have to download our .pot file from git
-<http://repo.or.cz/w/tuxanci.git?a=blob_plain;f=po/tuxanci.pot;hb=HEAD>
-and translate every line into your desired language. MSGID is orginal
-message and MSGSTR is translated one. When you are done you rename
-tuxanci.pot to langcode.po (cs_CZ.po). For translating is needed only
-some text editor (advanced are kbabel, lokalize...) and some skills
-in your and english language. Final product of your effort mail onto our
-mail (team<-at->tuxanci.org). Ah and before I forget update some
-relevant informations into header of your .po file, examples can be
-found in our git too <http://repo.or.cz/w/tuxanci.git?a=tree;f=po;hb=HEAD>.
-
-## MORE
-More informations you can find on our website: <URL Removed becuase of FEDORA-2026-c76c93c411>
+If you found some bug, have feature request, or need some help with, please fill it into GitHub Issues.
