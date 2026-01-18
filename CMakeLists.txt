@@ -44,14 +44,13 @@ SET ( CMAKE_DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/" CACHE PATH "Data path pre
 ###############################################################################
 # BASIC PROJECT VALUES
 ###############################################################################
+CMAKE_MINIMUM_REQUIRED ( VERSION 3.10 FATAL_ERROR ) # Fixed by GNUfault
 PROJECT ( tuxanci C )
 IF ( BUILD_SERVER )
 	SET ( APPNAME "tuxanci-server")
 ELSE ( BUILD_SERVER )
 	SET ( APPNAME "tuxanci" )
 ENDIF ( BUILD_SERVER )
-CMAKE_MINIMUM_REQUIRED ( VERSION 2.6.0 )
-CMAKE_MINIMUM_REQUIRED ( VERSION 2.6.0 FATAL_ERROR )
 INCLUDE (cmake/MacroAddSources.cmake)
 IF ( COMMAND cmake_policy )
 	cmake_policy( SET CMP0003 NEW )

@@ -334,6 +334,7 @@ static int event()
 	my_time_t curentTime;
 	arena_t *arena;
 	int countTuxAI;
+        (void)countTuxAI; /* Fixed by GNUfault */
 	/*int i;*/
 
 	if (lastEvent == 0) {

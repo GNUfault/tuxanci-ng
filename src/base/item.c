@@ -171,6 +171,7 @@ static int getCountWeaponOrBonusItem(space_t *spaceItem)
 void item_add_new_item(space_t *spaceItem, int author_id)
 {
 	arena_t *arena;
+	(void)arena; /* Fixed by GNUfault */
 	item_t *item;
 	int new_x, new_y;
 	int type;
@@ -277,6 +278,7 @@ void item_draw_list(list_t *listItem)
 static void action_itemevent(space_t *space, item_t *item, void *p)
 {
 	my_time_t currentTime;
+	(void)currentTime; /* Fixed by GNUfault */
 
 	currentTime = timer_get_current_time();
 	item->count++;

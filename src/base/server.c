@@ -156,6 +156,7 @@ static void delZombieCLient(void *p_nothing)
 {
 	client_t *thisClient;
 	my_time_t currentTime;
+        (void)currentTime; /* Fixed by GNUfault */
 	int i;
 
 	currentTime = timer_get_current_time();

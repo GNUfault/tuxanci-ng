@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmodPipe.a CMakeFiles/modPipe.dir/__/base/list.c.o CMakeFiles/modPipe.dir/__/base/space.c.o CMakeFiles/modPipe.dir/__/base/index.c.o CMakeFiles/modPipe.dir/modPipe.c.o
+/usr/bin/ranlib libmodPipe.a

@@ -91,6 +91,8 @@ void font_draw(char *string, int x, int y, int r, int g, int b)
 void font_drawMaxSize(char *s, int x, int y, int w, int h, int r, int g, int b)
 {
 	SDL_Rect src_rect, dst_rect;
+	(void)src_rect; /* Fixed by GNUfault */
+	(void)dst_rect; /* Fixed by GNUfault */
 	SDL_Surface *text;
 	image_t *i;
 	SDL_Color font_color = {r, g, b, SDL_ALPHA_OPAQUE};

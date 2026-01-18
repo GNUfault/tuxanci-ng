@@ -18,6 +18,8 @@
 #include "keyboardBuffer.h"
 #include "hotKey.h"
 
+#define STR_PROTO_SIZE 128 /* Fixed by GNUfault */
+
 static image_t *g_chat;
 
 static list_t *listText;
@@ -193,17 +195,19 @@ static void processMessageKey(SDL_keysym keysym)
 
 static void sendNewMessage()
 {
+	char out[STR_PROTO_SIZE]; /* Fixed by GNUfault */
+	const char *name = world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name; /* Fixed by GNUfault */
+
+	size_t max_name = 32; /* Fixed by GNUfault */
+	size_t max_line = STR_PROTO_SIZE - max_name - 7; /* Fixed by GNUfault */
+	if (max_line > 95) max_line = 95; /* Fixed by GNUfault */
+
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_CLIENT) {
 		proto_send_chat_client(line);
 	}
 
 	if (net_multiplayer_get_game_type() == NET_GAME_TYPE_SERVER) {
-		char out[STR_PROTO_SIZE];
-
-		snprintf(out, STR_PROTO_SIZE, "chat %s:%s\n",
-			 world_get_control_tux(TUX_CONTROL_KEYBOARD_RIGHT)->name,
-			 line);
-
+	snprintf(out, STR_PROTO_SIZE, "chat %.32s:%.*s\n", name, (int)max_line, line); /* Fixed by GNUfault */
 		proto_send_chat_server(PROTO_SEND_ALL, NULL, out);
 	}
 }

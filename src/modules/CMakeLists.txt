@@ -18,8 +18,8 @@ SET ( SRC_base_modules
 	${SRC_base_modules}
 	${WORKDIR}/base/main.h	${WORKDIR}/base/modules.h
 	${WORKDIR}/base/shot.h	${WORKDIR}/base/tux.h
-	${WORKDIR}/base/list	${WORKDIR}/base/gun.h
-	${WORKDIR}/base/space	${WORKDIR}/base/index
+	${WORKDIR}/base/list.h	${WORKDIR}/base/gun.h
+	${WORKDIR}/base/space.h	${WORKDIR}/base/index.h
 )
 ###############################################################################
 # COMPILATION AND INSTALLATION ITSELF

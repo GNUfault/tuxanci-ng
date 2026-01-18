@@ -35,6 +35,7 @@ void refreshLastMove(protect_t *p)
 
 	if (p->count == PROTECT_SPEED_AVARAGE) {
 		int my_index;
+                (void)my_index; /* Fixed by GNUfault */
 
 		my_index = p->avarage / PROTECT_SPEED_AVARAGE;
 		p->avarage = 0;

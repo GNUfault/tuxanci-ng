@@ -80,7 +80,7 @@ static void connectToDownServer()
 	countSendMsg = 0;
 	timeSendMsg = timer_get_current_time();
 
-	sprintf(msg, "GETARENA %s\n", arenaNetName);
+	snprintf(msg, sizeof(msg), "GETARENA %.117s\n", arenaNetName); /* Fixed by GNUfault */
 
 	buffer_append(sendBuffer, msg, strlen(msg));
 
