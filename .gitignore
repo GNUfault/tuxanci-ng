@@ -16,5 +16,5 @@ core.*
 # backup files
 *~
 
-# appimage
-packaging/appimage/tuxanci-*-x86_64.AppImage
+# deb package
+packaging/deb/tuxanci_*.deb
