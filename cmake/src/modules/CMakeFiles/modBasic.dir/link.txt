@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmodBasic.a CMakeFiles/modBasic.dir/__/base/list.c.o CMakeFiles/modBasic.dir/__/base/space.c.o CMakeFiles/modBasic.dir/__/base/index.c.o CMakeFiles/modBasic.dir/modBasic.c.o
-/usr/bin/ranlib libmodBasic.a

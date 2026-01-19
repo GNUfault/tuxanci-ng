@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmodMove.a CMakeFiles/modMove.dir/__/base/list.c.o CMakeFiles/modMove.dir/__/base/space.c.o CMakeFiles/modMove.dir/__/base/index.c.o CMakeFiles/modMove.dir/modMove.c.o
-/usr/bin/ranlib libmodMove.a

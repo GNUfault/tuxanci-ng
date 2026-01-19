@@ -1,2 +1,0 @@
-/usr/bin/ar qc libmodWall.a CMakeFiles/modWall.dir/__/base/list.c.o CMakeFiles/modWall.dir/__/base/space.c.o CMakeFiles/modWall.dir/__/base/index.c.o CMakeFiles/modWall.dir/modWall.c.o
-/usr/bin/ranlib libmodWall.a
