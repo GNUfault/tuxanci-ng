@@ -39,5 +39,8 @@ chmod +x appimagetool-x86_64.AppImage
 # Run appimagetool
 ./appimagetool-x86_64.AppImage ./tuxanci-$VERSION.AppDir
 
+# Rename appimage
+mv tuxanci-x86_64.AppImage tuxanci-$VERSION-x86_64.AppImage
+
 # Remove build artifacts
 rm -rf appimagetool-x86_64.AppImage* tuxanci-$VERSION.AppDir
