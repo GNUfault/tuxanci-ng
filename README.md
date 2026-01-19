@@ -54,30 +54,29 @@ For server we create directory /etc/tuxanci-server/server.conf where you could
 do some changes for it (again pretty selfexplaining).
 
 ## Controls
-### Player one
-movement: cursor arrows
-fire: zero [ 0 ] NumPad
-change weapon: one [ 1 ] NumPad
-### Player two
-movement: W(u) S(d) A(l) D(r)
-fire: Q
-change weapon: tab
-### Common
-Fullscreen/window mode: F1 (dangerous with multiple monitors)
-Save game: F2
-Change splitting of screen: F3 (just in local
-multiplayer game in a big arena)
-Pause: P
-Quit: Esc
+| Category       | Action                     | Key(s)                                |
+|----------------|----------------------------|---------------------------------------|
+| **Player One** | Movement                   | Cursor arrows                         |
+|                | Fire                       | Zero [0] NumPad                       |
+|                | Change weapon              | One [1] NumPad                        |
+| **Player Two** | Movement                   | W (up), S (down), A (left), D (right) |
+|                | Fire                       | Q                                     |
+|                | Change weapon              | Tab                                   |
+| **Common**     | Fullscreen/window mode     | F1 (dangerous with multiple monitors) |
+|                | Save game                  | F2                                    |
+|                | Change splitting of screen | F3 (local multiplayer in big arena)   |
+|                | Pause                      | P                                     |
+|                | Quit                       | Esc                                   |
 
 ## HAVE PROBLEM/FOUND BUG/ETC...
-If you found some bug, have feature request, or need some help with, please fill it into GitHub Issues.
+If you found some bug, have feature request, or need some help with, please open a [issue](https://github.com/GNUfault/extreme-tuxanci/issues).
 
 ## NOTE
 This is also on OSX and Windows, not just Linux.
 Both of those ports don't compile and no longer maintained 
 (Due to me not being able to maintain them by myself.
-You can send me a email at <bluMATRIKZ@gmail.com> or open a issue if you want to maintain one of them).
+You can send me a email at <bluMATRIKZ@gmail.com> 
+or open a issue if you want to maintain one of them).
 
 ## MORE
-xHire's (one of the former developers) has a [website](https://www.semirocket.science/projects/tuxanci/) with more information about Tuxánci.
+[xHire](https://github.com/xHire) (one of the former developers) has a [website](https://www.semirocket.science/projects/tuxanci/) with more information about Tuxánci.
