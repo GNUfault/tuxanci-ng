@@ -28,11 +28,11 @@ Put them around, step on them *KABOOM*
 Fires bomb which mirrors any obstacles and explodes only if it
 hits penguin.
 ## Bonus list
-Speedy tux: tux move faster
-Infinite ammo: you have really big backpack of ammo (fire at will)
-4way shoot: tux fire on shoot in every direction (cost only 1 ammo)
-Teleport: if somebody shoots at Tux he teleport himself away
-Ghost: Tux can move and shoot through obstacles.
+- Speedy tux: tux move faster
+- Infinite ammo: you have really big backpack of ammo (fire at will)
+- 4way shoot: tux fire on shoot in every direction (cost only 1 ammo)
+- Teleport: if somebody shoots at Tux he teleport himself away
+- Ghost: Tux can move and shoot through obstacles.
 ### Note
 Bonuses last only few seconds and if tux take another bonus then
 first one loses its effects.
