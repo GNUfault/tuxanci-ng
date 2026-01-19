@@ -125,13 +125,6 @@ static int init(export_fce_t *p)
 	return 0;
 }
 
-#ifndef PUBLIC_SERVER
-static int draw(int x, int y, int w, int h)
-{
-	return 0;
-}
-#endif /* PUBLIC_SERVER */
-
 static tux_t *findOtherTux(space_t *space)
 {
 	int i;
