@@ -1,4 +1,7 @@
 # TUXANCI CHANGELOG
+## from 0.21.0 to 0.21.1
+- remove appimage
+
 ## from 0.21.0 to 0.22.0
 - the download server is integrated in game server
 - support for OpenGL in master branch
