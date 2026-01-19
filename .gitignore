@@ -17,4 +17,4 @@ core.*
 *~
 
 # appimage
-packaging/appimage/tuxanci-x86_64.AppImage
+packaging/appimage/tuxanci-*-x86_64.AppImage
