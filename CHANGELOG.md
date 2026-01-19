@@ -9,8 +9,6 @@
 - documentation updates
 - abused link(s) removed
 - updated cmake to >= 3.10
-- updated email to <bluMATRIKZ@gmail.com>
-- removed old multiplayer server
 
 ## from 0.20.0 to 0.21.0
 - implemented gettext -> automatic selection of right language
