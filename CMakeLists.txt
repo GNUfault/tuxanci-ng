@@ -98,7 +98,17 @@ ADD_CUSTOM_TARGET ( uninstall "${CMAKE_COMMAND}"
 ###############################################################################
 INCLUDE ( InstallRequiredSystemLibraries )
 SET ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Tuxanci is first tux shooter inspired by game Bulanci." )
-SET ( CPACK_PACKAGE_VENDOR "Connor <bluMATRIKZ@gmail.com>" )
+SET ( CPACK_PACKAGE_VENDOR "GNUfault <bluMATRIKZ@gmail.com>" )
+
+SET ( CPACK_DEBIAN_PACKAGE_MAINTAINER "GNUfault" )
+SET ( CPACK_DEBIAN_PACKAGE_SECTION "games" )
+
+SET ( CPACK_RPM_PACKAGE_MAINTAINER "GNUfault" )
+SET ( CPACK_RPM_PACKAGE_SECTION "games" )
+
+SET ( CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libsdl1.2debian, libsdl-image1.2, libsdl-mixer1.2, libsdl-ttf2.0-0, libzip5" )
+SET ( CPACK_RPM_PACKAGE_REQUIRES "sdl12-compat, SDL_image, SDL_mixer, SDL_ttf, libzip" )
+
 SET ( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" )
 SET ( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 SET ( CPACK_GENERATOR "TGZ" )
