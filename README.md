@@ -1,5 +1,5 @@
 # Tuxánci
-#![Tuxánci](data/tuxanci.svg)
+![Tuxánci](data/tuxanci.svg)
 ## ABOUT TUXANCI
 Tuxanci is first tux shooter. In the absolute beginning it was inspired by
 a well-known Czech game Bulanci. Today Tuxanci goes its own way and is much
