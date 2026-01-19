@@ -1,5 +1,7 @@
 # TUXANCI CHANGELOG
-## from 0.21.0 to 0.21.1
+## from 0.22.1 to 0.22.2
+
+## from 0.22.0 to 0.22.1
 - remove appimage
 - fixed warnings in make uninstall
 - man pages updated
