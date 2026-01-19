@@ -1,5 +1,7 @@
 # TUXANCI CHANGELOG
 ## from 0.22.1 to 0.22.2
+- updated desktop file
+- deb package
 
 ## from 0.22.0 to 0.22.1
 - remove appimage
