@@ -219,7 +219,7 @@ static int init(export_fce_t *p)
 }
 
 #ifndef PUBLIC_SERVER
-static void action_drawwall(space_t *space, wall_t *wall, void *p)
+static void action_drawwall(space_t *space, wall_t *wall)
 {
 	drawWall(wall);
 }
