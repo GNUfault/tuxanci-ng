@@ -36,11 +36,13 @@ SET ( CMAKE_CONF_PATH "/etc" CACHE PATH "Config path prefix" )
 IF ( WIN32 )
 	SET ( CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix" )
 	SET ( CMAKE_LOCALE_PATH "locale" CACHE PATH "Locale path prefix" )
-ELSE ( WIN32 )
-	SET ( CMAKE_INSTALL_PREFIX "/usr/local/" CACHE PATH "Install path prefix" )
+ELSEIF ( PACKAGE ) 
+    SET ( CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Install path prefix" FORCE )
+ELSE ()
+	SET ( CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "Install path prefix" )
 	SET ( CMAKE_LOCALE_PATH "${CMAKE_INSTALL_PREFIX}/share/locale" CACHE PATH "Locale path prefix" )
-ENDIF ( WIN32 )
-SET ( CMAKE_DATA_PATH "${CMAKE_INSTALL_PREFIX}/share/" CACHE PATH "Data path prefix" )
+ENDIF ()
+SET ( CMAKE_DATA_PATH "${CMAKE_INSTALL_PREFIX}/share" CACHE PATH "Data path prefix" )
 ###############################################################################
 # BASIC PROJECT VALUES
 ###############################################################################
