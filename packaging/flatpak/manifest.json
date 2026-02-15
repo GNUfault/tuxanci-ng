@@ -7,7 +7,9 @@
   "finish-args": [
     "--socket=x11",
     "--device=dri",
-    "--socket=pulseaudio"
+    "--socket=pulseaudio",
+    "--filesystem=home/.tuxanci:create",
+    "--share=network"
   ],
   "modules": [
     {
@@ -32,7 +34,8 @@
       ],
       "build-commands": [
         "cp -r app/* /app/",
-        "mv /app/share/applications/tuxanci.desktop /app/share/applications/io.github.GNUfault.tuxanci.desktop"
+        "mkdir -p /app/share/icons/hicolor/scalable/apps",
+        "mv /app/share/pixmaps/io.github.GNUfault.tuxanci.svg /app/share/icons/hicolor/scalable/apps/io.github.GNUfault.tuxanci.svg"
       ]
     },
     {
@@ -56,6 +59,19 @@
         "sha256": "d48cbd1ce475b9e178206bf3b72d56b66d84d44f64ac05803328396234d67723"
       }
     ]
-    }
+    },
+    {
+    "name": "metainfo",
+    "buildsystem": "simple",
+    "build-commands": [
+      "install -Dm644 io.github.GNUfault.tuxanci.metainfo.xml /app/share/metainfo/io.github.GNUfault.tuxanci.metainfo.xml"
+    ],
+    "sources": [
+      {
+        "type": "file",
+        "path": "io.github.GNUfault.tuxanci.metainfo.xml"
+      }
+    ]
+  }
   ]
 }

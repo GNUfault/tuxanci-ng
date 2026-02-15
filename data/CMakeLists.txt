@@ -14,9 +14,9 @@ ENDIF ( NOT BUILD_SERVER )
 # CURRENT DIRECTORY FILES
 ###############################################################################
 IF ( NOT BUILD_SERVER )
-	INSTALL ( FILES tuxanci.svg
+	INSTALL ( FILES io.github.GNUfault.tuxanci.svg
 		DESTINATION ${CMAKE_INSTALL_ICONDIR}/ )
-	INSTALL ( FILES tuxanci.desktop
+	INSTALL ( FILES io.github.GNUfault.tuxanci.desktop
 		DESTINATION ${CMAKE_INSTALL_DESKTOPDIR}/ )
 ENDIF ( NOT BUILD_SERVER )
 ###############################################################################

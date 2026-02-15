@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>io.github.GNUfault.tuxanci</id>
+  <name>Tuxanci</name>
+  <summary>Tuxanci is first tux shooter inspired by game Bulanci.</summary>
+
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+
+  <description>
+    <p>
+      Tuxanci is first tux shooter inspired by game Bulanci.
+    </p>
+  </description>
+
+  <categories>
+    <category>Game</category>
+  </categories>
+
+  <launchable type="desktop-id">io.github.GNUfault.tuxanci.desktop</launchable>
+
+  <icon type="local">io.github.GNUfault.tuxanci.svg</icon>
+
+  <url type="homepage">https://github.com/GNUfault/tuxanci-ng</url>
+  <url type="bugtracker">https://github.com/GNUfault/tuxanci-ng/issues</url>
+  <url type="help">https://github.com/GNUfault/tuxanci-ng/issues</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/GNUfault/tuxanci-ng/blob/master/data/screenshots/main-menu.png</image>
+    </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">moderate</content_attribute>
+    <content_attribute id="language-profanity">intense</content_attribute>
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
+
+</component>

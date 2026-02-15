@@ -3,6 +3,8 @@
 ## from 0.22.2 to 0.22.3
 - switch from SDL1.2 to SDL2
 - add flatpak support
+- fix icon
+- chage some filenames
 
 ## from 0.22.1 to 0.22.2
 - updated desktop file

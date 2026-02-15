@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 PREFIX=../..
 BUILD_TYPE=Release
