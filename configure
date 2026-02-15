@@ -7,7 +7,7 @@ ROOTDIR=`pwd`
 ###
 # Defaults
 ###
-VERSION=0.22.2
+VERSION=0.22.3
 PREFIX=/usr/local
 PREFIX_BIN=${PREFIX}/bin
 PREFIX_LIB=${PREFIX}/lib/tuxanci

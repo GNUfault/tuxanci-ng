@@ -18,3 +18,9 @@ core.*
 
 # deb package
 packaging/deb/tuxanci_*.deb
+
+# rpm package
+packaging/rpm/tuxanci_*.rpm
+
+# flatpak package
+packaging/flatpak/io.github.GNUfault.tuxanci-*.flatpak
