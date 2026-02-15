@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "main.h"
 #include "audio.h"

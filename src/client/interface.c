@@ -9,8 +9,9 @@
 #include "hotKey.h"
 #include "mouse_buffer.h"
 
-static SDL_Surface *screen;	/* window surface */
-/*static SDL_Surface *my_surface;*/
+static SDL_Surface *window_surface;/* window surface */
+static SDL_Surface *logical_surface; /* logical 4:3 surface we draw into */
+static SDL_Window *window;/* SDL2 window */
 static SDL_TimerID timer;	/* timer */
 static Uint32 g_win_flags;	/* window flags */
 
@@ -54,23 +55,13 @@ void interface_disable_keyboard_buffer()
 
 void hotkey_screen()
 {
-	if (g_win_flags & SDL_FULLSCREEN) {
-		g_win_flags &= ~SDL_FULLSCREEN;
+	Uint32 flags = SDL_GetWindowFlags(window);
+	if (flags & SDL_WINDOW_FULLSCREEN) {
+		SDL_SetWindowFullscreen(window, 0);
 	} else {
-		g_win_flags |= SDL_FULLSCREEN;
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
-
-	if (SDL_WM_ToggleFullScreen(screen) == 0) {
-		error("Unable to switch to the fullscreen mode");
-
-		SDL_FreeSurface(screen);
-		screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WIN_BPP, g_win_flags);
-
-		if (screen == NULL) {
-			error("Unable to switch to the window mode: %s", SDL_GetError());
-			return;
-		}
-	}
+	window_surface = SDL_GetWindowSurface(window);
 }
 
 #ifdef SUPPORT_OPENGL
@@ -82,7 +73,21 @@ SDL_Surface *SetVideoMode(int width, int height, int bpp, Uint32 flags)
 	SDL_Surface *rval = 0;
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	rval = SDL_SetVideoMode(width, height, bpp, flags);
+	/* create SDL2 window with OpenGL context */
+	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+							  width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (window == NULL) {
+		return NULL;
+	}
+
+	if (SDL_GL_CreateContext(window) == NULL) {
+		/* if context creation fails, destroy window and return NULL */
+		SDL_DestroyWindow(window);
+		window = NULL;
+		return NULL;
+	}
+
+	rval = SDL_GetWindowSurface(window);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -125,42 +130,53 @@ int interface_init()
 
 #ifndef SUPPORT_OPENGL
 	use_open_gl = FALSE;
-	g_win_flags = SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
+	g_win_flags = SDL_WINDOW_SHOWN;
 
-	screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 0, g_win_flags);
+	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+							  WINDOW_SIZE_X, WINDOW_SIZE_Y, g_win_flags);
+	if (window != NULL) {
+		window_surface = SDL_GetWindowSurface(window);
+	}
 #else /* SUPPORT_OPENGL */
-	use_open_gl = !isParamFlag("--disable-opengl");
+	use_open_gl = isParamFlag("--enable-opengl");
 
 	if (interface_is_use_open_gl()) {
-		g_win_flags = SDL_OPENGL;
-		screen = SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 0, g_win_flags);
+		g_win_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+		window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+					  WINDOW_SIZE_X, WINDOW_SIZE_Y, g_win_flags);
 
-		if (screen == NULL) {
+		if (window != NULL) {
+			window_surface = SDL_GetWindowSurface(window);
+		} else {
 			use_open_gl = FALSE;
-			g_win_flags = SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-			
-			screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 0, g_win_flags);
+			g_win_flags = SDL_WINDOW_SHOWN;
+			window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+						  WINDOW_SIZE_X, WINDOW_SIZE_Y, g_win_flags);
+			if (window != NULL) window_surface = SDL_GetWindowSurface(window);
 		}
 	} else {
-		g_win_flags = SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-		screen = SDL_SetVideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, 0, g_win_flags);
+		g_win_flags = SDL_WINDOW_SHOWN;
+		window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+								  WINDOW_SIZE_X, WINDOW_SIZE_Y, g_win_flags);
+		if (window != NULL) window_surface = SDL_GetWindowSurface(window);
 	}
 #endif /* SUPPORT_OPENGL */
 
-	if (screen == NULL) {
+	if (window_surface == NULL || window == NULL) {
 		error("Unable to create interface: %s", SDL_GetError());
 		SDL_Quit();
 		return -1;
 	}
-	/**
-	 * enable unicode by default for keyboard support - it is a bit more
-	 * consuming than the nonsdl but can draw more characters
-	 */
-	SDL_EnableUNICODE(1);
-	SDL_WM_SetCaption(WINDOW_TITLE, NULL);
 
-	/* keyboard repeating */
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	/* create logical surface we draw into (game native resolution) */
+	logical_surface = SDL_CreateRGBSurfaceWithFormat(0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 32, SDL_PIXELFORMAT_ARGB8888);
+	if (logical_surface == NULL) {
+		error("Unable to create logical surface: %s", SDL_GetError());
+		SDL_Quit();
+		return -1;
+	}
+
+	SDL_SetWindowTitle(window, WINDOW_TITLE);
 	timer = SDL_AddTimer(INTERVAL, TimerCallback, NULL);
 
 	keyboard_buffer_init(KEYBOARD_BUFFER_SIZE);
@@ -176,26 +192,106 @@ int interface_init()
 
 SDL_Surface *interface_get_screen()
 {
-	/*return my_surface;*/
-	return screen;
+	/* return the logical surface for all drawing */
+	return logical_surface;
 }
 
 void interface_refresh()
 {
 #ifndef SUPPORT_OPENGL
-	SDL_Flip(screen);
+	/* Scale logical_surface to window_surface with 4:3 letterbox and center */
+	if (window_surface && logical_surface) {
+		int win_w = window_surface->w;
+		int win_h = window_surface->h;
+		int src_w = logical_surface->w;
+		int src_h = logical_surface->h;
+
+		float scale_x = (float)win_w / (float)src_w;
+		float scale_y = (float)win_h / (float)src_h;
+		float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+		int dst_w = (int)(src_w * scale);
+		int dst_h = (int)(src_h * scale);
+		SDL_Rect dst;
+		dst.x = (win_w - dst_w) / 2;
+		dst.y = (win_h - dst_h) / 2;
+		dst.w = dst_w;
+		dst.h = dst_h;
+
+		/* clear to black (letterbox bars) */
+		Uint32 black = SDL_MapRGBA(window_surface->format, 0, 0, 0, 255);
+		SDL_FillRect(window_surface, NULL, black);
+
+		SDL_BlitScaled(logical_surface, NULL, window_surface, &dst);
+		SDL_UpdateWindowSurface(window);
+	}
 #else /* SUPPORT_OPENGL */
 	if (interface_is_use_open_gl()) {
-		SDL_GL_SwapBuffers();
+		SDL_GL_SwapWindow(window);
 	} else {
-		SDL_Flip(screen);
+		if (window_surface && logical_surface) {
+			int win_w = window_surface->w;
+			int win_h = window_surface->h;
+			int src_w = logical_surface->w;
+			int src_h = logical_surface->h;
+
+			float scale_x = (float)win_w / (float)src_w;
+			float scale_y = (float)win_h / (float)src_h;
+			float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+			int dst_w = (int)(src_w * scale);
+			int dst_h = (int)(src_h * scale);
+			SDL_Rect dst;
+			dst.x = (win_w - dst_w) / 2;
+			dst.y = (win_h - dst_h) / 2;
+			dst.w = dst_w;
+			dst.h = dst_h;
+
+			Uint32 black = SDL_MapRGBA(window_surface->format, 0, 0, 0, 255);
+			SDL_FillRect(window_surface, NULL, black);
+
+			SDL_BlitScaled(logical_surface, NULL, window_surface, &dst);
+			SDL_UpdateWindowSurface(window);
+		}
 	}
 #endif /* SUPPORT_OPENGL */
 }
 
 void interface_get_mouse_position(int *x, int *y)
 {
-	SDL_GetMouseState(x, y);
+	int mx, my;
+	SDL_GetMouseState(&mx, &my);
+	interface_window_to_logical(mx, my, x, y);
+}
+
+void interface_window_to_logical(int winx, int winy, int *logicalx, int *logicaly)
+{
+	if (!window_surface || !logical_surface) {
+		*logicalx = winx;
+		*logicaly = winy;
+		return;
+	}
+
+	int win_w = window_surface->w;
+	int win_h = window_surface->h;
+	int src_w = logical_surface->w;
+	int src_h = logical_surface->h;
+
+	float scale_x = (float)win_w / (float)src_w;
+	float scale_y = (float)win_h / (float)src_h;
+	float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+	int dst_w = (int)(src_w * scale);
+	int dst_h = (int)(src_h * scale);
+	int dst_x = (win_w - dst_w) / 2;
+	int dst_y = (win_h - dst_h) / 2;
+
+	/* map window coords into logical surface space */
+	float lx = ((float)(winx - dst_x)) / scale;
+	float ly = ((float)(winy - dst_y)) / scale;
+
+	*logicalx = (int)lx;
+	*logicaly = (int)ly;
 }
 
 int interface_is_mouse_clicket()
@@ -205,33 +301,23 @@ int interface_is_mouse_clicket()
 
 int interface_is_press_any_key()
 {
-	Uint8 *mapa;
+	int numkeys = 0;
+	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
 	int i;
-
-	mapa = SDL_GetKeyState(NULL);
-
-	for (i = SDLK_BACKSPACE; i < SDLK_KP9; i++) {
-		if (mapa[i] == SDL_PRESSED) {
-			return 1;
-		}
+	for (i = 0; i < numkeys; i++) {
+		if (state[i]) return 1;
 	}
-
 	return 0;
 }
 
 void printPressAnyKey()
 {
-	Uint8 *mapa;
+	int numkeys = 0;
+	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
 	int i;
-
-	mapa = SDL_GetKeyState(NULL);
-
-	for (i = SDLK_BACKSPACE; i < SDLK_KP9; i++) {
-		if (mapa[i] == SDL_PRESSED) {
-			debug("Pressed key [SDL: %d]", i);
-		}
+	for (i = 0; i < numkeys; i++) {
+		if (state[i]) debug("Pressed key [SDL: %d]", i);
 	}
-
 }
 
 int hack_slow()
@@ -312,14 +398,9 @@ int eventAction()
 				}
 				break;
 
-			/* change the window size */
-			case SDL_VIDEORESIZE:
-				screen = SDL_SetVideoMode(event.resize.w, event.resize.h,
-							  WIN_BPP, g_win_flags);
-
-				if (screen == NULL) {
-					error("Unable to change resolution of the window: %s", SDL_GetError());
-					return 0;
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED || event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					window_surface = SDL_GetWindowSurface(window);
 				}
 				break;
 
@@ -351,6 +432,16 @@ void interface_quit()
 
 	hot_key_quit();
 	keyboard_buffer_quit();
+
+	if (logical_surface) {
+		SDL_FreeSurface(logical_surface);
+		logical_surface = NULL;
+	}
+
+	if (window) {
+		SDL_DestroyWindow(window);
+		window = NULL;
+	}
 
 	SDL_Quit();
 

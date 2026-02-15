@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
-#include <SDL_keyboard.h>
+#include <SDL2/SDL.h>
 
 #include "main.h"
 #include "interface.h"
@@ -191,9 +191,9 @@ static void readKey(widget_textfield_t *p)
 	len = strlen(p->text);
 
 	for (i = 0; keyboard_buffer_is_any_key(); i++) {
-		SDL_keysym k = keyboard_buffer_pop();
+		SDL_Keysym k = keyboard_buffer_pop();
 
-		char *name = (char *) SDL_GetKeyName(k.sym);
+		const char *name = SDL_GetKeyName(k.sym);
 
 		if (!name) {
 			continue;
@@ -202,7 +202,7 @@ static void readKey(widget_textfield_t *p)
 		if (len >= STR_SIZE) {
 			break;
 		}
-		
+
 		if (k.sym == SDLK_RETURN) {
 			break;
 		}
@@ -218,10 +218,6 @@ static void readKey(widget_textfield_t *p)
 				c = name[1];
 				break;
 		}
-		
-		if ((k.unicode & 0xFF80) == 0) {
-			c = k.unicode & 0x7F;
-		}
 
 		if (k.sym == SDLK_SPACE || k.sym == SDLK_TAB) {
 			c = ' ';
@@ -230,7 +226,7 @@ static void readKey(widget_textfield_t *p)
 				p->text[len-1] = '\0';
 				checkText(p, len);
 			}
-			
+
 			break;
 		}
 

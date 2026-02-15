@@ -46,19 +46,25 @@ static SDL_Surface *loadImage(const char *filename, int alpha)
 
 	accessExistFile(str);
 
-	if ((tmp = IMG_Load(str)) == NULL) {
-		error("SDL: %s", SDL_GetError());
-		return NULL;
-	}
+		if ((tmp = IMG_Load(str)) == NULL) {
+			error("SDL: %s", SDL_GetError());
+			return NULL;
+		}
 
-	if ((ret = (alpha) ? SDL_DisplayFormatAlpha(tmp) : SDL_DisplayFormat(tmp)) == NULL) {
-		error("SDL: %s", SDL_GetError());
+		if (alpha) {
+			ret = SDL_ConvertSurfaceFormat(tmp, SDL_PIXELFORMAT_RGBA8888, 0);
+		} else {
+			ret = SDL_ConvertSurfaceFormat(tmp, SDL_PIXELFORMAT_RGB24, 0);
+		}
+
+		if (ret == NULL) {
+			error("SDL: %s", SDL_GetError());
+			SDL_FreeSurface(tmp);
+			return NULL;
+		}
+
 		SDL_FreeSurface(tmp);
-		return NULL;
-	}
-
-	SDL_FreeSurface(tmp);
-	return ret;
+		return ret;
 }
 
 
@@ -123,10 +129,10 @@ image_t *image_new_opengl(SDL_Surface *surface)
 	new->tw = closestpoweroftwo(new->w);
 	new->th = closestpoweroftwo(new->h);
 
-	sdl_rgba_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, new->tw, new->th, bpp,  rmask, gmask, bmask, amask);
+		sdl_rgba_surface = SDL_CreateRGBSurface(0, new->tw, new->th, bpp,  rmask, gmask, bmask, amask);
 
-	SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);	/* we unset SDL_SRCALPHA to preserve alpha channel of original image */
-	SDL_BlitSurface(surface, 0, sdl_rgba_surface, 0);
+		SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_NONE);
+		SDL_BlitSurface(surface, NULL, sdl_rgba_surface, NULL);
 
 	SDL_LockSurface(sdl_rgba_surface);		/* we ensure that we can read pixels from sdl_rgba_surface */
 

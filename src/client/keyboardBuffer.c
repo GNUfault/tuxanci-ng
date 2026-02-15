@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "keyboardBuffer.h"
 
 static keyboardBuffer_t *keyboardBuffer = NULL;
 
-static SDL_keysym emptyKey;
+static SDL_Keysym emptyKey;
 
 /*
  * Key buffer initialization
@@ -23,9 +23,9 @@ void keyboard_buffer_init(int size)
 	assert(keyboardBuffer != NULL);
 	memset(keyboardBuffer, 0, sizeof(keyboardBuffer_t));
 
-	keyboardBuffer->buff = malloc(size * sizeof(SDL_keysym));
+	keyboardBuffer->buff = malloc(size * sizeof(SDL_Keysym));
 	assert(keyboardBuffer->buff != NULL);
-	memset(keyboardBuffer->buff, 0, size * sizeof(SDL_keysym));
+	memset(keyboardBuffer->buff, 0, size * sizeof(SDL_Keysym));
 
 	keyboardBuffer->begin = 0;
 	keyboardBuffer->end = 0;
@@ -45,14 +45,14 @@ void keyboard_buffer_clear()
 	keyboardBuffer->begin = 0;
 	keyboardBuffer->end = 0;
 	keyboardBuffer->count = 0;
-	memset(keyboardBuffer->buff, 0, keyboardBuffer->size * sizeof(SDL_keysym));
+	memset(keyboardBuffer->buff, 0, keyboardBuffer->size * sizeof(SDL_Keysym));
 }
 
 /*
  * Adds key to the end of the buffer. If the buffer is overrun,
  * an error is printed to stderr and the key is dropped.
  */
-bool_t keyboard_buffer_push(SDL_keysym key)
+bool_t keyboard_buffer_push(SDL_Keysym key)
 {
 	assert(keyboardBuffer != NULL);
 
@@ -77,7 +77,7 @@ bool_t keyboard_buffer_push(SDL_keysym key)
  * Takes out first key from the buffer and returns it. If the buffer is empty,
  * an error is printed to stderr and SDLK_UNKNOWN is returned.
  */
-SDL_keysym keyboard_buffer_pop()
+SDL_Keysym keyboard_buffer_pop()
 {
 	assert(keyboardBuffer != NULL);
 
@@ -86,7 +86,7 @@ SDL_keysym keyboard_buffer_pop()
 		return emptyKey;
 	}
 
-	SDL_keysym key = keyboardBuffer->buff[keyboardBuffer->begin];
+	SDL_Keysym key = keyboardBuffer->buff[keyboardBuffer->begin];
 	keyboardBuffer->buff[keyboardBuffer->begin] = emptyKey;
 
 	keyboardBuffer->begin++;

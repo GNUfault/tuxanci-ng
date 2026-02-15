@@ -5,14 +5,14 @@
 #include <string.h>
 #include <time.h>
 
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_thread.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_thread.h>
 
 #include "main.h"
 
 #ifdef SUPPORT_OPENGL
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 #endif
 
 /*
@@ -39,6 +39,7 @@ extern void interface_disable_keyboard_buffer();
 extern int interface_init();
 extern SDL_Surface *interface_get_screen();
 extern void interface_get_mouse_position(int *x, int *y);
+extern void interface_window_to_logical(int winx, int winy, int *logicalx, int *logicaly);
 extern int interface_is_mouse_clicket();
 extern int interface_is_press_any_key();
 extern void interface_refresh();

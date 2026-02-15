@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <SDL2/SDL.h>
 
 #include "main.h"
 #include "interface.h"
@@ -74,21 +75,21 @@ void catch_key_draw(widget_t *widget)
 
 static int getPressAnyKey()
 {
-	Uint8 *mapa;
-	int i;
+	int numkeys = 0;
+	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
+	int sc;
 
-	mapa = SDL_GetKeyState(NULL);
+	for (sc = 0; sc < numkeys; sc++) {
+		if (!state[sc]) continue;
 
-	for (i = SDLK_FIRST; i <= SDLK_COMPOSE; i++) {
-		if (i == SDLK_NUMLOCK ||	/* black key */
-		    i == SDLK_CAPSLOCK ||
-		    i == SDLK_SCROLLOCK) {
+		SDL_Keycode keycode = SDL_GetKeyFromScancode((SDL_Scancode)sc);
+		if (keycode == SDLK_NUMLOCKCLEAR ||
+			keycode == SDLK_CAPSLOCK ||
+			keycode == SDLK_SCROLLLOCK) {
 			continue;
 		}
 
-		if (mapa[i] == SDL_PRESSED) {
-			return i;
-		}
+		return (int) keycode;
 	}
 
 	return WIDGET_CATCHKEY_NOKEY;

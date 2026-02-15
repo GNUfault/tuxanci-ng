@@ -3,7 +3,7 @@
 
 #ifndef NO_SOUND
 
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include "main.h"
 
 #define MUSIC_GROUP_BASE "base"

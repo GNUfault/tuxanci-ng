@@ -131,9 +131,8 @@ static void switchTerm()
 void term_event()
 {
 	my_time_t currentTime;
-	Uint8 *mapa;
-
-	mapa = SDL_GetKeyState(NULL);
+	int numkeys = 0;
+	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
 
 	currentTime = timer_get_current_time();
 
@@ -142,7 +141,8 @@ void term_event()
 		refreshTerm();
 	}
 
-	if (mapa[SDLK_TAB] == SDL_PRESSED) {
+	SDL_Scancode sc = SDL_GetScancodeFromKey(SDLK_TAB);
+	if (sc < numkeys && state[sc]) {
 		if (currentTime - lastActive > TERM_ACTIVE_TIME_INTERVAL) {
 			lastActive = currentTime;
 			switchTerm();

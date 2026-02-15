@@ -10,7 +10,7 @@
 #include "hotKey.h"
 
 typedef struct hotKey_struct {
-	SDLKey key;
+	SDL_Keycode key;
 	bool_t active;
 	void (*handler) ();
 } hotKey_t;
@@ -18,7 +18,7 @@ typedef struct hotKey_struct {
 static list_t *listHotKey;
 static my_time_t lastActive;
 
-static hotKey_t *newHotKey(SDLKey key, void (*handler) ())
+static hotKey_t *newHotKey(SDL_Keycode key, void (*handler) ())
 {
 	hotKey_t *new;
 
@@ -35,7 +35,7 @@ static void destroyHotKey(hotKey_t *hotkey)
 	free(hotkey);
 }
 
-static hotKey_t *findHotkey(SDLKey key)
+static hotKey_t *findHotkey(SDL_Keycode key)
 {
 	int i;
 
@@ -58,7 +58,7 @@ void hot_key_init()
 	lastActive = timer_get_current_time();
 }
 
-void hot_key_register(SDLKey key, void (*handler) ())
+void hot_key_register(SDL_Keycode key, void (*handler) ())
 {
 	hotKey_t *hotkey;
 /*
@@ -70,7 +70,7 @@ void hot_key_register(SDLKey key, void (*handler) ())
 	list_ins(listHotKey, 0, hotkey);
 }
 
-void hot_key_unregister(SDLKey key)
+void hot_key_unregister(SDL_Keycode key)
 {
 	hotKey_t *hotkey;
 	int my_index;
@@ -86,7 +86,7 @@ void hot_key_unregister(SDLKey key)
 	list_del_item(listHotKey, my_index, destroyHotKey);
 }
 
-void hot_key_enable(SDLKey key)
+void hot_key_enable(SDL_Keycode key)
 {
 	hotKey_t *hotkey;
 
@@ -100,7 +100,7 @@ void hot_key_enable(SDLKey key)
 	hotkey->active = TRUE;
 }
 
-void hot_key_disable(SDLKey key)
+void hot_key_disable(SDL_Keycode key)
 {
 	hotKey_t *hotkey;
 
@@ -117,8 +117,9 @@ void hot_key_disable(SDLKey key)
 void hot_key_event()
 {
 	my_time_t currentTime;
-	Uint8 *mapa;
+	const Uint8 *state;
 	int i;
+	int numkeys = 0;
 
 	currentTime = timer_get_current_time();
 
@@ -126,14 +127,15 @@ void hot_key_event()
 		return;
 	}
 
-	mapa = SDL_GetKeyState(NULL);
+	state = SDL_GetKeyboardState(&numkeys);
 
 	for (i = 0; i < listHotKey->count; i++) {
 		hotKey_t *this;
 
 		this = (hotKey_t *) listHotKey->list[i];
 
-		if (mapa[this->key] == SDL_PRESSED && this->active == TRUE) {
+		SDL_Scancode sc = SDL_GetScancodeFromKey(this->key);
+		if (sc < numkeys && state[sc] && this->active == TRUE) {
 			lastActive = timer_get_current_time();
 			/*printf("hotKey = %d\n", this->key);*/
 			this->handler();

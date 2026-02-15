@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "main.h"
 #include "list.h"
@@ -117,7 +117,7 @@ void chat_draw()
 	font_draw(str, CHAT_LOCATION_X + 5, (CHAT_LOCATION_Y + 5) + (CHAT_MAX_LINES * 20), COLOR_WHITE);
 }
 
-static void processMessageKey(SDL_keysym keysym)
+static void processMessageKey(SDL_Keysym keysym)
 {
 	int w, h;
 	int len;
@@ -232,7 +232,7 @@ static void chat_eventEnable()
 	 */
 
 	while (keyboard_buffer_is_any_key() == TRUE) {
-		SDL_keysym key;
+		SDL_Keysym key;
 		key = keyboard_buffer_pop();
 
 		if (key.sym == SDLK_RETURN) {

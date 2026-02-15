@@ -1,7 +1,7 @@
 #ifndef MOUSE_EVENT_H
 #define MOUSE_EVENT_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #define MOUSE_BUF_MOTION	1
 #define MOUSE_BUF_CLICK_LEFT	2

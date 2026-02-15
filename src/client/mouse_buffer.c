@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +7,7 @@
 #include "main.h"
 #include "list.h"
 #include "mouse_buffer.h"
+#include "interface.h"
 
 static list_t *list_event;
 
@@ -51,7 +52,11 @@ int mouse_buffer_event(SDL_MouseButtonEvent *button)
 		case SDL_BUTTON_RIGHT:
 			/*printf("mouse button - pos(%d,%d)\n", button->x, button->y);*/
 
-			list_add(list_event, mouse_event_new(button->x, button->y, button->button));
+			{
+				int lx = button->x, ly = button->y;
+				interface_window_to_logical(button->x, button->y, &lx, &ly);
+				list_add(list_event, mouse_event_new(lx, ly, button->button));
+			}
 
 			return 1;
 			break;
@@ -84,9 +89,10 @@ bool_t mouse_buffer_is_on_area(int x, int y, int w, int h, unsigned int flag)
 		int mouse_x, mouse_y;
 
 		SDL_GetMouseState(&mouse_x, &mouse_y);
+		interface_window_to_logical(mouse_x, mouse_y, &mouse_x, &mouse_y);
 
 		if (mouse_x >= x && mouse_y >= y &&
-		    mouse_x < x+w && mouse_y < y+h) {
+			mouse_x < x+w && mouse_y < y+h) {
 			return TRUE;
 		}
 	} else {

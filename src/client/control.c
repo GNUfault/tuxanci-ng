@@ -1,12 +1,12 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <limits.h>
 #include <assert.h>
 
 #include "main.h"
 #include "control.h"
 
-control_t *control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left,
-		       SDLKey arg_down, SDLKey arg_shot, SDLKey arg_switch)
+control_t *control_new(SDL_Keycode arg_up, SDL_Keycode arg_right, SDL_Keycode arg_left,
+			   SDL_Keycode arg_down, SDL_Keycode arg_shot, SDL_Keycode arg_switch)
 {
 	control_t *tmp;
 
@@ -24,8 +24,9 @@ control_t *control_new(SDLKey arg_up, SDLKey arg_right, SDLKey arg_left,
 
 int control_get_key_route(control_t *my_control)
 {
-	Uint8 *map;
-	SDLKey ret_key;
+	const Uint8 *state;
+	int numkeys = 0;
+	int ret_key;
 	int z;
 	int i;
 
@@ -33,10 +34,11 @@ int control_get_key_route(control_t *my_control)
 
 	ret_key = CONTROL_NONE;
 
-	map = SDL_GetKeyState(NULL);
+	state = SDL_GetKeyboardState(&numkeys);
 
 	for (i = 0; i < CONTROL_KEY_COUNT_ROUTE; i++) {
-		if (map[my_control->key[i]] == SDL_PRESSED) {
+		SDL_Scancode sc = SDL_GetScancodeFromKey(my_control->key[i]);
+		if (sc < numkeys && state[sc]) {
 			my_control->count[i]++;
 		} else {
 			my_control->count[i] = 0;
@@ -46,9 +48,10 @@ int control_get_key_route(control_t *my_control)
 	z = INT_MAX;
 
 	for (i = 0; i < CONTROL_KEY_COUNT_ROUTE; i++) {
+		SDL_Scancode sc = SDL_GetScancodeFromKey(my_control->key[i]);
 		if (my_control->count[i] > 0 &&
-		    my_control->count[i] < z &&
-		    map[my_control->key[i]] == SDL_PRESSED) {
+			my_control->count[i] < z &&
+			sc < numkeys && state[sc]) {
 			z = my_control->count[i];
 			ret_key = i;
 		}
@@ -59,17 +62,18 @@ int control_get_key_route(control_t *my_control)
 
 int control_get_key_action(control_t *my_control)
 {
-	Uint8 *map;
+	int numkeys = 0;
+	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
 
 	assert(my_control != NULL);
 
-	map = SDL_GetKeyState(NULL);
-
-	if (map[my_control->key[CONTROL_SHOT]] == SDL_PRESSED) {
+	if (SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT]) < numkeys &&
+		state[SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT])]) {
 		return CONTROL_SHOT;
 	}
 
-	if (map[my_control->key[CONTROL_SWITCH]] == SDL_PRESSED) {
+	if (SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH]) < numkeys &&
+		state[SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH])]) {
 		return CONTROL_SWITCH;
 	}
 
