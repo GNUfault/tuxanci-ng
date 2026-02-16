@@ -199,6 +199,7 @@ static int init(export_fce_t *p)
 #ifndef PUBLIC_SERVER
 static void action_drawpipe(space_t *space, pipe_t *pipe, void *p)
 {
+	(void)space; (void)p;
 	drawPipe(pipe);
 }
 
@@ -242,6 +243,7 @@ static void action_eventpipe(space_t *space, pipe_t *pipe, shot_t *shot)
 {
 	arena_t *arena;
 	tux_t *author;
+	(void)space;
 
 	arena = export_fce->fce_arena_get_current();
 
@@ -309,6 +311,7 @@ static void cmdArena(char *line)
 
 static void recvMsg(char *msg)
 {
+	(void)msg;
 }
 
 static int destroy()

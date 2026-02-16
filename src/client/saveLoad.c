@@ -20,6 +20,7 @@
 
 static void action_saveTux(space_t *space, tux_t *tux, textFile_t *textFile)
 {
+	(void)space;
 	char str[STR_PROTO_SIZE];
 
 	snprintf(str, STR_PROTO_SIZE,
@@ -36,6 +37,7 @@ static void action_saveTux(space_t *space, tux_t *tux, textFile_t *textFile)
 
 static void action_saveShot(space_t *space, shot_t *shot, textFile_t *textFile)
 {
+	(void)space;
 	char str[STR_PROTO_SIZE];
 
 	snprintf(str, STR_PROTO_SIZE, "SHOT %d %d %d %d %d %d %d %d %d",
@@ -48,6 +50,7 @@ static void action_saveShot(space_t *space, shot_t *shot, textFile_t *textFile)
 
 static void action_saveItem(space_t *space, item_t *item, textFile_t *textFile)
 {
+	(void)space;
 	char str[STR_PROTO_SIZE];
 
 	snprintf(str, STR_PROTO_SIZE, "ITEM %d %d %d %d %d %d %d",

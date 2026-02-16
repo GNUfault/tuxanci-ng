@@ -74,6 +74,7 @@ static char *getStrBonus(int bonus)
 
 static void action_refreshTerm(space_t *space, tux_t *tux, void *p)
 {
+	(void)space; (void)p;
 	char str[STR_SIZE];
 
 	sprintf(str,
@@ -142,7 +143,7 @@ void term_event()
 	}
 
 	SDL_Scancode sc = SDL_GetScancodeFromKey(SDLK_TAB);
-	if (sc < numkeys && state[sc]) {
+	if ((int)sc < numkeys && state[(int)sc]) {
 		if (currentTime - lastActive > TERM_ACTIVE_TIME_INTERVAL) {
 			lastActive = currentTime;
 			switchTerm();

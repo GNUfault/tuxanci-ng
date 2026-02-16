@@ -81,6 +81,7 @@ void addLayer(image_t *img, int x, int y, int px, int py, int w, int h, int play
  */
 void layer_draw_all(int x, int y) /* Fixed by GNUfault */
 {
+	(void)x; (void)y;
 	layer_t *this;
 	int i;
 

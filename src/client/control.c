@@ -38,7 +38,7 @@ int control_get_key_route(control_t *my_control)
 
 	for (i = 0; i < CONTROL_KEY_COUNT_ROUTE; i++) {
 		SDL_Scancode sc = SDL_GetScancodeFromKey(my_control->key[i]);
-		if (sc < numkeys && state[sc]) {
+		if ((int)sc < numkeys && state[(int)sc]) {
 			my_control->count[i]++;
 		} else {
 			my_control->count[i] = 0;
@@ -51,7 +51,7 @@ int control_get_key_route(control_t *my_control)
 		SDL_Scancode sc = SDL_GetScancodeFromKey(my_control->key[i]);
 		if (my_control->count[i] > 0 &&
 			my_control->count[i] < z &&
-			sc < numkeys && state[sc]) {
+			(int)sc < numkeys && state[(int)sc]) {
 			z = my_control->count[i];
 			ret_key = i;
 		}
@@ -67,13 +67,13 @@ int control_get_key_action(control_t *my_control)
 
 	assert(my_control != NULL);
 
-	if (SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT]) < numkeys &&
-		state[SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT])]) {
+	if ((int)SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT]) < numkeys &&
+		state[(int)SDL_GetScancodeFromKey(my_control->key[CONTROL_SHOT])]) {
 		return CONTROL_SHOT;
 	}
 
-	if (SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH]) < numkeys &&
-		state[SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH])]) {
+	if ((int)SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH]) < numkeys &&
+		state[(int)SDL_GetScancodeFromKey(my_control->key[CONTROL_SWITCH])]) {
 		return CONTROL_SWITCH;
 	}
 

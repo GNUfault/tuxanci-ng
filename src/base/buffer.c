@@ -48,7 +48,7 @@ int buffer_cut(buffer_t *p, int len)
 	assert(p != NULL);
 	assert(len >= 0);
 
-	if (p->size - len >= 0) {
+	if (p->size >= (unsigned)len) {
 		memmove(p->data, p->data + len, p->size - len);
 		p->size -= len;
 		return 0;

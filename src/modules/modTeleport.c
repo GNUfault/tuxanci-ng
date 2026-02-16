@@ -232,6 +232,7 @@ static int init(export_fce_t *p)
 #ifndef PUBLIC_SERVER
 static void action_drawteleport(space_t *space, teleport_t *teleport, void *p)
 {
+	(void)space; (void)p;
 	drawTeleport(teleport);
 }
 
@@ -251,6 +252,7 @@ static void action_eventteleportshot(space_t *space, teleport_t *teleport, shot_
 {
 	arena_t *arena;
 	tux_t *author;
+	(void)space;
 
 	arena = export_fce->fce_arena_get_current();
 
@@ -265,17 +267,20 @@ static void action_eventteleportshot(space_t *space, teleport_t *teleport, shot_
 
 static void action_eventshot(space_t *space, shot_t *shot, space_t *p_spaceTeleport)
 {
+	(void)space;
 	space_action_from_location(p_spaceTeleport, action_eventteleportshot,
 				   shot, shot->x, shot->y, shot->w, shot->h);
 }
 
 static void action_eventteleporttux(space_t *space, teleport_t *teleport, tux_t *tux)
 {
+	(void)space;
 	teleportTux(tux, teleport);
 }
 
 static void action_eventtux(space_t *space, tux_t *tux, space_t *p_spaceTeleport)
 {
+	(void)space;
 	int x, y, w, h;
 
 	export_fce->fce_tux_get_proportion(tux, &x, &y, &w, &h);
@@ -301,6 +306,7 @@ static int event()
 
 static int isConflict(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	if (spaceTeleport == NULL) {
 		return 0;
 	}
@@ -317,6 +323,7 @@ static void cmdArena(char *line)
 
 static void recvMsg(char *msg)
 {
+	(void)msg;
 }
 
 static int destroy()

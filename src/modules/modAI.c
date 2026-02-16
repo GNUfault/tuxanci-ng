@@ -50,6 +50,7 @@ static alternative_t *cloneAlternative(alternative_t *p, int route, int x, int y
 	new = newAlternative(route, p->x, p->y);
 	new->first = p->first;
 	new->step = p->step;
+	(void)x; (void)y;
 
 	return new;
 }
@@ -117,6 +118,7 @@ static void destroyAlternative(alternative_t *p)
 
 static void cmd_ai(char *line)
 {
+	(void)line;
 }
 
 static int init(export_fce_t *p)
@@ -129,6 +131,7 @@ static int init(export_fce_t *p)
 #ifndef PUBLIC_SERVER
 static int draw(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	return 0;
 }
 #endif /* PUBLIC_SERVER */
@@ -157,6 +160,7 @@ static void shotTux(arena_t *arena, tux_t *tux_ai, tux_t *tux_rival)
 	int x_rival, y_rival;
 	int w, h;
 
+	(void)arena;
 	export_fce->fce_tux_get_proportion(tux_ai, &x_ai, &y_ai, &w, &h);
 	export_fce->fce_tux_get_proportion(tux_rival, &x_rival, &y_rival, &w, &h);
 
@@ -323,6 +327,7 @@ static void tux_eventAI(tux_t *tux)
 
 static void action_tuxAI(space_t *space, tux_t *tux, void *p)
 {
+	(void)space; (void)p;
 	if (tux->control == TUX_CONTROL_AI && tux->status == TUX_STATUS_ALIVE) {
 		tux_eventAI(tux);
 	}
@@ -379,6 +384,7 @@ static int event()
 
 static int isConflict(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	return 0;
 }
 
@@ -391,6 +397,7 @@ static void cmdArena(char *line)
 
 static void recvMsg(char *msg)
 {
+	(void)msg;
 }
 
 static int destroy()

@@ -185,6 +185,7 @@ void infoID(int id)
 	this = listID->list[index];
 
 	debug("ID information [%d]: used %d times", this->id, this->count);
+	(void)this;
 
 	return;
 }

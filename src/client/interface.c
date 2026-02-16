@@ -31,6 +31,7 @@ bool_t interface_is_inicialized()
 
 static Uint32 TimerCallback(Uint32 interval, void *param)
 {
+	(void)param;
 	SDL_Event event;
 
 	event.type = SDL_USEREVENT;
@@ -71,6 +72,8 @@ void hotkey_screen()
 SDL_Surface *SetVideoMode(int width, int height, int bpp, Uint32 flags)
 {
 	SDL_Surface *rval = 0;
+
+	(void)bpp; (void)flags;
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	/* create SDL2 window with OpenGL context */
@@ -316,7 +319,7 @@ void printPressAnyKey()
 	const Uint8 *state = SDL_GetKeyboardState(&numkeys);
 	int i;
 	for (i = 0; i < numkeys; i++) {
-		if (state[i]) debug("Pressed key [SDL: %d]", i);
+		if (state[i]) { debug("Pressed key [SDL: %d]", i); }
 	}
 }
 

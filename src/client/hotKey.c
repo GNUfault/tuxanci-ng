@@ -135,7 +135,7 @@ void hot_key_event()
 		this = (hotKey_t *) listHotKey->list[i];
 
 		SDL_Scancode sc = SDL_GetScancodeFromKey(this->key);
-		if (sc < numkeys && state[sc] && this->active == TRUE) {
+		if ((int)sc < numkeys && state[(int)sc] && this->active == TRUE) {
 			lastActive = timer_get_current_time();
 			/*printf("hotKey = %d\n", this->key);*/
 			this->handler();

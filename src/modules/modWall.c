@@ -138,6 +138,7 @@ static void getStatusImgWall(void *p, int *id, int *x, int *y, int *w, int *h)
 
 static void setStatusImgWall(void *p, int x, int y, int w, int h)
 {
+	(void)p; (void)x; (void)y; (void)w; (void)h;
 }
 #endif /* PUBLIC_SERVER */
 
@@ -225,6 +226,7 @@ static int init(export_fce_t *p)
 #ifndef PUBLIC_SERVER
 static void action_drawwall(space_t *space, wall_t *wall, void *p)
 {
+	(void)space; (void)p;
 	drawWall(wall);
 }
 
@@ -246,6 +248,7 @@ static void action_eventwall(space_t *space, wall_t *wall, shot_t *shot)
 {
 	arena_t *arena;
 	tux_t *author;
+	(void)space; (void)wall;
 
 	arena = export_fce->fce_arena_get_current();
 
@@ -308,6 +311,7 @@ static void cmdArena(char *line)
 
 static void recvMsg(char *msg)
 {
+	(void)msg;
 }
 
 static int destroy()

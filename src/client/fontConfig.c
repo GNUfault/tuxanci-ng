@@ -25,7 +25,7 @@ font_config_t *fontconfig_find(char **arg)
 {
 	FcObjectSet *os;
 	FcFontSet *fs;
-	FcPattern *pat;
+	FcPattern *pat = NULL;
 	font_config_t *ret;
 	int i;
 

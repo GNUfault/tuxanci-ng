@@ -31,6 +31,7 @@ static int init(export_fce_t *p)
 #ifndef PUBLIC_SERVER
 static int draw(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	debug("Drawing Basic module");
 	return 0;
 }
@@ -44,12 +45,14 @@ static int event()
 
 static int isConflict(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	debug("isConflict(%d, %d, %d, %d) in Basic module", x, y, w, h);
 	return 0;
 }
 
 static void cmd_basic(char *line)
 {
+	(void)line;
 	debug("cmd_basic(%s) in Basic module", line);
 }
 
@@ -62,6 +65,7 @@ static void cmdArena(char *line)
 
 static void recvMsg(char *msg)
 {
+	(void)msg;
 	debug("recvMsg(%s) in Basic module", msg);
 }
 

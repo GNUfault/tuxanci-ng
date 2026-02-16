@@ -218,6 +218,7 @@ static void proto_moveshot(char *msg)
 #ifndef PUBLIC_SERVER
 static int draw(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	return 0;
 }
 #endif /* PUBLIC_SERVER */
@@ -229,11 +230,13 @@ static int event()
 
 static int isConflict(int x, int y, int w, int h)
 {
+	(void)x; (void)y; (void)w; (void)h;
 	return 0;
 }
 
 static void cmdArena(char *line)
 {
+	(void)line;
 }
 
 static void recvMsg(char *msg)

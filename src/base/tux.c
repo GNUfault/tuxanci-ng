@@ -405,6 +405,7 @@ static void bombBallExplosion(shot_t *shot)
 
 static void action_tux(space_t *space, tux_t *tux, shot_t *shot)
 {
+	(void)space;
 	if (tux->status == TUX_STATUS_ALIVE) {
 		if (shot->author_id == tux->id && shot->isCanKillAuthor == FALSE) {
 			return;
@@ -735,11 +736,13 @@ void tux_set_status(void *p, int x, int y, int w, int h)
 	tux_t *tux;
 
 	tux = p;
+	(void)w; (void)h;
 	tux_set_proportion(tux, x, y);
 }
 
 static void action_checkMine(space_t *space, item_t *item, tux_t *tux)
 {
+	(void)space;
 	if (item->type == ITEM_MINE && item->author_id == tux->id) {
 		item->author_id = ID_UNKNOWN;
 	}

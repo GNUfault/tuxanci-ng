@@ -90,6 +90,7 @@ void world_do_end()
 
 static void timer_endArena(void *p) /* Fixed by GNUfault */
 {
+	(void)p;
 	if (net_multiplayer_get_game_type() != NET_GAME_TYPE_CLIENT) {
 		world_do_end();
 		return;
@@ -379,11 +380,13 @@ void world_event()
 
 void dialog_yes(void *p)
 {
+	(void)p;
 	world_do_end();
 }
 
 void dialog_no(void *p)
 {
+	(void)p;
 }
 
 static void hotkey_escape()
@@ -420,6 +423,7 @@ void startWorld()
 
 static void action_analyze(space_t *space, tux_t *tux, void *p)
 {
+	(void)space; (void)p;
 	analyze_add(tux->name, tux->score);
 }
 

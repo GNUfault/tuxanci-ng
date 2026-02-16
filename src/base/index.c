@@ -23,6 +23,7 @@ static index_item_t *index_item_new(int key, void *data)
 #ifdef DEBUG_INDEX
 static void printIndexItem(index_item_t *p)
 {
+	(void)p;
 	debug("Index [%d] contains: %p", p->key, p->data);
 }
 
