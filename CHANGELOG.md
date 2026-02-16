@@ -1,6 +1,6 @@
 # TUXANCI CHANGELOG
 
-## from 0.22.2 to 0.22.3
+## from 0.22.2 to 0.23.0
 - switch from SDL1.2 to SDL2
 - add appimage and flatpak support
 - fix icon

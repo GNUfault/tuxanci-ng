@@ -2,7 +2,7 @@
 set -e
 
 CPUS=$(nproc)
-VERSION=0.22.3
+VERSION=0.23.0
 
 rm -rf io.github.GNUfault.tuxanci-$VERSION-x86_64.AppImage AppDir .AppImage
 
