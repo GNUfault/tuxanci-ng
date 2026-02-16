@@ -16,11 +16,8 @@ core.*
 # backup files
 *~
 
-# deb package
-packaging/deb/tuxanci_*.deb
-
-# rpm package
-packaging/rpm/tuxanci_*.rpm
-
-# flatpak package
-packaging/flatpak/io.github.GNUfault.tuxanci-*.flatpak
+# flatpak files
+flatpak/io.github.GNUfault.tuxanci-*.flatpak
+flatpak/repo
+flatpak/build
+flatpak/.flatpak-builder

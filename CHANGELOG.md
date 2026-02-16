@@ -8,7 +8,8 @@
 
 ## from 0.22.1 to 0.22.2
 - updated desktop file
-- added missing cpack sets for .deb and .rpm files.
+- added missing cpack sets for .deb and .rpm files
+- remove old `packaging` directory
 
 ## from 0.22.0 to 0.22.1
 - remove appimage

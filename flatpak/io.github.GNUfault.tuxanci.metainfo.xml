@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
   <id>io.github.GNUfault.tuxanci</id>
-  <name>Tuxanci</name>
-  <summary>Tuxanci is first tux shooter inspired by game Bulanci.</summary>
+  <name>Tuxánci</name>
+  <summary>Tuxánci is first tux shooter inspired by game Bulanci.</summary>
 
   <metadata_license>CC-BY-SA-4.0</metadata_license>
-  <project_license>GPL-2.0-or-later</project_license>
+  <project_license>GPL-2.0</project_license>
 
   <description>
     <p>
-      Tuxanci is first tux shooter inspired by game Bulanci.
+      Tuxánci is first tux shooter inspired by game Bulanci.
     </p>
   </description>
 
