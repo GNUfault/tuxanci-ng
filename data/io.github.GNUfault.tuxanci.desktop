@@ -4,6 +4,6 @@ Comment=Tuxanci first tux shooter inspired by game Bulanci.
 Exec=tuxanci
 Terminal=false
 Type=Application
-Icon=io.github.GNUfault.tuxanci.svg
+Icon=io.github.GNUfault.tuxanci
 StartupNotify=true
 Categories=Game;ActionGame;
