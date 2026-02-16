@@ -49,6 +49,10 @@ static void initGame()
 
 	mouse_buffer_init();
 	interface_init();
+#ifdef __ANDROID__
+	touch_controls_init();
+	touch_controls_set_opacity(0.6f);
+#endif /* __ANDROID__ */
 	font_init();
 	layer_init();
 	image_init();
@@ -81,6 +85,10 @@ static void initGame()
 void game_quit()
 {
 	mouse_buffer_quit();
+#ifdef __ANDROID__
+	touch_controls_quit();
+#endif /* __ANDROID__ */
+	
 	interface_quit();
 
 	main_menu_quit();

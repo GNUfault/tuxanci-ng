@@ -367,6 +367,16 @@ int eventAction()
 
 	while (SDL_WaitEvent(&event)) {
 		switch (event.type) {
+#ifdef __ANDROID__
+			case SDL_FINGERDOWN:
+				touch_controls_update(&event.tfinger, TRUE);
+				break;
+			
+			case SDL_FINGERUP:
+				touch_controls_update(&event.tfinger, FALSE);
+				break;
+#endif /* __ANDROID__ */
+
 			case SDL_MOUSEBUTTONDOWN:
 				mouse_buffer_event(&event.button);
 				break;

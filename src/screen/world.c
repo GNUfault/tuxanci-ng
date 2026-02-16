@@ -197,6 +197,9 @@ void world_draw()
 	if (arena != NULL) {
 		arena_draw(arena);
 		panel_draw(tuxWithControlRightKeyboard, tuxWithControlLeftKeyboard);
+#ifdef __ANDROID__
+		touch_controls_draw();
+#endif /* __ANDROID__ */
 
 		if (arena->w > WINDOW_SIZE_X || arena->h > WINDOW_SIZE_Y) {
 			radar_draw(arena);
