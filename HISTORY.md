@@ -13,7 +13,9 @@ Here is a little history behind Tuxánci!
 > **Tuxánci NG:** The 2025/2026 revival project maintained by GNUfault (v0.22.z - latest).
 
 ## Bulánci
-I will not go into much detail about this game as it's not important.
+> [!NOTE]
+> I will not go into much detail about Bulánci as it's not important.
+> You can find more information [here](https://en.wikipedia.org/wiki/Bul%C3%A1nci).
 
 Bulánci is a freeware Windows-only action game made in 2001 by SleepTeam.
 
