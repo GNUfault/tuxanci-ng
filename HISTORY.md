@@ -21,7 +21,7 @@ Bulánci is a freeware Windows-only action game made in 2001 by SleepTeam.
 
 ## Tuxánci FG
 > [!NOTE]
-> I cannot find much information about Tuxánci FG
+> Work in progress!
 
 In early 2007, Dušan Ďurech wrote Tuxánci FG and announced it on March 4, 2007 via [AbcLinuxu](#abclinuxu).
 
