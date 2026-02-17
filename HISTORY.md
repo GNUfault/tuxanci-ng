@@ -3,14 +3,14 @@
 Here is a little history behind Tuxánci!
 
 > [!NOTE]
-> If you know more about the game. PLEASE make a pull request with new/updated information. Thank you :)
+> If you know additional information regarding the development of Tuxánci, please submit a Pull Request.
 
 > [!NOTE]
-> Tuxánci FG refers to branch of Tuxánci that was superseded by the NG branch.
+> **Tuxánci FG:** Refers to the original branch of the game (v0.05 – v0.18).
 > 
-> Tuxánci refers to the NG branch, also known as Tuxánci NG.
+> **Tuxánci:** Refers to the "Next Generation" (NG) rewrite (v0.20 – v0.21).
 >
-> Tuxánci NG refers to GNUfault's 2025 revival of the game.
+> **Tuxánci NG:** The 2025/2026 revival project maintained by GNUfault (v0.22.z - latest).
 
 ## Bulánci
 I will not go into much detail about this game as it's not important.
@@ -21,20 +21,20 @@ Bulánci is a freeware Windows-only action game made in 2001 by SleepTeam.
 > [!NOTE]
 > I cannot find much information about Tuxánci FG
 
-Becuase Bulánci was closed-source and freeware only for Windows, Dušan Ďurech created his own game in 2007 inspired by Bulánci named "Tuxánci".
-
-Tuxánci FG lasted from version 0.05 to 0.18.
+In early 2007, Dušan Ďurech wrote Tuxánci FG and announced it on March 4, 2007 via [AbcLinuxu](#abclinuxu).
 
 ## Servers
-Tuxánci NG had 4 offical multiplayer servers for each map operated by Radek Pinc.
+> **INFO NEEDED**
+> 1. Did Tuxánci FG have 3 offical multiplayer servers or did Tuxánci FG predate them?
+> 2. When did the multiplayer servers go down?
 
-All of the game servers are offline but the site with information about the servers is still up.
+Tuxánci NG had 4 offical multiplayer servers for each map formally operated by Radek Pinc.
 
-I am guessing the game servers went down around 2019.
+All of the game servers are now offline but [tuxanci.cz](https://www.tuxanci.cz) is still up.
 
 ## Online presense
 > [!NOTE]
-> I remember there being more but this is all I can find for now.
+> Work in progress!
 
 ## AbcLinuxu
 On March 4, 2007 at 4:01 PM, Dušan Ďurech posted a blog post announcing Tuxánci FG, It was last updated on March 15, 2007 at 10:39 AM.
@@ -48,14 +48,8 @@ On Aug 15, 2007, a user named DUSDUR on YouTube uploaded a video titled "Tuxanci
 ## Tuxánci
 I do not have info on why they rewrote Tuxánci FG but my best guess is Tuxánci FG's code was messy.
 
-Tuxánci lasted from 0.21 to 0.22.
-
 ## Revival
 > [!NOTE]
 > Work in progress!
 
-On Dec 19, 2025 at 9:00 PM, GNUfault emailed xHire asking if he could become a offical developer.
-
-On Mon, Dec 29, 2025 at 9:10 AM, xHire accepted.
-
-On Jan 17, 2026, GNUfault started development on Tuxánci NG.
+On Dec 19, 2025 at 9:00 PM, GNUfault emailed xHire asking if he could become a offical developer. After 10 days of waiting, xHire accepted. 19 days later, GNUfault started development.
