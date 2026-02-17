@@ -48,6 +48,9 @@ On March 30, 2007, a article reveiwing Tuxánci FG was made on Root.cz. You can 
 On Aug 15, 2007, a user named DUSDUR on YouTube uploaded a video titled "Tuxanci video" of DUSDUR playing of Tuxánci FG
 
 ## Tuxánci
+> [!NOTE]
+> Work in progress!
+
 I do not have info on why they rewrote Tuxánci FG but my best guess is Tuxánci FG's code was messy.
 
 ## Revival
