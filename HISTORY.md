@@ -38,7 +38,7 @@ All of the game servers are now offline but [tuxanci.cz](https://www.tuxanci.cz)
 > [!NOTE]
 > Work in progress!
 
-## AbcLinuxu
+### AbcLinuxu
 On March 4, 2007 at 4:01 PM, Dušan Ďurech posted a blog post announcing Tuxánci FG, It was last updated on March 15, 2007 at 10:39 AM.
 
 ### Root.cz
