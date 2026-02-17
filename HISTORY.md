@@ -57,4 +57,4 @@ I do not have info on why they rewrote Tuxánci FG but my best guess is Tuxánci
 > [!NOTE]
 > Work in progress!
 
-On Dec 19, 2025 at 9:00 PM, GNUfault emailed xHire asking if he could become a offical developer. After 10 days of waiting, xHire accepted. 19 days later, GNUfault started development.
+On Dec 19, 2025 at 9:00 PM, GNUfault emailed xHire asking if he could become a offical developer. 10 days later, xHire accepted. 19 days later, GNUfault started development.
