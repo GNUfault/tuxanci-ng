@@ -7,7 +7,9 @@ Here is a little history behind Tuxánci!
 
 > [!NOTE]
 > Tuxánci FG refers to branch of Tuxánci that was superseded by the NG branch.
+> 
 > Tuxánci refers to the NG branch, also known as Tuxánci NG.
+>
 > Tuxánci NG refers to GNUfault's 2025 revival of the game.
 
 ## Bulánci
