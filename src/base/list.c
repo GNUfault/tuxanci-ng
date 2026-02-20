@@ -137,10 +137,18 @@ void list_del(list_t *p, int n)
 
 void list_del_item(list_t *p, int n, void *f)
 {
-    void (*fce)(void *) = (void (*)(void *))f;
+#ifdef __ENSCRIPTEN__    
+	void (*fce)(void *) = (void (*)(void *))f;
 
-    assert(p != NULL);
+	assert(p != NULL);
     assert(n >= 0 || n < p->count);
+#else
+	void (*fce) (void *);
+
+	assert(p != NULL);
+	assert(n >= 0 || n < p->count);
+	fce = f;
+#endif /* __ENSCRIPTEN__ */
 
     if (fce != NULL) {
         fce(p->list[n]);

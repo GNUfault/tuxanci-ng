@@ -88,7 +88,12 @@ void hot_key_unregister(SDL_Keycode key)
 
 	my_index = list_search(listHotKey, hotkey);
 	assert(my_index != -1);
+
+#ifdef __EMSCRIPTEN__
 	list_del_item(listHotKey, my_index, destroyHotKey_void);
+#else
+    list_del_item(listHotKey, my_index, destroyHotKey);
+#endif /* __EMSCRIPTEN__ */
 }
 
 void hot_key_enable(SDL_Keycode key)
@@ -152,5 +157,9 @@ void hot_key_event()
 
 void hot_key_quit()
 {
+#ifdef __EMSCRIPTEN__
 	list_destroy_item(listHotKey, destroyHotKey_void);
+#else
+	list_destroy_item(listHotKey, destroyHotKey);
+#endif /* __EMSCRIPTEN__ */
 }
