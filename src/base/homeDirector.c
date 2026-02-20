@@ -12,11 +12,16 @@ static char homeDirector[STR_PATH_SIZE];
 void home_director_create()
 {
 	char *envHome;
+#ifdef __EMSCRIPTEN__
+	envHome = "/tmp";
+#else
 #ifndef __WIN32__
 	envHome = getenv("HOME");
 #else /* __WIN32__ */
 	envHome = getenv("USERPROFILE");
 #endif /* __WIN32__ */
+#endif /* __EMSCRIPTEN__ */
+
 	if (envHome == NULL) {
 		error("Environment variable HOME not found");
 		exit(0);

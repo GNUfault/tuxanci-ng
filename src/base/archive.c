@@ -136,6 +136,21 @@ char *archive_extract_file(char *archive, char *filename)
 }
 #endif /* SUPPORT_LIBPHYSFS */
 
+#ifdef __EMSCRIPTEN__
+char *archive_extract_file(char *archive, char *filename)
+{
+        char *name = malloc(STR_TMP_FILE_NAME);
+        char *base = strrchr(archive, '/');
+        base = base ? base + 1 : archive;
+        char arenaName[256];
+        strncpy(arenaName, base, sizeof(arenaName) - 1);
+        char *dot = strstr(arenaName, ".zip");
+        if (dot) *dot = '\0';
+        sprintf(name, "/usr/local/share/tuxanci/arena-extracted/%s/%s", arenaName, filename);
+        return name;
+}
+#endif /* __EMSCRIPTEN__ */
+
 void archive_delete_file(char *s)
 {
 	unlink(s);

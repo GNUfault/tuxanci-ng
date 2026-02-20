@@ -12,6 +12,20 @@
 # -DCMAKE_DOC_PATH=/other/bla/doc/tuxanci-version/	# install path for doc
 # -DCMAKE_LOCALE_PATH=/other/bla	# install path for locale
 ###############################################################################
+# WEB PORT
+###############################################################################
+SET ( BUILD_WEB OFF CACHE BOOL "Build for web (Emscripten)" )
+IF ( BUILD_WEB )
+	IF ( NOT CMAKE_TOOLCHAIN_FILE )
+		SET ( _em_toolchain "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" )
+		IF ( EXISTS "${_em_toolchain}" )
+			SET ( CMAKE_TOOLCHAIN_FILE "${_em_toolchain}" CACHE PATH "Emscripten toolchain" FORCE )
+		ELSE ()
+			MESSAGE ( FATAL_ERROR "BUILD_WEB=ON requires Emscripten. Set EMSDK environment variable or pass -DCMAKE_TOOLCHAIN_FILE=..." )
+		ENDIF ()
+	ENDIF ()
+ENDIF ( BUILD_WEB )
+###############################################################################
 # DEFAULT OPTIONS
 ###############################################################################
 OPTION (BUILD_SERVER        "Build the server instead of client"           OFF)
@@ -184,15 +198,32 @@ ENDIF ( Apple )
 ###############################################################################
 MESSAGE ( STATUS "<Loading PkgConfig>" )
 FIND_PACKAGE ( PkgConfig REQUIRED )
-IF ( WITH_PHYSFS )
-	FIND_PACKAGE ( PhysFS REQUIRED )
-	INCLUDE_DIRECTORIES( ${PHYSFS_INCLUDE_DIR} )
-ELSE ( WITH_PHYSFS )
-	pkg_check_modules(ZIP REQUIRED libzip)
-	INCLUDE_DIRECTORIES( ${ZIP_INCLUDE_DIRS} )
-ENDIF ( WITH_PHYSFS )
+IF ( EMSCRIPTEN )
+	FIND_PACKAGE ( PhysFS QUIET )
+	IF ( NOT PHYSFS_FOUND )
+		pkg_check_modules(ZIP libzip)
+	ENDIF ( NOT PHYSFS_FOUND )
+	IF ( NOT PHYSFS_FOUND AND NOT ZIP_FOUND )
+		SET ( USE_ARCHIVE_STUB 1 )
+		ADD_DEFINITIONS ( -DSUPPORT_ARCHIVE_STUB )
+		MESSAGE ( STATUS "<Web build: using archive stub (no libzip/PhysFS)>" )
+	ELSEIF ( PHYSFS_FOUND )
+		SET ( WITH_PHYSFS ON )
+		INCLUDE_DIRECTORIES( ${PHYSFS_INCLUDE_DIR} )
+	ELSE ( PHYSFS_FOUND )
+		INCLUDE_DIRECTORIES( ${ZIP_INCLUDE_DIRS} )
+	ENDIF ( NOT PHYSFS_FOUND AND NOT ZIP_FOUND )
+ELSE ( EMSCRIPTEN )
+	IF ( WITH_PHYSFS )
+		FIND_PACKAGE ( PhysFS REQUIRED )
+		INCLUDE_DIRECTORIES( ${PHYSFS_INCLUDE_DIR} )
+	ELSE ( WITH_PHYSFS )
+		pkg_check_modules(ZIP REQUIRED libzip)
+		INCLUDE_DIRECTORIES( ${ZIP_INCLUDE_DIRS} )
+	ENDIF ( WITH_PHYSFS )
+ENDIF ( EMSCRIPTEN )
 
-IF ( NOT BUILD_SERVER )
+IF ( NOT BUILD_SERVER AND NOT EMSCRIPTEN )
 	# cairo not needed until we start actually using the svg files
 	#pkg_check_modules(CAIRO REQUIRED cairo>=1.8.8)
 	#pkg_check_modules(CAIRO_SVG REQUIRED cairo-svg>=1.8.8)
@@ -213,7 +244,10 @@ IF ( NOT BUILD_SERVER )
 		pkg_check_modules(SDLMIXER REQUIRED SDL2_mixer)
 		INCLUDE_DIRECTORIES ( ${SDLMIXER_INCLUDE_DIRS} )
 	ENDIF ( WITH_AUDIO )
-ENDIF ( NOT BUILD_SERVER )
+ENDIF ( NOT BUILD_SERVER AND NOT EMSCRIPTEN )
+IF ( NOT BUILD_SERVER AND EMSCRIPTEN )
+	MESSAGE ( STATUS "<Web build: using Emscripten SDL/WebGL ports>" )
+ENDIF ( NOT BUILD_SERVER AND EMSCRIPTEN )
 ###############################################################################
 # GETTEXT SUPPORT
 ###############################################################################

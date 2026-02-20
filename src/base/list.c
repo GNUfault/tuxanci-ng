@@ -137,15 +137,14 @@ void list_del(list_t *p, int n)
 
 void list_del_item(list_t *p, int n, void *f)
 {
-	int (*fce) (void *);
+    void (*fce)(void *) = (void (*)(void *))f;
 
-	assert(p != NULL);
-	assert(n >= 0 || n < p->count);
-	fce = f;
+    assert(p != NULL);
+    assert(n >= 0 || n < p->count);
 
-	if (fce != NULL) {
-		fce(p->list[n]);
-	}
+    if (fce != NULL) {
+        fce(p->list[n]);
+    }
 
 	list_del(p, n);
 }

@@ -9,14 +9,14 @@
 #include "hotKey.h"
 #include "mouse_buffer.h"
 
-static SDL_Surface *window_surface;/* window surface */
-static SDL_Surface *logical_surface; /* logical 4:3 surface we draw into */
-static SDL_Window *window;/* SDL2 window */
-static SDL_TimerID timer;	/* timer */
-static Uint32 g_win_flags;	/* window flags */
+static SDL_Surface *window_surface;
+static SDL_Surface *logical_surface;
+static SDL_Window *window;
+static SDL_TimerID timer;
+static Uint32 g_win_flags;
 
 static bool_t isInterfaceInit = FALSE;
-static bool_t keyboardBufferEnabled = FALSE;	/* flag that controls organising keys into the buffer */
+static bool_t keyboardBufferEnabled = FALSE;
 static bool_t use_open_gl;
 
 bool_t interface_is_use_open_gl()
@@ -66,9 +66,6 @@ void hotkey_screen()
 }
 
 #ifdef SUPPORT_OPENGL
-/**
- * Sets video mode and sets up OpenGL for this change
- */
 SDL_Surface *SetVideoMode(int width, int height, int bpp, Uint32 flags)
 {
 	SDL_Surface *rval = 0;
@@ -76,7 +73,6 @@ SDL_Surface *SetVideoMode(int width, int height, int bpp, Uint32 flags)
 	(void)bpp; (void)flags;
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	/* create SDL2 window with OpenGL context */
 	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 							  width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 	if (window == NULL) {
@@ -84,7 +80,6 @@ SDL_Surface *SetVideoMode(int width, int height, int bpp, Uint32 flags)
 	}
 
 	if (SDL_GL_CreateContext(window) == NULL) {
-		/* if context creation fails, destroy window and return NULL */
 		SDL_DestroyWindow(window);
 		window = NULL;
 		return NULL;
@@ -123,7 +118,6 @@ int interface_init()
 {
 	debug("Initializing SDL");
 
-	/* initialization of SDL */
 	if (SDL_Init(SDL_SUBSYSTEMS) == -1) {
 		fatal("Unable to initialize SDL: %s", SDL_GetError());
 		SDL_Quit();
@@ -171,7 +165,6 @@ int interface_init()
 		return -1;
 	}
 
-	/* create logical surface we draw into (game native resolution) */
 	logical_surface = SDL_CreateRGBSurfaceWithFormat(0, WINDOW_SIZE_X, WINDOW_SIZE_Y, 32, SDL_PIXELFORMAT_ARGB8888);
 	if (logical_surface == NULL) {
 		error("Unable to create logical surface: %s", SDL_GetError());
@@ -195,14 +188,12 @@ int interface_init()
 
 SDL_Surface *interface_get_screen()
 {
-	/* return the logical surface for all drawing */
 	return logical_surface;
 }
 
 void interface_refresh()
 {
 #ifndef SUPPORT_OPENGL
-	/* Scale logical_surface to window_surface with 4:3 letterbox and center */
 	if (window_surface && logical_surface) {
 		int win_w = window_surface->w;
 		int win_h = window_surface->h;
@@ -221,7 +212,6 @@ void interface_refresh()
 		dst.w = dst_w;
 		dst.h = dst_h;
 
-		/* clear to black (letterbox bars) */
 		Uint32 black = SDL_MapRGBA(window_surface->format, 0, 0, 0, 255);
 		SDL_FillRect(window_surface, NULL, black);
 
@@ -289,7 +279,6 @@ void interface_window_to_logical(int winx, int winy, int *logicalx, int *logical
 	int dst_x = (win_w - dst_w) / 2;
 	int dst_y = (win_h - dst_h) / 2;
 
-	/* map window coords into logical surface space */
 	float lx = ((float)(winx - dst_x)) / scale;
 	float ly = ((float)(winy - dst_y)) / scale;
 
@@ -336,24 +325,16 @@ int hack_slow()
 		return 0;
 	}
 
-	/*printf("DEBUG: time interval %d\n", currentTime - lastTime);*/
-
 	if (isSlowHack == FALSE && currentTime - lastTime >= 100) {
-		/*printf("start slow hack (%d)\n", currentTime - lastTime);*/
 		isSlowHack = TRUE;
 		lastTime = timer_get_current_time();
 		return 1;
 	}
 
 	if (isSlowHack == TRUE && currentTime - lastTime >= 50) {
-		/*printf("stop slow hack (%d)\n", currentTime - lastTime);*/
 		isSlowHack = FALSE;
 		lastTime = timer_get_current_time();
 		return 0;
-	}
-
-	if (isSlowHack == TRUE) {
-		/*printf("hack time interval %d\n", currentTime - lastTime);*/
 	}
 
 	lastTime = timer_get_current_time();
@@ -365,7 +346,7 @@ int eventAction()
 {
 	SDL_Event event;
 
-	while (SDL_WaitEvent(&event)) {
+	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_MOUSEBUTTONDOWN:
 				mouse_buffer_event(&event.button);
@@ -374,7 +355,6 @@ int eventAction()
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 					default:
-						/* it is not necessary to always use the buffer */
 						if (keyboardBufferEnabled == TRUE) {
 							keyboard_buffer_push(event.key.keysym);
 						}
@@ -407,7 +387,6 @@ int eventAction()
 				}
 				break;
 
-			/* termination request */
 			case SDL_QUIT:
 				return -1;
 				break;
@@ -420,6 +399,19 @@ int eventAction()
 	return 0;
 }
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+
+static void emscripten_loop(void)
+{
+	eventAction();
+}
+
+void interface_event()
+{
+	emscripten_set_main_loop(emscripten_loop, 0, 1);
+}
+#else
 void interface_event()
 {
 	while (1) {
@@ -428,6 +420,7 @@ void interface_event()
 		}
 	}
 }
+#endif
 
 void interface_quit()
 {

@@ -35,6 +35,11 @@ static void destroyHotKey(hotKey_t *hotkey)
 	free(hotkey);
 }
 
+static void destroyHotKey_void(void *p)
+{
+        destroyHotKey((hotKey_t *) p);
+}
+
 static hotKey_t *findHotkey(SDL_Keycode key)
 {
 	int i;
@@ -83,7 +88,7 @@ void hot_key_unregister(SDL_Keycode key)
 
 	my_index = list_search(listHotKey, hotkey);
 	assert(my_index != -1);
-	list_del_item(listHotKey, my_index, destroyHotKey);
+	list_del_item(listHotKey, my_index, destroyHotKey_void);
 }
 
 void hot_key_enable(SDL_Keycode key)
@@ -147,5 +152,5 @@ void hot_key_event()
 
 void hot_key_quit()
 {
-	list_destroy_item(listHotKey, destroyHotKey);
+	list_destroy_item(listHotKey, destroyHotKey_void);
 }
