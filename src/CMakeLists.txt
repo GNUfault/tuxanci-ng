@@ -129,6 +129,10 @@ ADD_EXECUTABLE ( ${APPNAME} ${SRC_compile} )
 			-sASSERTIONS=1
 			-g3
 		)
+		TARGET_LINK_OPTIONS ( ${APPNAME} PRIVATE
+            "SHELL:--shell-file ${CMAKE_SOURCE_DIR}/src/emscripten/index.html"
+            "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/src/emscripten@/html"
+        )
 		SET ( _web_font "${CMAKE_SOURCE_DIR}/data/fonts/font.ttf" )
 		IF ( NOT EXISTS "${_web_font}" )
 			IF ( EXISTS "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf" )
